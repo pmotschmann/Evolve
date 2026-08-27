@@ -1644,7 +1644,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 36;
+global['beta'] = 37;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1951,28 +1951,23 @@ if (!global.settings.hasOwnProperty('mapView')){
 }
 // `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
 // from the same code and the hardware-accelerated one is the better default wherever it is available.
-['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
+['planetOrbits','moonOrbits','ships','planetNames','webgl','skyStars','starNames'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
     }
 });
-// How far out from the star being looked at the map draws anything, in light years. A number rather
-// than a toggle, so it sits outside the loop above. -1 is the map module's "no limit" sentinel and
-// the default: the whole star field is drawn, and the setting is there to thin it out when you want
-// to see one neighbourhood rather than all of them. The map module clamps and steps the rest.
+// How far out from the star being looked at the map draws anything, in light years. -1 is unlimited.
 if (!global.settings.mapView.hasOwnProperty('starRange')){
     global.settings.mapView['starRange'] = -1;
 }
-// Which game loop drives the solar map: 'fast', 'normal' or 'slow'. 'normal' is the mid loop, which
-// is where the map's simulation has always run, so an existing save keeps behaving as it did.
+// Which game loop drives the solar map: 'fast', 'normal' or 'slow'.
 if (!global.settings.mapView.hasOwnProperty('refresh')){
-    global.settings.mapView['refresh'] = 'normal';
+    global.settings.mapView['refresh'] = 'fast';
 }
 // Surface detail: 'low' is the flat stamped textures the map has always used, 'high' draws the
-// bodies that offer one as a lit sphere that answers to the camera. Low by default, so nothing
-// changes for an existing save until it is asked for.
+// bodies that offer one as a lit sphere that answers to the camera.
 if (!global.settings.mapView.hasOwnProperty('texture')){
-    global.settings.mapView['texture'] = 'low';
+    global.settings.mapView['texture'] = 'high';
 }
 
 export function setupStats(){

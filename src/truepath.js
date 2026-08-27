@@ -9407,6 +9407,9 @@ export const spacePlanetStats = {
     spc_home: { dist: 1, orbit: -1, size: 0.191, hz: true, inc: 0, ecc: 0.0167 },
     spc_moon: { dist: 0.00257, orbit: 27.32, size: 0.1, moon: true, parent: 'spc_home', inc: 5.14 },
     spc_red: { dist: 1.524, orbit: 687, size: 0.14, hz: true, inc: 1.85, ecc: 0.0934 },
+    // Mars's two captured rocks. We call them moons but really they are asteroids that got stuck in orbit.
+    spc_phobos: { dist: 0.0000627, orbit: 0.31891, size: 0.008, moon: true, parent: 'spc_red', inc: 25.2, lumpy: true },
+    spc_deimos: { dist: 0.00015684, orbit: 1.26244, size: 0.006, moon: true, parent: 'spc_red', inc: 25.2, lumpy: true },
     spc_hell: { dist: 0.387098, orbit: 88, size: 0.118, inc: 7, ecc: 0.2056 },
     spc_venus: { dist: 0.723332, orbit: 225, size: 0.187, inc: 3.4, ecc: 0.0068 },
     spc_gas: { dist: 5.203, orbit: 4330, size: 0.634, inc: 1.3, ecc: 0.0489 },
@@ -11633,479 +11636,37 @@ export const spacePlanetStats = {
     hd191849: { x: 1062325.788, y: -96553.943, z: -692057.697, dist: 1271535.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd191849'), zlabel: loc('star_hd191849') },
     // hd191849 planets (M0V, 1, generated; habitable-zone world at ~0.313 AU); HZ 0.250-0.360 AU.
     hd191849_p1: { dist: 0.313, orbit: 85, size: 0.191, star: 'hd191849', hz: true },
-    // BD+19 5116 -- 3 components.
-    // M3.5V, 0.3 solar radii, 20.16 ly.
-    bd195116: { x: -147472.31, y: 977913.391, z: -804916.344, dist: 1275128.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd195116'), zlabel: loc('star_bd195116') + ' A' },
-    // M4.0Ve, 0.274 solar radii, 20.16 ly.
-    bd195116b: { x: -147502.069, y: 977899.763, z: -804927.449, dist: 1275128.6, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_bd195116') + ' B' },
-    // M3.5Ve, 0.3 solar radii, 20.16 ly.
-    bd195116c: { x: -147471.861, y: 977913.497, z: -804916.298, dist: 1275128.6, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_bd195116') + ' C' },
-    // bd195116 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
-    bd195116_p1: { dist: 0.63965, orbit: 284.39, size: 0.697, star: 'bd195116' },
-    // bd195116b planets (M4.0Ve, 2, generated; habitable-zone world at ~0.104 AU); HZ 0.081-0.117 AU.
-    bd195116b_p1: { dist: 0.027, orbit: 3.38, size: 0.234, star: 'bd195116b' },
-    bd195116b_p2: { dist: 0.104, orbit: 26, size: 0.142, star: 'bd195116b', hz: true },
-    // bd195116c planets (M3.5Ve, 2, generated; habitable-zone world at ~0.0963 AU); HZ 0.092-0.132 AU.
-    bd195116c_p1: { dist: 0.0596, orbit: 10, size: 0.142, star: 'bd195116c' },
-    bd195116c_p2: { dist: 0.0963, orbit: 21, size: 0.142, star: 'bd195116c', hz: true },
-    // HD 152751 -- 3 components.
-    // M3.5Ve, 0.3 solar radii, 20.21 ly.
-    hd152751: { x: 1169808.984, y: 228333.307, z: 460893.584, dist: 1277893.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_hd152751'), zlabel: loc('star_hd152751') + ' A' },
-    // M7Ve, 0.12 solar radii, 20.21 ly.
-    hd152751b: { x: 1170383.345, y: 227674.421, z: 459759.978, dist: 1277893.6, orbit: -2, size: 0.693, startype: 'M', zlabel: loc('star_hd152751') + ' B' },
-    // M3.5V, 0.3 solar radii, 20.21 ly.
-    hd152751c: { x: 1169638.36, y: 228378.322, z: 461304.131, dist: 1277893.6, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_hd152751') + ' C' },
-    // hd152751 planets (M3.5Ve, 1, generated; habitable-zone world at ~0.113 AU); HZ 0.092-0.132 AU.
-    hd152751_p1: { dist: 0.113, orbit: 27, size: 0.191, star: 'hd152751', hz: true },
-    // hd152751b planets (M7Ve, 2, generated; habitable-zone world at ~0.0281 AU); HZ 0.024-0.035 AU.
-    hd152751b_p1: { dist: 0.012, orbit: 1.6, size: 0.191, star: 'hd152751b' },
-    hd152751b_p2: { dist: 0.0281, orbit: 5.73, size: 0.191, star: 'hd152751b', hz: true },
-    // hd152751c planets (M3.5V, 2, generated; none habitable); HZ 0.092-0.132 AU.
-    hd152751c_p1: { dist: 0.0661, orbit: 12, size: 0.234, star: 'hd152751c' },
-    hd152751c_p2: { dist: 0.177, orbit: 52, size: 0.296, star: 'hd152751c' },
-    // BD-11 3759.
-    // M3.5V, 0.3 solar radii, 20.39 ly.
-    bd113759: { x: 874961.445, y: -346065.402, z: 882163.859, dist: 1289779.8, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd113759'), zlabel: loc('star_bd113759') },
-    // bd113759 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
-    bd113759_p1: { dist: 0.1417, orbit: 36.116, size: 0.283, star: 'bd113759' },
-    // BD-07 4003.
-    // M3V, 0.361 solar radii, 20.55 ly.
-    bd074003: { x: 989940.071, y: -102691.173, z: 835669.388, dist: 1299565.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_bd074003'), zlabel: loc('star_bd074003') },
-    // bd074003 planets (M3V, 3, measured; none habitable); HZ 0.121-0.174 AU.
-    bd074003_p1: { dist: 0.02799, orbit: 3.148, size: 0.224, star: 'bd074003' },
-    bd074003_p2: { dist: 0.0399, orbit: 5.369, size: 0.418, star: 'bd074003' },
-    bd074003_p3: { dist: 0.0718, orbit: 12.921, size: 0.302, star: 'bd074003' },
-    // LP 368-128.
-    // M6.5Ve, 0.126 solar radii, 20.74 ly.
-    lp368128: { x: -939322.59, y: -443996.873, z: 800430.803, dist: 1311544.7, orbit: -2, size: 0.71, startype: 'M', label: loc('star_lp368128'), zlabel: loc('star_lp368128') },
-    // lp368128 planets (M6.5Ve, 1, generated; habitable-zone world at ~0.032 AU); HZ 0.027-0.039 AU.
-    lp368128_p1: { dist: 0.032, orbit: 6.86, size: 0.234, star: 'lp368128', hz: true },
-    // LP 944-20.
-    // M9.5Ve, 0.101 solar radii, 20.96 ly.
-    lp94420: { x: -434142.543, y: -660202.241, z: -1064393.681, dist: 1325624.6, orbit: -2, size: 0.636, startype: 'M', label: loc('star_lp94420'), zlabel: loc('star_lp94420') },
-    // lp94420 planets (M9.5Ve, 2, generated; habitable-zone world at ~0.0188 AU); HZ 0.016-0.022 AU.
-    lp94420_p1: { dist: 0.0188, orbit: 3.37, size: 0.142, star: 'lp94420', hz: true },
-    lp94420_p2: { dist: 0.0302, orbit: 6.86, size: 0.191, star: 'lp94420' },
-    // GL Virginis.
-    // M4.5Ve, 0.217 solar radii, 21.08 ly.
-    glvirginis: { x: 41634.071, y: -403851.732, z: 1270007.238, dist: 1333322.2, orbit: -2, size: 0.932, startype: 'M', label: loc('star_glvirginis'), zlabel: loc('star_glvirginis') },
-    // glvirginis planets (M4.5Ve, 2, generated; habitable-zone world at ~0.0705 AU); HZ 0.060-0.086 AU.
-    glvirginis_p1: { dist: 0.0422, orbit: 7.38, size: 0.191, star: 'glvirginis' },
-    glvirginis_p2: { dist: 0.0705, orbit: 16, size: 0.296, star: 'glvirginis', hz: true },
     // G 202-48.
     // M1.5V, 0.482 solar radii, 21.13 ly.
     g20248: { x: 115928.513, y: 973870.836, z: 907714.943, dist: 1336342.1, orbit: -2, size: 1.389, startype: 'M', label: loc('star_g20248'), zlabel: loc('star_g20248') },
     // g20248 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
     g20248_p1: { dist: 0.078361, orbit: 14.628, size: 0.233, star: 'g20248' },
-    // L 100-115.
-    // M4.0V, 0.274 solar radii, 21.21 ly.
-    l100115: { x: 389479.145, y: -1253182.633, z: -278215.816, dist: 1341478.6, orbit: -2, size: 1.047, startype: 'M', label: loc('star_l100115'), zlabel: loc('star_l100115') },
-    // l100115 planets (M4.0V, 1, generated; habitable-zone world at ~0.0939 AU); HZ 0.081-0.117 AU.
-    l100115_p1: { dist: 0.0939, orbit: 22, size: 0.191, star: 'l100115', hz: true },
-    // L 471-42.
-    // M4.5V, 0.217 solar radii, 21.73 ly.
-    l47142: { x: 629780.21, y: -1081371.362, z: 568279.685, dist: 1374383.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l47142'), zlabel: loc('star_l47142') },
-    // l47142 planets (M4.5V, 2, generated; none habitable); HZ 0.060-0.086 AU.
-    l47142_p1: { dist: 0.0157, orbit: 1.68, size: 0.234, star: 'l47142' },
-    l47142_p2: { dist: 0.0253, orbit: 3.43, size: 0.142, star: 'l47142' },
-    // Scholz's Star.
-    // M9.5+T5, 0.101 solar radii, 21.92 ly.
-    scholzsstar: { x: -996191.611, y: -962318.025, z: 55353.88, dist: 1386188.2, orbit: -2, size: 0.636, startype: 'M', label: loc('star_scholzsstar'), zlabel: loc('star_scholzsstar') },
-    // scholzsstar planets (M9.5+T5, 2, generated; none habitable); HZ 0.016-0.022 AU.
-    scholzsstar_p1: { dist: 0.012, orbit: 1.72, size: 0.191, star: 'scholzsstar' },
-    scholzsstar_p2: { dist: 0.0269, orbit: 5.77, size: 0.296, star: 'scholzsstar' },
-    // Ross 104.
-    // M4V, 0.274 solar radii, 22.01 ly.
-    ross104: { x: -482960.813, y: -356350.618, z: 1255749.893, dist: 1391813.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross104'), zlabel: loc('star_ross104') },
-    // ross104 planets (M4V, 1, generated; none habitable); HZ 0.081-0.117 AU.
-    ross104_p1: { dist: 0.0445, orbit: 7.15, size: 0.142, star: 'ross104' },
-    // Ross 619.
-    // M4.5V, 0.217 solar radii, 22.08 ly.
-    ross619: { x: -1072787.31, y: -727060.671, z: 519788.47, dist: 1396305.8, orbit: -2, size: 0.932, startype: 'M', label: loc('star_ross619'), zlabel: loc('star_ross619') },
-    // ross619 planets (M4.5V, 2, generated; habitable-zone world at ~0.0687 AU); HZ 0.060-0.086 AU.
-    ross619_p1: { dist: 0.0326, orbit: 5.01, size: 0.191, star: 'ross619' },
-    ross619_p2: { dist: 0.0687, orbit: 15, size: 0.191, star: 'ross619', hz: true },
-    // Ross 775.
-    // M3.0V, 0.361 solar radii, 22.11 ly.
-    ross775: { x: 447134.763, y: 1200016.345, z: -561854.509, dist: 1398445.3, orbit: -2, size: 1.202, startype: 'M', label: loc('star_ross775'), zlabel: loc('star_ross775') },
-    // ross775 planets (M3.0V, 2, generated; none habitable); HZ 0.121-0.174 AU.
-    ross775_p1: { dist: 0.0456, orbit: 5.85, size: 0.142, star: 'ross775' },
-    ross775_p2: { dist: 0.118, orbit: 24, size: 0.191, star: 'ross775' },
-    // G 41-14.
-    // M3.5V, 0.3 solar radii, 22.19 ly.
-    g4114: { x: -907735.629, y: -766901.575, z: 746689.568, dist: 1403448.4, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g4114'), zlabel: loc('star_g4114') },
-    // g4114 planets (M3.5V, 2, generated; none habitable); HZ 0.092-0.132 AU.
-    g4114_p1: { dist: 0.0345, orbit: 4.5, size: 0.191, star: 'g4114' },
-    g4114_p2: { dist: 0.0813, orbit: 16, size: 0.296, star: 'g4114' },
-    // BD-17 588 -- 2 components.
-    // M3V, 0.361 solar radii, 22.39 ly.
-    bd17588: { x: -701339.202, y: -262030.388, z: -1201595.744, dist: 1415757.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_bd17588'), zlabel: loc('star_bd17588') + ' A' },
-    // M2.5V, 0.421 solar radii, 22.39 ly.
-    bd17588b: { x: -701343.511, y: -261984.943, z: -1201603.138, dist: 1415757.4, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_bd17588') + ' B' },
-    // bd17588 planets (M3V, 2, measured; none habitable); HZ 0.121-0.174 AU.
-    bd17588_p1: { dist: 0.02661, orbit: 3.124, size: 0.205, star: 'bd17588' },
-    bd17588_p2: { dist: 0.0381, orbit: 5.359, size: 0.221, star: 'bd17588' },
-    // bd17588b planets (M2.5V, 1, generated; none habitable); HZ 0.144-0.207 AU.
-    bd17588b_p1: { dist: 0.0614, orbit: 8.79, size: 0.234, star: 'bd17588b' },
     // HD 216899.
     // M1.5V, 0.482 solar radii, 22.40 ly.
     hd216899: { x: 57063.345, y: 1111790.528, z: -875744.775, dist: 1416426.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_hd216899'), zlabel: loc('star_hd216899') },
     // hd216899 planets (M1.5V, 2, generated; habitable-zone world at ~0.212 AU); HZ 0.181-0.261 AU.
     hd216899_p1: { dist: 0.0656, orbit: 8.95, size: 0.234, star: 'hd216899' },
     hd216899_p2: { dist: 0.212, orbit: 52, size: 0.296, star: 'hd216899', hz: true },
-    // Wolf 358.
-    // M4V, 0.274 solar radii, 22.72 ly.
-    wolf358: { x: -377917.584, y: -734514.324, z: 1175847.938, dist: 1436993.9, orbit: -2, size: 1.047, startype: 'M', label: loc('star_wolf358'), zlabel: loc('star_wolf358') },
-    // wolf358 planets (M4V, 2, generated; habitable-zone world at ~0.113 AU); HZ 0.081-0.117 AU.
-    wolf358_p1: { dist: 0.05, orbit: 8.51, size: 0.191, star: 'wolf358' },
-    wolf358_p2: { dist: 0.113, orbit: 29, size: 0.296, star: 'wolf358', hz: true },
-    // BD+01 2447.
-    // dM2, 0.446 solar radii, 22.95 ly.
-    bd012447: { x: -427494.5, y: -895240.389, z: 1059682.332, dist: 1451596.9, orbit: -2, size: 1.336, startype: 'M', label: loc('star_bd012447'), zlabel: loc('star_bd012447') },
-    // bd012447 planets (dM2, 1, measured; none habitable); HZ 0.161-0.233 AU.
-    bd012447_p1: { dist: 0.05402, orbit: 7.027, size: 0.207, star: 'bd012447' },
     // HD 199305.
     // M1.0V, 0.501 solar radii, 22.96 ly.
     hd199305: { x: -215837.269, y: 1408452.44, z: 279320.811, dist: 1452013.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd199305'), zlabel: loc('star_hd199305') },
     // hd199305 planets (M1.0V, 1, generated; habitable-zone world at ~0.22 AU); HZ 0.192-0.277 AU.
     hd199305_p1: { dist: 0.22, orbit: 53, size: 0.191, star: 'hd199305', hz: true },
-    // LSPM J2146+3813.
-    // M5V, 0.196 solar radii, 22.99 ly.
-    lspmj21463813: { x: 61805.182, y: 1422556.784, z: -292583.176, dist: 1453648, orbit: -2, size: 0.885, startype: 'M', label: loc('star_lspmj21463813'), zlabel: loc('star_lspmj21463813') },
-    // lspmj21463813 planets (M5V, 3, generated; none habitable); HZ 0.052-0.075 AU.
-    lspmj21463813_p1: { dist: 0.0385, orbit: 6.86, size: 0.234, star: 'lspmj21463813' },
-    lspmj21463813_p2: { dist: 0.0779, orbit: 20, size: 0.296, star: 'lspmj21463813' },
-    lspmj21463813_p3: { dist: 0.165, orbit: 61, size: 0.191, star: 'lspmj21463813' },
-    // LP 914-54.
-    // M7.0Ve, 0.12 solar radii, 23.00 ly.
-    lp91454: { x: 1163079.711, y: -570067.209, z: 662198.823, dist: 1454729.6, orbit: -2, size: 0.693, startype: 'M', label: loc('star_lp91454'), zlabel: loc('star_lp91454') },
-    // lp91454 planets (M7.0Ve, 3, generated; habitable-zone world at ~0.0328 AU); HZ 0.024-0.035 AU.
-    lp91454_p1: { dist: 0.0168, orbit: 2.65, size: 0.191, star: 'lp91454' },
-    lp91454_p2: { dist: 0.0328, orbit: 7.23, size: 0.191, star: 'lp91454', hz: true },
-    lp91454_p3: { dist: 0.053, orbit: 15, size: 0.234, star: 'lp91454' },
-    // L 230-188.
-    // M4.5V, 0.217 solar radii, 23.18 ly.
-    l230188: { x: -125702.616, y: -1027376.682, z: -1038239.906, dist: 1466030.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l230188'), zlabel: loc('star_l230188') },
-    // l230188 planets (M4.5V, 1, generated; habitable-zone world at ~0.0743 AU); HZ 0.060-0.086 AU.
-    l230188_p1: { dist: 0.0743, orbit: 17, size: 0.234, star: 'l230188', hz: true },
-    // G 157-77.
-    // M5.0Ve, 0.196 solar radii, 23.41 ly.
-    g15777: { x: 88830.087, y: 751549.886, z: -1272242.315, dist: 1480310.3, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g15777'), zlabel: loc('star_g15777') },
-    // g15777 planets (M5.0Ve, 2, generated; none habitable); HZ 0.052-0.075 AU.
-    g15777_p1: { dist: 0.0191, orbit: 2.4, size: 0.191, star: 'g15777' },
-    g15777_p2: { dist: 0.0466, orbit: 9.13, size: 0.142, star: 'g15777' },
-    // BX Ceti.
-    // M3.5V, 0.3 solar radii, 23.56 ly.
-    bxceti: { x: -963495.744, y: 286006.242, z: -1099925.927, dist: 1489953.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bxceti'), zlabel: loc('star_bxceti') },
-    // bxceti planets (M3.5V, 3, generated; habitable-zone world at ~0.116 AU); HZ 0.092-0.132 AU.
-    bxceti_p1: { dist: 0.0471, orbit: 7.19, size: 0.191, star: 'bxceti' },
-    bxceti_p2: { dist: 0.116, orbit: 28, size: 0.191, star: 'bxceti', hz: true },
-    bxceti_p3: { dist: 0.271, orbit: 99, size: 0.296, star: 'bxceti' },
-    // L 788-34.
-    // M4.5Ve, 0.217 solar radii, 23.60 ly.
-    l78834: { x: 656870.052, y: 563295.284, z: -1215690.031, dist: 1492207.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_l78834'), zlabel: loc('star_l78834') },
-    // l78834 planets (M4.5Ve, 2, measured; none habitable); HZ 0.060-0.086 AU.
-    l78834_p1: { dist: 0.0153, orbit: 1.634, size: 0.236, star: 'l78834' },
-    l78834_p2: { dist: 0.186, orbit: 69.57, size: 0.321, star: 'l78834' },
-    // Wolf 922.
-    // M4.5V, 0.217 solar radii, 24.32 ly.
-    wolf922: { x: 860310.098, y: 808883.394, z: -985926.268, dist: 1538335.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_wolf922'), zlabel: loc('star_wolf922') },
-    // wolf922 planets (M4.5V, 2, generated; habitable-zone world at ~0.0764 AU); HZ 0.060-0.086 AU.
-    wolf922_p1: { dist: 0.0393, orbit: 6.63, size: 0.191, star: 'wolf922' },
-    wolf922_p2: { dist: 0.0764, orbit: 18, size: 0.234, star: 'wolf922', hz: true },
-    // G 24-16.
-    // M4.5V, 0.217 solar radii, 24.37 ly.
-    g2416: { x: 877371.112, y: 1186914.184, z: -444471.026, dist: 1541460.3, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g2416'), zlabel: loc('star_g2416') },
-    // g2416 planets (M4.5V, 2, generated; habitable-zone world at ~0.0657 AU); HZ 0.060-0.086 AU.
-    g2416_p1: { dist: 0.0266, orbit: 3.69, size: 0.142, star: 'g2416' },
-    g2416_p2: { dist: 0.0657, orbit: 14, size: 0.234, star: 'g2416', hz: true },
-    // G 203-47.
-    // M3.5V, 0.3 solar radii, 24.78 ly.
-    g20347: { x: 455972.628, y: 1178290.443, z: 927555.054, dist: 1567366.5, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g20347'), zlabel: loc('star_g20347') },
-    // g20347 planets (M3.5V, 2, generated; habitable-zone world at ~0.118 AU); HZ 0.092-0.132 AU.
-    g20347_p1: { dist: 0.0475, orbit: 7.28, size: 0.234, star: 'g20347' },
-    g20347_p2: { dist: 0.118, orbit: 28, size: 0.296, star: 'g20347', hz: true },
-    // G 141-36.
-    // M5.0V, 0.196 solar radii, 24.84 ly.
-    g14136: { x: 1210332.871, y: 995262.997, z: 114879.004, dist: 1571194.2, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g14136'), zlabel: loc('star_g14136') },
-    // g14136 planets (M5.0V, 1, generated; habitable-zone world at ~0.0608 AU); HZ 0.052-0.075 AU.
-    g14136_p1: { dist: 0.0608, orbit: 14, size: 0.234, star: 'g14136', hz: true },
     // BD+11 2576.
     // M1.0V, 0.501 solar radii, 24.88 ly.
     bd112576: { x: 458605.055, y: -231347.387, z: 1487113.923, dist: 1573323.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd112576'), zlabel: loc('star_bd112576') },
     // bd112576 planets (M1.0V, 1, measured; none habitable); HZ 0.192-0.277 AU.
     bd112576_p1: { dist: 0.422, orbit: 140.43, size: 0.279, star: 'bd112576' },
-    // G 258-33.
-    // M4.5Ve, 0.217 solar radii, 24.93 ly.
-    g25833: { x: -146792.604, y: 1385328.789, z: 737606.545, dist: 1576308.1, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g25833'), zlabel: loc('star_g25833') },
-    // g25833 planets (M4.5Ve, 2, generated; habitable-zone world at ~0.0755 AU); HZ 0.060-0.086 AU.
-    g25833_p1: { dist: 0.0419, orbit: 7.3, size: 0.234, star: 'g25833' },
-    g25833_p2: { dist: 0.0755, orbit: 18, size: 0.234, star: 'g25833', hz: true },
-    // L 499-56.
-    // M3.5V, 0.3 solar radii, 25.01 ly.
-    l49956: { x: 941671.267, y: 106288.601, z: -1266210.545, dist: 1581559.7, orbit: -2, size: 1.095, startype: 'M', label: loc('star_l49956'), zlabel: loc('star_l49956') },
-    // l49956 planets (M3.5V, 1, generated; habitable-zone world at ~0.116 AU); HZ 0.092-0.132 AU.
-    l49956_p1: { dist: 0.116, orbit: 28, size: 0.234, star: 'l49956', hz: true },
-    // VX Arietis.
-    // dM3, 0.361 solar radii, 25.05 ly.
-    vxarietis: { x: -1209725.682, y: 624756.169, z: -810031.249, dist: 1584268.6, orbit: -2, size: 1.202, startype: 'M', label: loc('star_vxarietis'), zlabel: loc('star_vxarietis') },
-    // vxarietis planets (dM3, 1, generated; habitable-zone world at ~0.148 AU); HZ 0.121-0.174 AU.
-    vxarietis_p1: { dist: 0.148, orbit: 34, size: 0.191, star: 'vxarietis', hz: true },
-    // BD-03 2870.
-    // M2V, 0.446 solar radii, 25.14 ly.
-    bd032870: { x: -499560.777, y: -1095922.556, z: 1037495.853, dist: 1589655.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_bd032870'), zlabel: loc('star_bd032870') },
-    // bd032870 planets (M2V, 3, generated; habitable-zone world at ~0.186 AU); HZ 0.161-0.233 AU.
-    bd032870_p1: { dist: 0.0497, orbit: 6.1, size: 0.191, star: 'bd032870' },
-    bd032870_p2: { dist: 0.125, orbit: 24, size: 0.142, star: 'bd032870' },
-    bd032870_p3: { dist: 0.186, orbit: 44, size: 0.142, star: 'bd032870', hz: true },
-    // SIPS J1259-4336.
-    // M8:, 0.114 solar radii, 25.20 ly.
-    sipsj12594336: { x: 849991.537, y: -1241522.277, z: 525235.083, dist: 1593654.6, orbit: -2, size: 0.675, startype: 'M', label: loc('star_sipsj12594336'), zlabel: loc('star_sipsj12594336') },
-    // sipsj12594336 planets (M8:, 2, generated; habitable-zone world at ~0.0248 AU); HZ 0.022-0.031 AU.
-    sipsj12594336_p1: { dist: 0.012, orbit: 1.65, size: 0.142, star: 'sipsj12594336' },
-    sipsj12594336_p2: { dist: 0.0248, orbit: 4.89, size: 0.296, star: 'sipsj12594336', hz: true },
-    // LP 881-64.
-    // M5.5/6Ve+M8.5Ve+M9/9.5V, 0.156 solar radii, 25.22 ly.
-    lp88164: { x: 141054.551, y: 85734.616, z: -1586471.991, dist: 1595036.1, orbit: -2, size: 0.79, startype: 'M', label: loc('star_lp88164'), zlabel: loc('star_lp88164') },
-    // lp88164 planets (M5.5/6Ve+M8.5Ve+M9/9.5V, 2, generated; habitable-zone world at ~0.0432 AU); HZ 0.038-0.055 AU.
-    lp88164_p1: { dist: 0.0132, orbit: 1.58, size: 0.191, star: 'lp88164' },
-    lp88164_p2: { dist: 0.0432, orbit: 9.35, size: 0.234, star: 'lp88164', hz: true },
-    // G 192-13.
-    // M4.0V, 0.274 solar radii, 25.22 ly.
-    g19213: { x: -1370582.939, y: 666576.349, z: 471084.587, dist: 1595224.8, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g19213'), zlabel: loc('star_g19213') },
-    // g19213 planets (M4.0V, 1, measured; habitable-zone world at ~0.09673 AU); HZ 0.081-0.117 AU.
-    g19213_p1: { dist: 0.09673, orbit: 21.45, size: 0.219, star: 'g19213', hz: true },
     // HD 165222.
     // M0V, 0.588 solar radii, 25.24 ly.
     hd165222: { x: 1430809.775, y: 663449.258, z: 246233.478, dist: 1596249.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd165222'), zlabel: loc('star_hd165222') },
     // hd165222 planets (M0V, 1, generated; habitable-zone world at ~0.298 AU); HZ 0.250-0.360 AU.
     hd165222_p1: { dist: 0.298, orbit: 79, size: 0.142, star: 'hd165222', hz: true },
-    // G 109-35.
-    // M5.0Ve, 0.196 solar radii, 25.29 ly.
-    g10935: { x: -1508802.795, y: -444235.462, z: 288699.947, dist: 1599118.1, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g10935'), zlabel: loc('star_g10935') },
-    // g10935 planets (M5.0Ve, 1, generated; habitable-zone world at ~0.0623 AU); HZ 0.052-0.075 AU.
-    g10935_p1: { dist: 0.0623, orbit: 14, size: 0.142, star: 'g10935', hz: true },
-    // G 227-22.
-    // M5Ve, 0.196 solar radii, 25.42 ly.
-    g22722: { x: -91308.728, y: 1395666.412, z: 792571.665, dist: 1607604.4, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g22722'), zlabel: loc('star_g22722') },
-    // g22722 planets (M5Ve, 1, generated; habitable-zone world at ~0.0602 AU); HZ 0.052-0.075 AU.
-    g22722_p1: { dist: 0.0602, orbit: 13, size: 0.191, star: 'g22722', hz: true },
-    // G 202-45.
-    // M3.0V, 0.361 solar radii, 25.59 ly.
-    g20245: { x: 297189.969, y: 1124480.276, z: 1124839.022, dist: 1618036, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g20245'), zlabel: loc('star_g20245') },
-    // g20245 planets (M3.0V, 1, generated; none habitable); HZ 0.121-0.174 AU.
-    g20245_p1: { dist: 0.0847, orbit: 15, size: 0.234, star: 'g20245' },
-    // G 154-44.
-    // M4.0Ve, 0.274 solar radii, 26.00 ly.
-    g15444: { x: 1595893.491, y: 390745.622, z: 61599.301, dist: 1644187.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g15444'), zlabel: loc('star_g15444') },
-    // g15444 planets (M4.0Ve, 1, generated; none habitable); HZ 0.081-0.117 AU.
-    g15444_p1: { dist: 0.048, orbit: 8.01, size: 0.142, star: 'g15444' },
-    // SCR J0740-4257.
-    // M4.5, 0.217 solar radii, 26.03 ly.
-    scrj07404257: { x: -382457.137, y: -1575486.101, z: -285161.172, dist: 1646130.9, orbit: -2, size: 0.932, startype: 'M', label: loc('star_scrj07404257'), zlabel: loc('star_scrj07404257') },
-    // scrj07404257 planets (M4.5, 1, generated; habitable-zone world at ~0.069 AU); HZ 0.060-0.086 AU.
-    scrj07404257_p1: { dist: 0.069, orbit: 15, size: 0.234, star: 'scrj07404257', hz: true },
-    // CD-44 3045 -- 3 components.
-    // M3.5V, 0.3 solar radii, 26.12 ly.
-    cd443045: { x: -425881.559, y: -1516938.983, z: -496949.326, dist: 1652101, orbit: -2, size: 1.095, startype: 'M', label: loc('star_cd443045'), zlabel: loc('star_cd443045') + ' A' },
-    // M3V, 0.361 solar radii, 26.12 ly.
-    cd443045b: { x: -425881.55, y: -1516939.614, z: -496947.406, dist: 1652101, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd443045') + ' B' },
-    // M3, 0.361 solar radii, 26.12 ly.
-    cd443045c: { x: -425886.726, y: -1516935.297, z: -496956.148, dist: 1652101, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd443045') + ' C' },
-    // cd443045 planets (M3.5V, 3, generated; habitable-zone world at ~0.117 AU); HZ 0.092-0.132 AU.
-    cd443045_p1: { dist: 0.0265, orbit: 3.03, size: 0.234, star: 'cd443045' },
-    cd443045_p2: { dist: 0.0664, orbit: 12, size: 0.191, star: 'cd443045' },
-    cd443045_p3: { dist: 0.117, orbit: 28, size: 0.191, star: 'cd443045', hz: true },
-    // cd443045b planets (M3V, 1, generated; habitable-zone world at ~0.151 AU); HZ 0.121-0.174 AU.
-    cd443045b_p1: { dist: 0.151, orbit: 35, size: 0.191, star: 'cd443045b', hz: true },
-    // cd443045c planets (M3, 1, generated; habitable-zone world at ~0.143 AU); HZ 0.121-0.174 AU.
-    cd443045c_p1: { dist: 0.143, orbit: 32, size: 0.234, star: 'cd443045c', hz: true },
-    // G 122-49.
-    // M4.5V, 0.217 solar radii, 26.23 ly.
-    g12249: { x: -577524.732, y: 362975.901, z: 1512178.9, dist: 1658906.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g12249'), zlabel: loc('star_g12249') },
-    // g12249 planets (M4.5V, 1, measured; none habitable); HZ 0.060-0.086 AU.
-    g12249_p1: { dist: 0.5714, orbit: 389.7, size: 0.344, star: 'g12249' },
-    // L 399-68.
-    // M3V, 0.361 solar radii, 26.26 ly.
-    l39968: { x: 804869.635, y: -1345613.212, z: 547953.646, dist: 1660946.5, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l39968'), zlabel: loc('star_l39968') },
-    // l39968 planets (M3V, 3, generated; habitable-zone world at ~0.131 AU); HZ 0.121-0.174 AU.
-    l39968_p1: { dist: 0.0513, orbit: 6.98, size: 0.142, star: 'l39968' },
-    l39968_p2: { dist: 0.131, orbit: 28, size: 0.234, star: 'l39968', hz: true },
-    l39968_p3: { dist: 0.231, orbit: 67, size: 0.142, star: 'l39968' },
-    // Wolf 437.
-    // M3.5V, 0.3 solar radii, 26.35 ly.
-    wolf437: { x: 249503.177, y: -431260.141, z: 1590217.087, dist: 1666441.6, orbit: -2, size: 1.095, startype: 'M', label: loc('star_wolf437'), zlabel: loc('star_wolf437') },
-    // wolf437 planets (M3.5V, 1, measured; none habitable); HZ 0.092-0.132 AU.
-    wolf437_p1: { dist: 0.01714, orbit: 1.467, size: 0.217, star: 'wolf437' },
-    // G 262-15.
-    // M3V, 0.361 solar radii, 26.38 ly.
-    g26215: { x: -277930.321, y: 1586632.124, z: 433374.834, dist: 1668070.9, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g26215'), zlabel: loc('star_g26215') },
-    // g26215 planets (M3V, 1, generated; none habitable); HZ 0.121-0.174 AU.
-    g26215_p1: { dist: 0.0518, orbit: 7.08, size: 0.191, star: 'g26215' },
-    // G 13-22.
-    // M4.5Ve, 0.217 solar radii, 26.38 ly.
-    g1322: { x: 173270.072, y: -762877.752, z: 1473425.31, dist: 1668228.7, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g1322'), zlabel: loc('star_g1322') },
-    // g1322 planets (M4.5Ve, 1, generated; habitable-zone world at ~0.0705 AU); HZ 0.060-0.086 AU.
-    g1322_p1: { dist: 0.0705, orbit: 16, size: 0.191, star: 'g1322', hz: true },
-    // L 674-15.
-    // M3.5V, 0.3 solar radii, 26.47 ly.
-    l67415: { x: -794121.084, y: -1460141.922, z: 200609.664, dist: 1674182.5, orbit: -2, size: 1.095, startype: 'M', label: loc('star_l67415'), zlabel: loc('star_l67415') },
-    // l67415 planets (M3.5V, 3, generated; habitable-zone world at ~0.117 AU); HZ 0.092-0.132 AU.
-    l67415_p1: { dist: 0.027, orbit: 3.12, size: 0.142, star: 'l67415' },
-    l67415_p2: { dist: 0.117, orbit: 28, size: 0.142, star: 'l67415', hz: true },
-    l67415_p3: { dist: 0.191, orbit: 59, size: 0.191, star: 'l67415' },
-    // IRAS 21500+5903.
-    // dM4.0, 0.274 solar radii, 26.50 ly.
-    iras215005903: { x: -339931.639, y: 1637093.503, z: 118050.821, dist: 1676175.6, orbit: -2, size: 1.047, startype: 'M', label: loc('star_iras215005903'), zlabel: loc('star_iras215005903') },
-    // iras215005903 planets (dM4.0, 2, generated; none habitable); HZ 0.081-0.117 AU.
-    iras215005903_p1: { dist: 0.0327, orbit: 4.5, size: 0.234, star: 'iras215005903' },
-    iras215005903_p2: { dist: 0.0785, orbit: 17, size: 0.234, star: 'iras215005903' },
     // BD+18 3421.
     // M1.5V, 0.482 solar radii, 26.61 ly.
     bd183421: { x: 1135649.899, y: 1031196.906, z: 692509.894, dist: 1683044.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd183421'), zlabel: loc('star_bd183421') },
     // bd183421 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
     bd183421_p1: { dist: 0.091, orbit: 15.53, size: 0.3, star: 'bd183421' },
-    // L 173-19.
-    // M2.0Ve, 0.446 solar radii, 26.80 ly.
-    l17319: { x: 218320.177, y: -855882.055, z: -1446362.925, dist: 1694745.9, orbit: -2, size: 1.336, startype: 'M', label: loc('star_l17319'), zlabel: loc('star_l17319') },
-    // l17319 planets (M2.0Ve, 1, generated; none habitable); HZ 0.161-0.233 AU.
-    l17319_p1: { dist: 0.108, orbit: 20, size: 0.234, star: 'l17319' },
-    // Ross 318.
-    // M3.0V, 0.361 solar radii, 26.85 ly.
-    ross318: { x: -933867.415, y: 1394243.231, z: 260596.047, dist: 1698214.6, orbit: -2, size: 1.202, startype: 'M', label: loc('star_ross318'), zlabel: loc('star_ross318') },
-    // ross318 planets (M3.0V, 1, measured; none habitable); HZ 0.121-0.174 AU.
-    ross318_p1: { dist: 0.1752, orbit: 39.63, size: 0.318, star: 'ross318' },
-    // CD-68 47.
-    // M2.5V, 0.421 solar radii, 26.86 ly.
-    cd6847: { x: 552799.069, y: -952388.316, z: -1292992.541, dist: 1698369.8, orbit: -2, size: 1.298, startype: 'M', label: loc('star_cd6847'), zlabel: loc('star_cd6847') },
-    // cd6847 planets (M2.5V, 3, generated; none habitable); HZ 0.144-0.207 AU.
-    cd6847_p1: { dist: 0.0873, orbit: 15, size: 0.234, star: 'cd6847' },
-    cd6847_p2: { dist: 0.21, orbit: 56, size: 0.296, star: 'cd6847' },
-    cd6847_p3: { dist: 0.419, orbit: 157, size: 0.296, star: 'cd6847' },
-    // G 207-16.
-    // M3V, 0.361 solar radii, 27.13 ly.
-    g20716: { x: 738951.275, y: 1513285.698, z: 329574.368, dist: 1716013.4, orbit: -2, size: 1.202, startype: 'M', label: loc('star_g20716'), zlabel: loc('star_g20716') },
-    // g20716 planets (M3V, 3, generated; habitable-zone world at ~0.157 AU); HZ 0.121-0.174 AU.
-    g20716_p1: { dist: 0.0342, orbit: 3.8, size: 0.234, star: 'g20716' },
-    g20716_p2: { dist: 0.0885, orbit: 16, size: 0.296, star: 'g20716' },
-    g20716_p3: { dist: 0.157, orbit: 37, size: 0.142, star: 'g20716', hz: true },
-    // mu.02 Herculis.
-    // M3.5V, 0.3 solar radii, 27.23 ly.
-    mu02herculis: { x: 946509.975, y: 1230486.379, z: 744900.19, dist: 1721875.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_mu02herculis'), zlabel: loc('star_mu02herculis') },
-    // mu02herculis planets (M3.5V, 3, generated; habitable-zone world at ~0.101 AU); HZ 0.092-0.132 AU.
-    mu02herculis_p1: { dist: 0.041, orbit: 5.84, size: 0.191, star: 'mu02herculis' },
-    mu02herculis_p2: { dist: 0.101, orbit: 23, size: 0.234, star: 'mu02herculis', hz: true },
-    mu02herculis_p3: { dist: 0.204, orbit: 65, size: 0.234, star: 'mu02herculis' },
-    // G 227-29.
-    // M4.0V, 0.274 solar radii, 27.24 ly.
-    g22729: { x: -38763.578, y: 1532957.583, z: 784422.78, dist: 1722434.5, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g22729'), zlabel: loc('star_g22729') },
-    // g22729 planets (M4.0V, 2, generated; habitable-zone world at ~0.0953 AU); HZ 0.081-0.117 AU.
-    g22729_p1: { dist: 0.0423, orbit: 6.63, size: 0.142, star: 'g22729' },
-    g22729_p2: { dist: 0.0953, orbit: 22, size: 0.191, star: 'g22729', hz: true },
-    // G 130-4.
-    // M4.5Ve, 0.217 solar radii, 27.28 ly.
-    g1304: { x: -483549.23, y: 1495432.845, z: -710779.208, dist: 1724919.2, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g1304'), zlabel: loc('star_g1304') },
-    // g1304 planets (M4.5Ve, 1, measured; none habitable); HZ 0.060-0.086 AU.
-    g1304_p1: { dist: 0.27, orbit: 111.74, size: 0.295, star: 'g1304' },
-    // SCR J1138-7721.
-    // M5.0V, 0.196 solar radii, 27.33 ly.
-    scrj11387721: { x: 805385.065, y: -1461677.889, z: -449503.196, dist: 1728352, orbit: -2, size: 0.885, startype: 'M', label: loc('star_scrj11387721'), zlabel: loc('star_scrj11387721') },
-    // scrj11387721 planets (M5.0V, 3, generated; habitable-zone world at ~0.0651 AU); HZ 0.052-0.075 AU.
-    scrj11387721_p1: { dist: 0.034, orbit: 5.69, size: 0.191, star: 'scrj11387721' },
-    scrj11387721_p2: { dist: 0.0651, orbit: 15, size: 0.234, star: 'scrj11387721', hz: true },
-    scrj11387721_p3: { dist: 0.154, orbit: 55, size: 0.633, star: 'scrj11387721' },
-    // SCR J1546-5534.
-    // M7.5, 0.116 solar radii, 27.39 ly.
-    scrj15465534: { x: 1435226.362, y: -969095.578, z: -22752.039, dist: 1731917.6, orbit: -2, size: 0.681, startype: 'M', label: loc('star_scrj15465534'), zlabel: loc('star_scrj15465534') },
-    // scrj15465534 planets (M7.5, 1, generated; none habitable); HZ 0.023-0.033 AU.
-    scrj15465534_p1: { dist: 0.012, orbit: 1.62, size: 0.142, star: 'scrj15465534' },
-    // Ross 64.
-    // M4V, 0.274 solar radii, 27.70 ly.
-    ross64: { x: -1723603.623, y: -275883.42, z: 151098.58, dist: 1752070.7, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross64'), zlabel: loc('star_ross64') },
-    // ross64 planets (M4V, 2, generated; none habitable); HZ 0.081-0.117 AU.
-    ross64_p1: { dist: 0.0216, orbit: 2.42, size: 0.234, star: 'ross64' },
-    ross64_p2: { dist: 0.0435, orbit: 6.91, size: 0.142, star: 'ross64' },
-    // CD-37 10765 -- 2 components.
-    // M5.5V, 0.156 solar radii, 27.72 ly.
-    cd3710765: { x: 1649288.037, y: -527263.327, z: 272134.592, dist: 1752773.5, orbit: -2, size: 0.79, startype: 'M', label: loc('star_cd3710765'), zlabel: loc('star_cd3710765') + ' A' },
-    // M3V, 0.361 solar radii, 27.72 ly.
-    cd3710765b: { x: 1649302.93, y: -527217.684, z: 272132.767, dist: 1752773.5, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd3710765') + ' B' },
-    // cd3710765 planets (M5.5V, 2, generated; habitable-zone world at ~0.044 AU); HZ 0.038-0.055 AU.
-    cd3710765_p1: { dist: 0.0254, orbit: 4.22, size: 0.142, star: 'cd3710765' },
-    cd3710765_p2: { dist: 0.044, orbit: 9.61, size: 0.296, star: 'cd3710765', hz: true },
-    // cd3710765b planets (M3V, 2, generated; habitable-zone world at ~0.151 AU); HZ 0.121-0.174 AU.
-    cd3710765b_p1: { dist: 0.0464, orbit: 6, size: 0.234, star: 'cd3710765b' },
-    cd3710765b_p2: { dist: 0.151, orbit: 35, size: 0.142, star: 'cd3710765b', hz: true },
-    // G 89-32.
-    // M4.5V, 0.217 solar radii, 27.74 ly.
-    g8932: { x: -1453414.433, y: -896613.685, z: 400677.894, dist: 1754101.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_g8932'), zlabel: loc('star_g8932') },
-    // g8932 planets (M4.5V, 1, generated; none habitable); HZ 0.060-0.086 AU.
-    g8932_p1: { dist: 0.0263, orbit: 3.63, size: 0.191, star: 'g8932' },
-    // Wolf 461.
-    // M4.5Ve, 0.217 solar radii, 27.87 ly.
-    wolf461: { x: 408489.973, y: -502308.088, z: 1639227.961, dist: 1762454.5, orbit: -2, size: 0.932, startype: 'M', label: loc('star_wolf461'), zlabel: loc('star_wolf461') },
-    // wolf461 planets (M4.5Ve, 2, generated; none habitable); HZ 0.060-0.086 AU.
-    wolf461_p1: { dist: 0.0222, orbit: 2.82, size: 0.234, star: 'wolf461' },
-    wolf461_p2: { dist: 0.0488, orbit: 9.18, size: 0.191, star: 'wolf461' },
-    // L 49-19.
-    // M3V, 0.361 solar radii, 28.04 ly.
-    l4919: { x: 914634.77, y: -1016020.979, z: -1129569.913, dist: 1773353.8, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l4919'), zlabel: loc('star_l4919') },
-    // l4919 planets (M3V, 1, generated; habitable-zone world at ~0.142 AU); HZ 0.121-0.174 AU.
-    l4919_p1: { dist: 0.142, orbit: 32, size: 0.191, star: 'l4919', hz: true },
-    // CD Ceti.
-    // M4.5V, 0.217 solar radii, 28.05 ly.
-    cdceti: { x: -1289659.085, y: 103310.647, z: -1213819.252, dist: 1774049.3, orbit: -2, size: 0.932, startype: 'M', label: loc('star_cdceti'), zlabel: loc('star_cdceti') },
-    // cdceti planets (M4.5V, 1, measured; none habitable); HZ 0.060-0.086 AU.
-    cdceti_p1: { dist: 0.0185, orbit: 2.291, size: 0.258, star: 'cdceti' },
-    // LP 502-56.
-    // M5.5V, 0.156 solar radii, 28.11 ly.
-    lp50256: { x: 1134545.036, y: 311567.812, z: 1332372.587, dist: 1777493.6, orbit: -2, size: 0.79, startype: 'M', label: loc('star_lp50256'), zlabel: loc('star_lp50256') },
-    // lp50256 planets (M5.5V, 1, generated; habitable-zone world at ~0.0498 AU); HZ 0.038-0.055 AU.
-    lp50256_p1: { dist: 0.0498, orbit: 12, size: 0.142, star: 'lp50256', hz: true },
-    // LP 666-9.
-    // M9Ve, 0.102 solar radii, 28.24 ly.
-    lp6669: { x: -1011475.325, y: -1262672.683, z: 756633.075, dist: 1786034.2, orbit: -2, size: 0.639, startype: 'M', label: loc('star_lp6669'), zlabel: loc('star_lp6669') },
-    // lp6669 planets (M9Ve, 1, generated; habitable-zone world at ~0.0193 AU); HZ 0.017-0.024 AU.
-    lp6669_p1: { dist: 0.0193, orbit: 3.48, size: 0.191, star: 'lp6669', hz: true },
-    // AP Columbae.
-    // M5, 0.196 solar radii, 28.26 ly.
-    apcolumbae: { x: -793109.347, y: -1427490.899, z: -726711.755, dist: 1787417.9, orbit: -2, size: 0.885, startype: 'M', label: loc('star_apcolumbae'), zlabel: loc('star_apcolumbae') },
-    // apcolumbae planets (M5, 2, generated; habitable-zone world at ~0.0601 AU); HZ 0.052-0.075 AU.
-    apcolumbae_p1: { dist: 0.0333, orbit: 5.51, size: 0.234, star: 'apcolumbae' },
-    apcolumbae_p2: { dist: 0.0601, orbit: 13, size: 0.191, star: 'apcolumbae', hz: true },
-    // SIPS J1141-3624.
-    // M5, 0.196 solar radii, 28.34 ly.
-    sipsj11413624: { x: 491247.807, y: -1557159.675, z: 739113.551, dist: 1792305.6, orbit: -2, size: 0.885, startype: 'M', label: loc('star_sipsj11413624'), zlabel: loc('star_sipsj11413624') },
-    // sipsj11413624 planets (M5, 3, generated; habitable-zone world at ~0.0673 AU); HZ 0.052-0.075 AU.
-    sipsj11413624_p1: { dist: 0.0137, orbit: 1.46, size: 0.142, star: 'sipsj11413624' },
-    sipsj11413624_p2: { dist: 0.0257, orbit: 3.74, size: 0.234, star: 'sipsj11413624' },
-    sipsj11413624_p3: { dist: 0.0673, orbit: 16, size: 0.296, star: 'sipsj11413624', hz: true },
-    // G 19-7.
-    // dM4, 0.274 solar radii, 28.38 ly.
-    g197: { x: 1597197.154, y: 424973.252, z: 700072.219, dist: 1794921.2, orbit: -2, size: 1.047, startype: 'M', label: loc('star_g197'), zlabel: loc('star_g197') },
-    // g197 planets (dM4, 2, generated; habitable-zone world at ~0.105 AU); HZ 0.081-0.117 AU.
-    g197_p1: { dist: 0.0207, orbit: 2.27, size: 0.142, star: 'g197' },
-    g197_p2: { dist: 0.105, orbit: 26, size: 0.296, star: 'g197', hz: true },
-    // LP 991-84.
-    // M4.5V, 0.217 solar radii, 28.46 ly.
-    lp99184: { x: -22778.079, y: -494350.083, z: -1730432.241, dist: 1799804.6, orbit: -2, size: 0.932, startype: 'M', label: loc('star_lp99184'), zlabel: loc('star_lp99184') },
-    // lp99184 planets (M4.5V, 3, generated; habitable-zone world at ~0.0755 AU); HZ 0.060-0.086 AU.
-    lp99184_p1: { dist: 0.0413, orbit: 7.15, size: 0.234, star: 'lp99184' },
-    lp99184_p2: { dist: 0.0755, orbit: 18, size: 0.191, star: 'lp99184', hz: true },
-    lp99184_p3: { dist: 0.223, orbit: 90, size: 0.296, star: 'lp99184' },
-    // HD 50281B.
-    // M2.5V, 0.421 solar radii, 28.54 ly.
-    hd50281b: { x: -1427856.257, y: -1101636.461, z: -68419.482, dist: 1804732, orbit: -2, size: 1.298, startype: 'M', label: loc('star_hd50281b'), zlabel: loc('star_hd50281b') },
-    // hd50281b planets (M2.5V, 2, generated; habitable-zone world at ~0.194 AU); HZ 0.144-0.207 AU.
-    hd50281b_p1: { dist: 0.0833, orbit: 14, size: 0.142, star: 'hd50281b' },
-    hd50281b_p2: { dist: 0.194, orbit: 49, size: 0.234, star: 'hd50281b', hz: true },
-    // SCR J0630-7643.
-    // M6Ve, 0.137 solar radii, 28.58 ly.
-    scrj06307643: { x: 494811.106, y: -1524653.773, z: -835462.135, dist: 1807596.2, orbit: -2, size: 0.74, startype: 'M', label: loc('star_scrj06307643'), zlabel: loc('star_scrj06307643') },
-    // scrj06307643 planets (M6Ve, 3, generated; habitable-zone world at ~0.0348 AU); HZ 0.031-0.044 AU.
-    scrj06307643_p1: { dist: 0.015, orbit: 2.1, size: 0.234, star: 'scrj06307643' },
-    scrj06307643_p2: { dist: 0.0348, orbit: 7.42, size: 0.296, star: 'scrj06307643', hz: true },
-    scrj06307643_p3: { dist: 0.07, orbit: 21, size: 0.142, star: 'scrj06307643' },
     // BD+36 2219.
     // M1.5V, 0.482 solar radii, 28.59 ly.
     bd362219: { x: -474130.991, y: 25653.847, z: 1744521.441, dist: 1807986, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd362219'), zlabel: loc('star_bd362219') },
@@ -12113,45 +11674,12 @@ export const spacePlanetStats = {
     bd362219_p1: { dist: 0.0504, orbit: 6.03, size: 0.234, star: 'bd362219' },
     bd362219_p2: { dist: 0.132, orbit: 26, size: 0.296, star: 'bd362219' },
     bd362219_p3: { dist: 0.23, orbit: 59, size: 0.234, star: 'bd362219', hz: true },
-    // BD-05 5715.
-    // M3.5V, 0.3 solar radii, 28.75 ly.
-    bd055715: { x: 715925.925, y: 1057044.323, z: -1294583.898, dist: 1818196.9, orbit: -2, size: 1.095, startype: 'M', label: loc('star_bd055715'), zlabel: loc('star_bd055715') },
-    // bd055715 planets (M3.5V, 2, measured; none habitable); HZ 0.092-0.132 AU.
-    bd055715_p1: { dist: 2.32, orbit: 1925.31, size: 0.712, star: 'bd055715' },
-    bd055715_p2: { dist: 4.95, orbit: 5990, size: 0.71, star: 'bd055715' },
     // 41 Ara B.
     // M0VpCa-3Cr-1, 0.588 solar radii, 28.79 ly.
     arab41: { x: 1727203.384, y: -551325.537, z: -167119.956, dist: 1820747.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_arab41'), zlabel: loc('star_arab41') },
     // arab41 planets (M0VpCa-3Cr-1, 2, generated; habitable-zone world at ~0.282 AU); HZ 0.250-0.360 AU.
     arab41_p1: { dist: 0.173, orbit: 35, size: 0.191, star: 'arab41' },
     arab41_p2: { dist: 0.282, orbit: 72, size: 0.191, star: 'arab41', hz: true },
-    // Ross 730 -- 2 components.
-    // M2.0V, 0.446 solar radii, 28.80 ly.
-    ross730: { x: 1081867.589, y: 1452414.683, z: 192737.634, dist: 1821289, orbit: -2, size: 1.336, startype: 'M', label: loc('star_ross730'), zlabel: loc('star_ross730') + ' A' },
-    // M2V, 0.446 solar radii, 28.80 ly.
-    ross730b: { x: 1081840.274, y: 1452566.886, z: 191741.367, dist: 1821289, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_ross730') + ' B' },
-    // ross730 planets (M2.0V, 2, generated; habitable-zone world at ~0.206 AU); HZ 0.161-0.233 AU.
-    ross730_p1: { dist: 0.102, orbit: 18, size: 0.191, star: 'ross730' },
-    ross730_p2: { dist: 0.206, orbit: 51, size: 0.191, star: 'ross730', hz: true },
-    // ross730b planets (M2V, 1, generated; none habitable); HZ 0.161-0.233 AU.
-    ross730b_p1: { dist: 0.094, orbit: 16, size: 0.142, star: 'ross730b' },
-    // L 32-8 -- 2 components.
-    // M3V, 0.361 solar radii, 28.83 ly.
-    l328: { x: 467096.787, y: -1551291.533, z: -836341.527, dist: 1823225.7, orbit: -2, size: 1.202, startype: 'M', label: loc('star_l328'), zlabel: loc('star_l328') + ' A' },
-    // M2V, 0.446 solar radii, 28.83 ly.
-    l328b: { x: 467227.317, y: -1551193.285, z: -836450.838, dist: 1823225.7, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_l328') + ' B' },
-    // l328 planets (M3V, 1, generated; habitable-zone world at ~0.137 AU); HZ 0.121-0.174 AU.
-    l328_p1: { dist: 0.137, orbit: 30, size: 0.142, star: 'l328', hz: true },
-    // l328b planets (M2V, 3, generated; habitable-zone world at ~0.183 AU); HZ 0.161-0.233 AU.
-    l328b_p1: { dist: 0.0985, orbit: 17, size: 0.142, star: 'l328b' },
-    l328b_p2: { dist: 0.183, orbit: 43, size: 0.191, star: 'l328b', hz: true },
-    l328b_p3: { dist: 0.347, orbit: 113, size: 0.234, star: 'l328b' },
-    // G 111-47.
-    // M3.5V, 0.3 solar radii, 28.87 ly.
-    g11147: { x: -1587800.076, y: 35187.856, z: 899996.758, dist: 1825470.2, orbit: -2, size: 1.095, startype: 'M', label: loc('star_g11147'), zlabel: loc('star_g11147') },
-    // g11147 planets (M3.5V, 2, generated; habitable-zone world at ~0.121 AU); HZ 0.092-0.132 AU.
-    g11147_p1: { dist: 0.0462, orbit: 6.98, size: 0.142, star: 'g11147' },
-    g11147_p2: { dist: 0.121, orbit: 30, size: 0.234, star: 'g11147', hz: true },
     // FL Aquarii -- 2 components.
     // M3.5V, 0.3 solar radii, 28.87 ly.
     flaquarii: { x: 741097.016, y: 575498.648, z: -1565973.141, dist: 1825567.1, orbit: -2, size: 1.095, startype: 'M', label: loc('star_flaquarii'), zlabel: loc('star_flaquarii') + ' A' },
@@ -12162,76 +11690,850 @@ export const spacePlanetStats = {
     flaquarii_p2: { dist: 0.114, orbit: 27, size: 0.142, star: 'flaquarii', hz: true },
     // flaquariib planets (M0Vep, 1, generated; habitable-zone world at ~0.289 AU); HZ 0.250-0.360 AU.
     flaquariib_p1: { dist: 0.289, orbit: 75, size: 0.234, star: 'flaquariib', hz: true },
-    // Ross 695.
-    // dM2.0, 0.446 solar radii, 28.95 ly.
-    ross695: { x: 536610.807, y: -1198301.058, z: 1275673.413, dist: 1830633.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_ross695'), zlabel: loc('star_ross695') },
-    // ross695 planets (dM2.0, 2, generated; habitable-zone world at ~0.198 AU); HZ 0.161-0.233 AU.
-    ross695_p1: { dist: 0.0512, orbit: 6.38, size: 0.191, star: 'ross695' },
-    ross695_p2: { dist: 0.198, orbit: 49, size: 0.296, star: 'ross695', hz: true },
-    // LEHPM 3396.
-    // M9, 0.102 solar radii, 28.96 ly.
-    lehpm3396: { x: -189707.803, y: -1122294.811, z: -1435094.02, dist: 1831674, orbit: -2, size: 0.639, startype: 'M', label: loc('star_lehpm3396'), zlabel: loc('star_lehpm3396') },
-    // lehpm3396 planets (M9, 2, generated; habitable-zone world at ~0.0199 AU); HZ 0.017-0.024 AU.
-    lehpm3396_p1: { dist: 0.012, orbit: 1.71, size: 0.234, star: 'lehpm3396' },
-    lehpm3396_p2: { dist: 0.0199, orbit: 3.65, size: 0.234, star: 'lehpm3396', hz: true },
-    // G 113-20.
-    // M2.0V, 0.446 solar radii, 29.15 ly.
-    g11320: { x: -1297912, y: -1157955.647, z: 611667.799, dist: 1843793.5, orbit: -2, size: 1.336, startype: 'M', label: loc('star_g11320'), zlabel: loc('star_g11320') },
-    // g11320 planets (M2.0V, 1, generated; habitable-zone world at ~0.202 AU); HZ 0.161-0.233 AU.
-    g11320_p1: { dist: 0.202, orbit: 50, size: 0.191, star: 'g11320', hz: true },
-    // G 193-27.
-    // M5.0V, 0.196 solar radii, 29.43 ly.
-    g19327: { x: -1646273.294, y: 470216.356, z: 729777.257, dist: 1861153.9, orbit: -2, size: 0.885, startype: 'M', label: loc('star_g19327'), zlabel: loc('star_g19327') },
-    // g19327 planets (M5.0V, 1, generated; habitable-zone world at ~0.0589 AU); HZ 0.052-0.075 AU.
-    g19327_p1: { dist: 0.0589, orbit: 13, size: 0.142, star: 'g19327', hz: true },
-    // SZ Ursae Majoris.
-    // M2V, 0.446 solar radii, 29.59 ly.
-    szursaemajoris: { x: -900614.298, y: 843767.543, z: 1406552.664, dist: 1871213.6, orbit: -2, size: 1.336, startype: 'M', label: loc('star_szursaemajoris'), zlabel: loc('star_szursaemajoris') },
-    // szursaemajoris planets (M2V, 3, generated; habitable-zone world at ~0.163 AU); HZ 0.161-0.233 AU.
-    szursaemajoris_p1: { dist: 0.0773, orbit: 12, size: 0.191, star: 'szursaemajoris' },
-    szursaemajoris_p2: { dist: 0.163, orbit: 36, size: 0.191, star: 'szursaemajoris', hz: true },
-    szursaemajoris_p3: { dist: 0.266, orbit: 76, size: 0.234, star: 'szursaemajoris' },
-    // CD-31 9113.
-    // M2V, 0.446 solar radii, 29.60 ly.
-    cd319113: { x: 425964.797, y: -1602700.36, z: 868977.805, dist: 1872222.4, orbit: -2, size: 1.336, startype: 'M', label: loc('star_cd319113'), zlabel: loc('star_cd319113') },
-    // cd319113 planets (M2V, 3, measured; habitable-zone world at ~0.178 AU); HZ 0.161-0.233 AU.
-    cd319113_p1: { dist: 0.062, orbit: 7.37, size: 0.292, star: 'cd319113' },
-    cd319113_p2: { dist: 0.178, orbit: 36.059, size: 0.279, star: 'cd319113', hz: true },
-    cd319113_p3: { dist: 4.819, orbit: 5094.1, size: 0.478, star: 'cd319113' },
-    // HD 115953.
-    // M2V, 0.446 solar radii, 29.65 ly.
-    hd115953: { x: -231550.552, y: 643230.95, z: 1746370.619, dist: 1875412.5, orbit: -2, size: 1.336, startype: 'M', label: loc('star_hd115953'), zlabel: loc('star_hd115953') },
-    // hd115953 planets (M2V, 2, generated; habitable-zone world at ~0.188 AU); HZ 0.161-0.233 AU.
-    hd115953_p1: { dist: 0.0784, orbit: 12, size: 0.191, star: 'hd115953' },
-    hd115953_p2: { dist: 0.188, orbit: 45, size: 0.142, star: 'hd115953', hz: true },
-    // LP 469-206.
-    // M5.0Ve, 0.196 solar radii, 29.66 ly.
-    lp469206: { x: -1189556.722, y: 620025.817, z: -1311430.982, dist: 1875987.3, orbit: -2, size: 0.885, startype: 'M', label: loc('star_lp469206'), zlabel: loc('star_lp469206') },
-    // lp469206 planets (M5.0Ve, 1, generated; none habitable); HZ 0.052-0.075 AU.
-    lp469206_p1: { dist: 0.0136, orbit: 1.44, size: 0.142, star: 'lp469206' },
-    // V374 Pegasi.
-    // M3.5Ve, 0.3 solar radii, 29.69 ly.
-    v374pegasi: { x: 205689.48, y: 1738895.117, z: -677765.722, dist: 1877613, orbit: -2, size: 1.095, startype: 'M', label: loc('star_v374pegasi'), zlabel: loc('star_v374pegasi') },
-    // v374pegasi planets (M3.5Ve, 3, generated; habitable-zone world at ~0.107 AU); HZ 0.092-0.132 AU.
-    v374pegasi_p1: { dist: 0.0458, orbit: 6.89, size: 0.234, star: 'v374pegasi' },
-    v374pegasi_p2: { dist: 0.107, orbit: 25, size: 0.142, star: 'v374pegasi', hz: true },
-    v374pegasi_p3: { dist: 0.28, orbit: 104, size: 0.296, star: 'v374pegasi' },
-    // WT 460.
-    // M5.5e, 0.156 solar radii, 29.72 ly.
-    wt460: { x: 1337148.442, y: -1173292.032, z: 607228.341, dist: 1879709.1, orbit: -2, size: 0.79, startype: 'M', label: loc('star_wt460'), zlabel: loc('star_wt460') },
-    // wt460 planets (M5.5e, 2, generated; none habitable); HZ 0.038-0.055 AU.
-    wt460_p1: { dist: 0.0136, orbit: 1.65, size: 0.191, star: 'wt460' },
-    wt460_p2: { dist: 0.0357, orbit: 7.02, size: 0.296, star: 'wt460' },
-    // LP 783-2.
-    // M6.5Ve, 0.126 solar radii, 29.85 ly.
-    lp7832: { x: -1109810.104, y: -1525094.692, z: 81767.613, dist: 1887929.6, orbit: -2, size: 0.71, startype: 'M', label: loc('star_lp7832'), zlabel: loc('star_lp7832') },
-    // lp7832 planets (M6.5Ve, 1, generated; none habitable); HZ 0.027-0.039 AU.
-    lp7832_p1: { dist: 0.012, orbit: 1.57, size: 0.142, star: 'lp7832' },
-    // Ross 1015.
-    // M4V, 0.274 solar radii, 29.98 ly.
-    ross1015: { x: 174743.328, y: 377121.588, z: 1849865.998, dist: 1895985.3, orbit: -2, size: 1.047, startype: 'M', label: loc('star_ross1015'), zlabel: loc('star_ross1015') },
-    // ross1015 planets (M4V, 1, generated; habitable-zone world at ~0.091 AU); HZ 0.081-0.117 AU.
-    ross1015_p1: { dist: 0.091, orbit: 21, size: 0.142, star: 'ross1015', hz: true }
+    // --- M dwarfs, 30 to 50 light years ------------------------------------------------------
+    // CD-45 5378.
+    // M1V, 0.501 solar radii, 30.72 ly.
+    cd455378: { x: 75666.288, y: -1931769.381, z: 191672.815, dist: 1942729.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cd455378'), zlabel: loc('star_cd455378') },
+    // cd455378 planets (M1V, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    cd455378_p1: { dist: 0.0071, orbit: 0.322, size: 0.164, star: 'cd455378' },
+    // CD-48 11837 -- 2 components.
+    // M1.5V, 0.482 solar radii, 31.57 ly.
+    cd4811837: { x: 1878027.133, y: -607416.805, z: -300773.687, dist: 1996598.6, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd4811837'), zlabel: loc('star_cd4811837') + ' A' },
+    // M3V, 0.361 solar radii, 31.57 ly.
+    cd4811837b: { x: 1878036.251, y: -607403.108, z: -300744.417, dist: 1996598.6, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd4811837') + ' B' },
+    // cd4811837 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
+    cd4811837_p1: { dist: 10.138, orbit: 17281.7, size: 0.662, star: 'cd4811837' },
+    // cd4811837b planets (M3V, 3, generated; habitable-zone world at ~0.15 AU); HZ 0.121-0.174 AU.
+    cd4811837b_p1: { dist: 0.0672, orbit: 10, size: 0.142, star: 'cd4811837b' },
+    cd4811837b_p2: { dist: 0.15, orbit: 35, size: 0.296, star: 'cd4811837b', hz: true },
+    cd4811837b_p3: { dist: 0.318, orbit: 108, size: 0.191, star: 'cd4811837b' },
+    // AU Microscopii.
+    // M1VeBa1, 0.501 solar radii, 31.68 ly.
+    aumicroscopii: { x: 1565381.606, y: 351471.045, z: -1200318.93, dist: 2003675.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_aumicroscopii'), zlabel: loc('star_aumicroscopii') },
+    // aumicroscopii planets (M1VeBa1, 2, measured; none habitable); HZ 0.192-0.277 AU.
+    aumicroscopii_p1: { dist: 0.07, orbit: 8.463, size: 0.418, star: 'aumicroscopii' },
+    aumicroscopii_p2: { dist: 0.119, orbit: 18.859, size: 0.319, star: 'aumicroscopii' },
+    // BD+61 195 -- 2 components.
+    // M1.5V, 0.482 solar radii, 32.16 ly.
+    bd61195: { x: -1144009.926, y: 1681318.803, z: -17690.086, dist: 2033692.3, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd61195'), zlabel: loc('star_bd61195') + ' A' },
+    // M5V, 0.196 solar radii, 32.16 ly.
+    bd61195b: { x: -1146307.862, y: 1679761.684, z: -16838.516, dist: 2033692.3, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_bd61195') + ' B' },
+    // bd61195 planets (M1.5V, 1, measured; none habitable); HZ 0.181-0.261 AU.
+    bd61195_p1: { dist: 0.0905, orbit: 13.851, size: 0.286, star: 'bd61195' },
+    // bd61195b planets (M5V, 3, generated; none habitable); HZ 0.052-0.075 AU.
+    bd61195b_p1: { dist: 0.0382, orbit: 6.78, size: 0.234, star: 'bd61195b' },
+    bd61195b_p2: { dist: 0.0888, orbit: 24, size: 0.191, star: 'bd61195b' },
+    bd61195b_p3: { dist: 0.221, orbit: 94, size: 0.191, star: 'bd61195b' },
+    // HD 232979.
+    // M0.5V, 0.544 solar radii, 32.32 ly.
+    hd232979: { x: -1820765.944, y: 918281.883, z: 138541.515, dist: 2043923.7, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd232979'), zlabel: loc('star_hd232979') },
+    // hd232979 planets (M0.5V, 3, generated; habitable-zone world at ~0.226 AU); HZ 0.220-0.317 AU.
+    hd232979_p1: { dist: 0.0749, orbit: 10, size: 0.234, star: 'hd232979' },
+    hd232979_p2: { dist: 0.134, orbit: 24, size: 0.191, star: 'hd232979' },
+    hd232979_p3: { dist: 0.226, orbit: 53, size: 0.191, star: 'hd232979', hz: true },
+    // HD 260655.
+    // M0.0V, 0.588 solar radii, 32.61 ly.
+    hd260655: { x: -1978330.492, y: -555095.644, z: 174988.287, dist: 2062169.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd260655'), zlabel: loc('star_hd260655') },
+    // hd260655 planets (M0.0V, 2, measured; none habitable); HZ 0.250-0.360 AU.
+    hd260655_p1: { dist: 0.02933, orbit: 2.77, size: 0.213, star: 'hd260655' },
+    hd260655_p2: { dist: 0.04749, orbit: 5.706, size: 0.236, star: 'hd260655' },
+    // BD+05 3409.
+    // M1.0V, 0.501 solar radii, 33.00 ly.
+    bd053409: { x: 1716062.26, y: 934647.502, z: 732247.87, dist: 2086773.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd053409'), zlabel: loc('star_bd053409') },
+    // bd053409 planets (M1.0V, 2, generated; habitable-zone world at ~0.234 AU); HZ 0.192-0.277 AU.
+    bd053409_p1: { dist: 0.0663, orbit: 8.82, size: 0.191, star: 'bd053409' },
+    bd053409_p2: { dist: 0.234, orbit: 58, size: 0.296, star: 'bd053409', hz: true },
+    // HD 122303.
+    // M0V, 0.588 solar radii, 33.99 ly.
+    hd122303: { x: 1095137.617, y: -509380.141, z: 1778128.816, dist: 2149543.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd122303'), zlabel: loc('star_hd122303') },
+    // hd122303 planets (M0V, 2, measured; none habitable); HZ 0.250-0.360 AU.
+    hd122303_p1: { dist: 0.0668, orbit: 8.709, size: 0.297, star: 'hd122303' },
+    hd122303_p2: { dist: 0.1617, orbit: 32.761, size: 0.29, star: 'hd122303' },
+    // HD 304636.
+    // M0V, 0.588 solar radii, 34.08 ly.
+    hd304636: { x: 356070.2, y: -2108015.667, z: -274032.366, dist: 2155367.7, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd304636'), zlabel: loc('star_hd304636') },
+    // hd304636 planets (M0V, 2, generated; none habitable); HZ 0.250-0.360 AU.
+    hd304636_p1: { dist: 0.142, orbit: 26, size: 0.142, star: 'hd304636' },
+    hd304636_p2: { dist: 0.245, orbit: 59, size: 0.234, star: 'hd304636' },
+    // BD+02 348.
+    // M1V, 0.501 solar radii, 34.27 ly.
+    bd02348: { x: -1196396.203, y: 471215.778, z: -1744946.89, dist: 2167544.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd02348'), zlabel: loc('star_bd02348') },
+    // bd02348 planets (M1V, 3, generated; habitable-zone world at ~0.216 AU); HZ 0.192-0.277 AU.
+    bd02348_p1: { dist: 0.12, orbit: 21, size: 0.191, star: 'bd02348' },
+    bd02348_p2: { dist: 0.216, orbit: 52, size: 0.296, star: 'bd02348', hz: true },
+    bd02348_p3: { dist: 0.612, orbit: 247, size: 0.427, star: 'bd02348' },
+    // BD+63 869.
+    // M0.5V, 0.544 solar radii, 34.32 ly.
+    bd63869: { x: -1333018.501, y: 794066.977, z: 1517212.959, dist: 2170118.9, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd63869'), zlabel: loc('star_bd63869') },
+    // bd63869 planets (M0.5V, 1, measured; none habitable); HZ 0.220-0.317 AU.
+    bd63869_p1: { dist: 0.112, orbit: 17.818, size: 0.432, star: 'bd63869' },
+    // HD 209290.
+    // M0.5V, 0.544 solar radii, 34.49 ly.
+    hd209290: { x: 806648.619, y: 1454981.382, z: -1410707.011, dist: 2181226.1, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd209290'), zlabel: loc('star_hd209290') },
+    // hd209290 planets (M0.5V, 1, generated; habitable-zone world at ~0.281 AU); HZ 0.220-0.317 AU.
+    hd209290_p1: { dist: 0.281, orbit: 74, size: 0.234, star: 'hd209290', hz: true },
+    // HD 111631.
+    // M0V, 0.588 solar radii, 34.75 ly.
+    hd111631: { x: 553268.04, y: -866732.752, z: 1942310.388, dist: 2197703.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd111631'), zlabel: loc('star_hd111631') },
+    // hd111631 planets (M0V, 3, generated; habitable-zone world at ~0.256 AU); HZ 0.250-0.360 AU.
+    hd111631_p1: { dist: 0.0907, orbit: 13, size: 0.142, star: 'hd111631' },
+    hd111631_p2: { dist: 0.152, orbit: 29, size: 0.142, star: 'hd111631' },
+    hd111631_p3: { dist: 0.256, orbit: 63, size: 0.296, star: 'hd111631', hz: true },
+    // HD 147379 -- 2 components.
+    // M1-Ve, 0.501 solar radii, 35.12 ly.
+    hd147379: { x: -294763.042, y: 1688867.809, z: 1411738.593, dist: 2220847.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd147379'), zlabel: loc('star_hd147379') + ' A' },
+    // M3.0V, 0.361 solar radii, 35.12 ly.
+    hd147379b: { x: -295340.137, y: 1689049.869, z: 1411400.129, dist: 2220847.9, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_hd147379') + ' B' },
+    // hd147379 planets (M1-Ve, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    hd147379_p1: { dist: 0.3193, orbit: 86.58, size: 0.425, star: 'hd147379' },
+    // hd147379b planets (M3.0V, 3, generated; habitable-zone world at ~0.161 AU); HZ 0.121-0.174 AU.
+    hd147379b_p1: { dist: 0.0351, orbit: 3.95, size: 0.191, star: 'hd147379b' },
+    hd147379b_p2: { dist: 0.0659, orbit: 10, size: 0.234, star: 'hd147379b' },
+    hd147379b_p3: { dist: 0.161, orbit: 39, size: 0.191, star: 'hd147379b', hz: true },
+    // CD-51 5974.
+    // M0V, 0.588 solar radii, 35.95 ly.
+    cd515974: { x: 852567.861, y: -2072798.55, z: 380189.641, dist: 2273303.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_cd515974'), zlabel: loc('star_cd515974') },
+    // cd515974 planets (M0V, 2, generated; none habitable); HZ 0.250-0.360 AU.
+    cd515974_p1: { dist: 0.0649, orbit: 8, size: 0.142, star: 'cd515974' },
+    cd515974_p2: { dist: 0.167, orbit: 33, size: 0.191, star: 'cd515974' },
+    // HD 11507.
+    // M0V, 0.588 solar radii, 36.07 ly.
+    hd11507: { x: -551192.042, y: -175463.377, z: -2206703.808, dist: 2281258.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd11507'), zlabel: loc('star_hd11507') },
+    // hd11507 planets (M0V, 1, generated; none habitable); HZ 0.250-0.360 AU.
+    hd11507_p1: { dist: 0.16, orbit: 31, size: 0.234, star: 'hd11507' },
+    // HD 176029.
+    // M1.0V, 0.501 solar radii, 36.23 ly.
+    hd176029: { x: 1781827.494, y: 1439674.124, z: 49454.134, dist: 2291291.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd176029'), zlabel: loc('star_hd176029') },
+    // hd176029 planets (M1.0V, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    hd176029_p1: { dist: 0.029, orbit: 2.378, size: 0.236, star: 'hd176029' },
+    // BD-11 916.
+    // M1V, 0.501 solar radii, 36.57 ly.
+    bd11916: { x: -1685638.609, y: -881904.237, z: -1315001.974, dist: 2312652.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd11916'), zlabel: loc('star_bd11916') },
+    // bd11916 planets (M1V, 1, generated; habitable-zone world at ~0.251 AU); HZ 0.192-0.277 AU.
+    bd11916_p1: { dist: 0.251, orbit: 65, size: 0.142, star: 'bd11916', hz: true },
+    // HD 28343.
+    // M0.5V, 0.544 solar radii, 36.62 ly.
+    hd28343: { x: -2194724.629, y: 175070.491, z: -719122.149, dist: 2316161.2, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd28343'), zlabel: loc('star_hd28343') },
+    // hd28343 planets (M0.5V, 2, generated; habitable-zone world at ~0.267 AU); HZ 0.220-0.317 AU.
+    hd28343_p1: { dist: 0.07, orbit: 9.21, size: 0.191, star: 'hd28343' },
+    hd28343_p2: { dist: 0.267, orbit: 69, size: 0.296, star: 'hd28343', hz: true },
+    // OT Serpentis.
+    // M1.0V, 0.501 solar radii, 37.35 ly.
+    otserpentis: { x: 1153674.843, y: 694757.665, z: 1940502.022, dist: 2362033.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_otserpentis'), zlabel: loc('star_otserpentis') },
+    // otserpentis planets (M1.0V, 2, generated; habitable-zone world at ~0.228 AU); HZ 0.192-0.277 AU.
+    otserpentis_p1: { dist: 0.0481, orbit: 5.45, size: 0.234, star: 'otserpentis' },
+    otserpentis_p2: { dist: 0.228, orbit: 56, size: 0.234, star: 'otserpentis', hz: true },
+    // DT Virginis -- 2 components.
+    // M0V, 0.588 solar radii, 37.53 ly.
+    dtvirginis: { x: 407370.238, y: -455218.392, z: 2293603.391, dist: 2373560.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_dtvirginis'), zlabel: loc('star_dtvirginis') + ' A' },
+    // T8.5p, 0.097 solar radii, 37.53 ly.
+    dtvirginisb: { x: 407222.424, y: -456363.161, z: 2293402.14, dist: 2373560.8, orbit: -2, size: 0.623, startype: 'T', zlabel: loc('star_dtvirginis') + ' B' },
+    // dtvirginis planets (M0V, 1, generated; none habitable); HZ 0.250-0.360 AU.
+    dtvirginis_p1: { dist: 0.152, orbit: 29, size: 0.191, star: 'dtvirginis' },
+    // HD 75632 -- 2 components.
+    // M1V, 0.501 solar radii, 37.77 ly.
+    hd75632: { x: -1556394.567, y: 1163899.072, z: 1388646.321, dist: 2388590.3, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd75632'), zlabel: loc('star_hd75632') + ' A' },
+    // M1V, 0.501 solar radii, 37.77 ly.
+    hd75632b: { x: -1556396.18, y: 1163884.936, z: 1388656.362, dist: 2388590.3, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_hd75632') + ' B' },
+    // hd75632 planets (M1V, 3, generated; habitable-zone world at ~0.249 AU); HZ 0.192-0.277 AU.
+    hd75632_p1: { dist: 0.128, orbit: 24, size: 0.191, star: 'hd75632' },
+    hd75632_p2: { dist: 0.249, orbit: 64, size: 0.142, star: 'hd75632', hz: true },
+    hd75632_p3: { dist: 0.607, orbit: 244, size: 0.296, star: 'hd75632' },
+    // hd75632b planets (M1V, 3, generated; habitable-zone world at ~0.242 AU); HZ 0.192-0.277 AU.
+    hd75632b_p1: { dist: 0.0866, orbit: 13, size: 0.191, star: 'hd75632b' },
+    hd75632b_p2: { dist: 0.242, orbit: 61, size: 0.296, star: 'hd75632b', hz: true },
+    hd75632b_p3: { dist: 0.371, orbit: 117, size: 0.296, star: 'hd75632b' },
+    // BD+45 2247.
+    // M0V, 0.588 solar radii, 38.19 ly.
+    bd452247: { x: 284164.214, y: 1230506.092, z: 2058409.952, dist: 2414942.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd452247'), zlabel: loc('star_bd452247') },
+    // bd452247 planets (M0V, 1, generated; habitable-zone world at ~0.289 AU); HZ 0.250-0.360 AU.
+    bd452247_p1: { dist: 0.289, orbit: 75, size: 0.142, star: 'bd452247', hz: true },
+    // G 234-5.
+    // M0V, 0.588 solar radii, 38.51 ly.
+    g2345: { x: -1911494.545, y: 949188.953, z: 1172862.96, dist: 2435236.9, orbit: -2, size: 1.534, startype: 'M', label: loc('star_g2345'), zlabel: loc('star_g2345') },
+    // g2345 planets (M0V, 2, generated; habitable-zone world at ~0.312 AU); HZ 0.250-0.360 AU.
+    g2345_p1: { dist: 0.107, orbit: 17, size: 0.191, star: 'g2345' },
+    g2345_p2: { dist: 0.312, orbit: 84, size: 0.234, star: 'g2345', hz: true },
+    // Wolf 918.
+    // M1V, 0.501 solar radii, 38.63 ly.
+    wolf918: { x: 1583515.726, y: 1160504.995, z: -1453494.861, dist: 2442732.3, orbit: -2, size: 1.416, startype: 'M', label: loc('star_wolf918'), zlabel: loc('star_wolf918') },
+    // wolf918 planets (M1V, 1, generated; none habitable); HZ 0.192-0.277 AU.
+    wolf918_p1: { dist: 0.133, orbit: 25, size: 0.191, star: 'wolf918' },
+    // DS Leonis.
+    // M1.0Ve, 0.501 solar radii, 38.94 ly.
+    dsleonis: { x: -818298.017, y: -656753.414, z: 2227712.466, dist: 2462445.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_dsleonis'), zlabel: loc('star_dsleonis') },
+    // dsleonis planets (M1.0Ve, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    dsleonis_p1: { dist: 0.0531, orbit: 6.02, size: 0.321, star: 'dsleonis' },
+    // BD+47 612.
+    // M0V, 0.588 solar radii, 38.99 ly.
+    bd47612: { x: -1798591.468, y: 1602938.049, z: -523760.272, dist: 2465495.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd47612'), zlabel: loc('star_bd47612') },
+    // bd47612 planets (M0V, 1, measured; habitable-zone world at ~0.291 AU); HZ 0.250-0.360 AU.
+    bd47612_p1: { dist: 0.291, orbit: 73.94, size: 0.413, star: 'bd47612', hz: true },
+    // G 85-52.
+    // M0V, 0.588 solar radii, 39.63 ly.
+    g8552: { x: -2451944.339, y: -158555.997, z: -492500.831, dist: 2505938.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_g8552'), zlabel: loc('star_g8552') },
+    // g8552 planets (M0V, 1, generated; habitable-zone world at ~0.284 AU); HZ 0.250-0.360 AU.
+    g8552_p1: { dist: 0.284, orbit: 73, size: 0.234, star: 'g8552', hz: true },
+    // L 89-27.
+    // M1.5V, 0.482 solar radii, 40.13 ly.
+    l8927: { x: 614515.884, y: -1552660.063, z: -1910975.18, dist: 2537756.7, orbit: -2, size: 1.389, startype: 'M', label: loc('star_l8927'), zlabel: loc('star_l8927') },
+    // l8927 planets (M1.5V, 1, generated; none habitable); HZ 0.181-0.261 AU.
+    l8927_p1: { dist: 0.119, orbit: 22, size: 0.191, star: 'l8927' },
+    // CD-52 7989.
+    // M1V, 0.501 solar radii, 41.67 ly.
+    cd527989: { x: 2399516.319, y: -1033217.477, z: -347825.933, dist: 2635564.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cd527989'), zlabel: loc('star_cd527989') },
+    // cd527989 planets (M1V, 2, generated; habitable-zone world at ~0.22 AU); HZ 0.192-0.277 AU.
+    cd527989_p1: { dist: 0.0518, orbit: 6.09, size: 0.234, star: 'cd527989' },
+    cd527989_p2: { dist: 0.22, orbit: 53, size: 0.142, star: 'cd527989', hz: true },
+    // BD-09 3070.
+    // M1V, 0.501 solar radii, 41.72 ly.
+    bd093070: { x: -554609.438, y: -1989091.843, z: 1642461.606, dist: 2638514.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd093070'), zlabel: loc('star_bd093070') },
+    // bd093070 planets (M1V, 3, generated; habitable-zone world at ~0.265 AU); HZ 0.192-0.277 AU.
+    bd093070_p1: { dist: 0.112, orbit: 19, size: 0.234, star: 'bd093070' },
+    bd093070_p2: { dist: 0.265, orbit: 70, size: 0.191, star: 'bd093070', hz: true },
+    bd093070_p3: { dist: 0.542, orbit: 206, size: 0.142, star: 'bd093070' },
+    // BD+18 2776.
+    // M1V, 0.501 solar radii, 42.12 ly.
+    bd182776: { x: 711662.871, y: -16641.73, z: 2566613.127, dist: 2663502.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd182776'), zlabel: loc('star_bd182776') },
+    // bd182776 planets (M1V, 1, generated; habitable-zone world at ~0.249 AU); HZ 0.192-0.277 AU.
+    bd182776_p1: { dist: 0.249, orbit: 64, size: 0.142, star: 'bd182776', hz: true },
+    // BD+08 4887.
+    // M0V, 0.588 solar radii, 42.34 ly.
+    bd084887: { x: 508931.807, y: 1973665.499, z: -1736365.001, dist: 2677560.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd084887'), zlabel: loc('star_bd084887') },
+    // bd084887 planets (M0V, 1, generated; habitable-zone world at ~0.312 AU); HZ 0.250-0.360 AU.
+    bd084887_p1: { dist: 0.312, orbit: 84, size: 0.142, star: 'bd084887', hz: true },
+    // BD-11 2741.
+    // dM0.5, 0.544 solar radii, 42.82 ly.
+    bd112741: { x: -829087.566, y: -2165354.459, z: 1399265.355, dist: 2708152.4, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd112741'), zlabel: loc('star_bd112741') },
+    // bd112741 planets (dM0.5, 1, generated; habitable-zone world at ~0.285 AU); HZ 0.220-0.317 AU.
+    bd112741_p1: { dist: 0.285, orbit: 76, size: 0.142, star: 'bd112741', hz: true },
+    // CD-55 1514.
+    // M0Vk:, 0.588 solar radii, 42.94 ly.
+    cd551514: { x: -221036.021, y: -2476684.328, z: -1092247.584, dist: 2715847.4, orbit: -2, size: 1.534, startype: 'M', label: loc('star_cd551514'), zlabel: loc('star_cd551514') },
+    // cd551514 planets (M0Vk:, 2, generated; habitable-zone world at ~0.315 AU); HZ 0.250-0.360 AU.
+    cd551514_p1: { dist: 0.156, orbit: 30, size: 0.142, star: 'cd551514' },
+    cd551514_p2: { dist: 0.315, orbit: 86, size: 0.142, star: 'cd551514', hz: true },
+    // CD-53 570.
+    // M1.5V, 0.482 solar radii, 43.07 ly.
+    cd53570: { x: 23445.477, y: -1524578.841, z: -2257295.41, dist: 2724017.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd53570'), zlabel: loc('star_cd53570') },
+    // cd53570 planets (M1.5V, 2, generated; habitable-zone world at ~0.234 AU); HZ 0.181-0.261 AU.
+    cd53570_p1: { dist: 0.132, orbit: 26, size: 0.234, star: 'cd53570' },
+    cd53570_p2: { dist: 0.234, orbit: 60, size: 0.191, star: 'cd53570', hz: true },
+    // HD 166348.
+    // M0V, 0.588 solar radii, 43.08 ly.
+    hd166348: { x: 2625681.677, y: -468151.493, z: -555507.531, dist: 2724327.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd166348'), zlabel: loc('star_hd166348') },
+    // hd166348 planets (M0V, 2, generated; habitable-zone world at ~0.299 AU); HZ 0.250-0.360 AU.
+    hd166348_p1: { dist: 0.158, orbit: 30, size: 0.191, star: 'hd166348' },
+    hd166348_p2: { dist: 0.299, orbit: 79, size: 0.234, star: 'hd166348', hz: true },
+    // BD+57 2735.
+    // M1.5V, 0.482 solar radii, 43.16 ly.
+    bd572735: { x: -1001212.32, y: 2534851.856, z: -146844.359, dist: 2729370.5, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd572735'), zlabel: loc('star_bd572735') },
+    // bd572735 planets (M1.5V, 1, generated; habitable-zone world at ~0.231 AU); HZ 0.181-0.261 AU.
+    bd572735_p1: { dist: 0.231, orbit: 59, size: 0.142, star: 'bd572735', hz: true },
+    // BD-07 4156.
+    // M1V, 0.501 solar radii, 43.32 ly.
+    bd074156: { x: 2314857.208, y: 80020.577, z: 1462753.24, dist: 2739455.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd074156'), zlabel: loc('star_bd074156') },
+    // bd074156 planets (M1V, 3, generated; habitable-zone world at ~0.222 AU); HZ 0.192-0.277 AU.
+    bd074156_p1: { dist: 0.0652, orbit: 8.6, size: 0.191, star: 'bd074156' },
+    bd074156_p2: { dist: 0.222, orbit: 54, size: 0.296, star: 'bd074156', hz: true },
+    bd074156_p3: { dist: 0.425, orbit: 143, size: 0.142, star: 'bd074156' },
+    // BD+27 4120.
+    // M1V, 0.501 solar radii, 43.44 ly.
+    bd274120: { x: 506340.175, y: 2560780.579, z: -855270.882, dist: 2746901.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd274120'), zlabel: loc('star_bd274120') },
+    // bd274120 planets (M1V, 3, generated; none habitable); HZ 0.192-0.277 AU.
+    bd274120_p1: { dist: 0.0666, orbit: 8.88, size: 0.142, star: 'bd274120' },
+    bd274120_p2: { dist: 0.157, orbit: 32, size: 0.191, star: 'bd274120' },
+    bd274120_p3: { dist: 0.295, orbit: 83, size: 0.296, star: 'bd274120' },
+    // BD+46 1889.
+    // M1.0V, 0.501 solar radii, 43.60 ly.
+    bd461889: { x: -166940.211, y: 987323.461, z: 2569380.315, dist: 2757606.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd461889'), zlabel: loc('star_bd461889') },
+    // bd461889 planets (M1.0V, 3, generated; habitable-zone world at ~0.194 AU); HZ 0.192-0.277 AU.
+    bd461889_p1: { dist: 0.0823, orbit: 12, size: 0.191, star: 'bd461889' },
+    bd461889_p2: { dist: 0.194, orbit: 44, size: 0.234, star: 'bd461889', hz: true },
+    bd461889_p3: { dist: 0.325, orbit: 96, size: 0.191, star: 'bd461889' },
+    // EG Camelopardalis -- 2 components.
+    // M0.0V, 0.588 solar radii, 43.99 ly.
+    egcamelopardalis: { x: -2415296.502, y: 1129953.691, z: 793526.248, dist: 2782110.1, orbit: -2, size: 1.534, startype: 'M', label: loc('star_egcamelopardalis'), zlabel: loc('star_egcamelopardalis') + ' A' },
+    // M4.2V, 0.274 solar radii, 43.99 ly.
+    egcamelopardalisb: { x: -2415724.075, y: 1128192.852, z: 794729.216, dist: 2782110.1, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_egcamelopardalis') + ' B' },
+    // egcamelopardalis planets (M0.0V, 3, generated; habitable-zone world at ~0.322 AU); HZ 0.250-0.360 AU.
+    egcamelopardalis_p1: { dist: 0.11, orbit: 18, size: 0.234, star: 'egcamelopardalis' },
+    egcamelopardalis_p2: { dist: 0.186, orbit: 39, size: 0.234, star: 'egcamelopardalis' },
+    egcamelopardalis_p3: { dist: 0.322, orbit: 88, size: 0.191, star: 'egcamelopardalis', hz: true },
+    // egcamelopardalisb planets (M4.2V, 1, generated; habitable-zone world at ~0.0922 AU); HZ 0.081-0.117 AU.
+    egcamelopardalisb_p1: { dist: 0.0922, orbit: 21, size: 0.191, star: 'egcamelopardalisb', hz: true },
+    // BD+35 2436 -- 2 components.
+    // M1V, 0.501 solar radii, 44.70 ly.
+    bd352436: { x: 19851.028, y: 489946.162, z: 2783722.006, dist: 2826579.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd352436'), zlabel: loc('star_bd352436') + ' A' },
+    // M3V, 0.361 solar radii, 44.70 ly.
+    bd352436b: { x: 20093.887, y: 489930.837, z: 2783722.961, dist: 2826579.1, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_bd352436') + ' B' },
+    // bd352436 planets (M1V, 2, generated; none habitable); HZ 0.192-0.277 AU.
+    bd352436_p1: { dist: 0.0651, orbit: 8.58, size: 0.191, star: 'bd352436' },
+    bd352436_p2: { dist: 0.133, orbit: 25, size: 0.142, star: 'bd352436' },
+    // bd352436b planets (M3V, 1, generated; habitable-zone world at ~0.155 AU); HZ 0.121-0.174 AU.
+    bd352436b_p1: { dist: 0.155, orbit: 37, size: 0.142, star: 'bd352436b', hz: true },
+    // BD+36 1970.
+    // M1V, 0.501 solar radii, 44.26 ly.
+    bd361970: { x: -1889085.762, y: -255311.469, z: 2049359.62, dist: 2798875.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd361970'), zlabel: loc('star_bd361970') },
+    // bd361970 planets (M1V, 1, generated; none habitable); HZ 0.192-0.277 AU.
+    bd361970_p1: { dist: 0.0736, orbit: 10, size: 0.191, star: 'bd361970' },
+    // BD+09 2636.
+    // M0V, 0.588 solar radii, 44.74 ly.
+    bd092636: { x: 274459.033, y: -875929.709, z: 2676665.363, dist: 2829685.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd092636'), zlabel: loc('star_bd092636') },
+    // bd092636 planets (M0V, 2, generated; habitable-zone world at ~0.266 AU); HZ 0.250-0.360 AU.
+    bd092636_p1: { dist: 0.157, orbit: 30, size: 0.142, star: 'bd092636' },
+    bd092636_p2: { dist: 0.266, orbit: 66, size: 0.142, star: 'bd092636', hz: true },
+    // G 125-30.
+    // M1.5V, 0.482 solar radii, 44.86 ly.
+    g12530: { x: 1079608.779, y: 2616762.772, z: 191650.425, dist: 2837205, orbit: -2, size: 1.389, startype: 'M', label: loc('star_g12530'), zlabel: loc('star_g12530') },
+    // g12530 planets (M1.5V, 2, generated; habitable-zone world at ~0.219 AU); HZ 0.181-0.261 AU.
+    g12530_p1: { dist: 0.109, orbit: 19, size: 0.142, star: 'g12530' },
+    g12530_p2: { dist: 0.219, orbit: 55, size: 0.142, star: 'g12530', hz: true },
+    // BD+52 911.
+    // M0.5V, 0.544 solar radii, 45.19 ly.
+    bd52911: { x: -2581516.242, y: 1175293.819, z: 349408.176, dist: 2857906.2, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd52911'), zlabel: loc('star_bd52911') },
+    // bd52911 planets (M0.5V, 2, generated; habitable-zone world at ~0.279 AU); HZ 0.220-0.317 AU.
+    bd52911_p1: { dist: 0.125, orbit: 22, size: 0.142, star: 'bd52911' },
+    bd52911_p2: { dist: 0.279, orbit: 73, size: 0.142, star: 'bd52911', hz: true },
+    // HD 331161 -- 2 components.
+    // M0.5V, 0.544 solar radii, 45.48 ly.
+    hd331161: { x: 1106871.762, y: 2648540.586, z: 179800.449, dist: 2876153.8, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd331161'), zlabel: loc('star_hd331161') + ' A' },
+    // M2.5V, 0.421 solar radii, 45.48 ly.
+    hd331161b: { x: 1106890.017, y: 2648537.731, z: 179730.109, dist: 2876153.8, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd331161') + ' B' },
+    // hd331161 planets (M0.5V, 2, generated; habitable-zone world at ~0.267 AU); HZ 0.220-0.317 AU.
+    hd331161_p1: { dist: 0.14, orbit: 26, size: 0.234, star: 'hd331161' },
+    hd331161_p2: { dist: 0.267, orbit: 69, size: 0.142, star: 'hd331161', hz: true },
+    // hd331161b planets (M2.5V, 1, generated; habitable-zone world at ~0.172 AU); HZ 0.144-0.207 AU.
+    hd331161b_p1: { dist: 0.172, orbit: 41, size: 0.234, star: 'hd331161b', hz: true },
+    // Ross 987.
+    // M0V, 0.588 solar radii, 45.73 ly.
+    ross987: { x: -2687559.091, y: 59122.999, z: 1066376.447, dist: 2891993.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_ross987'), zlabel: loc('star_ross987') },
+    // ross987 planets (M0V, 2, generated; none habitable); HZ 0.250-0.360 AU.
+    ross987_p1: { dist: 0.176, orbit: 36, size: 0.234, star: 'ross987' },
+    ross987_p2: { dist: 0.394, orbit: 120, size: 0.142, star: 'ross987' },
+    // HD 318327 -- 2 components.
+    // M1.5, 0.482 solar radii, 46.15 ly.
+    hd318327: { x: 2913861.55, y: -134259.178, z: -89444.612, dist: 2918324, orbit: -2, size: 1.389, startype: 'M', label: loc('star_hd318327'), zlabel: loc('star_hd318327') + ' A' },
+    // M2.5, 0.421 solar radii, 46.15 ly.
+    hd318327b: { x: 2913861.44, y: -134093.963, z: -89695.687, dist: 2918324, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd318327') + ' B' },
+    // hd318327 planets (M1.5, 1, generated; none habitable); HZ 0.181-0.261 AU.
+    hd318327_p1: { dist: 0.0743, orbit: 11, size: 0.191, star: 'hd318327' },
+    // hd318327b planets (M2.5, 2, generated; habitable-zone world at ~0.175 AU); HZ 0.144-0.207 AU.
+    hd318327b_p1: { dist: 0.101, orbit: 19, size: 0.191, star: 'hd318327b' },
+    hd318327b_p2: { dist: 0.175, orbit: 42, size: 0.142, star: 'hd318327b', hz: true },
+    // BD+67 552.
+    // M0.5V, 0.544 solar radii, 46.19 ly.
+    bd67552: { x: -2028751.795, y: 1272183.251, z: 1672344.609, dist: 2920791.1, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd67552'), zlabel: loc('star_bd67552') },
+    // bd67552 planets (M0.5V, 3, generated; none habitable); HZ 0.220-0.317 AU.
+    bd67552_p1: { dist: 0.136, orbit: 25, size: 0.234, star: 'bd67552' },
+    bd67552_p2: { dist: 0.346, orbit: 101, size: 0.191, star: 'bd67552' },
+    bd67552_p3: { dist: 0.626, orbit: 246, size: 0.296, star: 'bd67552' },
+    // BD-02 2198.
+    // M1.0V, 0.501 solar radii, 46.41 ly.
+    bd022198: { x: -2195457.342, y: -1899383.62, z: 432666.199, dist: 2935113.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd022198'), zlabel: loc('star_bd022198') },
+    // bd022198 planets (M1.0V, 2, generated; habitable-zone world at ~0.219 AU); HZ 0.192-0.277 AU.
+    bd022198_p1: { dist: 0.0554, orbit: 6.74, size: 0.191, star: 'bd022198' },
+    bd022198_p2: { dist: 0.219, orbit: 53, size: 0.234, star: 'bd022198', hz: true },
+    // G 226-66.
+    // M1V, 0.501 solar radii, 46.67 ly.
+    g22666: { x: -32994.481, y: 2486291.347, z: 1589586.11, dist: 2951189.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_g22666'), zlabel: loc('star_g22666') },
+    // g22666 planets (M1V, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    g22666_p1: { dist: 0.1344, orbit: 24.16, size: 0.328, star: 'g22666' },
+    // CPD-58 7400.
+    // M1V, 0.501 solar radii, 46.89 ly.
+    cpd587400: { x: 2559186.407, y: -1095173.114, z: -1021646.776, dist: 2965232.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cpd587400'), zlabel: loc('star_cpd587400') },
+    // cpd587400 planets (M1V, 3, generated; habitable-zone world at ~0.239 AU); HZ 0.192-0.277 AU.
+    cpd587400_p1: { dist: 0.136, orbit: 26, size: 0.234, star: 'cpd587400' },
+    cpd587400_p2: { dist: 0.239, orbit: 60, size: 0.296, star: 'cpd587400', hz: true },
+    cpd587400_p3: { dist: 0.582, orbit: 229, size: 0.191, star: 'cpd587400' },
+    // HD 23453.
+    // M1V, 0.501 solar radii, 46.92 ly.
+    hd23453: { x: -2655392.537, y: 715095.063, z: -1114438.861, dist: 2967228.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd23453'), zlabel: loc('star_hd23453') },
+    // hd23453 planets (M1V, 1, generated; none habitable); HZ 0.192-0.277 AU.
+    hd23453_p1: { dist: 0.0705, orbit: 9.67, size: 0.191, star: 'hd23453' },
+    // CD-38 1058.
+    // M1.5V, 0.482 solar radii, 47.01 ly.
+    cd381058: { x: -720047.571, y: -1373050.184, z: -2536319.646, dist: 2972650.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd381058'), zlabel: loc('star_cd381058') },
+    // cd381058 planets (M1.5V, 2, generated; habitable-zone world at ~0.198 AU); HZ 0.181-0.261 AU.
+    cd381058_p1: { dist: 0.0967, orbit: 16, size: 0.142, star: 'cd381058' },
+    cd381058_p2: { dist: 0.198, orbit: 47, size: 0.296, star: 'cd381058', hz: true },
+    // HD 184489.
+    // M0V, 0.588 solar radii, 47.09 ly.
+    hd184489: { x: 2194424.082, y: 1976084.839, z: -386884.625, dist: 2978269.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd184489'), zlabel: loc('star_hd184489') },
+    // hd184489 planets (M0V, 1, generated; habitable-zone world at ~0.289 AU); HZ 0.250-0.360 AU.
+    hd184489_p1: { dist: 0.289, orbit: 75, size: 0.234, star: 'hd184489', hz: true },
+    // CD-36 2458.
+    // M1.5V, 0.482 solar radii, 47.29 ly.
+    cd362458: { x: -1251262.844, y: -2329622.595, z: -1396755.427, dist: 2990606.3, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd362458'), zlabel: loc('star_cd362458') },
+    // cd362458 planets (M1.5V, 1, generated; habitable-zone world at ~0.234 AU); HZ 0.181-0.261 AU.
+    cd362458_p1: { dist: 0.234, orbit: 60, size: 0.234, star: 'cd362458', hz: true },
+    // HD 216133.
+    // M0.5V, 0.544 solar radii, 47.32 ly.
+    hd216133: { x: 799657.675, y: 1519494.357, z: -2450703.815, dist: 2992367.7, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd216133'), zlabel: loc('star_hd216133') },
+    // hd216133 planets (M0.5V, 2, generated; habitable-zone world at ~0.271 AU); HZ 0.220-0.317 AU.
+    hd216133_p1: { dist: 0.0954, orbit: 15, size: 0.234, star: 'hd216133' },
+    hd216133_p2: { dist: 0.271, orbit: 70, size: 0.142, star: 'hd216133', hz: true },
+    // Wolf 1421.
+    // M1.5V, 0.482 solar radii, 47.94 ly.
+    wolf1421: { x: -2650186.995, y: -976665.126, z: 1102065.022, dist: 3031816.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_wolf1421'), zlabel: loc('star_wolf1421') },
+    // wolf1421 planets (M1.5V, 2, generated; none habitable); HZ 0.181-0.261 AU.
+    wolf1421_p1: { dist: 0.0644, orbit: 8.71, size: 0.234, star: 'wolf1421' },
+    wolf1421_p2: { dist: 0.164, orbit: 35, size: 0.296, star: 'wolf1421' },
+    // HD 19305.
+    // M0V, 0.588 solar radii, 48.01 ly.
+    hd19305: { x: -2090868.078, y: 126819.842, z: -2197988.835, dist: 3036275.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd19305'), zlabel: loc('star_hd19305') },
+    // hd19305 planets (M0V, 1, generated; habitable-zone world at ~0.297 AU); HZ 0.250-0.360 AU.
+    hd19305_p1: { dist: 0.297, orbit: 78, size: 0.191, star: 'hd19305', hz: true },
+    // HD 150848.
+    // M0V, 0.588 solar radii, 48.51 ly.
+    hd150848: { x: 2950401.455, y: -807179.335, z: 236173.074, dist: 3067928.4, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd150848'), zlabel: loc('star_hd150848') },
+    // hd150848 planets (M0V, 2, generated; habitable-zone world at ~0.339 AU); HZ 0.250-0.360 AU.
+    hd150848_p1: { dist: 0.159, orbit: 31, size: 0.191, star: 'hd150848' },
+    hd150848_p2: { dist: 0.339, orbit: 95, size: 0.142, star: 'hd150848', hz: true },
+    // BD+48 1829.
+    // M1V, 0.501 solar radii, 48.79 ly.
+    bd481829: { x: -1896559.588, y: 377881.143, z: 2404574.569, dist: 3085727, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd481829'), zlabel: loc('star_bd481829') },
+    // bd481829 planets (M1V, 1, measured; none habitable); HZ 0.192-0.277 AU.
+    bd481829_p1: { dist: 0.039435, orbit: 3.822, size: 0.365, star: 'bd481829' },
+    // BD+02 1729.
+    // M0.0V, 0.588 solar radii, 49.17 ly.
+    bd021729: { x: -2448320.563, y: -1810766.125, z: 628314.974, dist: 3109329.1, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd021729'), zlabel: loc('star_bd021729') },
+    // bd021729 planets (M0.0V, 1, generated; habitable-zone world at ~0.308 AU); HZ 0.250-0.360 AU.
+    bd021729_p1: { dist: 0.308, orbit: 83, size: 0.142, star: 'bd021729', hz: true },
+    // YY Geminorum.
+    // M0.5VeFe-2, 0.544 solar radii, 49.19 ly.
+    yygeminorum: { x: -2849894.148, y: -373282.104, z: 1189281.572, dist: 3110567, orbit: -2, size: 1.475, startype: 'M', label: loc('star_yygeminorum'), zlabel: loc('star_yygeminorum') },
+    // yygeminorum planets (M0.5VeFe-2, 3, generated; habitable-zone world at ~0.277 AU); HZ 0.220-0.317 AU.
+    yygeminorum_p1: { dist: 0.0649, orbit: 8.22, size: 0.191, star: 'yygeminorum' },
+    yygeminorum_p2: { dist: 0.136, orbit: 25, size: 0.142, star: 'yygeminorum' },
+    yygeminorum_p3: { dist: 0.277, orbit: 72, size: 0.296, star: 'yygeminorum', hz: true },
+    // HD 229793.
+    // M0V, 0.588 solar radii, 49.60 ly.
+    hd229793: { x: 2088663.87, y: 2305108.972, z: 403366.455, dist: 3136678, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd229793'), zlabel: loc('star_hd229793') },
+    // hd229793 planets (M0V, 3, generated; habitable-zone world at ~0.27 AU); HZ 0.250-0.360 AU.
+    hd229793_p1: { dist: 0.157, orbit: 30, size: 0.191, star: 'hd229793' },
+    hd229793_p2: { dist: 0.27, orbit: 68, size: 0.191, star: 'hd229793', hz: true },
+    hd229793_p3: { dist: 0.528, orbit: 186, size: 0.191, star: 'hd229793' },
+    // LP 905-56.
+    // M1.5V, 0.482 solar radii, 49.97 ly.
+    lp90556: { x: 164877.747, y: -2866383.723, z: 1320882.318, dist: 3160390.9, orbit: -2, size: 1.389, startype: 'M', label: loc('star_lp90556'), zlabel: loc('star_lp90556') },
+    // lp90556 planets (M1.5V, 1, generated; habitable-zone world at ~0.217 AU); HZ 0.181-0.261 AU.
+    lp90556_p1: { dist: 0.217, orbit: 54, size: 0.142, star: 'lp90556', hz: true },
+    // --- the stars of the twelve zodiac constellations ----------------------------------------
+    // Deneb Algedi — Capricornus.
+    // A5mF2 (IV), V 2.85, 1.44 solar radii, 38.7 ly.
+    denebalgedi: { x: 1346798.67, y: 1037219.997, z: -1761072.518, dist: 2447665.9, orbit: -2, size: 2.399, startype: 'A', label: loc('star_denebalgedi'), zlabel: loc('star_denebalgedi') },
+    // Castor — Gemini.
+    // A2Vm, V 1.58, 2.97 solar radii, 50.9 ly.
+    castor: { x: -2947390.694, y: -384933.192, z: 1229990.644, dist: 3216856, orbit: -2, size: 3.446, startype: 'A', label: loc('star_castor'), zlabel: loc('star_castor') },
+    // Zosma — Leo.
+    // A4V, V 2.56, 2.42 solar radii, 58.4 ly.
+    zosma: { x: -1041949.993, y: -1014223.215, z: 3397061.667, dist: 3695177.5, orbit: -2, size: 3.108, startype: 'A', label: loc('star_zosma'), zlabel: loc('star_zosma') },
+    // Sheratan — Aries.
+    // A5V..., V 2.64, 2.40 solar radii, 58.7 ly.
+    sheratan: { x: -2257315.881, y: 1748146.232, z: -2368779.418, dist: 3709798.7, orbit: -2, size: 3.1, startype: 'A', label: loc('star_sheratan'), zlabel: loc('star_sheratan') },
+    // Alzirr — Gemini.
+    // F5IV, V 3.35, 2.68 solar radii, 58.7 ly.
+    alzirr: { x: -3461197.74, y: -1310575.384, z: 291431.357, dist: 3712469.5, orbit: -2, size: 3.271, startype: 'F', label: loc('star_alzirr'), zlabel: loc('star_alzirr') },
+    // Chi Cancri — Cancer.
+    // F6V, V 5.13, 1.28 solar radii, 59.6 ly.
+    chicancri: { x: -3125910.251, y: -883545.266, z: 1910932.618, dist: 3768770.4, orbit: -2, size: 2.262, startype: 'F', label: loc('star_chicancri'), zlabel: loc('star_chicancri') },
+    // Mu Virginis — Virgo.
+    // F2III, V 3.87, 1.96 solar radii, 59.6 ly.
+    muvirginis: { x: 2474554.834, y: -591742.084, z: 2780296.798, dist: 3768770.4, orbit: -2, size: 2.799, startype: 'F', label: loc('star_muvirginis'), zlabel: loc('star_muvirginis') },
+    // Wasat — Gemini.
+    // F0IV..., V 3.5, 2.09 solar radii, 60.5 ly.
+    wasat: { x: -3535728.862, y: -1012845.775, z: 1046657.613, dist: 3823967.5, orbit: -2, size: 2.89, startype: 'F', label: loc('star_wasat'), zlabel: loc('star_wasat') },
+    // Larawag — Scorpius.
+    // K2IIIb, V 2.29, 8.72 solar radii, 63.7 ly.
+    larawag: { x: 3926946.854, y: -776665.14, z: 460343.008, dist: 4029396.5, orbit: -2, size: 5.905, startype: 'KIII', label: loc('star_larawag'), zlabel: loc('star_larawag') },
+    // Hamal — Aries.
+    // K2III, V 2.01, 10.24 solar radii, 65.8 ly.
+    hamal: { x: -2736666.313, y: 1946449.882, z: -2458368.761, dist: 4161921, orbit: -2, size: 6.401, startype: 'KIII', label: loc('star_hamal'), zlabel: loc('star_hamal') },
+    // Aldebaran — Taurus.
+    // K5III, V 0.87, 27.43 solar radii, 66.6 ly.
+    aldebaran: { x: -3953624.047, y: -67037.968, z: -1458632.581, dist: 4214646.6, orbit: -2, size: 10.475, startype: 'KIII', label: loc('star_aldebaran'), zlabel: loc('star_aldebaran') },
+    // Syrma — Virgo.
+    // F7V, V 4.07, 2.60 solar radii, 72.5 ly.
+    syrma: { x: 2667656.084, y: -1091831.83, z: 3567844.753, dist: 4586720.2, orbit: -2, size: 3.224, startype: 'F', label: loc('star_syrma'), zlabel: loc('star_syrma') },
+    // Eta Scorpii — Scorpius.
+    // F3p, V 3.32, 3.18 solar radii, 73.5 ly.
+    etascorpii: { x: 4471100.421, y: -1251297.394, z: -186747.688, dist: 4646650.3, orbit: -2, size: 3.568, startype: 'F', label: loc('star_etascorpii'), zlabel: loc('star_etascorpii') },
+    // Heze — Virgo.
+    // A3V, V 3.38, 1.95 solar radii, 74.1 ly.
+    heze: { x: 1901875.662, y: -1319517.94, z: 4072789.711, dist: 4684642.4, orbit: -2, size: 2.792, startype: 'A', label: loc('star_heze'), zlabel: loc('star_heze') },
+    // Zubenelgenubi — Libra.
+    // A3IV, V 2.75, 2.67 solar radii, 75.8 ly.
+    zubenelgenubi: { x: 3556432.491, y: -1271555.798, z: 2951726.217, dist: 4793511.6, orbit: -2, size: 3.266, startype: 'A', label: loc('star_zubenelgenubi'), zlabel: loc('star_zubenelgenubi') },
+    // Kaus Borealis — Sagittarius.
+    // K1IIIb, V 2.82, 8.04 solar radii, 78.2 ly.
+    kausborealis: { x: 4868193.15, y: 654809.254, z: -561536.432, dist: 4944027, orbit: -2, size: 5.671, startype: 'KIII', label: loc('star_kausborealis'), zlabel: loc('star_kausborealis') },
+    // Regulus — Leo.
+    // B7V, V 1.36, 3.18 solar radii, 79.3 ly.
+    regulus: { x: -2270732.666, y: -2386821.34, z: 3781079.107, dist: 5014947.9, orbit: -2, size: 3.566, startype: 'B', label: loc('star_regulus'), zlabel: loc('star_regulus') },
+    // Ascella — Sagittarius.
+    // A3IV, V 2.6, 3.32 solar radii, 88.2 ly.
+    ascella: { x: 5340386.27, y: 640612.689, z: -1476843.79, dist: 5577739.5, orbit: -2, size: 3.646, startype: 'A', label: loc('star_ascella'), zlabel: loc('star_ascella') },
+    // Zeta1 Aquarii — Aquarius.
+    // F3III-IV, V 3.65, 3.42 solar radii, 91.9 ly.
+    zeta1aquarii: { x: 1673033.688, y: 3646468.087, z: -4202801.278, dist: 5810276.2, orbit: -2, size: 3.698, startype: 'F', label: loc('star_zeta1aquarii'), zlabel: loc('star_zeta1aquarii') },
+    // Alnasl — Sagittarius.
+    // K0III, V 2.98, 8.77 solar radii, 96.9 ly.
+    alnasl: { x: 6106080.938, y: 97950.9, z: -484691.066, dist: 6126070.9, orbit: -2, size: 5.921, startype: 'KIII', label: loc('star_alnasl'), zlabel: loc('star_alnasl') },
+    // Lambda Geminorum — Gemini.
+    // A3V..., V 3.58, 2.42 solar radii, 100.9 ly.
+    lambdageminorum: { x: -5801429.318, y: -2217289.956, z: 1459865.978, dist: 6379981.6, orbit: -2, size: 3.112, startype: 'A', label: loc('star_lambdageminorum'), zlabel: loc('star_lambdageminorum') },
+    // Omega Piscium — Pisces.
+    // F4IV, V 4.03, 3.35 solar radii, 104.3 ly.
+    omegapiscium: { x: -723791.429, y: 3834734.551, z: -5320650.537, dist: 6598362.3, orbit: -2, size: 3.658, startype: 'F', label: loc('star_omegapiscium'), zlabel: loc('star_omegapiscium') },
+    // Algedi — Capricornus.
+    // G6/G8III, V 3.58, 6.20 solar radii, 105.8 ly.
+    algedi: { x: 5201896.594, y: 3137586.905, z: -2808242.506, dist: 6692563.5, orbit: -2, size: 4.98, startype: 'G', label: loc('star_algedi'), zlabel: loc('star_algedi') },
+    // Lambda Piscium — Pisces.
+    // A7V, V 4.49, 2.02 solar radii, 106.6 ly.
+    lambdapiscium: { x: -9437.473, y: 3710985.368, z: -5629829.155, dist: 6742883.5, orbit: -2, size: 2.843, startype: 'A', label: loc('star_lambdapiscium'), zlabel: loc('star_lambdapiscium') },
+    // Alhena — Gemini.
+    // A0IV, V 1.93, 4.77 solar radii, 109.3 ly.
+    alhena: { x: -6598286.392, y: -1988805.849, z: 536638.763, dist: 6912359.5, orbit: -2, size: 4.367, startype: 'A', label: loc('star_alhena'), zlabel: loc('star_alhena') },
+    // Vindemiatrix — Virgo.
+    // G8IIIvar, V 2.85, 9.49 solar radii, 109.6 ly.
+    vindemiatrix: { x: 1314998.937, y: -1443781.722, z: 6650129.032, dist: 6930941.1, orbit: -2, size: 6.163, startype: 'G', label: loc('star_vindemiatrix'), zlabel: loc('star_vindemiatrix') },
+    // Iota Geminorum — Gemini.
+    // G9III+..., V 3.78, 7.11 solar radii, 120.4 ly.
+    iotageminorum: { x: -7056507.09, y: -1352000.114, z: 2511750.622, dist: 7611247.5, orbit: -2, size: 5.334, startype: 'G', label: loc('star_iotageminorum'), zlabel: loc('star_iotageminorum') },
+    // Tau Sagittarii — Sagittarius.
+    // K1/K2III, V 3.32, 9.94 solar radii, 121.6 ly.
+    tausagittarii: { x: 7317503.924, y: 1202820.018, z: -2038224.684, dist: 7690708.7, orbit: -2, size: 6.304, startype: 'KIII', label: loc('star_tausagittarii'), zlabel: loc('star_tausagittarii') },
+    // Rasalas — Leo.
+    // K0III, V 3.88, 7.42 solar radii, 124.1 ly.
+    rasalas: { x: -4583636.848, y: -2045095.342, z: 6034113.802, dist: 7848736.9, orbit: -2, size: 5.448, startype: 'KIII', label: loc('star_rasalas'), zlabel: loc('star_rasalas') },
+    // Rho1 Sagittarii — Sagittarius.
+    // F0III/IV, V 3.92, 3.61 solar radii, 127.0 ly.
+    rho1sagittarii: { x: 7300209.655, y: 2665376.8, z: -2016784.319, dist: 8028992.1, orbit: -2, size: 3.801, startype: 'F', label: loc('star_rho1sagittarii'), zlabel: loc('star_rho1sagittarii') },
+    // Algieba — Leo.
+    // K0III, V 2.01, 18.40 solar radii, 130.1 ly.
+    algieba: { x: -3823863.162, y: -2834739.446, z: 6710811.089, dist: 8227555.1, orbit: -2, size: 8.58, startype: 'KIII', label: loc('star_algieba'), zlabel: loc('star_algieba') },
+    // Asellus Australis — Cancer.
+    // K0III, V 3.94, 7.59 solar radii, 130.6 ly.
+    asellusaustralis: { x: -6120022.803, y: -3257544.815, z: 4484979.538, dist: 8257198, orbit: -2, size: 5.511, startype: 'KIII', label: loc('star_asellusaustralis'), zlabel: loc('star_asellusaustralis') },
+    // Elnath — Taurus.
+    // B7III, V 1.65, 4.70 solar radii, 133.9 ly.
+    elnath: { x: -8444095.577, y: 295757.441, z: -553086.502, dist: 8467356.6, orbit: -2, size: 4.334, startype: 'B', label: loc('star_elnath'), zlabel: loc('star_elnath') },
+    // Arkab Posterior — Sagittarius.
+    // F2III, V 4.27, 3.67 solar radii, 134.2 ly.
+    arkabposterior: { x: 7691052.775, y: -905814.88, z: -3466779.714, dist: 8484771.9, orbit: -2, size: 3.83, startype: 'F', label: loc('star_arkabposterior'), zlabel: loc('star_arkabposterior') },
+    // 109 Virginis — Virgo.
+    // A0V, V 3.73, 2.56 solar radii, 134.5 ly.
+    virginis109: { x: 5139258.294, y: -424248.988, z: 6764323.954, dist: 8505765.2, orbit: -2, size: 3.201, startype: 'A', label: loc('star_virginis109'), zlabel: loc('star_virginis109') },
+    // Gamma Piscium — Pisces.
+    // G7III, V 3.7, 7.82 solar radii, 138.0 ly.
+    gammapiscium: { x: 702603.301, y: 5322464.261, z: -6878054.491, dist: 8725245.6, orbit: -2, size: 5.594, startype: 'G', label: loc('star_gammapiscium'), zlabel: loc('star_gammapiscium') },
+    // Kappa Geminorum — Gemini.
+    // G8III, V 3.57, 8.79 solar radii, 141.4 ly.
+    kappageminorum: { x: -7976249.482, y: -2264252.738, z: 3345285.441, dist: 8940823.8, orbit: -2, size: 5.93, startype: 'G', label: loc('star_kappageminorum'), zlabel: loc('star_kappageminorum') },
+    // Omicron Sagittarii — Sagittarius.
+    // K0III, V 3.76, 8.98 solar radii, 142.1 ly.
+    omicronsagittarii: { x: 8482667.694, y: 2227627.471, z: -1946317.047, dist: 8983658.8, orbit: -2, size: 5.992, startype: 'KIII', label: loc('star_omicronsagittarii'), zlabel: loc('star_omicronsagittarii') },
+    // Kaus Australis — Sagittarius.
+    // B9.5III, V 1.79, 6.21 solar radii, 143.3 ly.
+    kausaustralis: { x: 8929272.536, y: -125597.538, z: -1543716.259, dist: 9062601.3, orbit: -2, size: 4.986, startype: 'B', label: loc('star_kausaustralis'), zlabel: loc('star_kausaustralis') },
+    // Eta Sagittarii — Sagittarius.
+    // M2III, V 3.1, 52.78 solar radii, 145.9 ly.
+    etasagittarii: { x: 9079908.211, y: -565928.243, z: -1551345.047, dist: 9228850.4, orbit: -2, size: 14.53, startype: 'M', label: loc('star_etasagittarii'), zlabel: loc('star_etasagittarii') },
+    // Ain — Taurus.
+    // K0III, V 3.53, 10.30 solar radii, 146.7 ly.
+    ain: { x: -8711713.976, y: 365719.545, z: -3160471.065, dist: 9274496.7, orbit: -2, size: 6.419, startype: 'KIII', label: loc('star_ain'), zlabel: loc('star_ain') },
+    // Delta3 Tauri — Taurus.
+    // A2IV, V 4.3, 2.48 solar radii, 148.5 ly.
+    delta3tauri: { x: -8746724.009, y: 287486.421, z: -3411148.915, dist: 9392750.7, orbit: -2, size: 3.148, startype: 'A', label: loc('star_delta3tauri'), zlabel: loc('star_delta3tauri') },
+    // Theta Piscium — Pisces.
+    // K1III, V 4.27, 7.84 solar radii, 148.5 ly.
+    thetapiscium: { x: 123605.253, y: 5925323.025, z: -7286908.469, dist: 9392750.7, orbit: -2, size: 5.598, startype: 'KIII', label: loc('star_thetapiscium'), zlabel: loc('star_thetapiscium') },
+    // Psi1 Aquarii — Aquarius.
+    // K0III, V 4.24, 7.59 solar radii, 149.8 ly.
+    psi1aquarii: { x: 1783288.541, y: 4215660.949, z: -8295693.809, dist: 9474727, orbit: -2, size: 5.51, startype: 'KIII', label: loc('star_psi1aquarii'), zlabel: loc('star_psi1aquarii') },
+    // Chamukuy — Taurus.
+    // A7III, V 3.4, 4.71 solar radii, 150.4 ly.
+    chamukuy: { x: -8816394.396, y: -53444.442, z: -3564016.402, dist: 9509672.9, orbit: -2, size: 4.339, startype: 'A', label: loc('star_chamukuy'), zlabel: loc('star_chamukuy') },
+    // Alrescha — Pisces.
+    // A2, V 3.82, 3.13 solar radii, 150.6 ly.
+    alrescha: { x: -4889900.221, y: 2243843.037, z: -7857391.836, dist: 9522844.2, orbit: -2, size: 3.54, startype: 'A', label: loc('star_alrescha'), zlabel: loc('star_alrescha') },
+    // Kappa Piscium — Pisces.
+    // A0p, V 4.95, 1.67 solar radii, 153.5 ly.
+    kappapiscium: { x: 588826.609, y: 5524736.394, z: -7959161.322, dist: 9706579.1, orbit: -2, size: 2.582, startype: 'A', label: loc('star_kappapiscium'), zlabel: loc('star_kappapiscium') },
+    // 1 Geminorum — Gemini.
+    // G7III, V 4.16, 7.12 solar radii, 155.1 ly.
+    geminorum1: { x: -9734413.546, y: -1193925.722, z: 122440.912, dist: 9808122, orbit: -2, size: 5.335, startype: 'G', label: loc('star_geminorum1'), zlabel: loc('star_geminorum1') },
+    // Secunda Hyadum — Taurus.
+    // G8III, V 3.77, 8.82 solar radii, 155.6 ly.
+    secundahyadum: { x: -9118266.319, y: 316001.613, z: -3687851.007, dist: 9840878.1, orbit: -2, size: 5.941, startype: 'G', label: loc('star_secundahyadum'), zlabel: loc('star_secundahyadum') },
+    // Nashira — Capricornus.
+    // A7III:mp..., V 3.69, 4.30 solar radii, 157.0 ly.
+    nashira: { x: 5713596.483, y: 4150864.604, z: -6981971.463, dist: 9930900.6, orbit: -2, size: 4.147, startype: 'A', label: loc('star_nashira'), zlabel: loc('star_nashira') },
+    // Skat — Aquarius.
+    // A3V, V 3.27, 4.45 solar radii, 160.6 ly.
+    skat: { x: 3225757.957, y: 3787464.056, z: -8853834.385, dist: 10155825, orbit: -2, size: 4.217, startype: 'A', label: loc('star_skat'), zlabel: loc('star_skat') },
+    // Prima Hyadum — Taurus.
+    // G8III, V 3.65, 9.68 solar radii, 161.5 ly.
+    primahyadum: { x: -9345075.139, y: 149487.647, z: -4125250.448, dist: 10216186.5, orbit: -2, size: 6.223, startype: 'G', label: loc('star_primahyadum'), zlabel: loc('star_primahyadum') },
+    // Theta Capricorni — Capricornus.
+    // A1V, V 4.08, 2.77 solar radii, 162.2 ly.
+    thetacapricorni: { x: 6971710.602, y: 4240992.292, z: -6213835.458, dist: 10256827.7, orbit: -2, size: 3.328, startype: 'A', label: loc('star_thetacapricorni'), zlabel: loc('star_thetacapricorni') },
+    // Zubenelhakrabi — Libra.
+    // K0III, V 3.91, 9.62 solar radii, 163.2 ly.
+    zubenelhakrabi: { x: 8636186.63, y: -1288368.657, z: 5497795.462, dist: 10318399.5, orbit: -2, size: 6.204, startype: 'KIII', label: loc('star_zubenelhakrabi'), zlabel: loc('star_zubenelhakrabi') },
+    // 98 Aquarii — Aquarius.
+    // K0III, V 3.96, 9.42 solar radii, 163.4 ly.
+    aquarii98: { x: 2556220.435, y: 2774222.232, z: -9620763.226, dist: 10333908.1, orbit: -2, size: 6.137, startype: 'KIII', label: loc('star_aquarii98'), zlabel: loc('star_aquarii98') },
+    // Sadachbia — Aquarius.
+    // A0V, V 3.86, 2.94 solar radii, 163.7 ly.
+    sadachbia: { x: 3366575.536, y: 6379680.459, z: -7428647.796, dist: 10354658.9, orbit: -2, size: 3.427, startype: 'A', label: loc('star_sadachbia'), zlabel: loc('star_sadachbia') },
+    // Mesarthim — Aries.
+    // A1p Si, V 3.88, 3.07 solar radii, 164.1 ly.
+    mesarthim: { x: -6197354.593, y: 4747201.822, z: -6834305.473, dist: 10375493.3, orbit: -2, size: 3.505, startype: 'A', label: loc('star_mesarthim'), zlabel: loc('star_mesarthim') },
+    // Chertan — Leo.
+    // A2V, V 3.33, 4.30 solar radii, 165.1 ly.
+    chertan: { x: -2545672.417, y: -3686307.341, z: 9428309.551, dist: 10438502.3, orbit: -2, size: 4.149, startype: 'A', label: loc('star_chertan'), zlabel: loc('star_chertan') },
+    // Bharani — Aries.
+    // B8Vn, V 3.61, 2.63 solar radii, 165.6 ly.
+    bharani: { x: -8192838.874, y: 4178532.07, z: -5015547.208, dist: 10475612.3, orbit: -2, size: 3.246, startype: 'B', label: loc('star_bharani'), zlabel: loc('star_bharani') },
+    // Eta Aquarii — Aquarius.
+    // B9IV-Vn, V 4.04, 2.51 solar radii, 167.9 ly.
+    etaaquarii: { x: 2814448.214, y: 6580087.744, z: -7840684.329, dist: 10615790.3, orbit: -2, size: 3.168, startype: 'B', label: loc('star_etaaquarii'), zlabel: loc('star_etaaquarii') },
+    // Theta Librae — Libra.
+    // K0III, V 4.13, 8.98 solar radii, 168.5 ly.
+    thetalibrae: { x: 9371828.344, y: -1060304.541, z: 4955401.951, dist: 10654173.9, orbit: -2, size: 5.992, startype: 'KIII', label: loc('star_thetalibrae'), zlabel: loc('star_thetalibrae') },
+    // Iota Aquarii — Aquarius.
+    // B8V, V 4.29, 2.04 solar radii, 175.2 ly.
+    iotaaquarii: { x: 5232049.242, y: 4965958.025, z: -8407021.902, dist: 11077594.3, orbit: -2, size: 2.854, startype: 'B', label: loc('star_iotaaquarii'), zlabel: loc('star_iotaaquarii') },
+    // Xi Piscium — Pisces.
+    // K0III SB, V 4.61, 7.65 solar radii, 179.1 ly.
+    xipiscium: { x: -5547299.293, y: 2994652.413, z: -9410665.528, dist: 11327007.5, orbit: -2, size: 5.532, startype: 'KIII', label: loc('star_xipiscium'), zlabel: loc('star_xipiscium') },
+    // Asellus Borealis — Cancer.
+    // A1IV, V 4.66, 2.37 solar radii, 181.2 ly.
+    asellusborealis: { x: -8695293.932, y: -3901518.563, z: 6362567.88, dist: 11459155.9, orbit: -2, size: 3.078, startype: 'A', label: loc('star_asellusborealis'), zlabel: loc('star_asellusborealis') },
+    // Epsilon Piscium — Pisces.
+    // K0III, V 4.27, 9.08 solar radii, 181.8 ly.
+    epsilonpiscium: { x: -4062928.384, y: 5221355.458, z: -9403303.965, dist: 11497480.8, orbit: -2, size: 6.027, startype: 'KIII', label: loc('star_epsilonpiscium'), zlabel: loc('star_epsilonpiscium') },
+    // Polis — Sagittarius.
+    // B2III:, V 3.84, 4.06 solar radii, 181.8 ly.
+    polis: { x: 11318276.841, y: 1996383.542, z: -321134.594, dist: 11497480.8, orbit: -2, size: 4.03, startype: 'B', label: loc('star_polis'), zlabel: loc('star_polis') },
+    // Rukbat — Sagittarius.
+    // B8V, V 3.96, 2.46 solar radii, 181.8 ly.
+    rukbat: { x: 10568026.412, y: -422317.178, z: -4508939.042, dist: 11497480.8, orbit: -2, size: 3.137, startype: 'B', label: loc('star_rukbat'), zlabel: loc('star_rukbat') },
+    // Iota Sagittarii — Sagittarius.
+    // K0III, V 4.12, 9.73 solar radii, 181.8 ly.
+    iotasagittarii: { x: 10038667.503, y: -356015.539, z: -5593788.79, dist: 11497480.8, orbit: -2, size: 6.239, startype: 'KIII', label: loc('star_iotasagittarii'), zlabel: loc('star_iotasagittarii') },
+    // Zubeneschamali — Libra.
+    // B8V, V 2.61, 4.66 solar radii, 185.1 ly.
+    zubeneschamali: { x: 8979565.339, y: -1258419.893, z: 7404119.1, dist: 11706288.6, orbit: -2, size: 4.32, startype: 'B', label: loc('star_zubeneschamali'), zlabel: loc('star_zubeneschamali') },
+    // Ancha — Aquarius.
+    // G8III-IV, V 4.17, 8.84 solar radii, 187.4 ly.
+    ancha: { x: 4659965.663, y: 6299267.881, z: -8895411.941, dist: 11854299.2, orbit: -2, size: 5.947, startype: 'G', label: loc('star_ancha'), zlabel: loc('star_ancha') },
+    // Acubens — Cancer.
+    // A5m, V 4.26, 3.66 solar radii, 188.3 ly.
+    acubens: { x: -7980358.345, y: -5907258.444, z: 6575996.714, dist: 11909053.5, orbit: -2, size: 3.825, startype: 'A', label: loc('star_acubens'), zlabel: loc('star_acubens') },
+    // Theta Geminorum — Gemini.
+    // A3III, V 3.6, 4.50 solar radii, 189.1 ly.
+    thetageminorum: { x: -11541312.786, y: -424230.266, z: 3097913.122, dist: 11957380.1, orbit: -2, size: 4.241, startype: 'A', label: loc('star_thetageminorum'), zlabel: loc('star_thetageminorum') },
+    // Iota Capricorni — Capricornus.
+    // G8III, V 4.28, 8.82 solar radii, 196.7 ly.
+    iotacapricorni: { x: 7845403.486, y: 5217399.295, z: -8123817.075, dist: 12440579.4, orbit: -2, size: 5.94, startype: 'G', label: loc('star_iotacapricorni'), zlabel: loc('star_iotacapricorni') },
+    // Minelauva — Virgo.
+    // M3III, V 3.39, 78.01 solar radii, 198.4 ly.
+    minelauva: { x: 2935701.294, y: -4113195.187, z: 11483835.319, dist: 12546521, orbit: -2, size: 17.665, startype: 'M', label: loc('star_minelauva'), zlabel: loc('star_minelauva') },
+    // Albali — Aquarius.
+    // A1V, V 3.78, 4.07 solar radii, 207.7 ly.
+    albali: { x: 8995154.976, y: 6947404.663, z: -6589749.383, dist: 13137885.7, orbit: -2, size: 4.036, startype: 'A', label: loc('star_albali'), zlabel: loc('star_albali') },
+    // Tau Virginis — Virgo.
+    // A3V, V 4.23, 4.00 solar radii, 224.9 ly.
+    tauvirginis: { x: 6774687.931, y: -2571073.56, z: 12241255.399, dist: 14225159, orbit: -2, size: 4.001, startype: 'A', label: loc('star_tauvirginis'), zlabel: loc('star_tauvirginis') },
+    // Nunki — Sagittarius.
+    // B2.5V, V 2.05, 5.30 solar radii, 227.8 ly.
+    nunki: { x: 13870875.508, y: 2335132.069, z: -3101650.095, dist: 14403966.9, orbit: -2, size: 4.605, startype: 'B', label: loc('star_nunki'), zlabel: loc('star_nunki') },
+    // Tejat — Gemini.
+    // M3IIIvar, V 2.87, 115.73 solar radii, 231.6 ly.
+    tejat: { x: -14400709.83, y: -2468356.598, z: 1065036.093, dist: 14649489.1, orbit: -2, size: 21.516, startype: 'M', label: loc('star_tejat'), zlabel: loc('star_tejat') },
+    // Phi Sagittarii — Sagittarius.
+    // B8.5III, V 3.17, 4.66 solar radii, 239.3 ly.
+    phisagittarii: { x: 14721824.71, y: 2068029.698, z: -2829009.723, dist: 15133147.9, orbit: -2, size: 4.317, startype: 'B', label: loc('star_phisagittarii'), zlabel: loc('star_phisagittarii') },
+    // Epsilon Leonis — Leo.
+    // G0II, V 2.97, 16.68 solar radii, 246.7 ly.
+    epsilonleonis: { x: -9280293.922, y: -4691251.048, z: 11632099.494, dist: 15602481.5, orbit: -2, size: 8.169, startype: 'G', label: loc('star_epsilonleonis'), zlabel: loc('star_epsilonleonis') },
+    // Spica — Virgo.
+    // B1V, V 0.98, 6.99 solar radii, 249.7 ly.
+    spica: { x: 7187210.625, y: -6913382.166, z: 12246954.507, dist: 15793629.9, orbit: -2, size: 5.289, startype: 'B', label: loc('star_spica'), zlabel: loc('star_spica') },
+    // Kang — Virgo.
+    // K3III, V 4.18, 17.16 solar radii, 254.8 ly.
+    kang: { x: 9706663.321, y: -4836296.8, z: 11919145.585, dist: 16114438, orbit: -2, size: 8.285, startype: 'KIII', label: loc('star_kang'), zlabel: loc('star_kang') },
+    // Zaniah — Virgo.
+    // A2IV, V 3.89, 5.35 solar radii, 265.4 ly.
+    zaniah: { x: 2283518.337, y: -7759176.361, z: 14705596.095, dist: 16783141.3, orbit: -2, size: 4.625, startype: 'A', label: loc('star_zaniah'), zlabel: loc('star_zaniah') },
+    // 88 Aquarii — Aquarius.
+    // K1III, V 3.68, 18.74 solar radii, 270.7 ly.
+    aquarii88: { x: 5187009.081, y: 4631239.521, z: -15641365.875, dist: 17117411.3, orbit: -2, size: 8.657, startype: 'KIII', label: loc('star_aquarii88'), zlabel: loc('star_aquarii88') },
+    // Upsilon Geminorum — Gemini.
+    // K5III, V 4.06, 25.66 solar radii, 270.9 ly.
+    upsilongeminorum: { x: -15601808.548, y: -3488891.342, z: 6156614.253, dist: 17131628.4, orbit: -2, size: 10.131, startype: 'KIII', label: loc('star_upsilongeminorum'), zlabel: loc('star_upsilongeminorum') },
+    // Adhafera — Leo.
+    // F0III, V 3.43, 9.77 solar radii, 274.1 ly.
+    adhafera: { x: -8599764.347, y: -5010751.41, z: 14190681.715, dist: 17333177, orbit: -2, size: 6.252, startype: 'F', label: loc('star_adhafera'), zlabel: loc('star_adhafera') },
+    // Torcular — Pisces.
+    // K0III, V 4.26, 14.03 solar radii, 279.5 ly.
+    torcular: { x: -8983468.861, y: 6382483.209, z: -13818806.647, dist: 17674790.6, orbit: -2, size: 7.49, startype: 'KIII', label: loc('star_torcular'), zlabel: loc('star_torcular') },
+    // Brachium — Libra.
+    // M3/M4III, V 3.25, 120.95 solar radii, 288.4 ly.
+    brachium: { x: 14760936.914, y: -6198065.302, z: 8735037.516, dist: 18237383.4, orbit: -2, size: 21.995, startype: 'M', label: loc('star_brachium'), zlabel: loc('star_brachium') },
+    // Sigma Aquarii — Aquarius.
+    // A0IVs, V 4.82, 3.34 solar radii, 289.7 ly.
+    sigmaaquarii: { x: 6704383.552, y: 8735114.554, z: -14639383.989, dist: 18318366.4, orbit: -2, size: 3.654, startype: 'A', label: loc('star_sigmaaquarii'), zlabel: loc('star_sigmaaquarii') },
+    // Omicron Tauri — Taurus.
+    // G8III, V 3.61, 17.76 solar radii, 291.0 ly.
+    omicrontauri: { x: -14392322.701, y: 1482779.966, z: -11367719.946, dist: 18400071.9, orbit: -2, size: 8.429, startype: 'G', label: loc('star_omicrontauri'), zlabel: loc('star_omicrontauri') },
+    // Nu Virginis — Virgo.
+    // M0III, V 4.04, 47.47 solar radii, 293.8 ly.
+    nuvirginis: { x: -1005551.716, y: -8032683.929, z: 16726356.453, dist: 18582415, orbit: -2, size: 13.78, startype: 'M', label: loc('star_nuvirginis'), zlabel: loc('star_nuvirginis') },
+    // 51 Sagittarii — Sagittarius.
+    // A1m..., V 5.64, 2.45 solar radii, 294.4 ly.
+    sagittarii51: { x: 16881246.558, y: 4455880.574, z: -6459296.106, dist: 18615957.2, orbit: -2, size: 3.13, startype: 'A', label: loc('star_sagittarii51'), zlabel: loc('star_sagittarii51') },
+    // Sargas — Scorpius.
+    // F1II, V 1.86, 23.40 solar radii, 300.3 ly.
+    sargas: { x: 18415972.216, y: -4204657.929, z: -1977310.605, dist: 18993076.1, orbit: -2, size: 9.674, startype: 'F', label: loc('star_sargas'), zlabel: loc('star_sargas') },
+    // Tarf — Cancer.
+    // K4III, V 3.53, 32.49 solar radii, 303.4 ly.
+    tarf: { x: -14593617.89, y: -9937599.009, z: 7511835.689, dist: 19187423.8, orbit: -2, size: 11.4, startype: 'KIII', label: loc('star_tarf'), zlabel: loc('star_tarf') },
+    // Mu Piscium — Pisces.
+    // K4III, V 4.84, 17.80 solar radii, 304.0 ly.
+    mupiscium: { x: -8364819.035, y: 6999093.214, z: -15829511.967, dist: 19223187.9, orbit: -2, size: 8.439, startype: 'KIII', label: loc('star_mupiscium'), zlabel: loc('star_mupiscium') },
+    // Upsilon Piscium — Pisces.
+    // A3V, V 4.74, 4.33 solar radii, 308.0 ly.
+    upsilonpiscium: { x: -10349522.466, y: 12093289.403, z: -11225225.318, dist: 19477318.8, orbit: -2, size: 4.163, startype: 'A', label: loc('star_upsilonpiscium'), zlabel: loc('star_upsilonpiscium') },
+    // Tau2 Aquarii — Aquarius.
+    // K5III, V 4.05, 30.22 solar radii, 317.6 ly.
+    tau2aquarii: { x: 6418919.606, y: 8294417.207, z: -17128207.306, dist: 20084207, orbit: -2, size: 10.995, startype: 'KIII', label: loc('star_tau2aquarii'), zlabel: loc('star_tau2aquarii') },
+    // Tau Geminorum — Gemini.
+    // K2III, V 4.41, 16.54 solar radii, 321.0 ly.
+    taugeminorum: { x: -19240111.436, y: -2436919.735, z: 6003057.115, dist: 20301654.1, orbit: -2, size: 8.135, startype: 'KIII', label: loc('star_taugeminorum'), zlabel: loc('star_taugeminorum') },
+    // Dabih — Capricornus.
+    // A5:n, V 3.05, 11.08 solar radii, 326.8 ly.
+    dabih: { x: 16172018.549, y: 9019592.672, z: -9179945.092, dist: 20667816.2, orbit: -2, size: 6.657, startype: 'A', label: loc('star_dabih'), zlabel: loc('star_dabih') },
+    // Iota Cancri — Cancer.
+    // G8Iab:, V 4.03, 16.66 solar radii, 331.1 ly.
+    iotacancri: { x: -16181444.177, y: -4604266.938, z: 12468756.012, dist: 20940589.4, orbit: -2, size: 8.163, startype: 'G', label: loc('star_iotacancri'), zlabel: loc('star_iotacancri') },
+    // Kaus Media — Sagittarius.
+    // K3III, V 2.72, 45.87 solar radii, 347.7 ly.
+    kausmedia: { x: 21788717.919, y: 1142246.449, z: -2738723.878, dist: 21989851.4, orbit: -2, size: 13.546, startype: 'KIII', label: loc('star_kausmedia'), zlabel: loc('star_kausmedia') },
+    // Alpherg — Pisces.
+    // G8III, V 3.62, 21.24 solar radii, 349.6 ly.
+    alpherg: { x: -11145927.278, y: 10390529.931, z: -16017347.667, dist: 22107696.2, orbit: -2, size: 9.218, startype: 'G', label: loc('star_alpherg'), zlabel: loc('star_alpherg') },
+    // Nu Piscium — Pisces.
+    // K3III, V 4.45, 21.60 solar radii, 363.2 ly.
+    nupiscium: { x: -10749305.24, y: 7493862.323, z: -18864933.706, dist: 22969354.8, orbit: -2, size: 9.295, startype: 'KIII', label: loc('star_nupiscium'), zlabel: loc('star_nupiscium') },
+    // Xi2 Sagittarii — Sagittarius.
+    // G8/K0II/III, V 3.52, 23.24 solar radii, 365.2 ly.
+    xi2sagittarii: { x: 21956857.356, y: 5723394.453, z: -4319148.894, dist: 23097962.6, orbit: -2, size: 9.642, startype: 'G', label: loc('star_xi2sagittarii'), zlabel: loc('star_xi2sagittarii') },
+    // Atlas — Taurus.
+    // B8III, V 3.62, 6.05 solar radii, 382.4 ly.
+    atlas: { x: -21651669.452, y: 4993287.79, z: -9539287.95, dist: 24181102.7, orbit: -2, size: 4.92, startype: 'B', label: loc('star_atlas'), zlabel: loc('star_atlas') },
+    // Propus — Gemini.
+    // M3III, V 3.31, 156.92 solar radii, 384.6 ly.
+    propus: { x: -24010662.689, y: -3739914.473, z: 1068888.876, dist: 24323680, orbit: -2, size: 25.053, startype: 'M', label: loc('star_propus'), zlabel: loc('star_propus') },
+    // Lambda Aquarii — Aquarius.
+    // M2IIIvar, V 3.73, 104.20 solar radii, 385.1 ly.
+    lambdaaquarii: { x: 6396763.271, y: 12128235.877, z: -20125272.008, dist: 24352397.4, orbit: -2, size: 20.416, startype: 'M', label: loc('star_lambdaaquarii'), zlabel: loc('star_lambdaaquarii') },
+    // Zeta Capricorni — Capricornus.
+    // G4Ibp..., V 3.77, 19.98 solar radii, 385.5 ly.
+    zetacapricorni: { x: 15737763.846, y: 8011251.315, z: -16810256.197, dist: 24381182.7, orbit: -2, size: 8.94, startype: 'G', label: loc('star_zetacapricorni'), zlabel: loc('star_zetacapricorni') },
+    // Tau Tauri — Taurus.
+    // B3V, V 4.27, 3.55 solar radii, 398.2 ly.
+    tautauri: { x: -24276930.737, y: 1423394.074, z: -6548793.218, dist: 25184958, orbit: -2, size: 3.769, startype: 'B', label: loc('star_tautauri'), zlabel: loc('star_tautauri') },
+    // Acrab — Scorpius.
+    // B0.5V, V 2.56, 4.93 solar radii, 404.2 ly.
+    acrab: { x: 23256690.079, y: -2776106.691, z: 10232563.921, dist: 25559455.5, orbit: -2, size: 4.441, startype: 'B', label: loc('star_acrab'), zlabel: loc('star_acrab') },
+    // 41 Piscium — Pisces.
+    // K3III, V 5.38, 15.80 solar radii, 407.7 ly.
+    piscium41: { x: -5172568.98, y: 14283668.83, z: -20832417.507, dist: 25783100.8, orbit: -2, size: 7.95, startype: 'KIII', label: loc('star_piscium41'), zlabel: loc('star_piscium41') },
+    // 7 Piscium — Pisces.
+    // K2III, V 5.05, 16.60 solar radii, 432.6 ly.
+    piscium7: { x: 1382257.045, y: 17258769.723, z: -21179685.459, dist: 27356075.1, orbit: -2, size: 8.149, startype: 'KIII', label: loc('star_piscium7'), zlabel: loc('star_piscium7') },
+    // Sigma Piscium — Pisces.
+    // B9.5V, V 5.5, 3.41 solar radii, 433.7 ly.
+    sigmapiscium: { x: -13736558.582, y: 19079302.931, z: -14128973.964, dist: 27428830.6, orbit: -2, size: 3.692, startype: 'B', label: loc('star_sigmapiscium'), zlabel: loc('star_sigmapiscium') },
+    // Tianguan — Taurus.
+    // B4IIIp, V 2.97, 7.58 solar radii, 445.0 ly.
+    tianguan: { x: -27865977.817, y: -2774680.409, z: -2763571.199, dist: 28139809.8, orbit: -2, size: 5.508, startype: 'B', label: loc('star_tianguan'), zlabel: loc('star_tianguan') },
+    // Phi Piscium — Pisces.
+    // K0III..., V 4.67, 18.54 solar radii, 446.2 ly.
+    phipiscium: { x: -14103452.31, y: 17186490.9, z: -17375412.233, dist: 28216799.7, orbit: -2, size: 8.612, startype: 'KIII', label: loc('star_phipiscium'), zlabel: loc('star_phipiscium') },
+    // 62 Sagittarii — Sagittarius.
+    // M4III, V 4.43, 162.97 solar radii, 448.6 ly.
+    sagittarii62: { x: 24551546.781, y: 6085881.492, z: -12851336.033, dist: 28372050.3, orbit: -2, size: 25.532, startype: 'M', label: loc('star_sagittarii62'), zlabel: loc('star_sagittarii62') },
+    // Paikauhale — Scorpius.
+    // B0V, V 2.82, 4.71 solar radii, 474.1 ly.
+    paikauhale: { x: 28915879.503, y: -4303542.714, z: 6646262.211, dist: 29980349.7, orbit: -2, size: 4.341, startype: 'B', label: loc('star_paikauhale'), zlabel: loc('star_paikauhale') },
+    // 43 Sagittarii — Sagittarius.
+    // K0III, V 4.88, 18.17 solar radii, 481.8 ly.
+    sagittarii43: { x: 28000776.363, y: 9429247.413, z: -7437261.015, dist: 30467475, orbit: -2, size: 8.526, startype: 'KIII', label: loc('star_sagittarii43'), zlabel: loc('star_sagittarii43') },
+    // Kappa Scorpii — Scorpius.
+    // B1.5III, V 2.39, 7.46 solar radii, 483.2 ly.
+    kappascorpii: { x: 30082845.929, y: -4741081.748, z: -2514070.578, dist: 30557749, orbit: -2, size: 5.464, startype: 'B', label: loc('star_kappascorpii'), zlabel: loc('star_kappascorpii') },
+    // Lambda Tauri — Taurus.
+    // B3V + A, V 3.41, 6.41 solar radii, 483.9 ly.
+    lambdatauri: { x: -26657455.256, y: 757767.013, z: -15011821.972, dist: 30603086.9, orbit: -2, size: 5.065, startype: 'B', label: loc('star_lambdatauri'), zlabel: loc('star_lambdatauri') },
+    // Dschubba — Scorpius.
+    // B0.2IV, V 2.29, 6.23 solar radii, 491.2 ly.
+    dschubba: { x: 28273708.643, y: -4936073.937, z: 11882896.479, dist: 31063976.8, orbit: -2, size: 4.993, startype: 'B', label: loc('star_dschubba'), zlabel: loc('star_dschubba') },
+    // Xamidimura — Scorpius.
+    // B1.5IV + B, V 3, 5.84 solar radii, 501.0 ly.
+    xamidimura: { x: 30686760.02, y: -7585536.253, z: 2162727.969, dist: 31684302, orbit: -2, size: 4.835, startype: 'B', label: loc('star_xamidimura'), zlabel: loc('star_xamidimura') },
+    // Theta1 Sagittarii — Sagittarius.
+    // B2.5IV, V 4.37, 4.15 solar radii, 518.5 ly.
+    theta1sagittarii: { x: 28693497.972, y: 2774108.749, z: -15631230.052, dist: 32792497, orbit: -2, size: 4.072, startype: 'B', label: loc('star_theta1sagittarii'), zlabel: loc('star_theta1sagittarii') },
+    // Sadalmelik — Aquarius.
+    // G2Ib, V 2.95, 38.09 solar radii, 523.5 ly.
+    sadalmelik: { x: 12315842.833, y: 21270521.992, z: -22182097.948, dist: 33108315.6, orbit: -2, size: 12.343, startype: 'G', label: loc('star_sadalmelik'), zlabel: loc('star_sadalmelik') },
+    // Sadalsuud — Aquarius.
+    // G0Ib, V 2.9, 37.53 solar radii, 537.3 ly.
+    sadalsuud: { x: 17939158.052, y: 19939427.31, z: -20864221.304, dist: 33981022.4, orbit: -2, size: 12.252, startype: 'G', label: loc('star_sadalsuud'), zlabel: loc('star_sadalsuud') },
+    // Nu Geminorum — Gemini.
+    // B6III, V 4.13, 5.90 solar radii, 544.5 ly.
+    nugeminorum: { x: -33532225.819, y: -7385233.893, z: 2609151.794, dist: 34434859.1, orbit: -2, size: 4.856, startype: 'B', label: loc('star_nugeminorum'), zlabel: loc('star_nugeminorum') },
+    // Antares — Scorpius.
+    // M1Ib + B2.5V, V 1.06, 442.16 solar radii, 553.7 ly.
+    antares: { x: 33482585.13, y: -4737142.167, z: 9101690.761, dist: 35019491.7, orbit: -2, size: 42.055, startype: 'M', label: loc('star_antares'), zlabel: loc('star_antares') },
+    // Shaula — Scorpius.
+    // B1.5IV+..., V 1.62, 12.58 solar radii, 571.2 ly.
+    shaula: { x: 35722407.488, y: -5183047.957, z: -1395734.217, dist: 36123433.6, orbit: -2, size: 7.094, startype: 'B', label: loc('star_shaula'), zlabel: loc('star_shaula') },
+    // 62 Piscium — Pisces.
+    // G8III, V 5.92, 12.21 solar radii, 579.3 ly.
+    piscium62: { x: -10840781.668, y: 17655228.405, z: -30216230.033, dist: 36636732.9, orbit: -2, size: 6.987, startype: 'G', label: loc('star_piscium62'), zlabel: loc('star_piscium62') },
+    // Fang — Scorpius.
+    // B1V + B2V, V 2.89, 6.81 solar radii, 585.6 ly.
+    fang: { x: 33885395.245, y: -7689344.176, z: 12805363.638, dist: 37031383.5, orbit: -2, size: 5.217, startype: 'B', label: loc('star_fang'), zlabel: loc('star_fang') },
+    // Omega Capricorni — Capricornus.
+    // K4III, V 4.12, 68.77 solar radii, 842.8 ly.
+    omegacapricorni: { x: 40277341.051, y: 13448387.213, z: -32211738.027, dist: 53298399.5, orbit: -2, size: 16.586, startype: 'KIII', label: loc('star_omegacapricorni'), zlabel: loc('star_omegacapricorni') },
+    // Mebsuta — Gemini.
+    // A3mA6-A9, V 3.06, 25.77 solar radii, 845.0 ly.
+    mebsuta: { x: -51955626.419, y: -8727957.408, z: 8938280.004, dist: 53436478.2, orbit: -2, size: 10.152, startype: 'A', label: loc('star_mebsuta'), zlabel: loc('star_mebsuta') },
+    // 19 Piscium — Pisces.
+    // C5II, V 4.95, 372.65 solar radii, 898.5 ly.
+    piscium19: { x: -1839360.24, y: 32053680.142, z: -46882274.301, dist: 56822260.6, orbit: -2, size: 38.608, startype: 'M', label: loc('star_piscium19'), zlabel: loc('star_piscium19') },
+    // 3 Sagittarii — Sagittarius.
+    // F7II, V 4.53, 28.57 solar radii, 985.4 ly.
+    sagittarii3: { x: 62302325.391, y: 1268400.941, z: 227627.415, dist: 62315651.4, orbit: -2, size: 10.69, startype: 'F', label: loc('star_sagittarii3'), zlabel: loc('star_sagittarii3') },
+    // Eta Leonis — Leo.
+    // A0Ib, V 3.48, 27.11 solar radii, 1269.1 ly.
+    etaleonis: { x: -39166159.355, y: -32320617.862, z: 62151791.911, dist: 80258679.4, orbit: -2, size: 10.414, startype: 'A', label: loc('star_etaleonis'), zlabel: loc('star_etaleonis') },
+    // Mekbuda — Gemini.
+    // G3Ibv SB, V 4.01, 62.82 solar radii, 1376.2 ly.
+    mekbuda: { x: -81964289.677, y: -23110887.542, z: 17950910.201, dist: 87031563.7, orbit: -2, size: 15.852, startype: 'G', label: loc('star_mekbuda'), zlabel: loc('star_mekbuda') },
+    // Iota1 Scorpii — Scorpius.
+    // F3Ia, V 2.99, 97.31 solar radii, 1929.9 ly.
+    iota1scorpii: { x: 119726554.996, y: -19802471.211, z: -13025392.918, dist: 122050181.1, orbit: -2, size: 19.729, startype: 'F', label: loc('star_iota1scorpii'), zlabel: loc('star_iota1scorpii') },
+    // Zeta1 Scorpii — Scorpius.
+    // B1Iae, V 4.7, 12.97 solar radii, 2568.2 ly.
+    zeta1scorpii: { x: 155321448.814, y: -47404899.636, z: 2466030.299, dist: 162413233.1, orbit: -2, size: 7.202, startype: 'B', label: loc('star_zeta1scorpii'), zlabel: loc('star_zeta1scorpii') },
 };
 
 // --- The cow -------------------------------------------------------------------------------------
@@ -12266,9 +12568,7 @@ function cowCandidates(){
     });
 }
 
-// Where the cow sits around its star, and how long it takes to get round. Both are read off whatever
-// else orbits that star so the newcomer is in scale with its neighbours: outside the outermost of
-// them, and on the same period-to-distance relation, which is what keeps it from looking bolted on.
+// Where the cow sits around its star.
 function cowOrbit(star){
     let outer = 0, k = 0;
     for (let body of Object.values(spacePlanetStats)){
@@ -12280,16 +12580,14 @@ function cowOrbit(star){
     return { d: dist, o: Math.round((k || COW_PERIOD_K) * Math.pow(dist, 1.5)) };
 }
 
-// Makes sure the table matches whatever this run rolled, and returns the cow's id (or false when
-// there is no cow — a run that is not TruePath). Called from setOrbits, so the entry is in place
-// before anything asks the map to draw or a ship to fly.
 export function cowPlanet(){
     if (!global.race['truepath']){
         delete spacePlanetStats[COW_ID];
         delete global.race['cow'];
         return false;
     }
-    if (!global.race['cow']){
+    // Re-rolled if the star it was hiding behind is no longer in the table.
+    if (!global.race['cow'] || !spacePlanetStats[global.race.cow.s]){
         let stars = cowCandidates();
         if (stars.length === 0){ return false; }
         let star = stars[Math.floor(Math.random() * stars.length)];
@@ -12320,9 +12618,6 @@ export function setOrbits(){
             global.space.position[o] = Math.rand(0,360);
         }
     });
-    // Moons used to be pinned to their planet's orbital angle, which was what kept them alongside it
-    // while both circled the Sun. They now orbit the planet itself (see orbitPoint), so each keeps
-    // its own angle and advances at its own period.
     // Gliese 570 B & C are a binary — keep them on opposite sides of their barycenter (same period,
     // so the 180-degree offset is preserved as they advance).
     if (global.space.position.hasOwnProperty('gliese570b')){
@@ -12339,31 +12634,13 @@ export function dist3(a,b){
     return Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
 }
 
-// A body's orbital inclination in degrees. An explicit `inc` wins; everything else gets a small
-// deterministic tilt from its id, so the decorative systems aren't perfectly flat discs when the map
-// is turned. Nothing in the 0-6 degree range is a ship destination, so this can't move a target.
+// A body's orbital inclination in degrees.
 function orbitIncline(id){
     let body = spacePlanetStats[id];
     if (id === 'spc_home' && kamikazeRun()){ return KAMIKAZE_INCLINE; }
     return body.hasOwnProperty('inc') ? body.inc : (texSeed(id) % 600) / 100;
 }
 
-// A moon's real orbit is far smaller than its planet's drawn disc — Luna runs 384,000 km out around
-// an Earth the map draws 2.9 million km across — so at true scale every moon sits buried inside its
-// primary at every zoom, which is what the old fixed nudges were working around.
-//
-// Bodies are already drawn at symbolic sizes rather than true scale, and moon orbits get the same
-// treatment: one factor per planet, the least that lifts its moons clear of its disc, applied to
-// every moon of that planet. Spacing *within* a system therefore stays exactly real — the Galilean
-// moons keep Callisto 4.46 times as far out as Io — while each system is big enough to see. Applied
-// inside orbitPoint so the drawn position, the orbit ring, click targets and the coordinates ships
-// fly to are all the same number.
-//
-// Clearance is measured against the sum of the two discs, not the planet's alone: a moon drawn large
-// next to its planet still has to get past it. Luna is half Earth's drawn radius, where no other
-// moon here reaches a quarter of its primary's, so counting only the planet left the two touching.
-// Every moon is checked rather than just the innermost, since the one that needs the most room is
-// whichever has the worst size-to-distance ratio, not necessarily the closest in.
 const MOON_ORBIT_CLEARANCE = 1.4;
 const moonSpreadCache = {};
 function moonSpread(parent){
@@ -12385,19 +12662,14 @@ function orbitRadius(id){
     return body.parent ? body.dist * moonSpread(body.parent) : orbitDist(id);
 }
 
-// Where a body sits at a given angle along its orbit, in AU from the Sun. Split out of genXYZcoord so
-// the map can trace the exact path a body follows when it draws that body's orbit — the ring and the
-// dot on it are then guaranteed to agree, at any camera angle.
+// Where a body sits at a given angle along its orbit, in AU from the Sun.
 export function orbitPoint(planet, deg){
     let body = spacePlanetStats[planet];
     let rad = deg * (Math.PI / 180);
     let inc = orbitIncline(planet) * (Math.PI / 180);
     let u, v, origin;
     if (body.parent){
-        // A moon: a circle centred on wherever its planet is right now, travelled at its own
-        // distance and its own period, rather than a second heliocentric orbit running a hair
-        // outside its planet's. No eccentricity or x-shift — the major moons are near enough
-        // circular, and borrowing the planet's would stretch the moon off its primary.
+        // A moon: a circle centred on wherever its planet is right now.
         origin = genXYZcoord(body.parent);
         let r = body.dist * moonSpread(body.parent);
         u = Math.cos(rad) * r;
@@ -12413,10 +12685,7 @@ export function orbitPoint(planet, deg){
         v = Math.sin(rad) * body.dist;
     }
     else {
-        // A true ellipse with the Sun at a focus. `dist` is the semi-major axis, so periapsis lands
-        // at dist·(1-ecc) on the +x side and apoapsis at dist·(1+ecc) opposite it, and the body is
-        // placed by eccentric anomaly rather than by the raw angle so its speed varies the way a
-        // real orbit's does.
+        // A true ellipse with the Sun at a focus.
         origin = { x: 0, y: 0, z: 0 };
         let ecc = orbitEcc(planet);
         let E = eccentricAnomaly(rad, ecc);
@@ -12429,21 +12698,10 @@ export function orbitPoint(planet, deg){
     return { x: origin.x + u, y: origin.y + v * Math.cos(inc), z: origin.z + v * Math.sin(inc) };
 }
 
-// How far out of the plane a random point may stray by default, as a fraction of its distance from
-// the target. A twentieth is a couple of degrees — enough to look scattered rather than perfectly
-// flat, without lifting the point clear of the system it belongs to.
+// How far out of the plane a random point may stray by default, as a fraction of its distance from the target.
 const RANDOM_COORD_SPREAD = 0.05;
 
 // A random point lying between minAU and maxAU from a target, kept near that target's plane.
-//
-// `target` is either a spacePlanetStats id or any {x,y,z} point. Bearing around the target is
-// uniform, and the radius is drawn through a square root so points spread evenly across the annulus
-// instead of bunching against its inner edge.
-//
-// The out-of-plane axis is z. Bodies orbit in x/y and are tilted about x by their inclination (see
-// orbitPoint), so z is the normal to the orbital plane and the one to hold near zero — spreading in
-// x/y with a small z gives a point scattered across the system's disc, which is what staying "in the
-// plane" means here. Pass `spreadAU` to set that deviation explicitly in AU.
 export function randomCoord(target, minAU, maxAU, spreadAU){
     let origin = typeof target === 'string' ? genXYZcoord(target) : target;
     let min = Math.min(minAU, maxAU);
@@ -12459,10 +12717,6 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
 }
 
 export function genXYZcoord(planet){
-    // Temporary coordinates are points held outside the table. One that names a body in `b` rides
-    // along with it -- a survey point on a moon has to keep up as the moon goes round, or the trip
-    // ends up aimed at empty space the moon left months ago. One with no `b` is a fixed point in
-    // deep space, a picked-up signal, and stays where it was heard.
     let temp = tempCoord(planet);
     if (temp){
         let parent = tempParent(temp);
@@ -12472,9 +12726,8 @@ export function genXYZcoord(planet){
     }
     // spc_survey is whichever moon the survey turned up, so it orbits as that body does.
     planet = resolveBody(planet);
-    // A location that is neither in the table nor a live temp point — a signal that expired while a
-    // ship sat on it, say. Fall back to the origin rather than throwing, which would take the map
-    // and the tick loop down with it.
+    // Invalid location. Fall back to the origin rather than throwing, which would take
+    // the map and the tick loop down with it.
     if (!spacePlanetStats[planet]){ return { x: 0, y: 0, z: 0 }; }
     // Stars have fixed coordinates and are not positioned by distance/angle from the Sun.
     if (spacePlanetStats[planet].startype){
@@ -12483,9 +12736,7 @@ export function genXYZcoord(planet){
     return orbitPoint(planet, global.space.position.hasOwnProperty(planet) ? global.space.position[planet] : 0);
 }
 
-// The star nearest a point (absolute Sun-frame coords), scanning every star in spacePlanetStats.
-// Off the star index, and comparing squared distances so the loop carries no square roots: this runs
-// once for the range anchor and again for every ship under way, on every frame.
+// The star nearest a point.
 function nearestStar(pt){
     let best = 'spc_sun';
     let bestDist = Infinity;
@@ -12498,13 +12749,7 @@ function nearestStar(pt){
     return best;
 }
 
-// The star a ship should be drawn relative to, as absolute Sun-frame coords. Ships store absolute
-// coordinates that can be hundreds of thousands of AU from the origin; drawing those huge numbers
-// directly loses canvas precision and distorts the ship marker (the same reason each star system is
-// drawn in its own translated frame). Reference the nearer of the ship's origin-system star and its
-// destination-system star, so a ship crossing between two systems keeps its origin star until it
-// reaches the point equidistant from the two — the halfway point between them — then swaps to the
-// destination star.
+// The star a ship should be drawn relative to, as absolute Sun-frame coords.
 function shipRefStar(ship){
     if (!ship.inTransit)
         return locSystem(ship.location.name);
@@ -12551,9 +12796,6 @@ const jumpLinks = [
 // like — keyed by an id, each { n: display name, a: active, s: spacePlanetStats key of the star it
 // sits at, x, y, z }. They are fixed points rather than table entries, so they neither orbit nor appear in
 // spacePlanetStats, and every place that resolves a location has to know about them.
-//
-// `a` only gates whether the point is offered as a destination; a ship already sitting on an
-// inactive one still has to resolve, so this ignores it.
 function tempCoord(locationName){
     let temps = global.race['tempCoordinates'];
     return temps && typeof locationName === 'string' && temps.hasOwnProperty(locationName) ? temps[locationName] : false;
@@ -12627,10 +12869,7 @@ export function moveTempCoordinates(days = 0.2){
     });
 }
 
-// The system a temp point belongs to, normalised to the keys locSystem hands out: 'sun' for the home
-// system, otherwise the star's own id. `s` is a spacePlanetStats key, so this is mostly a pass
-// through — it also tolerates `s` naming a body rather than its star, and falls back to the home
-// system for anything unrecognised, which at worst costs a wormhole shortcut rather than the trip.
+// The system a temp point belongs to.
 function tempSystem(entry){
     // A point riding a body belongs to whatever system that body does, whatever `s` was recorded as.
     let parent = tempParent(entry);
@@ -12652,9 +12891,7 @@ function locSystem(locationName){
     return spacePlanetStats[locationName] && spacePlanetStats[locationName].star ? spacePlanetStats[locationName].star : 'sun';
 }
 
-// Display name of the star a location orbits. Empty when the location IS that star, so a destination
-// like Tau Ceti itself isn't labelled with its own name twice. locSystem returns a system key rather
-// than a table id, and the Sun's is 'sun' while its entry is spc_sun, hence the step across.
+// Display name of the star a location orbits.
 function locSystemName(locationName){
     // Temp points need no special case: their `s` is a table key, so locSystem resolves them to the
     // same system keys everything else uses and the label lookup below covers them.
@@ -12667,7 +12904,6 @@ function locSystemName(locationName){
 // Find an active wormhole route (series of gate locations if any) connecting 
 // fromLoc's system to toLoc's system, or null when cannot find a path.
 // Uses A* to find optimal route when more gates are involved.
-// Does not account for travel within a system, so solution might not be optimal in extreme edge cases
 function findWormholeRoute(fromLoc, toLoc){
     let fromSys = locSystem(fromLoc);
     let toSys = locSystem(toLoc);
@@ -13756,6 +13992,70 @@ function starRange(){
     let ly = Math.round(raw / STAR_RANGE_STEP) * STAR_RANGE_STEP;
     return Math.min(STAR_RANGE_MAX, Math.max(STAR_RANGE_MIN, ly));
 }
+// Which orbits are drawn. Two flags underneath — planetOrbits and moonOrbits, which the drawing code
+// reads separately — presented as one button with four positions, because two buttons for one
+// question took two lines of the panel and still could not say "moons but not planets" in one look.
+//
+// The order is the useful one: everything, then the planets alone, then the moons alone, then
+// nothing. The label names the position it is IN, not the one the next press would move to — with
+// two buttons there was only ever one thing a press could do and naming it was unambiguous, but a
+// four-way cycle read as an instruction tells you nothing about what you are currently looking at.
+const ORBIT_STATES = [
+    { planets: true,  moons: true,  key: 'solar_map_orbits_all' },
+    { planets: true,  moons: false, key: 'solar_map_orbits_planets' },
+    { planets: false, moons: true,  key: 'solar_map_orbits_moons' },
+    { planets: false, moons: false, key: 'solar_map_orbits_none' },
+];
+// Where the two flags currently sit in that cycle. A save from before this button existed has any
+// combination of them, and all four are positions on the cycle, so nothing needs migrating.
+function orbitStateIndex(){
+    const p = !!mapView().planetOrbits, m = !!mapView().moonOrbits;
+    return ORBIT_STATES.findIndex(s => s.planets === p && s.moons === m);
+}
+function orbitLabel(){
+    return loc(ORBIT_STATES[orbitStateIndex()].key);
+}
+function cycleOrbits(){
+    const next = ORBIT_STATES[(orbitStateIndex() + 1) % ORBIT_STATES.length];
+    mapView().planetOrbits = next.planets;
+    mapView().moonOrbits = next.moons;
+}
+
+// Which names are drawn, on the same pattern: two flags underneath, three positions on the button.
+// There is no fourth — star names without planet names is the useful half-measure, planet names
+// without star names is not, since a planet's name means little without knowing whose it is.
+const NAME_STATES = [
+    { planets: true,  stars: true,  key: 'solar_map_show_planet_names' },
+    { planets: false, stars: true,  key: 'solar_map_hide_planet_names' },
+    { planets: false, stars: false, key: 'solar_map_hide_star_names' },
+];
+// Read defensively. starNames is newer than planetNames, so a save that predates it has no such key
+// — and the map has always drawn star names, which is what its absence has to mean.
+function namesShown(){
+    const v = mapView();
+    return { planets: !!v.planetNames, stars: v.starNames === undefined ? true : !!v.starNames };
+}
+// Total rather than a lookup: the button only ever sets the three combinations above, but a save can
+// hold the fourth, and star names off is what decides the position whatever the planet flag says.
+function nameStateIndex(){
+    const n = namesShown();
+    return !n.stars ? 2 : n.planets ? 0 : 1;
+}
+function nameLabel(){
+    return loc(NAME_STATES[nameStateIndex()].key);
+}
+function cycleNames(){
+    const next = NAME_STATES[(nameStateIndex() + 1) % NAME_STATES.length];
+    mapView().planetNames = next.planets;
+    mapView().starNames = next.stars;
+}
+// Whether a star is going unnamed on the map — the zoom has shrunk the labels away, or the player has
+// turned them off. Either way the hover label is the only way left to tell one star from another, so
+// it answers to both.
+function starLabelsOff(){
+    return starNamesHidden() || !namesShown().stars;
+}
+
 // Which loop drives the map. Read defensively, as starRange is: the vars.js block has not
 // necessarily run on an older save, and anything unrecognised means the setting it has always had.
 // main.js reads the same key and is what actually acts on it — this pair only names it for the UI.
@@ -13826,6 +14126,61 @@ function starCulled(pos){
     if (range !== STAR_RANGE_INF && dist3(pos, mapAnchor) > range * AU_PER_LY){ return true; }
     return mapScale >= planetLabelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
 }
+// The colour the map paints a star of a given class. Shared by the discs drawn in the scene and by
+// the backdrop sky, which has to agree with them — a star should be the same colour whichever of the
+// two is showing it.
+function starTint(type){
+    switch (type){
+        case 'O':    return '5a86ff';   // Blue — the hottest there is
+        case 'B':    return '8fb8ff';   // Blue-white
+        case 'A':    return 'ffffff';   // White
+        case 'F':    return 'fdffb8';   // Yellow-White
+        case 'G':    return 'f8ff2b';   // Yellow dwarf
+        case 'K':    return 'ff802b';   // Orange dwarf
+        case 'KIII': return 'ff5a28';   // Red giant — cooler than a K dwarf, so redder, but nowhere near an M
+        case 'M':    return 'ff1414';   // Red dwarf
+        case 'T':    return '9420b1';   // Brown dwarf
+        case 'D':    return 'e4e4e4';   // White dwarf
+        default:     return 'f8ff2b';
+    }
+}
+
+// --- the backdrop sky ---------------------------------------------------------------------------
+// Zoomed in on a system, every other star is off screen by a factor of about a thousand: at the zoom
+// where a system's planets are made out, the viewport spans a couple of hundred AU and the nearest
+// neighbour is a quarter of a million away. Drawing them where they really are would put nothing on
+// screen, so instead they are drawn where they would be SEEN from — direction only, on a sphere
+// around the system being looked at, at a fixed size in pixels.
+//
+// The result is the sky as it looks from there: the same stars in the same places, turning with the
+// camera and holding still as you zoom, which is what a sky does.
+//
+// Rough effective temperatures for the classes the table records — enough to tell a blue-white star
+// from a red dwarf when working out how bright one looks from a distance. Nothing shows the player a
+// number derived from these.
+const STAR_TEMP = { O: 35000, B: 18000, A: 8500, F: 6600, G: 5700, K: 4600, KIII: 4100,
+                    M: 3200, T: 1300, D: 12000 };
+const SUN_TEMP = 5772;
+// Dot radius in screen pixels, faintest to brightest, and the range of apparent brightness those two
+// ends stand for as a base-10 log. The faint end is around Proxima seen from here, the bright end
+// around Sirius, which is the span the eye actually has to separate on a real sky.
+const SKY_MIN_PX = 0.6, SKY_MAX_PX = 2.6;
+const SKY_LOG_FAINT = -4.5, SKY_LOG_BRIGHT = 0;
+// How much of the frame the visible half of the sky covers. Half the diagonal puts a star at right
+// angles to the view out at the corner, so the hemisphere fills the viewport and the middle of it —
+// where the eye is — is close to undistorted.
+const SKY_RADIUS_FRAC = 0.5;
+
+// How bright a star of this size and class looks from `ly` light years away, relative to the Sun
+// seen from one light year. L goes as R^2 T^4 and brightness falls off as the square of the distance;
+// the table stores 2*sqrt(R), so the radius comes back out of the size.
+function skyFlux(star, ly){
+    const R = Math.pow((star.size || 1) / 2, 2);
+    const T = STAR_TEMP[star.startype] || SUN_TEMP;
+    const L = R * R * Math.pow(T / SUN_TEMP, 4);
+    return L / Math.max(ly * ly, 1e-6);
+}
+
 // Zoomed out this far the star names would be too small to read, which is the point at which naming whatever
 // the pointer is over stops being redundant and starts being the only way to tell what you are seeing.
 function starNamesHidden(){
@@ -13863,7 +14218,7 @@ function bodyName(id){
 function hoverName(id){
     let body = spacePlanetStats[id];
     if (!body){ return false; }
-    if (body.startype){ return starNamesHidden() ? (body.zlabel || body.label) : false; }
+    if (body.startype){ return starLabelsOff() ? (body.zlabel || body.label) : false; }
     return mapView().planetNames && !mapLabelled[id] ? bodyName(id) : false;
 }
 
@@ -14129,6 +14484,10 @@ const SOL_BODY_COLOR = {
     spc_hell:      '8a8078',   // Mercury, dark grey-brown
     spc_venus:     'd9b878',   // Venus, pale sulphur cloud
     spc_red:       'b1512c',   // Mars, rust
+    // Both are carbonaceous rock, and both are lifted well off their true albedo of about 0.07 —
+    // at that they would be all but invisible against the black.
+    spc_phobos:    '8b7f72',   // Phobos, dark grey-brown
+    spc_deimos:    '96897b',   // Deimos, the same a shade paler
     spc_belt:      '766d64',   // asteroid rubble
     spc_gas:       'c8a172',   // Jupiter, tan
     spc_io:        'd9c15c',   // Io, sulphur yellow
@@ -14235,13 +14594,6 @@ const NAMED_STYLES = ['earth','mars','venus','jupiter','saturn','icegiant','nept
 // needs — but it means the surface cannot answer to the camera. Rotate the view and Jupiter's belts
 // stay pinned to the screen, which reads as a sticker rather than a planet.
 //
-// This draws the sphere instead, one pixel at a time: for each point on the disc the surface normal
-// is worked out, rotated out of camera space into the body's own frame, and turned into a latitude
-// and longitude to look the surface up by. Banding therefore falls on real latitude circles — they
-// close into rings when the camera looks down a pole and open into stripes as it comes level — and
-// a feature like the Great Red Spot sits at a fixed place on the planet, swinging round the limb and
-// out of sight as the camera orbits, because that is what actually happens.
-//
 // Everything here is gated on mapView().texture === 'high'. On Low the map draws exactly the flat
 // textures it always has, and none of this code runs.
 
@@ -14321,7 +14673,7 @@ const SPHERE_STYLES = {
         [13,0x87,0x49,0x2c],[19,0x8d,0x4e,0x31],       // North Equatorial Belt
         [26,0xd8,0xb4,0x86],[33,0xf2,0xe6,0xcc],[42,0xac,0x82,0x59],[54,0xdb,0xc7,0xa8],
         [68,0xb0,0x9b,0x82],[80,0x8b,0x79,0x66],[90,0x7c,0x6b,0x5a]],
-        spot: { lat:-22, lon:270, halfLon:32, halfLat:10, r:0xc0, g:0x50, b:0x30 },
+        spot: { lat:-22, lon:270, halfLon:20, halfLat:12, r:0xc0, g:0x50, b:0x30 },
         mottle: [0.16, 9, 3, 0xff, 0xf0, 0xd8], banded: true },
     saturn: { bands: [
         [-90,0x9a,0x8a,0x70],[-70,0xbe,0xac,0x86],[-45,0xe4,0xd2,0xa8],[-25,0xd2,0xba,0x8c],
@@ -15415,6 +15767,86 @@ function drawDanger(ctx, x, y, r){
     ctx.restore();
 }
 
+// --- irregular bodies ---------------------------------------------------------------------------
+// A rock only pulls itself round if it is big enough for its own gravity to win, and Phobos and
+// Deimos are nowhere near it. They are drawn as a closed curve whose radius wanders with the angle
+// instead of a disc: a few low harmonics taken off the body's own seed, so a given moon is the same
+// shape on every frame and every load, turned with the camera so swinging the view round shows a
+// different profile rather than a sticker that follows you.
+//
+// Two constraints from the WebGL backend shape this, and both are real:
+//
+//   - It fills a path as a single triangle fan, which is only correct for a CONVEX polygon. The
+//     amplitudes below are held under what would put a dent in the outline — a k-th harmonic starts
+//     to turn the curve concave around a = 1/(k^2 - 1) — so the silhouette stays lumpy but convex.
+//   - It has no clip(). A body's surface texture is a square image of a round disc, and with nothing
+//     to clip it to it would spill past a silhouette that is not round. So an irregular body takes
+//     its shading from a second, offset fill rather than from a texture.
+const LUMP_STEPS = 40;
+// Harmonic, amplitude. A polar curve r = 1 + a*cos(k*theta) stays convex while its curvature,
+// r^2 + 2r'^2 - r*r'', holds non-negative; at the tightest point that comes out as a <= 1/(k^2 + 1).
+// What has to be checked is the SUM of a*(k^2 + 1) over all the harmonics, not each one alone: the
+// phases are taken off a hash and can line up, and when they do it is the total bending that dents
+// the outline. A high harmonic is expensive — at k=4 a unit of amplitude bends it seventeen times as
+// hard as at k=2 — so most of the shape here is a long k=2 swell, which reads as the elongated
+// potato both of these actually are.
+const LUMP_HARMONICS = [[2, 0.115], [3, 0.022], [4, 0.003]];
+// The lit side is built from a few nested fills, each smaller, lighter and pushed a little further
+// toward the sun. A radial gradient would be one fill and a smoother job of it, but the WebGL backend
+// resolves a gradient per VERTEX, and it fills a path as a fan whose vertices all sit on the rim —
+// so the middle of the shape would never see the middle of the gradient, and the two renderers would
+// disagree. Flat fills are the thing both of them draw the same way.
+const LUMP_SHADE_STEPS = 5;
+const LUMP_LIT_OFFSET = 0.30, LUMP_LIT_SHADE = 1.4, LUMP_DARK_SHADE = 0.6;
+
+// The radius of the outline at an angle, as a multiple of the body's nominal radius.
+function lumpFactor(seed, theta){
+    let f = 1;
+    for (let i = 0; i < LUMP_HARMONICS.length; i++){
+        const [k, amp] = LUMP_HARMONICS[i];
+        const phase = (sphHash(seed, k, i, 7) / 4294967296) * Math.PI * 2;
+        f += amp * Math.cos(k * theta + phase);
+    }
+    return f;
+}
+// Lay the outline down as a path. `spin` turns it, which is what makes it read as a solid object
+// being looked at from a new angle rather than a shape painted on the screen.
+function lumpPath(ctx, x, y, r, seed, spin, scale){
+    ctx.beginPath();
+    for (let i = 0; i <= LUMP_STEPS; i++){
+        const t = i / LUMP_STEPS * Math.PI * 2;
+        const rr = r * (scale || 1) * lumpFactor(seed, t + spin);
+        const px = x + Math.cos(t) * rr, py = y + Math.sin(t) * rr;
+        if (i === 0){ ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+    }
+    ctx.closePath();
+}
+function drawLumpy(ctx, x, y, r, color, opts){
+    const seed = opts.seed || 1;
+    // Turned with the camera. Pitch is left out: it tips the view rather than spinning it, and
+    // rolling the outline for it would look like the rock rotating when the camera merely leaned.
+    const spin = mapYaw;
+    ctx.fillStyle = hexShade(color, LUMP_DARK_SHADE);
+    lumpPath(ctx, x, y, r, seed, spin);
+    ctx.fill();
+    // Below a few pixels there is nothing to shade — the silhouette is the whole of what reads.
+    if (r * mapScale < 2.5){ return; }
+    // Which way the sun is, in screen terms. Falling back to the upper left is the same flat light
+    // everything else on the map uses when it has no star to measure from.
+    let lx = -0.7071, ly = -0.7071;
+    if (opts.sun){
+        const sx = pX(opts.sun), sy = pY(opts.sun), n = Math.hypot(sx, sy);
+        if (n > 1e-6){ lx = sx / n; ly = sy / n; }
+    }
+    for (let i = 1; i <= LUMP_SHADE_STEPS; i++){
+        const t = i / LUMP_SHADE_STEPS;
+        const off = LUMP_LIT_OFFSET * t;
+        ctx.fillStyle = hexShade(color, LUMP_DARK_SHADE + (LUMP_LIT_SHADE - LUMP_DARK_SHADE) * t);
+        lumpPath(ctx, x + lx * r * off, y + ly * r * off, r, seed, spin, 1 - 0.5 * t);
+        ctx.fill();
+    }
+}
+
 function drawBody(ctx, x, y, r, color, opts){
     opts = opts || {};
     if (opts.glyph){
@@ -15445,6 +15877,13 @@ function drawBody(ctx, x, y, r, color, opts){
     // surface texture is, since a few pixels of ring is just a smudge.
     let rings = opts.rings && r * mapScale >= 2.5;
     if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt, opts.sun); }
+    // A body too small to have pulled itself round is drawn as one, and takes no texture — see the
+    // note above drawLumpy.
+    if (opts.lumpy){
+        drawLumpy(ctx, x, y, r, color, opts);
+        if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt, opts.sun); }
+        return;
+    }
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
     ctx.fill();
@@ -15546,6 +15985,11 @@ export function drawMap() {
     // home system on the very next line.
     indexBodies();
     mapAnchor = genXYZcoord(nearestStar(mapFocus));
+    // The sky behind the system, painted before anything in it. Screen space throughout: the world
+    // transform is set aside for the pass, so a star's place on the sky depends on which way the
+    // camera faces and on nothing else — not on the zoom, and not on where the view has been panned.
+    // First of everything drawn, so a ship trail or a planet always sits over it rather than under.
+    drawSkyStars();
     // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
     // labels alike.
     const homeCulled = starCulled(ORIGIN);
@@ -15670,6 +16114,43 @@ export function drawMap() {
         ctx.restore();
     }
 
+    function drawSkyStars(){
+        if (!mapView().skyStars){ return; }
+        // Only worth drawing once the real stars have left the frame; below that they are on screen
+        // in their true places and a second copy of them on the rim would be nonsense.
+        if (mapScale < planetLabelMinScale){ return; }
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const radius = Math.hypot(canvas.width, canvas.height) * SKY_RADIUS_FRAC;
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        for (const id of starIndex()){
+            const star = spacePlanetStats[id];
+            if (star.hidden){ continue; }
+            const pos = genXYZcoord(id);
+            const dx = pos.x - mapAnchor.x, dy = pos.y - mapAnchor.y, dz = pos.z - mapAnchor.z;
+            const au = Math.hypot(dx, dy, dz);
+            // The star the sky is being seen from is not in it, and neither is anything close enough
+            // to still be drawn in the scene proper.
+            if (au <= STAR_CULL_AU){ continue; }
+            // The player's range limit thins the sky exactly as it thins the map.
+            const range = starRange();
+            if (range !== STAR_RANGE_INF && au > range * AU_PER_LY){ continue; }
+            const u = { x: dx / au, y: dy / au, z: dz / au };
+            // Only the half of the sky behind the system. The other half is between the camera and
+            // what it is looking at, and painting it would drop stars in front of the planets.
+            if (pD(u) <= 0){ continue; }
+            const sx = cx + pX(u) * radius, sy = cy + pY(u) * radius;
+            if (sx < -2 || sy < -2 || sx > canvas.width + 2 || sy > canvas.height + 2){ continue; }
+            const lg = Math.log10(Math.max(skyFlux(star, au / AU_PER_LY), 1e-12));
+            const t = Math.min(1, Math.max(0, (lg - SKY_LOG_FAINT) / (SKY_LOG_BRIGHT - SKY_LOG_FAINT)));
+            ctx.fillStyle = hexShadeRGBA(starTint(star.startype), 1, 0.35 + 0.65 * t);
+            ctx.beginPath();
+            ctx.arc(sx, sy, SKY_MIN_PX + (SKY_MAX_PX - SKY_MIN_PX) * t, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
     let setColor = function(id){
         let color = '558888';
         if (actions.space[id] && actions.space[id].info.syndicate() && global.settings.space[id.substring(4)]){
@@ -15677,35 +16158,7 @@ export function drawMap() {
             color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
         }
         if (spacePlanetStats[id].startype || spacePlanetStats[id].bodystar){
-            switch (spacePlanetStats[id].startype || spacePlanetStats[id].bodystar){
-                case 'A': // White
-                    color = 'ffffff';
-                    break;
-                case 'F': // Yellow-White
-                    color = 'fdffb8';
-                    break;
-                case 'G': // Yellow dwarf
-                    color = 'f8ff2b';
-                    break;
-                case 'K': // Orange dwarf
-                    color = 'ff802b';
-                    break;
-                case 'KIII': // Red giant — cooler than a K dwarf, so redder, but nowhere near an M
-                    color = 'ff5a28';
-                    break;
-                case 'M': // Red dwarf
-                    color = 'ff1414';
-                    break;
-                case 'T': // Brown dwarf
-                    color = '9420b1';
-                    break;
-                case 'D': // White dwarf
-                    color = 'e4e4e4';
-                    break;
-                default:
-                    color = 'f8ff2b';
-                    break;
-            }
+            color = starTint(spacePlanetStats[id].startype || spacePlanetStats[id].bodystar);
         }
         else if (id === 'spc_dwarf' || id === 'tau_gas2'){
             color = '7132a8';
@@ -15746,16 +16199,9 @@ export function drawMap() {
             let p = planetLocation[id];
             let bx = pX(p), by = pY(p);
             let size = planet.size / 10 * homeScale;
-            // How far this body reads from whatever it circles, on screen. Kept so the pick list can
-            // tell one standing clear of its primary from one buried in it — a moon against its
-            // planet, a planet against the Sun.
+            // How far this body reads from whatever it circles, on screen.
             let sep;
             if (planet.moon) {
-                // Moons used to be shoved a fixed distance off their planet so the two did not sit on
-                // the same dot. Their own orbit does that job now, so the nudge is gone — it was
-                // tens of millions of kilometres of it, which is what made the spacing wrong.
-                // Measure separation from the planet rather than from the Sun, or a moon out at
-                // Jupiter would be floored to a pixel while still buried in its primary.
                 let q = rel(p, planetLocation[planet.parent]);
                 sep = Math.hypot(pX(q), pY(q)) * mapScale;
                 size = visibleRadius(size, sep);
@@ -15774,13 +16220,12 @@ export function drawMap() {
 
         // Every far half goes down before any body does. A body on the far side of its orbit is
         // further out than its primary and so is drawn before it — laying that half down just ahead
-        // of the primary would put the ring line over the very world riding on it. Ahead of the whole
-        // pass, a body always paints over its own ring.
+        // of the primary would put the ring line over the very world riding on it.
         for (let primary of Object.keys(orbitsBy)){
             strokeOrbitGroup(ctx, orbitsBy[primary], ORIGIN, planetLocation[primary], false);
         }
         for (let b of bodies){
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id) });
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id), lumpy: !!b.planet.lumpy });
             // The near half belongs in front of the primary, and still behind anything nearer than
             // it — which is exactly where drawing it here puts it, since the bodies left to come are
             // the nearer ones.
@@ -15824,9 +16269,7 @@ export function drawMap() {
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
-        // A marker, not a body: sized in screen pixels rather than AU. The old fixed 0.1 map
-        // units was reasonable while planets were drawn at arbitrary sizes, but against real
-        // radii it is five times Earth and half the Sun.
+        // A marker, not a body: sized in screen pixels rather than AU.
         ctx.arc(pX(here), pY(here), SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
         ctx.fill();
         ctx.restore();
@@ -15914,7 +16357,7 @@ export function drawMap() {
         // per-star name (zlabel) when zoomed in — opposite zoom ranges, so exactly one shows.
         {
             let sunText = mapScale < planetLabelMinScale ? spacePlanetStats.spc_sun.label : spacePlanetStats.spc_sun.zlabel;
-            if (sunText && !homeCulled){
+            if (sunText && !homeCulled && namesShown().stars){
                 // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
                 // stays close to the star at any zoom.
                 ctx.fillText(sunText, pX(planetLocation.spc_sun) * mapScale, (pY(planetLocation.spc_sun) - Math.max(spacePlanetStats.spc_sun.size * mapScale / 10, 1) + 2));
@@ -15927,14 +16370,7 @@ export function drawMap() {
 
     // --- Star systems ---
     // Every star beyond the Sun is drawn in a frame translated to the star, so its huge coordinates
-    // (hundreds of thousands of AU from the origin) keep canvas precision. Drawing a star and its
-    // orbiting bodies directly in the Sun frame loses precision and distorts the shapes; here each
-    // star and its system are clean circles centered on the star. The Sun itself sits at the origin
-    // and is drawn with the home system above.
-    // Systems are drawn back to front, so with the map tilted a near system covers a far one rather
-    // than whichever happened to come last in the table.
-    // One pass off the star index, keeping each star's position rather than recomputing it: the old
-    // chain called genXYZcoord three times per star and built four intermediate arrays.
+    // (hundreds of thousands of AU from the origin) keep canvas precision.
     let starOrder = [];
     for (const starId of mapStarIds){
         if (starId === 'spc_sun'){ continue; }
@@ -15946,6 +16382,7 @@ export function drawMap() {
     // Read once for the whole pass. `global` is a Vue reactive proxy, so each of these is a trap
     // call, and inside the per-star loops they were being paid tens of thousands of times a frame.
     const showPlanetOrbits = mapView().planetOrbits, showPlanetNames = mapView().planetNames;
+    const showStarNames = namesShown().stars;
     const namesHidden = starNamesHidden();
     for (let { id: starId, star, pos: sc } of starOrder) {
         ctx.save();
@@ -15954,11 +16391,7 @@ export function drawMap() {
 
         // Orbits of bodies around this star. Traced through orbitPoint in the star's own frame, so
         // the eccentricity, off-centre focus and inclination all come from the one place that
-        // positions the bodies themselves. Collected rather than drawn here so each can be split
-        // around the star below; a barycenter (hidden) has no disc to split against, so its
-        // companions' orbits are simply drawn whole.
-        // Everything this star holds, off the index. `bodies` is the handful orbiting it rather than
-        // the whole table.
+        // positions the bodies themselves.
         const bodies = mapBodiesOf[starId] || [];
         let starOrbits = [];
         if (showPlanetOrbits){
@@ -16003,14 +16436,11 @@ export function drawMap() {
                 pr: Math.max(star.size / 10 * scale, 1 / mapScale) });
         }
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
-        // Every one of these orbits is centred on the star, so they split around it. The far arcs go
-        // down before any body is drawn — a planet on the far side of its orbit comes before the star
-        // in the sorted order, and laying its ring just ahead of the star would paint the line over
-        // it. The near arcs follow the star, in the loop below.
+        // Every one of these orbits is centred on the star, so they split around it.
         if (starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: !!m.planet.lumpy });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr, m.sep);
@@ -16036,13 +16466,13 @@ export function drawMap() {
                 let starText = mapScale < planetLabelMinScale ? star.label : star.zlabel;
                 // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
                 // stays close to the star at any zoom.
-                if (starText){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * mapScale, 1) + 2)); }
+                if (starText && showStarNames){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * mapScale, 1) + 2)); }
             }
             // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
             // label when zoomed out, zlabel when zoomed in — drawn just above the body at its orbit position.
             for (const id of bodies) {
                 const planet = spacePlanetStats[id];
-                if (!planet.bodystar){ continue; }
+                if (!planet.bodystar || !showStarNames){ continue; }
                 let bt = mapScale < planetLabelMinScale ? planet.label : planet.zlabel;
                 if (!bt){ continue; }
                 let q = rel(genXYZcoord(id), sc);
@@ -16084,10 +16514,7 @@ export function drawMap() {
     if (ctx.endFrame){ ctx.endFrame(); }
 }
 
-// Left to itself the map only repaints on the long loop, which is far too slow for the beacon pulse
-// to read as one, so while it is open an animation timer drives its own repaints. It stops itself the
-// moment the canvas leaves the DOM (the modal was closed) or the last signal goes quiet, so a map
-// with nothing pulsing on it costs nothing.
+// Rate the beacons pulse at
 const BEACON_FPS = 12;
 var beaconTimer = false;
 function beaconAnimate(){
@@ -16102,6 +16529,10 @@ function beaconAnimate(){
             beaconTimer = false;
             return;
         }
+        // On Fast the map runs a timer of its own at more than twice this rate, so painting here as
+        // well would put a second frame over the top of every one of its own for nothing. Read off
+        // the setting rather than that timer.
+        if (mapRefreshRate() === 'fast' && !webWorker.offline){ return; }
         drawMap();
     }, Math.round(1000 / BEACON_FPS));
 }
@@ -16149,10 +16580,7 @@ function buildSolarMap(parentNode, keep) {
     // which is fast enough to be exploratory without overshooting on a small nudge.
     const ROTATE_RATE = 0.008;
 
-    // The camera orbits a focus point rather than the origin. Spinning an orthographic camera about
-    // the Sun throws a distant system clean off screen — its projected position moves by a share of
-    // its hundreds of thousands of AU — so the map tracks the world point sitting at the middle of
-    // the viewport and turns about that instead. Panning slides the focus, rotating pivots on it.
+    // The camera orbits a focus point rather than the origin.
 
     // Inverse of pX/pY/pD: a projected point at a given depth, back in world space. The camera basis
     // is orthonormal, so this is just the transpose applied to (px, py, depth).
@@ -16165,15 +16593,12 @@ function buildSolarMap(parentNode, keep) {
     }
     // Re-read the focus after a pan. Sideways it simply follows the viewport centre, but the depth
     // along the view axis is unconstrained under an orthographic camera, so it is taken from the
-    // star nearest the new centre. Carrying the old depth instead left the focus stranded on the
-    // plane the player started from, which made rotation pivot about empty space a long way in front
-    // of whatever they had just scrolled to.
+    // star nearest the new centre.
     function refocus(){
         let px = (canvasOffset.x - mapShift.x) / mapScale;
         let py = (canvasOffset.y - mapShift.y) / mapScale;
         let depth = pD(mapFocus), best = Infinity;
-        // Off the star index rather than the whole table: this runs on every pan and zoom, and the
-        // table is now mostly planets, none of which it wants.
+        // Off the star index rather than the whole table: this runs on every pan and zoom.
         for (const id of starIndex()){
             if (spacePlanetStats[id].hidden){ continue; }
             let p = genXYZcoord(id);
@@ -16188,10 +16613,7 @@ function buildSolarMap(parentNode, keep) {
         mapShift.y = canvasOffset.y - pY(pt) * mapScale;
     }
 
-    // The id of the star under the pointer, or false. Only bodies actually on screen are candidates —
-    // culled stars aren't drawn, so they can't be picked. `bodystar` bodies (a binary orbiting an
-    // invisible barycenter) draw as stars and are picked like them. The grab radius never drops below a
-    // few pixels, since zoomed out a star is a single dot and would otherwise be impossible to hit.
+    // The id of the star under the pointer, or false.
     const CLICK_GRAB_PX = 10;
     function starAt(e){
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
@@ -16212,9 +16634,7 @@ function buildSolarMap(parentNode, keep) {
     }
 
     // The body under the pointer, or false. Unlike starAt this picks planets and moons as well, from
-    // whatever drawMap last laid down. Nearest centre wins, so a moon sitting on its planet is still
-    // reachable. `naming` includes the entries recorded for naming only — the ones out past the zoom
-    // where planets are told apart individually — which a click must not land on (see addPickable).
+    // whatever drawMap last laid down. Nearest centre wins.
     function bodyAt(e, naming){
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
         let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
@@ -16233,17 +16653,9 @@ function buildSolarMap(parentNode, keep) {
     }
 
     // The body the pointer should be naming.
-    //
-    // Whatever it is over, except that one drawn too close to its primary to be told apart hands the
-    // name over to that primary: zoomed out that far it is a sub-pixel speck inside the other's disc,
-    // and its centre can still be the nearest to the pointer, so naming it would put a label on
-    // something the player cannot see. A moon defers to its planet, a planet to its star.
     function nameTarget(e){
         let id = bodyAt(e, true);
         if (!id){ return false; }
-        // Keep walking up while what we landed on is buried in whatever it circles — zoomed right
-        // out a moon can be inside its planet which is itself inside the Sun. Bounded so no shape of
-        // data can loop.
         for (let step = 0; step < 4; step++){
             let hit = mapPickable.find(p => p.id === id);
             let body = spacePlanetStats[id];
@@ -16258,10 +16670,8 @@ function buildSolarMap(parentNode, keep) {
     // Track what the pointer is over so drawMap can name it, repainting only when the answer changes —
     // a mousemove that is still over the same star costs nothing.
     function trackHover(e){
-        let over = starNamesHidden() ? starAt(e) : false;
-        // Failing a star, any body the map has drawn but left unnamed. hoverName is the one test for
-        // whether there is anything to say, so a world whose name is already on the map is passed
-        // over here and costs no repaint.
+        let over = starLabelsOff() ? starAt(e) : false;
+        // Failing a star, any body the map has drawn but left unnamed.
         if (!over){
             let body = nameTarget(e);
             if (body && hoverName(body)){ over = body; }
@@ -16269,8 +16679,7 @@ function buildSolarMap(parentNode, keep) {
         let rect = document.getElementById("mapCanvas").getBoundingClientRect();
         let at = { x: e.clientX - rect.left, y: e.clientY - rect.top };
         // Repaint when the star changes and, while one is hovered, as the pointer moves — the label has
-        // to follow the cursor to stay above it. Recording the position only on entry left it pinned
-        // where the pointer came in, which put it back under the arrow on the way across the star.
+        // to follow the cursor to stay above it.
         let shifted = over && (at.x !== mapHoverAt.x || at.y !== mapHoverAt.y);
         mapHoverAt = at;
         if (over !== mapHover || shifted){
@@ -16564,20 +16973,39 @@ function buildSolarMap(parentNode, keep) {
     // every time another was added; a panel costs one click to reach and takes no space until then.
     // Each button reads and writes its own key in global.settings.mapView, so the panel is rebuilt
     // from the saved setting every time the map opens and the click is what persists the change.
-    // Each label states what the click will do, so it flips with the setting.
+    // Each label states the setting it is IN rather than what a press would do to it, so the panel
+    // can be read as a report of what is on screen. Every button in it follows that: the ones with
+    // more than two positions always did, and the plain toggles were brought into line with them.
     let mapSettings = $(`<div class="mapSettings" style="position: absolute; bottom: 36px; left: 2px; display: ${mapSettingsOpen ? 'flex' : 'none'}; flex-direction: column; align-items: stretch; gap: 4px; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; max-width: 15em;"></div>`);
+    // Orbits: one button, four positions. See ORBIT_STATES.
+    $(`<input type="button" value="${orbitLabel()}" style="height: 30px;">`)
+        .on("click", function(){
+            cycleOrbits();
+            $(this).val(orbitLabel());
+            drawMap();
+        })
+        .appendTo(mapSettings);
+
+    // Names: one button, three positions. See NAME_STATES.
+    $(`<input type="button" value="${nameLabel()}" style="height: 30px;">`)
+        .on("click", function(){
+            cycleNames();
+            $(this).val(nameLabel());
+            drawMap();
+        })
+        .appendTo(mapSettings);
+
     [
-        ['planetOrbits', 'solar_map_hide_planet_orbits', 'solar_map_show_planet_orbits'],
-        ['moonOrbits', 'solar_map_hide_moon_orbits', 'solar_map_show_moon_orbits'],
         // A busy campaign puts enough dots, trails and names over the inner system to hide the worlds
         // underneath them.
-        ['ships', 'solar_map_hide_ships', 'solar_map_show_ships'],
-        ['planetNames', 'solar_map_hide_planet_names', 'solar_map_show_planet_names'],
-    ].forEach(function([key, onKey, offKey]){
-        $(`<input type="button" value="${loc(mapView()[key] ? onKey : offKey)}" style="height: 30px;">`)
+        ['ships', 'solar_map_show_ships', 'solar_map_hide_ships'],
+        // The sky behind the system, once the real stars are off screen. See drawSkyStars.
+        ['skyStars', 'solar_map_show_sky', 'solar_map_hide_sky'],
+    ].forEach(function([key, shownKey, hiddenKey]){
+        $(`<input type="button" value="${loc(mapView()[key] ? shownKey : hiddenKey)}" style="height: 30px;">`)
             .on("click", function(){
                 mapView()[key] = !mapView()[key];
-                $(this).val(loc(mapView()[key] ? onKey : offKey));
+                $(this).val(loc(mapView()[key] ? shownKey : hiddenKey));
                 drawMap();
             })
             .appendTo(mapSettings);

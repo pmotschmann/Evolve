@@ -4549,14 +4549,15 @@ const techs = {
         title(){ return loc('tech_lab_assistants'); },
         desc(){ return loc('tech_lab_assistants'); },
         category: 'science',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 },
+        reqs(r){ return r.era === 'matrioshka' ? { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 } : { science: 9, womling_tech: 10, shadow: 2 }; },
         grant: ['science',10],
         cost: {
             Knowledge(){ return 17500000; }
         },
-        effect(){ return loc('tech_lab_assistants_effect',[5]); },
+        effect(){ return loc('tech_lab_assistants_effect',[global.tech['shadow'] ? 2 : 5]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -13439,9 +13440,10 @@ const techs = {
         title(){ return loc('outer_shipyard_engine_optimizations'); },
         desc(){ return loc('outer_shipyard_engine_optimizations'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_engine: 5, m_ignite: 4, resettle: 2 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_engine: 5, m_ignite: 4, resettle: 2 } : { syard_engine: 5, shadow: 2 }; },
         grant: ['syard_engine',6],
         cost: {
             Knowledge(){ return 18950000; },
@@ -13460,7 +13462,8 @@ const techs = {
         title(){ return loc('outer_shipyard_engine_electrokinetic'); },
         desc(){ return loc('outer_shipyard_engine_electrokinetic'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
         reqs: { syard_engine: 6 },
         grant: ['syard_engine',7],
@@ -13523,9 +13526,10 @@ const techs = {
         title(){ return loc('tech_antimatter_generator'); },
         desc(){ return loc('tech_antimatter_generator'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_power: 5, m_ignite: 4, resettle: 2, womling_energy: 1 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_power: 5, m_ignite: 4, resettle: 2, womling_energy: 1 } : { syard_power: 5, shadow: 2, womling_energy: 1 }; },
         grant: ['syard_power',6],
         cost: {
             Knowledge(){ return 19450000; },

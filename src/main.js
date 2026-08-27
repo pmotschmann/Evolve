@@ -927,17 +927,44 @@ set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
 
-// Which loop drives the solar map. Offline catch-up overrides it for efficiency.
-function mapRefresh(){
-    if (webWorker.offline){ return 'slow'; }
+// Which clock advances the solar map.
+// Offline uses longLoop. midLoop is used while map is closed,
+// When map is open depends on user setting.
+function mapDriver(){
+    if (webWorker.offline){ return 'longLoop'; }
+    if (!document.getElementById('mapCanvas')){ return 'midLoop'; }
     const view = global.settings && global.settings.mapView;
     const r = view && view.refresh;
-    return r === 'fast' || r === 'slow' ? r : 'normal';
+    return r === 'fast' ? 'timer' : r === 'slow' ? 'midLoop' : 'fastLoop';
 }
 
-// One step of the solar map's simulation: orbital positions, temp coordinates, ships under way, and
-// the redraw. `ticks` is how many fast loops the step covers. A game day is webWorker.longRatio fast
-// loops, so everything scales off that and the map advances at the same rate whichever loop drives it.
+//  the map's clock, for Fast setting
+const MAP_FPS = 30;
+// A frame's worth of game time, in fast loops.
+function mapFrameTicks(){ return (1000 / MAP_FPS) / webWorker.mt; }
+// Past this the timer is plainly not running, and the fast loop settles the debt itself rather than letting it grow.
+const MAP_ARREARS_MAX = 3;
+// Game time the map is owed, in fast loops.
+var mapArrears = 0;
+var mapTimer = false;
+function syncMapTimer(){
+    const want = mapDriver() === 'timer';
+    if (want === (mapTimer !== false)){ return; }
+    if (!want){
+        clearInterval(mapTimer);
+        mapTimer = false;
+        return;
+    }
+    mapTimer = setInterval(function(){
+        if (mapDriver() !== 'timer'){ syncMapTimer(); return; }
+        const step = Math.min(mapArrears, mapFrameTicks());
+        if (step <= 0){ return; }
+        mapArrears -= step;
+        updateSolarMap(step);
+    }, Math.round(1000 / MAP_FPS));
+}
+
+// One step of the solar map's simulation
 function updateSolarMap(ticks){
     if (!global.race['truepath']){ return; }
     // Offline steps are whole game days each, the same scaling longLoop applies to its own day count.
@@ -963,8 +990,7 @@ function updateSolarMap(ticks){
     }
     moveTempCoordinates(days);
     moveShips(days);
-    // Axial rotation for the high-detail surfaces. Advanced here rather than kept per body,
-    // since one clock serves them all -- each turns at its own rate off its own period.
+    // Axial rotation for the high-detail surfaces.
     advanceMapDays(days);
 
     if (document.getElementById('mapCanvas')) {
@@ -1043,6 +1069,8 @@ function processOfflineTime(){
 }
 
 function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
+    // Settle whatever the map's timer has not spent
+    if (mapArrears > 0){ updateSolarMap(mapArrears); mapArrears = 0; }
     webWorker.offline = true;
     webWorker.offlineScale = daysPerStep;
     // Drop Vue reactivity for the whole simulation so the thousands of state mutations don't each
@@ -4611,7 +4639,7 @@ function fastLoop(){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
             }
             if (global.tech['science'] >= 10){
-                scientist_base *= 1 + (womling_sci * 0.05);
+                scientist_base *= 1 + (womling_sci * (global.tech['shadow'] ? 0.02 : 0.05));
             }
             if (global.civic.govern.type === 'theocracy'){
                 scientist_base *= 1 - (govEffect.theocracy()[2] / 100);
@@ -8773,8 +8801,20 @@ function fastLoop(){
         }
     }
 
-    // The solar map, when the player has asked for the smoothest motion it can give.
-    if (mapRefresh() === 'fast'){ updateSolarMap(1); }
+    // The solar map. On Normal the fast loop is the map's clock; on Fast it only funds the timer,
+    // which spends what it is given a frame at a time.
+    const mapClock = mapDriver();
+    if (mapClock === 'timer'){ mapArrears += 1; }
+    // Anything the timer has not spent is settled here — because it has stopped being the map's
+    // clock, or because it is not firing. Either way the game time is paid rather than dropped.
+    if (mapArrears > 0 && (mapClock !== 'timer' || mapArrears >= MAP_ARREARS_MAX)){
+        updateSolarMap(mapArrears);
+        mapArrears = 0;
+    }
+    if (mapClock === 'fastLoop'){ updateSolarMap(1); }
+    // Start or stop the timer as the map opens, closes, or the setting moves. Four times a second is
+    // soon enough that the change is not visible.
+    syncMapTimer();
 
     firstRun = false;
 }
@@ -12187,7 +12227,8 @@ function midLoop(){
         buildGene(blockGeneBuffer);
     }
 
-    if (mapRefresh() === 'normal'){ updateSolarMap(webWorker.midRatio); }
+    // The solar map on Slow, and whenever the map is closed — nothing is watching it either way.
+    if (mapDriver() === 'midLoop'){ updateSolarMap(webWorker.midRatio); }
     
     resourceAlt();
 
@@ -13747,8 +13788,8 @@ function longLoop(){
         }
     }
 
-    // The solar map on its coarsest setting, and the one offline catch-up always uses.
-    if (mapRefresh() === 'slow'){ updateSolarMap(webWorker.longRatio); }
+    // The solar map during offline catch-up, which is the only thing this loop drives it for.
+    if (mapDriver() === 'longLoop'){ updateSolarMap(webWorker.longRatio); }
 
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');
