@@ -17,12 +17,12 @@ import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust, teamster, factoryBonus, technicianBonus } from './prod.js';
 import { swissKnife } from './tech.js';
-import { vacuumCollapse } from './resets.js';
+import { vacuumCollapse, living_extinction } from './resets.js';
 import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './index.js';
 import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderSurface, ecoMinorTraitEffect } from './iceage.js';
+import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect } from './iceage.js';
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -783,7 +783,7 @@ popover('topBarPlanet',
                     challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
                 }
             }
-            obj.popper.append($(`<div>${loc(global.race['cataclysm'] ? 'no_home' : 'home',[planet,race,planet_label,orbit])}</div>${geo_traits}${challenges}`));
+            obj.popper.append($(`<div>${loc(global.race['iceage'] ? 'rogue_home' : (global.race['cataclysm'] ? 'no_home' : 'home'),[planet,race,planet_label,orbit])}</div>${geo_traits}${challenges}`));
         }
         return undefined;
     },
@@ -1503,9 +1503,9 @@ function fastLoop(){
         'Money','Knowledge','Omniscience','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
         'Cement','Coal','Oil','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium','Helium_3',
         'Water','Deuterium','Tungsten','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
-        'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Positronium','Quantium',
+        'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Positronium','Power_Bones','Quantium',
         'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene','Scarletite',
-        'Cipher','Nanite','Mana','Authority'
+        'Super_Fuel','Cipher','Nanite','Mana','Authority'
     ];
 
     breakdown.p['consume'] = {};
@@ -2358,6 +2358,7 @@ function fastLoop(){
 
         // Power usage
         let p_structs = global.power;
+
         // Determine total power demand across all structs and get a list of powered structs that support load balancing
         let totalPowerDemand = 0;
         let pb_list = [];
@@ -2598,7 +2599,7 @@ function fastLoop(){
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
             { a: 'eden', r: 'eden_asphodel', s: 'encampment', g: 'asphodel' },
             { a: 'surface', r: 'wastes', s: 'great_heater', g: 'wastes'},
-            { a: 'surface', r: 'crater', s: 'crater_station', g: 'crater'}
+            { a: 'surface', r: 'crater', s: 'crater_headquarters', g: 'crater'}
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
             if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
@@ -3437,6 +3438,13 @@ function fastLoop(){
         }
         else{
             global.city.morale.casino = 0;
+        }
+        if(global.race['aberrant_magnificent'] && global.race['aberrant_magnificent_morale']){
+            global.city.morale.aberrant_magnificent = -global.race['aberrant_magnificent_morale'];
+            morale += global.city.morale.aberrant_magnificent;
+        }
+        else{
+            global.city.morale.aberrant_magnificent = 0;
         }
 
         if (global.tech['broadcast'] && !global.race['joyless']){
@@ -6358,12 +6366,13 @@ function fastLoop(){
                         let tree_hardiness = actions.surface.ecosystem.trees.hardiness();
                         lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier * tree_hardiness / 2);
                         global.surface.trees.count -= workers * time_multiplier * lack_of_trees / tree_hardiness;
+                        global.surface.trees.empowered = Math.min(global.surface.trees.count, global.surface.trees.empowered);
                         drawEcology('trees');
                         breakdown.p['Lumber'][`ᄂ${loc('surface_tree_shortage')}`] = ((lack_of_trees - 1) * 100) + '%';
                     }
                 }
 
-                let delta = lumber_base * sawmills * lumber_yard * lack_of_trees * ecosystem;
+                let delta = lumber_base * sawmills * lumber_yard * woodcutter * lack_of_trees * ecosystem;
                 if (global.city['sawmill']){
                     global.city.sawmill['psaw'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
                 }
@@ -6545,7 +6554,7 @@ function fastLoop(){
 
             if(global.underground['under_mine']){
                 underground_quarry += global.underground['under_mine'].count * 0.02;
-                stone_base *= 1 + underground_quarry;
+                stone_base *= underground_quarry;
             }
 
             // Deferred until here so that Chrysotile cannot get both boosts
@@ -6767,7 +6776,7 @@ function fastLoop(){
 
         //ice age buildings
         [
-            {b:'bonfire', r:'underground', r2:'cave', c:['lumber']},{b:'mineshaft_vator', r:'underground', r2:'cave', c:['oil']},{b:'core_forge', r:'underground', r2:'core', c:['water', 'coal']},{b:'core_blacksmith', r:'underground', r2:'core', c:['water', 'titanium']},
+            {b:'bonfire', r:'underground', r2:'cave', c:['lumber']},{b:'mineshaft_vator', r:'underground', r2:'cave', c:['oil']},{b:'core_mine', r:'underground', r2:'core', c:['water', 'steel', 'alloy']},{b:'core_forge', r:'underground', r2:'core', c:['water', 'coal']},{b:'core_blacksmith', r:'underground', r2:'core', c:['water', 'titanium']},
             {b:'core_refinery', r:'underground', r2:'core', c:['water', 'oil']},{b:'watch_tower', r:'surface', r2:'wastes', c:['food']},{b:'water_pipe', r:'surface', r2:'ecosystem', c:['water']},{b:'surface_farm', r:'surface', r2:'wastes', c:['water']},
             {b:'surface_zoo', r:'surface', r2:'wastes', c:['food']}
         ].forEach(function(building){
@@ -6821,6 +6830,63 @@ function fastLoop(){
             }
         });
 
+        if(p_on['core_mine']){
+            let c_action = actions.underground.core.core_mine;
+            //-5MW, -100 water/s, -2 steel/s, -0.5 alloy/s
+            //each powered building adds another -2 steel/ -0.5 alloy/s to *each* building.
+            /*let active = Math.floor(Math.min(
+                global.resource.Water.amount / (c_action.consume('water') * time_multiplier * p_on['core_mine']),
+                global.resource.Steel.amount / (c_action.consume('steel') * time_multiplier * p_on['core_mine']),
+                global.resource.Alloy.amount / (c_action.consume('alloy') * time_multiplier * p_on['core_mine']),
+                p_on['core_mine']));
+            modRes('Water', -(c_action.consume('water') * p_on['core_mine'] * time_multiplier));
+            breakdown.p.consume.Water[loc('underground_core_mine')] = -(c_action.consume('water') * p_on['core_mine']);
+            modRes('Steel', -(c_action.consume('steel') * p_on['core_mine'] * time_multiplier));
+            breakdown.p.consume.Steel[loc('underground_core_mine')] = -(c_action.consume('steel') * p_on['core_mine']);
+            modRes('Alloy', -(c_action.consume('alloy') * p_on['core_mine'] * time_multiplier));
+            breakdown.p.consume.Alloy[loc('underground_core_mine')] = -(c_action.consume('alloy') * p_on['core_mine']);*/
+            let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
+            //p_on['core_mine'] = active;
+            base = workerScale(base, 'core_miner');
+            let traits = racialTrait(base, 'miner');
+            if (global.race['tough']){
+                traits *= 1 + (traits.tough.vars()[0] / 100);
+            }
+            let ogreFathom = fathomCheck('ogre');
+            if (ogreFathom > 0){
+                traits *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
+            }
+            traits = traits ** 0.5;
+            base *= traits * job_data.core_miner.impact();
+            if (global.race['gravity_well']){ delta = teamster(delta); }
+            let iridium_base = base * (1 + global.city.geology['Iridium'] || 0);
+            let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * 2;
+            let multiplier = global_multiplier * hunger * shrineMetal.mult * job_data.core_miner.mine_effect();
+            let iridium_delta = iridium_base * multiplier * (1 + iridium_smelter);
+            let titanium_delta = titanium_base * multiplier;
+            
+            breakdown.p['Iridium'][loc('job_core_miner')] = iridium_base + 'v';
+            if (iridium_delta > 0){
+                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = (iridium_smelter * 100) + '%';
+                if(global.tech['mineshaft'] >= 5){
+                    breakdown.p['Iridium'][`ᄂ${loc('underground_mineshaft')}`] = ((job_data.core_miner.mine_effect() - 1) * 100).toFixed(2) + '%';
+                }
+                if (global.race['gravity_well']){
+                    breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+2`] = -((1 - teamster(1)) * 100) + '%';
+                }
+            }
+            breakdown.p['Titanium'][loc('job_core_miner')] = titanium_base + 'v';
+            if (titanium_delta > 0){
+                if(global.tech['mineshaft'] >= 5){
+                    breakdown.p['Titanium'][`ᄂ${loc('underground_mineshaft')}`] = ((job_data.core_miner.mine_effect() - 1) * 100).toFixed(2) + '%';
+                }
+                if (global.race['gravity_well']){
+                    breakdown.p['Titanium'][`ᄂ${loc('evo_challenge_gravity_well')}+2`] = -((1 - teamster(1)) * 100) + '%';
+                }
+            }
+            modRes('Iridium', iridium_delta * time_multiplier);
+            modRes('Titanium', titanium_delta * time_multiplier);
+        }
         
         // Surface Crater Mining
         if(support_on['crater_drill']){
@@ -6856,151 +6922,9 @@ function fastLoop(){
             modRes('Coal', coal_base * refinery * global_multiplier * time_multiplier * hunger);
             modRes('Uranium', uranium_base * refinery * global_multiplier * time_multiplier * hunger);
         }
-
-        /*if(p_on['bonfire']){
-            let c_action = actions.underground.cave.bonfire;
-            let lumber_cost = c_action.consume('lumber');
-            breakdown.p.consume.Lumber[loc('underground_bonfire')] = -(lumber_cost * p_on['bonfire']);
-            let active = Math.floor(Math.min(
-                global.resource.Lumber.amount / (lumber_cost * time_multiplier),
-                p_on['bonfire']));
-            modRes('Lumber', -(p_on['bonfire'] * lumber_cost * time_multiplier));
-            p_on['bonfire'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.underground.bonfire.on > p_on['bonfire']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['bonfire']}/${global.underground.bonfire.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if(p_on['core_forge']){ //issue: buildings further below shut off first when running out of resource regardless of power grid settings
-            let c_action = actions.underground.core.core_forge;
-            let water_cost = c_action.consume('water');
-            let coal_cost = c_action.consume('coal');
-            breakdown.p.consume.Water[loc('underground_core_forge')] = -(water_cost * p_on['core_forge']);
-            breakdown.p.consume.Coal[loc('underground_core_forge')] = -(coal_cost * p_on['core_forge']);
-            let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier),
-                global.resource.Coal.amount / (coal_cost * time_multiplier),
-                p_on['underground_core_forge']));
-            modRes('Water', -(p_on['core_forge'] * water_cost * time_multiplier));
-            modRes('Coal', -(p_on['core_forge'] * coal_cost * time_multiplier));
-            p_on['underground_core_forge'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.underground.core_forge.on > p_on['core_forge']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['core_forge']}/${global.underground.core_forge.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if (p_on['core_blacksmith']){
-            let c_action = actions.underground.core.core_blacksmith;
-            let water_cost = c_action.consume('water');
-            let titanium_cost = c_action.consume('titanium');
-            breakdown.p.consume.Water[loc('underground_core_blacksmith')] = -(water_cost * p_on['core_blacksmith']);
-            breakdown.p.consume.Titanium[loc('underground_core_blacksmith')] = -(titanium_cost * p_on['core_blacksmith']);
-            let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier),
-                global.resource.Titanium.amount / (titanium_cost * time_multiplier),
-                p_on['core_blacksmith']));
-            modRes('Water', -(p_on['core_blacksmith'] * water_cost * time_multiplier));
-            modRes('Titanium', -(p_on['core_blacksmith'] * titanium_cost * time_multiplier));
-            p_on['core_blacksmith'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.underground.core_blacksmith.on > p_on['core_blacksmith']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['core_blacksmith']}/${global.underground.core_blacksmith.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if(support_on['watch_tower']){
-            let c_action = actions.surface.wastes.watch_tower;
-            let food_cost = c_action.consume('food');
-            breakdown.p.consume.Food[loc('surface_watch_tower')] = -(food_cost * support_on['watch_tower']);
-            let active = Math.floor(Math.min(
-                global.resource.Food.amount / (food_cost * time_multiplier),
-                support_on['watch_tower']));
-            modRes('Food', -(support_on['watch_tower'] * food_cost * time_multiplier));
-            support_on['watch_tower'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.surface.watch_tower.on > support_on['watch_tower']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${support_on['watch_tower']}/${global.surface.watch_tower.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if(p_on['water_pipe']){
-            let c_action = actions.surface.ecosystem.water_pipe;
-            let water_cost = c_action.consume('water');
-            breakdown.p.consume.Water[loc('surface_water_pipe')] = -(water_cost * p_on['water_pipe']);
-            let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier),
-                p_on['water_pipe']));
-            modRes('Water', -(p_on['water_pipe'] * water_cost * time_multiplier));
-            p_on['water_pipe'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.surface.water_pipe.on > p_on['water_pipe']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['water_pipe']}/${global.surface.water_pipe.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if(p_on['surface_farm']){
-            let c_action = actions.surface.ecosystem.surface_farm;
-            let water_cost = c_action.consume('water');
-            breakdown.p.consume.Water[loc('surface_surface_farm')] = -(water_cost * p_on['surface_farm']);
-            let active = Math.floor(Math.min(
-                global.resource.Water.amount / (water_cost * time_multiplier),
-                p_on['surface_farm']));
-            modRes('Water', -(p_on['surface_farm'] * water_cost * time_multiplier));
-            p_on['surface_farm'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.surface.surface_farm.on > p_on['surface_farm']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['surface_farm']}/${global.surface.surface_farm.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }
-        if(p_on['surface_zoo']){
-            let c_action = actions.surface.wastes.surface_zoo;
-            let food_cost = c_action.consume('food');
-            breakdown.p.consume.Food[loc('surface_zoo')] = -(food_cost * p_on['surface_zoo']);
-            let active = Math.floor(Math.min(
-                global.resource.Food.amount / (food_cost * time_multiplier),
-                p_on['surface_zoo']));
-            modRes('Food', -(p_on['surface_zoo'] * food_cost * time_multiplier));
-            p_on['surface_zoo'] = active;
-            let struct = $(`#${c_action.id} .on`);
-            if(global.surface.surface_zoo.on > p_on['surface_zoo']){
-                struct.addClass('warn');
-                struct.prop('title',`ON ${p_on['surface_zoo']}/${global.surface.surface_zoo.on}`);
-            }
-            else {
-                struct.removeClass('warn');
-                struct.prop('title',`ON`);
-            }
-        }*/
         
         if(global.surface['overview']){
-            surfaceEcosystemVisual();
+            surfaceEcosystemVisual(); //updates numbers on ecosystem buildings. Notably updating amount of trees after lumberjack cutting
         }
 
         if (global.eden['palace'] && p_on['spirit_vacuum'] && global.tech['isle']){
@@ -7965,64 +7889,6 @@ function fastLoop(){
                 }
             }
             modRes('Iridium', (delta * time_multiplier) * geneBonus('assayer'));
-        }
-
-        if(p_on['core_mine']){
-            let c_action = actions.underground.core.core_mine;
-            //-5MW, -100 water/s, -2 steel/s, -0.5 alloy/s
-            //each powered building adds another -2 steel/ -0.5 alloy/s to *each* building.
-            let active = Math.floor(Math.min(
-                global.resource.Water.amount / (c_action.consume('water') * time_multiplier * p_on['core_mine']),
-                global.resource.Steel.amount / (c_action.consume('steel') * time_multiplier * p_on['core_mine']),
-                global.resource.Alloy.amount / (c_action.consume('alloy') * time_multiplier * p_on['core_mine']),
-                p_on['core_mine']));
-            modRes('Water', -(c_action.consume('water') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Water[loc('underground_core_mine')] = -(c_action.consume('water') * p_on['core_mine']);
-            modRes('Steel', -(c_action.consume('steel') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Steel[loc('underground_core_mine')] = -(c_action.consume('steel') * p_on['core_mine']);
-            modRes('Alloy', -(c_action.consume('alloy') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Alloy[loc('underground_core_mine')] = -(c_action.consume('alloy') * p_on['core_mine']);
-            let base = Math.min(global.civic.core_miner.workers, jobScale(active)); //reduce available workers immediately on resource shortage
-            p_on['core_mine'] = active;
-            base = workerScale(base, 'core_miner');
-            let traits = racialTrait(base, 'miner');
-            if (global.race['tough']){
-                traits *= 1 + (traits.tough.vars()[0] / 100);
-            }
-            let ogreFathom = fathomCheck('ogre');
-            if (ogreFathom > 0){
-                traits *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
-            }
-            traits = traits ** 0.5;
-            base *= traits * job_data.core_miner.impact();
-            if (global.race['gravity_well']){ delta = teamster(delta); }
-            let iridium_base = base;
-            let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * 2;
-            let multiplier = global_multiplier * hunger * shrineMetal.mult * job_data.core_miner.mine_effect();
-            let iridium_delta = iridium_base * multiplier * iridium_smelter_mult;
-            let titanium_delta = titanium_base * multiplier;
-            
-            breakdown.p['Iridium'][loc('job_core_miner')] = iridium_base + 'v';
-            if (iridium_delta > 0){
-                breakdown.p['Iridium'][`ᄂ${loc('city_smelter')}+3`] = (iridium_smelter * 100) + '%';
-                if(global.tech['mineshaft'] >= 5){
-                    breakdown.p['Iridium'][`ᄂ${loc('underground_mineshaft')}`] = ((job_data.core_miner.mine_effect() - 1) * 100).toFixed(2) + '%';
-                }
-                if (global.race['gravity_well']){
-                    breakdown.p['Iridium'][`ᄂ${loc('evo_challenge_gravity_well')}+2`] = -((1 - teamster(1)) * 100) + '%';
-                }
-            }
-            breakdown.p['Titanium'][loc('job_core_miner')] = titanium_base + 'v';
-            if (titanium_delta > 0){
-                if(global.tech['mineshaft'] >= 5){
-                    breakdown.p['Titanium'][`ᄂ${loc('underground_mineshaft')}`] = ((job_data.core_miner.mine_effect() - 1) * 100).toFixed(2) + '%';
-                }
-                if (global.race['gravity_well']){
-                    breakdown.p['Titanium'][`ᄂ${loc('evo_challenge_gravity_well')}+2`] = -((1 - teamster(1)) * 100) + '%';
-                }
-            }
-            modRes('Iridium', iridium_delta * time_multiplier);
-            modRes('Titanium', titanium_delta * time_multiplier);
         }
 
         // Iridium Extractor Ship
@@ -9462,6 +9328,7 @@ function midLoop(){
             Nanite: 0,
             Materials: 0,
             Positronium: 0,
+            Power_Bones: 10
         };
         // labor caps
         var lCaps = {
@@ -10278,11 +10145,14 @@ function midLoop(){
             caps['Money'] += gain;
             breakdown.c.Money[loc('tech_luxury_condo')] = gain+'v';
         }
-        if (support_on['work_quarters']){
-            let gain = Math.round(support_on['work_quarters'] * actions.surface.crater.work_quarters.citizens());
+        if (support_on['work_station']){
+            let gain = Math.round(support_on['work_station'] * actions.surface.crater.work_station.citizens());
+            let cap = actions.surface.crater.work_station.res_cap('uranium') * global.surface['work_station'].count;
             caps[global.race.species] += gain;
-            lCaps['crater_worker'] += jobScale(support_on['work_quarters']);
-            breakdown.c[global.race.species][`${loc('surface_work_quarters')}`] = gain + 'v';
+            caps['Uranium'] += cap;
+            lCaps['crater_worker'] += jobScale(support_on['work_station']);
+            breakdown.c[global.race.species][`${loc('surface_work_station')}`] = gain + 'v';
+            breakdown.c['Uranium'][loc('surface_work_station')] = cap+'v';
         }
         if (global.city['lodge']){
             let cit = global.city.lodge.count * actions.city.lodge.citizens();
@@ -10555,11 +10425,6 @@ function midLoop(){
                     breakdown.c[res][loc('underground_fluid_depot')] = gain+'v';
                 }
             }
-        }
-        if (global.surface['work_quarters']){
-            let gain = actions.surface.crater.work_quarters.res_cap('uranium') * global.surface['work_quarters'].count;
-            caps['Uranium'] += gain;
-            breakdown.c['Uranium'][loc('surface_work_quarters')] = gain+'v';
         }
         if (global.space['propellant_depot']){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
@@ -11378,15 +11243,26 @@ function midLoop(){
             caps['Water'] += water;
             breakdown.c.Water[loc('space_red_spaceport_title')] = water+'v';
         }
-        if(global.underground['ice_collector']){
+        if (global.underground['ice_collector']){
             let water = global.underground['ice_collector'].count * actions.underground.cave.ice_collector.res_cap('water');
             caps['Water'] += water;
             breakdown.c.Water[loc('underground_ice_collector')] = water+'v';
+        }
+        if (p_on['water_pump']){
+            let water = p_on['water_pump'] * actions.underground.industry.water_pump.res_cap('water');
+            caps['Water'] += water;
+            breakdown.c.Water[loc('underground_water_pump')] = water+'v';
         }
 
         if (global.tauceti['mining_pit']){
             lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * (global.tech['isolation'] ? 6 : 8));
             caps['Materials'] += support_on['mining_pit'] * 1000000;
+        }
+
+        if (global.surface['bone_storage']){
+            let bones = global.surface['bone_storage'].count * actions.surface.wastes.bone_storage.res_cap('power_bones');
+            caps['Power_Bones'] += bones;
+            breakdown.c.Power_Bones[loc('surface_bone_storage')] = bones+'v';
         }
 
         if (global.civic.torturer.display && global.tech['unfathomable'] && global.tech.unfathomable >= 2){
@@ -11893,7 +11769,7 @@ function midLoop(){
         });
 
         // Limit craftsmen for resources that require specific structs. Combined craftsman worker limits are done below.
-        ['Scarletite','Quantium'].forEach(function (res){
+        ['Scarletite','Quantium','Super_Fuel'].forEach(function (res){
             limitCraftsmen(res);
         });
 
@@ -12334,7 +12210,7 @@ function midLoop(){
             let dJob = global.civic[global.civic.d_job];
             let restored = false;
             Object.keys(craft_costs).forEach(function (craft){
-                let capped = ['Scarletite','Quantium'].includes(craft);
+                let capped = ['Scarletite','Quantium','Super_Fuel'].includes(craft);
                 let ceiling = capped ? craftsmanCap(craft) : -1;
                 let reopened = capped && ceiling > (rcap.hasOwnProperty(craft) ? rcap[craft] : ceiling);
                 if (roomier || reopened){
@@ -12602,6 +12478,64 @@ function midLoop(){
                     initStruct(actions.underground.core.core_support_beams);
                 }
                 messageQueue(loc('tech_mineshaft_depth3'),'info',false,['progress']);
+            }
+        }
+
+        
+        if(global.race['iceage'] && global.tech['living_extinction']){ //ice age gradual extinction event
+            global.tech['living_extinction']++;
+            let zone_reach = {surface: {wastes: 10, crater: 70, ecosystem: 0}, underground: {cave: 50, depths: 70, industry: 90, core: 110}};
+            let total = 0;
+            if(global.tech['living_extinction'] === 10){
+                messageQueue(loc('reset_living_extinction_progress1'),'danger',false,['progress']);
+            }
+            if(global.aberrants.herbivores.count < Math.rand(0, 100)){
+                global.aberrants.herbivores.count++;
+            }
+            if(global.aberrants.carnivores.count < Math.rand(0, 100)){
+                global.aberrants.carnivores.count++;
+            }
+            if(global.aberrants.scavengers.count < Math.rand(0, 100)){
+                global.aberrants.scavengers.count++;
+            }
+            ['underground', 'surface'].forEach(function (category){
+                for(let [zone, entry] of Object.entries(actions[category])){
+                    for(let [struct, entry2] of Object.entries(entry)){
+                        if(global[category][struct]?.count && !entry2.spared){
+                            let potential = (global.tech['living_extinction'] - zone_reach[category][zone]) / 500;
+                            let razed = (potential - Math.random()) * (global[category][struct].count / 100 * Math.random());
+                            razed = Math.max(0, razed);
+                            razed = Math.min(razed, global[category][struct].count);
+                            razed = Math.ceil(razed);
+                            if(razed > 1){
+                                debugger;
+                            }
+                            global[category][struct].count -= razed;
+                            global[category][struct].razed = (global[category][struct].razed || 0) + razed;
+                            total += razed;
+                            if (global[category][struct].hasOwnProperty('on')){
+                                let turned_off = razed;
+                                if (global[category][struct].on < turned_off){
+                                    turned_off = global[category][struct].on;
+                                }
+                                global[category][struct].on -= turned_off;
+                            }
+                        }
+                    }
+                }
+            });
+            if(total >= 1){
+                renderUnderground();
+                renderSurface();
+            }
+            if(caps[global.race.species] <= 0){
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
+                document.body.className = 'extinction_fading';
+                setTimeout(function(){
+                    living_extinction();
+                }, 10000);
             }
         }
 
@@ -13241,7 +13175,7 @@ function longLoop(){
             hellguard();
         }
         
-        if(global.surface['overview']){
+        if(global.surface['overview'] && !global.tech['living_extinction']){
             surfaceEcosystem();
         }
 
@@ -13439,6 +13373,9 @@ function longLoop(){
 
         if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
             global.race['rainbow_active']--;
+        }
+        if(global.race['aberrant_magnificent'] && global.race['aberrant_magnificent'] > 1){
+            global.race['aberrant_magnificent']--;
         }
 
         if (global.city.calendar.day > 0){

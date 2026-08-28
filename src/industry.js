@@ -1752,7 +1752,7 @@ export function altReplicatorRes(res){
 // Resources the replicator will never offer. Anything with an atomic mass is fair game otherwise, so
 // long as the player has actually unlocked it.
 export function replicatorRes(){
-    let blacklist = ['Asphodel_Powder','Elysanite','Quantium'];
+    let blacklist = ['Asphodel_Powder','Elysanite','Quantium','Super_Fuel'];
     if (global.race['fasting']){ blacklist.push('Food'); }
     if (global.race['iceage']){ blacklist.push('Lumber'); }
     return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
@@ -2042,6 +2042,7 @@ export function setPowerGrid(){
         el: `#powerModeSwitch`,
         data: global.settings
     });
+
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
             return;
@@ -2073,6 +2074,7 @@ export function setPowerGrid(){
             let parts = struct.split(":");
             let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
+
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
@@ -2210,7 +2212,7 @@ export function gridDefs(){
         tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
         asphodel: { l: global.support.asphodel, n: loc(`eden_asphodel_name`), s: global.settings.eden.asphodel, r: 'eden', rs: 'encampment' },
         wastes: { l: global.support.wastes, n: loc(`surface_wastes`), s: global.settings.surface.wastes, r: 'surface', rs: 'great_heater'},
-        crater: { l: global.support.crater, n: loc(`surface_crater`), s: global.settings.surface.crater, r: 'surface', rs: 'crater_station'}
+        crater: { l: global.support.crater, n: loc(`surface_crater`), s: global.settings.surface.crater, r: 'surface', rs: 'crater_headquarters'}
     };
 }
 

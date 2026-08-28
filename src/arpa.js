@@ -2824,38 +2824,41 @@ function drawEcosystem(){
             $('#arpaEcosystem').append(breakdown);
 
 
-            let minorElem = $(`<div id="geneticMinor_${type}" class="traitListing"></div>`);
+            let minorElem = $(`<div id="geneticMinor_${type}" class="traitListing minor"></div>`);
             breakdown.append(minorElem);
-            minorElem.append(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[loc(`surface_${type}`)])}</div>`);
+            minorElem.append(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_minor_traits',[loc(`surface_${type}_single`)])}</div>`);
 
             let trait_box = $(`<div class="traitBox"></div>`);
             minorElem.append(trait_box);
             let minorList = ecosystemInfo.minorTraits;
             for(let [index, entry] of Object.entries(minorList)){
-                let name_type = `${type === 'trees' ? `${index}_trees` : index}`;
+                let trait_name = `${type === 'trees' ? ecosystemInfo.plantMinorTraitNames[index] : index}`;
                 let m_trait = $(`<div class="trait t-${index} traitRow"></div>`);
-                let gene = $(`<h4 class="is-sr-only">${index}</h4><span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${type}', '${index}')" @click="gene('${type}', '${index}')">${loc('genelab_eco_rank')}</span>`);
+                let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${type}', '${index}')" @click="gene('${type}', '${index}')">${loc('genelab_eco_rank')}</span>`);
                 m_trait.append(gene);
 
-                m_trait.append(`<span class="has-text-warning name">(${global.surface[type].minorTraits[index]}) ${loc(`ecotrait_${name_type}_name`)}</span>`);
+                m_trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.surface[type].minorTraits[index]}) ${loc(`trait_${trait_name}_name`)}</span>`);
 
                 trait_box.append(m_trait);
             };
             let mGeneCost = ecosystemInfo.minorTraitCost;
             vBind({
-                el: `#geneticBreakdown_${type}`,
+                el: `#geneticMinor_${type}`,
                 data: {
                     genes: global.genes,
                     race: global.race
                 },
                 methods: {
                     gene(eco, type){
+                        if(global.tech['living_extinction']){
+                            return;
+                        }
                         let curr_iteration = 0;
                         let iterations = keyMultiplier();
                         let can_purchase = true;
                         let redraw = false;
                         while (curr_iteration < iterations && can_purchase){
-                            let cost = mGeneCost(global.surface[eco].minorTraits[type]);
+                            let cost = mGeneCost(global.surface[eco].minorTraits[type], eco);
                             if (global.resource.Genes.amount >= cost){
                                 global.resource.Genes.amount -= cost;
                                 global.surface[eco].minorTraits[type]++;
@@ -2871,13 +2874,13 @@ function drawEcosystem(){
                         }
                     },
                     geneCost(eco, type){
-                        return mGeneCost(global.surface[eco].minorTraits[type]);
+                        return mGeneCost(global.surface[eco].minorTraits[type], eco);
                     },
                     traitEffect(t){
                         return 'description';
                     },
                     genePurchasable(eco, type){
-                        if(global.resource.Genes.amount >= mGeneCost(global.surface[eco].minorTraits[type])){
+                        if(global.resource.Genes.amount >= mGeneCost(global.surface[eco].minorTraits[type], eco) && !global.tech['living_extinction']){
                             return true;
                         }
                         return false;
@@ -2885,10 +2888,14 @@ function drawEcosystem(){
                 }
             });
             for(let [index, entry] of Object.entries(minorList)){
+                let trait_name = `${type === 'trees' ? ecosystemInfo.plantMinorTraitNames[index] : index}`;
                 let name_type = `${type === 'trees' ? `${index}_trees` : index}`;
 
                 popover(`ecoGenetrait${index}`, function(){
-                    return `${loc('arpa_eco_gene_buy',[loc(`ecotrait_${name_type}_name`),sizeApproximation(mGeneCost(global.surface[type].minorTraits[index])),global.resource.Genes.name])}`;
+                    if(global.tech['living_extinction']){
+                        return loc('arpa_eco_gene_empowered_danger');
+                    }
+                    return `${loc('arpa_eco_gene_buy',[loc(`trait_${trait_name}_name`),sizeApproximation(mGeneCost(global.surface[type].minorTraits[index], type)),global.resource.Genes.name])}`;
                 },
                 {
                     elm: `#geneticMinor_${type} .t-${index} .gbuy`,
@@ -2902,6 +2909,199 @@ function drawEcosystem(){
                     elm: `#geneticMinor_${type} .t-${index} .name`,
                     classes: `has-background-light has-text-dark`
                 });
+            }
+
+            let majorList = global.aberrants?.[type] || {};
+            if(Object.keys(majorList).length){
+                let majorElem = $(`<div id="geneticMajor_${type}" class="traitListing major"></div>`);
+                breakdown.append(majorElem);
+                majorElem.append(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_aberrant_major_traits',[loc(`surface_${type}_single`)])} ${Object.keys(majorList).length - (majorList.hasOwnProperty('count') ? 1 : 0)}/${ecosystemInfo.majorTraitCap()}</div>`);
+                let majorTrait_box = $(`<div class="traitBox"></div>`);
+                majorElem.append(majorTrait_box);
+                for(let [index, entry] of Object.entries(majorList)){
+                    if(index === 'count'){
+                        continue;
+                    }
+                    let trait = $(`<div class="trait t-${index} traitRow"></div>`);
+                    let gene = $(`<span v-bind:class="['add', 'majorgene', raisePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="raiseCost('${type}', '${index}')" @click="raise('${type}', '${index}')">»</span>`);
+                    let purge = $(`<span v-bind:class="['sub', 'majorgene' ,'has-text-danger', lowerPurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="lowerCost('${type}', '${index}')" @click="lower('${type}', '${index}')">«</span>`);
+                    trait.append(purge);
+                    trait.append(gene);
+                    
+                    trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.aberrants[type][index]}) ${ecosystemInfo.majorTraits[index].name()}</span>`);
+
+                    majorTrait_box.append(trait);
+                }
+
+                let raiseCost = ecosystemInfo.majorTraitCost;
+                let lowerCost = (rank, lifeform) => raiseCost(rank, lifeform) / 4;
+                vBind({
+                    el: `#geneticMajor_${type}`,
+                    data: {
+                        genes: global.genes,
+                        race: global.race
+                    },
+                    methods: {
+                        raise(eco, type){
+                            if(type === 'empowered' || ecosystemInfo.majorTraits[type].danger || global.tech['living_extinction']){
+                                return;
+                            }
+                            let curr_iteration = 0;
+                            let iterations = keyMultiplier();
+                            let can_purchase = true;
+                            let redraw = false;
+                            while (curr_iteration < iterations && can_purchase){
+                                let cost = raiseCost(global.aberrants[eco][type], eco);
+                                if (global.resource.Genes.amount >= cost){
+                                    global.resource.Genes.amount -= cost;
+                                    global.aberrants[eco][type]++;
+                                    redraw = true;
+                                }
+                                else {
+                                    can_purchase = false;
+                                }
+                                curr_iteration++;
+                            }
+                            if (redraw){
+                                ecosystem();
+                            }
+                        },
+                        lower(eco, type){
+                            if(type === 'empowered' || global.tech['living_extinction']){
+                                return;
+                            }
+                            let lethal = global.aberrants.trees.hasOwnProperty('hivemind') && global.aberrants.herbivores.hasOwnProperty('shapeshifter') && 
+                                global.aberrants.carnivores.hasOwnProperty('intelligent') && global.aberrants.scavengers.hasOwnProperty('infiltrator');
+                            if(type !== 'hivemind' && lethal){
+                                global.tech['living_extinction'] = 1;
+                                ecosystem();
+                                return;
+                            }
+                            let curr_iteration = 0;
+                            let iterations = keyMultiplier();
+                            let can_purchase = true;
+                            let redraw = false;
+                            while (curr_iteration < iterations && can_purchase){
+                                let cost = lowerCost(global.aberrants[eco][type], eco);
+                                if (global.resource.Genes.amount >= cost){
+                                    global.resource.Genes.amount -= cost;
+                                    global.aberrants[eco][type]--;
+                                    if(global.aberrants[eco][type] <= 1){
+                                        can_purchase = false;
+                                    }
+                                    if(global.aberrants[eco][type] === 0){
+                                        delete global.aberrants[eco][type];
+                                        clearPopper(`ecoGenetrait${type}`);
+                                    }
+                                    redraw = true;
+                                }
+                                else {
+                                    can_purchase = false;
+                                }
+                                curr_iteration++;
+                            }
+                            if (redraw){
+                                ecosystem();
+                            }
+                        },
+                        raiseCost(eco, type){
+                            return raiseCost(global.aberrants[eco][type], eco);
+                        },
+                        lowerCost(eco, type){
+                            return lowerCost(global.aberrants[eco][type], eco);
+                        },
+                        traitEffect(t){
+                            return 'description';
+                        },
+                        raisePurchasable(eco, type){
+                            if(type === 'empowered' || ecosystemInfo.majorTraits[type].danger || global.tech['living_extinction']){
+                                return false;
+                            }
+                            return global.resource.Genes.amount >= raiseCost(global.aberrants[eco][type], eco);
+                        },
+                        lowerPurchasable(eco, type){
+                            if(type === 'empowered' || global.tech['living_extinction']){
+                                return false;
+                            }
+                            return global.resource.Genes.amount >= lowerCost(global.aberrants[eco][type], eco);
+                        },
+                    }
+                });
+                for(let [index, entry] of Object.entries(majorList)){
+                    if(index === 'count'){
+                        continue;
+                    }
+
+                    popover(`ecoGenetrait${index}`, function(){
+                        if(global.tech['living_extinction']){
+                            return loc('arpa_eco_gene_empowered_danger');
+                        }
+                        let desc = `<div>${loc('arpa_eco_gene_buy',[loc(`trait_${index}_name`),sizeApproximation(raiseCost(global.aberrants[type][index], type)), global.resource.Genes.name])}</div>`;
+                        if(index === 'empowered' || ecosystemInfo.majorTraits[index].danger){
+                            let danger = false;
+                            for(let [index, entry] of Object.entries(majorList)){
+                                if(index !== 'count' && ecosystemInfo.majorTraits[index].danger){
+                                    danger = true;
+                                    break;
+                                }
+                            };
+                            if(danger && index === 'empowered'){
+                                return loc('arpa_eco_gene_empowered_danger'); //empowered gets feisty
+                            }
+                            return loc('arpa_eco_gene_empowered');
+                        }
+                        return desc;
+                    },
+                    {
+                        elm: `#geneticMajor_${type} .t-${index} .add`,
+                        classes: `has-background-light has-text-dark`
+                    });
+                    popover(`ecoGenetrait${index}`, function(){
+                        if(global.tech['living_extinction']){
+                            return loc('arpa_eco_gene_empowered_danger');
+                        }
+                        let desc = `<div>${loc('arpa_eco_gene_sub',[loc(`trait_${index}_name`),sizeApproximation(lowerCost(global.aberrants[type][index], type)), global.resource.Genes.name])}</div>`;
+                        if(index === 'empowered'){
+                            let danger = false;
+                            for(let [index, entry] of Object.entries(majorList)){
+                                if(index !== 'count' && ecosystemInfo.majorTraits[index].danger){
+                                    danger = true;
+                                    break;
+                                }
+                            };
+                            if(danger && index === 'empowered'){
+                                return loc('arpa_eco_gene_empowered_danger');
+                            }
+                            return loc('arpa_eco_gene_empowered');
+                        }
+                        let danger = ecosystemInfo.majorTraits[index].danger;
+                        let lethal = global.aberrants.trees.hasOwnProperty('hivemind') && global.aberrants.herbivores.hasOwnProperty('shapeshifter') && 
+                            global.aberrants.carnivores.hasOwnProperty('intelligent') && global.aberrants.scavengers.hasOwnProperty('infiltrator');
+                        if(lethal && index === 'hivemind'){
+                            desc += `<div class="has-text-warning">${loc('ecotrait_hivemind_effect_safe')}</div>`;
+                        }
+                        else if(lethal && danger){
+                            let gains = calcPrestige('living_extinction');
+                            let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                            desc += `<div class="has-text-advanced">${loc('ecotrait_hivemind_effect_reset', [gains.plasmid,plasmidType,gains.phage,gains.dark])}</div>`;
+                        }
+                        else if(global.aberrants[type][index] <= 1){
+                            desc += `<div class="has-text-danger">${loc('arpa_eco_gene_sub_zero')}</div>`;
+                        }
+                        return desc;
+                    },
+                    {
+                        elm: `#geneticMajor_${type} .t-${index} .sub`,
+                        classes: `has-background-light has-text-dark`
+                    });
+                    popover(`ecoGenetrait${index}`, function(){
+                        return `<div>${loc(`ecotrait_${index}_desc`)}</div>${ecosystemInfo.majorTraits[index].effect(type, global.aberrants[type][index])}`;
+                    },
+                    {
+                        elm: `#geneticMajor_${type} .t-${index} .name`,
+                        classes: `has-background-light has-text-dark`
+                    });
+                }
             }
         }
     })

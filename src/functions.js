@@ -327,7 +327,8 @@ export function powerGrid(type,reset){
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
                 'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
                 'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
-                'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_station',
+                'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_headquarters',
+                'crater:refinery_funnel',
                 'city:replicator'
             ];
             break;
@@ -386,7 +387,7 @@ export function powerGrid(type,reset){
             power_structs = ['wastes:watch_tower', 'wastes:woodcutter', 'wastes:surface_apartment', 'wastes:genetics_lab'];
             break;
         case 'crater':
-            power_structs = ['crater:work_quarters', 'crater:crater_drill', 'crater:crater_fabrication', 'crater:crater_factory'];
+            power_structs = ['crater:work_station', 'crater:crater_drill', 'crater:crater_fabrication', 'crater:crater_factory', 'crater:fuel_refinery'];
             break;
     }
 
@@ -1890,6 +1891,7 @@ export function getResetConstants(type, inputs){
         case 'ascend':
         case 'terraform':
         case 'thrusters':
+        case 'living_extinction':
             rc.pop_divisor = 1.15;
             rc.k_inc = 30000;
             rc.k_mult = 1.008;
@@ -2038,12 +2040,12 @@ export function calcPrestige(type,inputs){
         new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
     }
-    else if(type === 'thrusters'){
+    else if(type === 'thrusters' || type === 'living_extinction'){
         gains.dark = 10;
     }
 
 
-    if (['ascend','descend','terraform','apotheosis','thrusters'].includes(type)){
+    if (['ascend','descend','terraform','apotheosis'].includes(type)){
         let pr_gain = 1;
         if (challenge === undefined){
             pr_gain = alevel();
@@ -2055,7 +2057,7 @@ export function calcPrestige(type,inputs){
             pr_gain = challenge + 1;
         }
 
-        if (type === 'ascend' || type === 'terraform' || type === 'thrusters'){
+        if (type === 'ascend' || type === 'terraform'){
             switch (universe){
                 case 'micro':
                     pr_gain *= 0.25;
@@ -2418,10 +2420,10 @@ function flierAdjust(costs, args){
 
 function craftAdjust(costs, args){
     let fathom = fathomCheck('pterodacti');
-    if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Aerographene'] || costs['Scarletite'] || costs['Quantium'])){
+    if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Aerographene'] || costs['Scarletite'] || costs['Quantium'] || costs['Super_Fuel'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Aerographene' || res === 'Scarletite' || res === 'Quantium'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Aerographene' || res === 'Scarletite' || res === 'Quantium' || res === 'Super_Fuel'){
                 newCosts[res] = function(){
                     let cost = costs[res](args);
                     if (global.race['hollow_bones']){

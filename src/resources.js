@@ -133,6 +133,7 @@ export const atomic_mass = {
     Nanoweave: 23.71,
     Scarletite: 188.6,
     Quantium: 241.35,
+    Super_Fuel: 84.16,
     Aerographene: 4.62
 };
 
@@ -187,6 +188,7 @@ export function craftCost(manual=false){
         Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
         Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
         Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
+        Super_Fuel: [{ r: 'Oil', a: 4000},{ r: 'Power_Bones', a:0.8 }],
         Aerographene: [{ r: 'Graphene', a: 5000 },{ r: 'Nano_Tube', a: 5000 }],
         Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
     };
@@ -205,6 +207,9 @@ export function craftCost(manual=false){
                 costs[res][i].a = Math.round(costs[res][i].a * rate);
             }
         });
+    }
+    if(global.surface['refinery_funnel'] && p_on['refinery_funnel']){
+        costs['Super_Fuel'][1].a *= 2 ** p_on['refinery_funnel'];
     }
     return costs;
 }
@@ -257,6 +262,10 @@ export const craftingRatio = (function(){
                     multi: []
                 },
                 Quantium: {
+                    add: [],
+                    multi: []
+                },
+                Super_Fuel: {
                     add: [],
                     multi: []
                 },
@@ -438,6 +447,13 @@ export const craftingRatio = (function(){
                     name: loc(`tech_infectious_disease_lab_alt`),
                     manual: 1,
                     auto: qCraft
+                });
+            }
+            if (p_on['refinery_funnel']){
+                crafting.Super_Fuel.multi.push({
+                    name: loc(`surface_refinery_funnel`),
+                    manual: 1,
+                    auto: 1 + (0.1 * p_on['refinery_funnel'])
                 });
             }
             if (global.tech['core'] >= 3 && p_on['core_blacksmith']){
@@ -797,6 +813,7 @@ export function defineResources(wiki){
     loadResource('Elysanite',wiki,0,1,false,true,'advanced');
     loadResource('Unobtainium',wiki,0,1,false,false,'advanced');
     loadResource('Positronium',wiki,0,1,false,false,'advanced');
+    loadResource('Power_Bones',wiki,100,1,false,false,'advanced')
     loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');
     loadResource('Nanite',wiki,0,1,false,false,'advanced');
@@ -811,6 +828,7 @@ export function defineResources(wiki){
     loadResource('Nanoweave',wiki,-1,0,false,false,'danger');
     loadResource('Scarletite',wiki,-1,0,false,false,'danger');
     loadResource('Quantium',wiki,-1,0,false,false,'danger');
+    loadResource('Super_Fuel',wiki,-1,0,false,false,'danger');
     loadResource('Aerographene',wiki,-1,0,false,false,'danger');
     loadResource('Thermite',wiki,-1,0,false,false,'danger');
     loadResource('Corrupt_Gem',wiki,-2,0,false,false,'caution');
@@ -916,15 +934,15 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     if (stackable){
         res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button" aria-label="Open crate management for ${global.resource[name].name}">+</span></span>`));
     }
-    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
+    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium' || name === 'Super_Fuel'){
         res_container.append($('<span></span>'));
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium' || name === 'Super_Fuel'){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diffSize(diff) }} /s</span>`));
     }
-    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium'){
+    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium' && name !== 'Super_Fuel'){
         let craft = $('<span class="craftable"></span>');
         res_container.append(craft);
 

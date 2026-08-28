@@ -556,7 +556,7 @@ export const events = {
                 'Money','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
                 'Cement','Coal','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
                 'Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene',
-                'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium',
+                'Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Elysanite','Unobtainium','Quantium','Super_Fuel',
                 'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Aerographene','Scarletite'
             ].forEach(function(r){
                 if (global.resource[r].display){

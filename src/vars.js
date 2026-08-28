@@ -60,6 +60,7 @@ export function set_ulevel(u_level){
 export var hell_reports = {};
 export var hell_graphs = {};
 export var battle_log = [];
+export var fight_log = {herbivores: [], carnivores: [], scavengers: []};
 export var message_logs = {
     view: 'all'
 };
@@ -1714,6 +1715,10 @@ if(!global.race.hasOwnProperty('inactiveTraits')){
     }
 }
 
+if(false){
+    global.aberrants = {};
+}
+
 if (!global.settings['icon']){
     global.settings['icon'] = 'star';
 }
@@ -1978,9 +1983,9 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','iceAge','geck','dark','harmony',
+        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','blastaway','lextinct','geck','dark','harmony',
         'blood','cores','artifact','supercoiled','talens','exons','cattle','tcattle','murders',
-        'tmurders','psykill','tpsykill','pdebt','uDead','zkills'
+        'tmurders','psykill','tpsykill','pdebt','uDead','zkills','hslain','cslain','sslain','amutations'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2387,6 +2392,9 @@ if (global.city['foundry'] && !global.city.foundry['Quantium']){
 }
 if (global.city['foundry'] && !global.city.foundry['Aerographene']){
     global.city.foundry['Aerographene'] = 0;
+}
+if (global.city['foundry'] && !global.city.foundry['Super_Fuel']){
+    global.city.foundry['Super_Fuel'] = 0;
 }
 
 if (!global.settings['arpa']){

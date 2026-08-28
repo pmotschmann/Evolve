@@ -16,8 +16,9 @@ import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
-import { bioseed, iceAge } from './resets.js';
+import { bioseed, blast_away } from './resets.js';
 import { loadTab } from './index.js';
+import { fightLogModal } from './iceage.js';
 
 export const actions = {
     evolution: {
@@ -2697,6 +2698,7 @@ export const actions = {
                         Aerographene: 0,
                         Scarletite: 0,
                         Quantium: 0,
+                        Super_Fuel: 0,
                         hold: {},
                         cap: 0,
                         rcap: {},
@@ -4082,7 +4084,7 @@ export const actions = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    iceAge();
+                    blast_away();
                     return true;
                 }
                 return false;
@@ -4460,7 +4462,7 @@ export function setChallengeScreen(){
 }
 
 export function buildTemplate(key, region){
-    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : (global.race['warlord'] ? 'warlord' :'cataclysm');
+    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : (global.race['warlord'] ? 'warlord' : (global.race['iceage'] ? 'iceage' :'cataclysm'));
 
     let tKey = function(a,k,r){
         if (r === 'space' || r === 'portal'){
@@ -7835,8 +7837,6 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     }
     if (c_action.id === 'portal-spire' || (c_action.id === 'portal-waygate' && global.tech.waygate >= 2)){
         if (obj && obj['time']){
-            console.log(obj['time']);
-            debugger;
             parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ timer(time) }}</div>`));
             vBind({
                 el: '#popTimer',
@@ -8309,6 +8309,11 @@ function drawModal(c_action,type){
             break;
         case 'mech_station':
             loadIndustry('mech_station',body);
+            break;
+        case 'aberrant_herbivores':
+        case 'aberrant_carnivores':
+        case 'aberrant_scavengers':
+            fightLogModal(type,body);
             break;
     }
 }
@@ -9873,6 +9878,26 @@ function iceAgeStart(){
 
         global.resource.Lumber.amount = 0;
         global.resource.Stone.amount = 0;
+
+        if(!global.aberrants){
+            global.aberrants = {
+                trees: {
+                    empowered:0,
+                },
+                herbivores: {
+                    empowered: 0,
+                    count: 0
+                },
+                carnivores: {
+                    empowered: 0,
+                    count: 0
+                },
+                scavengers: {
+                    empowered: 0,
+                    count: 0
+                }
+            }
+        }
 
         renderUnderground();
     }

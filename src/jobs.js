@@ -732,7 +732,7 @@ export function defineJobs(define){
     loadJob('pit_miner',define);
     loadJob('crew',define);
     if (!define && !global.race['start_cataclysm']){
-        ['Scarletite','Quantium'].forEach(function (res){
+        ['Scarletite','Quantium','Super_Fuel'].forEach(function (res){
             limitCraftsmen(res, false);
         });
         loadFoundry();
@@ -1067,6 +1067,13 @@ export function craftsmanCap(res){
             }
             return jobScale(cap || 0);
 
+        
+        case 'Super_Fuel':
+            if (global.surface.hasOwnProperty('fuel_refinery')){
+                let cap = getStructNumActive(actions.surface.crater.fuel_refinery);
+                return jobScale(cap);
+            }
+            return 0;
         // This function isn't used to limit normal craftsmen
         default:
             return Number.MAX_SAFE_INTEGER;
@@ -1156,6 +1163,7 @@ export function loadFoundry(servants){
         if (!servants){
             list.push('Scarletite');
             list.push('Quantium');
+            list.push('Super_Fuel');
         }
         if (summer && !servants){
             list.push('Thermite');
@@ -1183,6 +1191,9 @@ export function loadFoundry(servants){
                 else if (res === 'Quantium' && (global.space.hasOwnProperty('zero_g_lab') || global.tauceti.hasOwnProperty('infectious_disease_lab'))){
                     job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ maxQuantium(e.on) }}</span></div>`);
                 }
+                else if (res === 'Super_Fuel' && (global.surface.hasOwnProperty('fuel_refinery'))){
+                    job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ maxSuperFuel(r.on) }}</span></div>`);
+                }
                 else {
                     let tracker = servants ? `{{ s.sjobs.${res} }}` : `{{ f.${res} }}`;
                     let id = servants ? `scraft${res}` : `craft${res}`;
@@ -1201,13 +1212,19 @@ export function loadFoundry(servants){
             }
         }
 
-        let bindData = global.portal.hasOwnProperty('hell_forge') ? {
+        /*let bindData = global.portal.hasOwnProperty('hell_forge') ? {
             c: global.civic.craftsman,
             p: global.portal.hell_forge,
         } : {
             c: global.civic.craftsman,
             e: global.space.hasOwnProperty('zero_g_lab') || global.tauceti.hasOwnProperty('infectious_disease_lab') ? (global.tech['isolation'] ? global.tauceti.infectious_disease_lab : global.space.zero_g_lab) : { count: 0, on: 0 },
-        };
+        };*/
+        let bindData = {
+            c: global.civic.craftsman,
+            p: global.portal.hasOwnProperty('hell_forge') ? global.portal.hell_forge : 0,
+            e: global.space.hasOwnProperty('zero_g_lab') || global.tauceti.hasOwnProperty('infectious_disease_lab') ? (global.tech['isolation'] ? global.tauceti.infectious_disease_lab : global.space.zero_g_lab) : { count: 0, on: 0 },
+            r: global.surface.hasOwnProperty('fuel_refinery') ? global.surface.fuel_refinery : 0
+        }
         if (servants){
             bindData['s'] = global.race.servants;
         }
@@ -1224,7 +1241,7 @@ export function loadFoundry(servants){
                 add(res){
                     let keyMult = keyMultiplier();
                     let tMax = -1;
-                    if (res === 'Scarletite' || res === 'Quantium'){
+                    if (['Scarletite', 'Quantium', 'Super_Fuel'].includes(res)){
                         tMax = craftsmanCap(res);
                     }
                     for (let i=0; i<keyMult; i++){
@@ -1305,6 +1322,9 @@ export function loadFoundry(servants){
                 },
                 maxQuantium(v){
                     return craftsmanCap('Quantium');
+                },
+                maxSuperFuel(v){
+                    return craftsmanCap('Super_Fuel');
                 }
             }
         });

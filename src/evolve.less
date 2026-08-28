@@ -6219,34 +6219,64 @@ div.bigbang {
 }
 
 .ecoTraits{
+    margin-bottom: .5rem;
+    border-bottom: .0625rem solid;
+    border-top: .0625rem solid;
+    padding: 1rem;
+    border-radius: 1rem;
 
-    .traitListing{
-        margin-bottom: .5rem;
-        border-bottom: .0625rem solid;
-        border-top: .0625rem solid;
-        padding: 1rem;
-        border-radius: 1rem;
-
-        .gene{
+    .traitListing {
+        &:not(:first-child) {
+            margin-top: 0.5rem;
+        }
+        .gene {
             margin-top: .125rem;
             margin-bottom: .125rem;
         }
+        .majorgene {
+            padding: 0 0.5rem 0.1rem;
+            margin-top: .125rem;
+            margin-bottom: .125rem;
+            font-size: 1.2em;
+        }
     }
-    .traitBox{
+    .block {
+        display: block;
+    }
+    .traitBox {
         display: flex;
         flex-wrap: wrap;
     }
-    .traitHeading{
+    .traitHeading {
         margin-bottom: .25rem;
     }
 
-    .traitRow{
+    .traitRow {
         width: calc(100% / 3);
     }
 }
 
-.empowered{
+#fightLogContent {
+    text-align: left;
+    div {
+        margin-bottom:0.25rem;
+    }
+    h3 {
+        font-weight: 700;
+    }
+}
+
+#mTabCivil .empowered, .TTEmpowered {
     text-shadow: @bulma-info 0px 0 5px, @bulma-info 0px 0 5px, @bulma-info 0px 0 5px;
+}
+
+#modalBox .modalBoxTitle:has(.empowered) {
+    display: none;
+}
+.extinction_fading{
+    transition: opacity 10s;
+    opacity: 1;
+    opacity: 0;
 }
 
 // --- The screen bleeding out ---------------------------------------------------------------------

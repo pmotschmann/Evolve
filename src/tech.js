@@ -14,6 +14,7 @@ import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
+import { ecoGainMajorTrait } from './iceage.js';
 
 const techs = {
     club: {
@@ -5140,13 +5141,16 @@ const techs = {
         reqs: { thrusters: 1 },
         grant: ['thrusters',2],
         cost: {
-            Knowledge(){ return 20000000; }
+            Knowledge(){ return global.race['iceage'] ? 250000 : 20000000; },
+            Super_Fuel(){ return global.race['iceage'] ? 1000 : 0; }
         },
         effect(){return loc('tech_giant_thrusters_effect');},
         action(){
             if (payCosts($(this)[0])){
-                initStruct(actions.city.giant_thrusters);
-                initStruct(actions.city.thruster_fuel);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.giant_thrusters);
+                    initStruct(actions.city.thruster_fuel);
+                }
                 return true;
             }
             return false;
@@ -5934,10 +5938,205 @@ const techs = {
         effect: loc('tech_plant_odd_seed_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.surface.trees.mayorTraits['empowered'] = 1;
+                global.aberrant.trees.empowered = 1;
+                return true;
             }
             return false;
         }
+    },
+    power_bone_study: {
+        id: 'tech-power_bone_study',
+        title(){ return loc('tech_power_bone_study'); },
+        desc(){ return loc('tech_power_bone_study'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 5 },
+        grant: ['ecosystem_genetics',6],
+        cost: {
+            Knowledge(){ return 220000; },
+            Power_Bones() { return 10; }
+        },
+        effect: loc('tech_power_bone_study_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    aberrant_study: {
+        id: 'tech-aberrant_study',
+        title(){ return loc('tech_aberrant_study'); },
+        desc(){ return loc('tech_aberrant_study'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6 },
+        grant: ['ecosystem_genetics',7],
+        cost: {
+            Knowledge(){ return 245000; },
+        },
+        effect: loc('tech_aberrant_study_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                ecoGainMajorTrait('trees', undefined, true);
+                messageQueue(loc('tech_aberrant_study_result'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    bone_storage: {
+        id: 'tech-bone_storage',
+        title(){ return loc('tech_bone_storage'); },
+        desc(){ return loc('tech_bone_storage'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 5 },
+        grant: ['bone_storage',1],
+        cost: {
+            Knowledge(){ return 225000; }
+        },
+        effect: loc('tech_bone_storage_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.wastes.bone_storage);
+                return true;
+            }
+            return false;
+        }
+    },
+    bone_weaponry: {
+        id: 'tech-bone_weaponry',
+        title(){ return loc('tech_bone_weaponry'); },
+        desc(){ return loc('tech_bone_weaponry'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6, military: 6 },
+        grant: ['military',7],
+        cost: {
+            Knowledge(){ return 225000; },
+            Power_Bones() { return 100; }
+        },
+        effect: loc('tech_bone_weaponry_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bone_weaponry_flair'); }
+    },
+    bone_armor: {
+        id: 'tech-bone_armor',
+        title(){ return loc('tech_bone_armor'); },
+        desc(){ return loc('tech_bone_armor'); },
+        category: 'military',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6, armor: 3 },
+        grant: ['armor',4],
+        cost: {
+            Knowledge(){ return 230000; },
+            Power_Bones() { return 200; }
+        },
+        effect: loc('tech_bone_armor_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return `<div>${loc('tech_bone_armor_flair1')}</div><div>${loc('tech_bone_armor_flair2')}</div>`; }
+    },
+    bone_chainsaw: {
+        id: 'tech-bone_chainsaw',
+        title(){ return loc('tech_bone_chainsaw'); },
+        desc(){ return loc('tech_bone_chainsaw'); },
+        category: 'lumber_gathering',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6, axe: 5 },
+        not_trait: ['living_tool'],
+        grant: ['axe',6],
+        cost: {
+            Knowledge(){ return 230000; },
+            Power_Bones() { return 300; }
+        },
+        effect: loc('tech_bone_chainsaw_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bone_axe_flair'); }
+    },
+    bone_hammer: {
+        id: 'tech-bone_hammer',
+        title(){ return loc('tech_bone_hammer'); },
+        desc(){ return loc('tech_bone_hammer'); },
+        category: 'stone_gathering',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6, hammer: 4 },
+        not_trait: ['living_tool','tusk'],
+        grant: ['hammer',5],
+        cost: {
+            Knowledge(){ return 230000; },
+            Power_Bones() { return 500; }
+        },
+        effect: loc('tech_bone_hammer_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['pickaxe'] = 6;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_bone_hammer_flair'); }
+    },
+    super_binder: {
+        id: 'tech-super_binder',
+        title(){ return loc('tech_super_binder'); },
+        desc(){ return loc('tech_super_binder'); },
+        category: 'progress',
+        era: 'globalized',
+        reqs: { ecosystem_genetics: 6 },
+        grant: ['thrusters',1],
+        cost: {
+            Knowledge(){ return 240000; },
+            Power_Bones() { return 350; }
+        },
+        effect: loc('tech_super_binder_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                initStruct(actions.surface.crater.fuel_refinery);
+                initStruct(actions.surface.crater.refinery_funnel);
+                global.resource.Super_Fuel.display = true;
+                loadFoundry();
+                return true;
+            }
+            return false;
+        }
+    },
+    rocket_engine: {
+        id: 'tech-rocket_engine',
+        title(){ return loc('tech_rocket_engine'); },
+        desc(){ return loc('tech_rocket_engine'); },
+        category: 'power_generation',
+        era: 'globalized',
+        reqs: { thrusters: 1 },
+        trait: ['iceage'],
+        grant: ['super_fuel',1],
+        cost: {
+            Knowledge(){ return 240000; },
+            Super_Fuel() { return 600; }
+        },
+        effect: loc('tech_rocket_engine_effect'),
+        action(){
+            /*if (payCosts($(this)[0])){
+                return true;
+            }*/
+            return false;
+        },
+        flair(){ return loc('tech_rocket_engine_flair'); }
     },
     watch_tower: {
         id: 'tech-watch_tower',
@@ -7955,7 +8154,7 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
-        not_trait: ['lone_survivor','warlord'],
+        not_trait: ['lone_survivor','warlord','iceage'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }
@@ -8082,7 +8281,8 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','living_tool'],
+        condition(){ return global.race['iceage'] || !global.race['sappy'] },
         grant: ['hammer',1],
         cost: {
             Knowledge(){ return 540; },
@@ -8103,7 +8303,8 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { hammer: 1, mining: 3 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','living_tool'],
+        condition(){ return global.race['iceage'] || !global.race['sappy'] },
         grant: ['hammer',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -8124,7 +8325,8 @@ const techs = {
         category: 'stone_gathering',
         era: 'discovery',
         reqs: { hammer: 2, smelting: 2 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','living_tool'],
+        condition(){ return global.race['iceage'] || !global.race['sappy'] },
         grant: ['hammer',3],
         cost: {
             Knowledge(){ return 7200; },
@@ -8145,7 +8347,8 @@ const techs = {
         category: 'stone_gathering',
         era: 'industrialized',
         reqs: { hammer: 3, high_tech: 3 },
-        not_trait: ['cataclysm','sappy','living_tool'],
+        not_trait: ['cataclysm','living_tool'],
+        condition(){ return global.race['iceage'] || !global.race['sappy'] },
         grant: ['hammer',4],
         cost: {
             Knowledge(){ return 40000; },
