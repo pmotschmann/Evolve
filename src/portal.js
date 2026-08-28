@@ -1,4 +1,4 @@
-import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap } from './vars.js';
+import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap, webWorker } from './vars.js';
 import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus } from './races.js';
@@ -4317,7 +4317,10 @@ function fortressData(dt){
     }
 }
 
-export function bloodwar(){
+// `report` is false for the intermediate days of an offline catch-up step: the day's outcome still
+// lands in global.portal.observe.stats, but the per-day report object is not filed and the graphs
+// are not touched, because purgeReports() would drop those days anyway and nobody is watching.
+export function bloodwar(report = true){
     // Hell combat draws from its own RNG stream (hellseed) so soul gem and kill outcomes are
     // reproducible during offline catch-up without disturbing the standard seed or the warseed.
     // Mirrors Math.rand's integer-in-[min,max) behaviour.
@@ -4359,21 +4362,23 @@ export function bloodwar(){
         pat_armor += traits.scales.vars()[2];
     }
 
-    let forgeOperating = false;                    
+    // The understaffed badge is presentation only; skip the selector while catching up offline.
+    const forgeBadge = (cls) => { if (!webWorker.offline){ $(`#portal-soul_forge .on`)[cls]('altwarn'); } };
+    let forgeOperating = false;
     if (p_on['soul_forge']){
         let troops = global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
         let forge = soulForgeSoldiers();
         if (forge <= troops){
             forgeOperating = true;
-            $(`#portal-soul_forge .on`).removeClass('altwarn');
+            forgeBadge('removeClass');
         }
         else {
             forgeOperating = false;
-            $(`#portal-soul_forge .on`).addClass('altwarn');
+            forgeBadge('addClass');
         }
     }
     else {
-        $(`#portal-soul_forge .on`).addClass('altwarn');
+        forgeBadge('addClass');
     }
 
     // Drones
@@ -4508,7 +4513,9 @@ export function bloodwar(){
                     soulCapacitor(killed);
                 }
                 if (killed > 0){
-                    let div = 35 - Math.floor(p_on['attractor'] / 3);
+                    // p_on only carries a key once the struct has been powered at least once, so
+                    // with no attractor built this is undefined
+                    let div = 35 - Math.floor((p_on['attractor'] || 0) / 3);
                     if (div < 5){ div = 5; }
                     let chances = Math.round(killed / div);
                     for (let j=0; j<chances; j++){
@@ -4719,7 +4726,8 @@ export function bloodwar(){
                 if (searched > search_limit){ searched = search_limit; }
                 surv_report.bodies = searched;
                 if (searched > 0){
-                    let div = 25 - Math.floor(p_on['attractor'] / 5);
+                    // Same undefined-p_on NaN as the patrol drop above.
+                    let div = 25 - Math.floor((p_on['attractor'] || 0) / 5);
                     if (div < 5){ div = 5; }
                     let chances = Math.round(searched / div);
                     for (let j=0; j<chances; j++){
@@ -4897,13 +4905,15 @@ export function bloodwar(){
             global.portal.observe.stats.period[stat] += day_report.stats[stat];
         }
     });
+    if (!report){ return; }
+
     if (!hell_reports[`year-${global.city.calendar.year}`]){
         hell_reports[`year-${global.city.calendar.year}`] = {};
     }
     hell_reports[`year-${global.city.calendar.year}`][`day-${global.city.calendar.day}`] = day_report;
-    
+
     purgeReports();
-    
+
     let now = Date.now();
     if (now - lastHellGraphUpdate >= hellGraphUpdateInterval){
         lastHellGraphUpdate = now;
@@ -4961,21 +4971,23 @@ export function hellguard(){
             global.portal.minions.spawns += hellRand(global.portal.minions.on * low_spawn, global.portal.minions.on * spawn);
         }
 
+        // Presentation only - see the same badge in bloodwar().
+        const forgeBadge = (cls) => { if (!webWorker.offline){ $(`#portal-soul_forge .on`)[cls]('altwarn'); } };
         let forgeOperating = false;
         if (p_on['soul_forge']){
             let troops = garrisonSize(false,{no_forge: true});
             let forge = soulForgeSoldiers();
             if (forge <= troops){
                 forgeOperating = true;
-                $(`#portal-soul_forge .on`).removeClass('altwarn');
+                forgeBadge('removeClass');
             }
             else {
                 forgeOperating = false;
-                $(`#portal-soul_forge .on`).addClass('altwarn');
+                forgeBadge('addClass');
             }
         }
         else {
-            $(`#portal-soul_forge .on`).addClass('altwarn');
+            forgeBadge('addClass');
         }
 
         if (global.portal.throne.enemy.length > 0){

@@ -11,7 +11,8 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, advanceMapDays, driftingPoint, facilityFindings, orbitPeriod, syndicateWithdrawal } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
+import { starData, genXYZcoord, drawMap, randomCoord, advanceMapDays, orbitPeriod } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -972,8 +973,8 @@ function updateSolarMap(ticks){
     if (webWorker.offline){ days *= webWorker.offlineScale; }
 
     if (global.space.hasOwnProperty('position')){
-        Object.keys(spacePlanetStats).forEach(function(planet){
-            if (spacePlanetStats[planet].startype){ return; }   // stars use fixed coordinates
+        Object.keys(starData).forEach(function(planet){
+            if (starData[planet].startype){ return; }   // stars use fixed coordinates
             if (global.space.position.hasOwnProperty(planet)){
                 let orbit = orbitPeriod(planet);
                 if (orbit === 0){
@@ -997,6 +998,14 @@ function updateSolarMap(ticks){
         drawMap();
     }
 }
+
+// How much game time one pass of each loop stands for, in units of that loop's live cadence.
+// During offline catch-up a single pass of all three loops covers offlineScale whole game days,
+// so anything that counts loop passes (rather than scaling off time_multiplier) has to advance
+// by that many passes' worth or it runs 1/step as fast as it does in live play.
+function dayStep(){ return webWorker.offline ? webWorker.offlineScale : 1; }
+function midSteps(){ return webWorker.offline ? (webWorker.longRatio / webWorker.midRatio) * webWorker.offlineScale : 1; }
+function fastSteps(){ return webWorker.offline ? webWorker.longRatio * webWorker.offlineScale : 1; }
 
 var loopTick = 0; // Used to synchronize the fast, mid, and long loops to each other
 export function execGameLoops(periods = 1, offline = false){
@@ -1202,6 +1211,9 @@ var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 
 function powerBadge(sel,warn,title){
+    // Purely presentational, and the offline modal covers the page anyway; skipping it during
+    // catch-up saves a querySelectorAll per powered struct per simulated tick.
+    if (webWorker.offline){ return; }
     const nodes = document.querySelectorAll(sel);
     for (let i=0; i<nodes.length; i++){
         if (warn){ nodes[i].classList.add('warn'); }
@@ -1248,7 +1260,7 @@ function setElHeight(el,value){
 }
 
 function fastLoop(){
-    if (!global.race['no_craft']){
+    if (!global.race['no_craft'] && !webWorker.offline){
         // keyMultiplier() is the same for every button this tick, so compute it once instead of per element.
         const km = keyMultiplier();
         const crafts = document.querySelectorAll('.craft');
@@ -4299,13 +4311,21 @@ function fastLoop(){
 
         // Fortress Repair
         if (global.portal['fortress'] && global.portal.fortress.walls < 100){
-            if (modRes('Stone', -(200 * time_multiplier))){
-                global.portal.fortress.repair++;
+            let ticks = fastSteps();
+            let bill = 200 * time_multiplier;
+            let paid = Math.min(bill, global.resource.Stone.amount);
+            if (paid > 0){
+                modRes('Stone', -paid);
+                global.portal.fortress.repair += Math.floor(ticks * paid / bill);
                 breakdown.p.consume.Stone[loc('portal_fortress_name')] = -200;
             }
-            if (global.portal.fortress.repair >= actions.portal.prtl_fortress.info.repair()){
-                global.portal.fortress.repair = 0;
+            let wall_repair = actions.portal.prtl_fortress.info.repair();
+            while (global.portal.fortress.repair >= wall_repair && global.portal.fortress.walls < 100){
+                global.portal.fortress.repair -= wall_repair;
                 global.portal.fortress.walls++;
+            }
+            if (global.portal.fortress.walls >= 100){
+                global.portal.fortress.repair = 0;
             }
         }
 
@@ -8597,7 +8617,7 @@ function fastLoop(){
         // Power grid state
         global.city.power_total = -max_power;
         global.city.power = power_grid;
-        const meter = document.getElementById('powerMeter');
+        const meter = webWorker.offline ? null : document.getElementById('powerMeter');
         if (meter){
             if (global.city.power < 0){
                 meter.classList.add('low');
@@ -8745,13 +8765,19 @@ function fastLoop(){
 
     // carport repair
     if (global.portal['carport']){
-        const carportCount = document.querySelector('#portal-carport .count');
+        const carportCount = webWorker.offline ? null : document.querySelector('#portal-carport .count');
         if (global.portal.carport.damaged > 0){
             if (carportCount){ carportCount.classList.add('has-text-alert'); }
-            global.portal.carport.repair++;
-            if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair()){
-                global.portal.carport.repair = 0;
+            // Advance by a whole compressed step's worth of fast loops, otherwise carports stay
+            // wrecked for the entire catch-up while the surveyors that damaged them keep dying.
+            global.portal.carport.repair += fastSteps();
+            let carport_repair = actions.portal.prtl_fortress.carport.repair();
+            while (global.portal.carport.repair >= carport_repair && global.portal.carport.damaged > 0){
+                global.portal.carport.repair -= carport_repair;
                 global.portal.carport.damaged--;
+            }
+            if (global.portal.carport.damaged <= 0){
+                global.portal.carport.repair = 0;
             }
             //limit carport damage to account for removing high population
             global.portal.carport.damaged = Math.min(global.portal.carport.damaged, jobScale(global.portal.carport.count));
@@ -8774,14 +8800,16 @@ function fastLoop(){
         diffCalc(global.race.species,webWorker.mt);
     }
 
-    if (global.settings.expose){
+    if (global.settings.expose && !webWorker.offline){
         if (!window['evolve']){
             enableDebug();
         }
         updateDebugData();
     }
 
-    let easter = eventActive('easter');
+    // Binding easter eggs / trick-or-treats reaches into the DOM for elements the offline modal
+    // is covering; the first live fast loop binds anything that appeared during catch-up.
+    let easter = webWorker.offline ? { active: false } : eventActive('easter');
     if (easter.active){
         for (i=1; i<=18; i++){
             const egg = document.getElementById(`egg${i}`);
@@ -8792,7 +8820,7 @@ function fastLoop(){
         }
     }
 
-    let halloween = eventActive('halloween');
+    let halloween = webWorker.offline ? { active: false } : eventActive('halloween');
     if (halloween.active){
         for (i=1; i<=8; i++){
             const treat = document.getElementById(`treat${i}`);
@@ -10982,14 +11010,18 @@ function midLoop(){
             }
 
             let heal_chance = global.tech['tech_womling_firstaid'] ? 3 : 4;
-            if (Math.rand(0,10) === 0){
-                let raw = Math.rand(0,miners + scientist);
-                if (raw > injured){
-                    injured = raw;
+            // Injury and recovery are a coupled per-mid-loop roll, so a compressed step has to
+            // roll them once per mid loop it stands for rather than scaling either side.
+            for (let w = midSteps(); w > 0; w--){
+                if (Math.rand(0,10) === 0){
+                    let raw = Math.rand(0,miners + scientist);
+                    if (raw > injured){
+                        injured = raw;
+                    }
                 }
-            }
-            else if (injured > 0 && Math.rand(0,heal_chance) === 0){
-                injured--;
+                else if (injured > 0 && Math.rand(0,heal_chance) === 0){
+                    injured--;
+                }
             }
 
             if (global.tauceti.hasOwnProperty('womling_farm')){
@@ -11176,7 +11208,7 @@ function midLoop(){
             else if (global.resource[res].amount < 0){
                 //global.resource[res].amount = 0;
             }
-            const resCount = document.querySelector(`#res${res} .count`);
+            const resCount = webWorker.offline ? null : document.querySelector(`#res${res} .count`);
             if (resCount){
                 resCount.classList.toggle('has-text-warning', global.resource[res].amount >= global.resource[res].max * 0.99);
             }
@@ -11735,13 +11767,18 @@ function midLoop(){
                 }
             }
 
+            // Mech progress is a flat per-mid-loop rate, so a compressed step credits as many mid
+            // loops as it stands for. The ETAs stay in live mid-loop units - they are display only
+            // and the first live mid loop recomputes them.
+            let mech_progress = progress * midSteps();
+
             if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
-                global.portal.waygate.progress += progress;
+                global.portal.waygate.progress += mech_progress;
                 global.portal.waygate.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.waygate.progress) / progress);
                 global.portal.spire.time = timeFormat(-1);
             }
             else {
-                global.portal.spire.progress += progress;
+                global.portal.spire.progress += mech_progress;
                 global.portal.spire.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.spire.progress) / progress);
                 if (global.tech['waygate'] && global.tech.waygate >= 2){
                     global.portal.waygate.time = timeFormat(-1);
@@ -11838,23 +11875,15 @@ function midLoop(){
         }
 
         if (global.race['cannibalize'] && global.city['s_alter']){
-            if (global.city.s_alter.rage > 0){
-                global.city.s_alter.rage--;
-            }
-            if (global.city.s_alter.regen > 0){
-                global.city.s_alter.regen--;
-            }
-            if (global.city.s_alter.mind > 0){
-                global.city.s_alter.mind--;
-            }
-            if (global.city.s_alter.mine > 0){
-                global.city.s_alter.mine--;
-            }
-            if (global.city.s_alter.harvest > 0){
-                global.city.s_alter.harvest--;
-            }
+            // These are mid-loop countdowns; a compressed step burns as many of them as it covers.
+            let alter_step = midSteps();
+            ['rage','regen','mind','mine','harvest'].forEach(function(buff){
+                if (global.city.s_alter[buff] > 0){
+                    global.city.s_alter[buff] = Math.max(0, global.city.s_alter[buff] - alter_step);
+                }
+            });
 
-            if (document.querySelector(`#popper[data-id="city-s_alter"]`)){
+            if (!webWorker.offline && document.querySelector(`#popper[data-id="city-s_alter"]`)){
                 updateDesc(actions.city.s_alter,'city','s_alter');
             }
         }
@@ -12238,7 +12267,10 @@ function midLoop(){
 
     // The solar map on Slow, and whenever the map is closed — nothing is watching it either way.
     if (mapDriver() === 'midLoop'){ updateSolarMap(webWorker.midRatio); }
-    
+
+    // Everything past this point is presentation: No need to run during catch up.
+    if (webWorker.offline){ return; }
+
     resourceAlt();
 
     const costLists = document.querySelectorAll(`.costList`);
@@ -12419,7 +12451,9 @@ function longLoop(){
     const astroSign = astrologySign();
     if (global.race.species !== 'protoplasm'){
 
-        if (global.settings.tabLoad || (global.settings.civTabs === 2 && global.settings.govTabs === 2)){
+        // Reconciles the power grid against the breaker elements on screen; there are none to read
+        // while the offline modal is up, and setPowerGrid() would only rebuild markup nobody sees.
+        if (!webWorker.offline && (global.settings.tabLoad || (global.settings.civTabs === 2 && global.settings.govTabs === 2))){
             let grids = gridDefs();
             let updatePowerGrid = false;
             Object.keys(grids).forEach(function(grid){
@@ -12465,11 +12499,19 @@ function longLoop(){
             }, 4000);
         }
 
-        if (global.portal['fortress'] && !global.race['warlord']){
-            bloodwar();
-        }
-        else if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
-            hellguard();
+        // Hell fights one battle per game day, and the garrison heals between battles. During
+        // offline catch-up a single long loop stands for offlineScale days, so the pair has to be
+        // run that many times, interleaved - threat feeds back into the next day's spawn and
+        // wounded soldiers fight at half strength, so neither side can be scaled arithmetically
+        // and fighting every day before healing any of them is not the same fight. Only the final
+        // pass files a day report; purgeReports() would drop the intermediate ones anyway.
+        const hell_days = dayStep();
+        const fortress_war = global.portal['fortress'] && !global.race['warlord'];
+        const warlord_war = global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0;
+        for (let d = 0; d < hell_days; d++){
+            if (fortress_war){ bloodwar(d === hell_days - 1); }
+            else if (warlord_war){ hellguard(); }
+            healSoldiers(astroSign);
         }
 
         if (global.civic.govern.rev > 0){
@@ -12593,90 +12635,27 @@ function longLoop(){
             }
         }
 
-        // Soldier Healing
-        if (global.civic.garrison.wounded > 0){
-            let healed = jobScale(global.race['regenerative'] ? traits.regenerative.vars()[0] : 1);
-
-            let fathom = fathomCheck('troll');
-            if (fathom > 0){
-                healed += Math.round(jobScale(20 * traits.regenerative.vars(1)[0] * fathom));
-            }
-            let hc = global.city['hospital'] ? global.city.hospital.count : 0;
-            if (global.race['orbit_decayed'] && global.race['truepath']){
-                hc = Math.min(support_on['operating_base'],p_on['operating_base']);
-            }
-            else if (global.race['artifical'] && global.city['boot_camp']){
-                hc = global.city.boot_camp.count;
-            }
-            if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
-                let bonus = global.stats.achieve.lamentis.l;
-                if (bonus > 5){ bonus = 5; }
-                hc += bonus;
-            }
-            if (astroSign === 'cancer'){
-                hc += astroVal('cancer')[0];
-                if (hc < 0){ hc = 0; }
-            }
-            if (global.tech['medic'] && global.tech['medic'] >= 2){
-                hc *= global.tech['medic'];
-            }
-            if (global.race['fibroblast']){
-                hc += geneVars('fibroblast')[0] * global.race['fibroblast'];
-            }
-            hc *= geneBonus('mycelial');
-            if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
-                hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
-            }
-            let mantisFathom = fathomCheck('mantis');
-            if (mantisFathom > 0){
-                hc >= 20 ? hc *= (1 + traits.cannibalize.vars(1)[0] / 100 * mantisFathom) : hc += Math.floor(traits.cannibalize.vars(1)[0] / 5 * mantisFathom);
-            }
-            if (global.race['high_pop']){
-                hc *= traits.high_pop.vars()[2];
-            }
-            let painVal = govActive('nopain',0);
-            if (painVal){
-                hc *= 1 + (painVal / 100);
-            }
-            if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 2){
-                hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
-            }
-            let max_bound = 20;
-            if (global.race['slow_regen']){
-                max_bound *= 1 + (traits.slow_regen.vars()[0] / 100);
-            }
-            hc = Math.round(hc);
-            if (hc > 0){
-                while (hc >= max_bound){
-                    healed++;
-                    hc -= max_bound;
-                }
-                if (Math.rand(0,max_bound) < hc){
-                    healed++;
-                }
-            }
-            global.civic.garrison.wounded -= healed;
-            if (global.civic.garrison.wounded < 0){
-                global.civic.garrison.wounded = 0;
-            }
-        }
-
+        // Garrison countdowns, one tick per game day.
         if (global.civic.garrison['fatigue'] && global.civic.garrison.fatigue > 0){
-            global.civic.garrison.fatigue--;
+            global.civic.garrison.fatigue = Math.max(0, global.civic.garrison.fatigue - dayStep());
         }
 
         if (global.civic.garrison['protest'] && global.civic.garrison.protest > 0){
-            global.civic.garrison.protest--;
+            global.civic.garrison.protest = Math.max(0, global.civic.garrison.protest - dayStep());
         }
 
+        // Mercenary cost decay is a per-day roll, so a compressed step rolls once per day covered.
         if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0){
             let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
             let max_merc_roll = global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
             let num_restore = 0;
-            for (let roll_num = 0; roll_num < max_merc_roll; roll_num++){
-                if (Math.rand(0, merc_bound) === 0){
-                    num_restore++;
+            for (let d = dayStep(); d > 0; d--){
+                for (let roll_num = 0; roll_num < max_merc_roll; roll_num++){
+                    if (Math.rand(0, merc_bound) === 0){
+                        num_restore++;
+                    }
                 }
+                if (num_restore >= global.civic.garrison.m_use){ break; }
             }
             global.civic.garrison.m_use = Math.max(0, global.civic.garrison.m_use - num_restore);
         }
@@ -12687,9 +12666,9 @@ function longLoop(){
 
         if (global.city.calendar.day > 0){
             // Time. During offline catch-up a single long loop represents offlineScale whole days.
-            let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
-            global.city.calendar.day += dayStep;
-            global.stats.days += dayStep;
+            let day_step = dayStep();
+            global.city.calendar.day += day_step;
+            global.stats.days += day_step;
             while (global.city.calendar.day > orbitLength()){
                 global.city.calendar.day -= orbitLength();
                 global.city.calendar.year++;
@@ -13025,8 +13004,8 @@ function longLoop(){
                 // are effectively repaired 6 times faster
                 const yardRepair = 3;
                 const fieldRepair = 1;
-                let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
-                let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - dayStep) / 2);
+                let day_step = dayStep();
+                let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - day_step) / 2);
 
                 // Ships under way are advanced by moveShips (see truepath.js)
                 global.space.shipyard.ships.forEach(function(ship){
@@ -13036,7 +13015,7 @@ function longLoop(){
                     if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
                         // anywhere else it is patched up every other day (see the cadence above).
-                        ship.damage -= atShipyard(ship) ? yardRepair * dayStep : fieldRepair * fieldDays;
+                        ship.damage -= atShipyard(ship) ? yardRepair * day_step : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
                     // Wear and tear from fighting syndicate.
@@ -13743,7 +13722,7 @@ function longLoop(){
         // Roll the major/minor random events once per game day. During offline catch-up a single
         // long loop represents offlineScale days, so roll that many times to keep event cadence
         // (and their effects) matching real time instead of firing only once per compressed step.
-        let eventRolls = webWorker.offline ? webWorker.offlineScale : 1;
+        let eventRolls = dayStep();
         for (let er = 0; er < eventRolls; er++){
             rollDayEvents(astroSign);
         }
@@ -13834,6 +13813,76 @@ function buildGene(blockGeneBuffer = false){
     }
 }
 
+// One game day of soldier recovery.
+function healSoldiers(astroSign){
+    if (global.civic.garrison.wounded <= 0){ return; }
+
+    let healed = jobScale(global.race['regenerative'] ? traits.regenerative.vars()[0] : 1);
+
+    let fathom = fathomCheck('troll');
+    if (fathom > 0){
+        healed += Math.round(jobScale(20 * traits.regenerative.vars(1)[0] * fathom));
+    }
+    let hc = global.city['hospital'] ? global.city.hospital.count : 0;
+    if (global.race['orbit_decayed'] && global.race['truepath']){
+        hc = Math.min(support_on['operating_base'],p_on['operating_base']);
+    }
+    else if (global.race['artifical'] && global.city['boot_camp']){
+        hc = global.city.boot_camp.count;
+    }
+    if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
+        let bonus = global.stats.achieve.lamentis.l;
+        if (bonus > 5){ bonus = 5; }
+        hc += bonus;
+    }
+    if (astroSign === 'cancer'){
+        hc += astroVal('cancer')[0];
+        if (hc < 0){ hc = 0; }
+    }
+    if (global.tech['medic'] && global.tech['medic'] >= 2){
+        hc *= global.tech['medic'];
+    }
+    if (global.race['fibroblast']){
+        hc += geneVars('fibroblast')[0] * global.race['fibroblast'];
+    }
+    hc *= geneBonus('mycelial');
+    if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
+        hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
+    }
+    let mantisFathom = fathomCheck('mantis');
+    if (mantisFathom > 0){
+        hc >= 20 ? hc *= (1 + traits.cannibalize.vars(1)[0] / 100 * mantisFathom) : hc += Math.floor(traits.cannibalize.vars(1)[0] / 5 * mantisFathom);
+    }
+    if (global.race['high_pop']){
+        hc *= traits.high_pop.vars()[2];
+    }
+    let painVal = govActive('nopain',0);
+    if (painVal){
+        hc *= 1 + (painVal / 100);
+    }
+    if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 2){
+        hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
+    }
+    let max_bound = 20;
+    if (global.race['slow_regen']){
+        max_bound *= 1 + (traits.slow_regen.vars()[0] / 100);
+    }
+    hc = Math.round(hc);
+    if (hc > 0){
+        while (hc >= max_bound){
+            healed++;
+            hc -= max_bound;
+        }
+        if (Math.rand(0,max_bound) < hc){
+            healed++;
+        }
+    }
+    global.civic.garrison.wounded -= healed;
+    if (global.civic.garrison.wounded < 0){
+        global.civic.garrison.wounded = 0;
+    }
+}
+
 function diffCalc(res,period){
     let sec = 1000;
     if (global.race['slow']){
@@ -13852,6 +13901,10 @@ function diffCalc(res,period){
         global.resource[res].gen = +(global.resource[res].gen_d / (period / sec)).toFixed(2);
         global.resource[res].gen_d = 0;
     }
+
+    // The rate itself is state; the colour on it is not. Skipping the colouring during catch-up
+    // saves a jQuery descendant selector per resource per simulated tick.
+    if (webWorker.offline){ return; }
 
     let el = $(`#res${res} .diff`);
     if (global.race['decay']){
