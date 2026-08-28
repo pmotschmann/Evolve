@@ -4,7 +4,7 @@ import { defineIndustry } from './industry.js';
 import { jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
-import { buildGarrison, govEffect, govTitle, armyRating, govCivics } from './civics.js';
+import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
@@ -9247,7 +9247,7 @@ function minorWish(parent){
 
                     let options = ['pet'];
                     let rivals = ['gov0','gov1','gov2'];
-                    if (global.race['truepath'] && !global.tech['isolation'] && global.tech['rival']){
+                    if (global.race['truepath'] && !global.tech['isolation'] && rivalActive()){
                         rivals.push('gov3');
                     }
 
@@ -9782,7 +9782,7 @@ function majorWish(parent){
                         }
                     });
 
-                    if (global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 0){
+                    if (global.race['truepath'] && !global.tech['isolation'] && rivalActive() && global.civic.foreign.gov3.hstl > 0){
                         options.push('gov3');
                     }
 

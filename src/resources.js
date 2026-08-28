@@ -6,7 +6,7 @@ import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate, womlingArtisans } from './truepath.js';
 import { govActive, defineGovernor } from './governor.js';
-import { govEffect } from './civics.js';
+import { govEffect, rivalCollapsed } from './civics.js';
 import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
 import { loc } from './locale.js';
 
@@ -1555,7 +1555,7 @@ export function marketItem(mount,market_item,name,color,full){
                     if (rank > 5){ rank = 5; }
                     rate *= 1 + (rank / 50);
                 }
-                if (global.race['truepath']){
+                if (global.race['truepath'] && !rivalCollapsed()){
                     rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
                 }
                 rate = +(rate).toFixed(3);
@@ -2065,7 +2065,7 @@ export function tradeSellPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
         price = price * (1 + (global.tech['railway'] * boost));
     }
-    if (global.race['truepath'] && !global.race['lone_survivor']){
+    if (global.race['truepath'] && !global.race['lone_survivor'] && !rivalCollapsed()){
         price *= 1 - (global.civic.foreign.gov3.hstl / 101);
     }
     if (global.race['inflation']){
@@ -2105,7 +2105,7 @@ export function tradeBuyPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
         price = price * (boost ** global.tech['railway']);
     }
-    if (global.race['truepath'] && !global.race['lone_survivor']){
+    if (global.race['truepath'] && !global.race['lone_survivor'] && !rivalCollapsed()){
         price *= 1 + (global.civic.foreign.gov3.hstl / 101);
     }
     if (global.race['inflation']){

@@ -6,12 +6,12 @@ import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
-import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
+import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer, rivalCollapsed, collapseRival } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, advanceMapDays, driftingPoint, facilityFindings, orbitPeriod } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, spacePlanetStats, genXYZcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, randomCoord, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, advanceMapDays, driftingPoint, facilityFindings, orbitPeriod, syndicateWithdrawal } from './truepath.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1967,7 +1967,7 @@ function fastLoop(){
                             if (rank > 10){ rank = 10; }
                             rate *= 1 + (rank / 100);
                         }
-                        if (global.race['truepath']){
+                        if (global.race['truepath'] && !rivalCollapsed()){
                             rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
                         }
                         modRes(res,routes * time_multiplier * rate);
@@ -5985,6 +5985,15 @@ function fastLoop(){
         if(global.portal['oven_complete'] && p_on['oven_complete'] && !global.tech['dish_reset'] && global.portal['devilish_dish'].done >= 100){
             global.tech['dish_reset'] = 1;
             drawTech();
+        }
+
+        if (global.tech['shadow'] && global.tech.shadow >= 4 && p_on['server_farm']){
+            let base = p_on['server_farm'] * 0.025;
+            let delta = base * global_multiplier;
+
+            breakdown.p['Cipher'][loc('tau_star_server_farm')] = base + 'v';
+
+            modRes('Cipher', delta * time_multiplier);
         }
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && p_on['alien_outpost']){
@@ -12546,9 +12555,29 @@ function longLoop(){
             }
         }
 
-        if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
+        if (global.race['truepath'] && !rivalCollapsed() && global.civic.foreign.gov3.mil < 500){
             if (Math.rand(0, 50) === 0){
                 global.civic.foreign.gov3.mil++;
+            }
+        }
+
+        // Shadow War, advancement
+        if (global.race['truepath'] && global.tech['shadow']){
+            if (global.tech.shadow === 2){
+                if (!global.race['gov3_collapse']){
+                    global.race['gov3_collapse'] = global.stats.days + Math.rand(30,51);
+                }
+                else if (global.stats.days >= global.race.gov3_collapse){
+                    collapseRival();
+                }
+            }
+            else if (global.tech.shadow === 3){
+                if (!global.race['syndicate_withdraw']){
+                    global.race['syndicate_withdraw'] = global.stats.days + Math.rand(20,31);
+                }
+                else if (global.stats.days >= global.race.syndicate_withdraw){
+                    syndicateWithdrawal();
+                }
             }
         }
 

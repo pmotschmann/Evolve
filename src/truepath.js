@@ -2,13 +2,13 @@ import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webW
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers } from './resources.js';
-import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect } from './civics.js';
+import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals } from './industry.js';
+import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals, setPowerGrid } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { traitCostMod, fathomCheck } from './races.js';
@@ -2655,6 +2655,9 @@ const tauCetiModules = {
                 if (global.resource.Positronium.display){
                     let store = Math.floor(global.resource.Knowledge.max / 1000);
                     effectText += `<div>${loc('plus_max_resource',[store.toLocaleString(),global.resource.Positronium.name])}</div>`;
+                }
+                if (global.tech['shadow'] && global.tech.shadow >= 4){
+                    effectText += `<div>${loc('produce',[0.025,global.resource.Cipher.name])}</div>`;
                 }
                 return effectText + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -9138,12 +9141,15 @@ export function syndicate(region,extra){
     if (syndicateActive() && global.space.syndicate.hasOwnProperty(region)){
         let divisor = 1000;
 
+        // A collapsed rival government is no longer keeping the syndicate off you, nor egging it on.
         let rival = 0;
-        if (global.civic.foreign.gov3.hstl < 10){
-            rival = 250 - (25 * global.civic.foreign.gov3.hstl);
-        }
-        else if (global.civic.foreign.gov3.hstl > 60){
-            rival = (-13 * (global.civic.foreign.gov3.hstl - 60));
+        if (!rivalCollapsed()){
+            if (global.civic.foreign.gov3.hstl < 10){
+                rival = 250 - (25 * global.civic.foreign.gov3.hstl);
+            }
+            else if (global.civic.foreign.gov3.hstl > 60){
+                rival = (-13 * (global.civic.foreign.gov3.hstl - 60));
+            }
         }
 
         switch (region){
@@ -14079,20 +14085,9 @@ function starRangeLabel(){
     return starRange() === STAR_RANGE_INF ? loc('solar_map_star_range_all')
                                           : loc('solar_map_star_range', [starRange()]);
 }
-// The star the range is measured from. mapFocus is the point at the centre of the viewport, and
-// clicking any body recenters on it, so this resolves to the clicked star, or to the parent star of
-// a clicked planet, or to whatever is nearest after a free pan. Resolved once per frame in drawMap
-// rather than inside starCulled: nearestStar scans every star and starCulled runs for every star,
-// so working it out in the test would square the cost on a hundred-system field.
+// The star the range is measured from.
 var mapAnchor = { x: 0, y: 0, z: 0 };
-// The table, indexed the two ways the draw actually walks it: every star, and the bodies orbiting
-// each one. Rebuilt at the top of drawMap, which is cheap (one pass) and cannot go stale — the star
-// field otherwise made the draw quadratic, rescanning all ~1300 entries once per drawn star to find
-// the handful orbiting it, four separate times. At the zoomed-out field that was several million
-// iterations and as many throwaway pair-arrays every frame.
-// `mapDrawnAsStar` additionally holds the bodies that draw as stars without being one in the table —
-// a binary orbiting an invisible barycenter — which is what the pointer test wants and the camera
-// does not.
+// The table, indexed the ways the draw actually uses it.
 var mapStarIds = [], mapDrawnAsStar = [], mapBodiesOf = {};
 function indexBodies(){
     mapStarIds = [];
@@ -14107,8 +14102,6 @@ function indexBodies(){
     }
 }
 // The index is built by drawMap, which always runs before any pointer or camera event can fire.
-// Built on demand anyway rather than trusting that ordering, since an empty index would silently
-// mean "no stars" instead of failing.
 function starIndex(){
     if (!mapStarIds.length){ indexBodies(); }
     return mapStarIds;
@@ -14117,17 +14110,14 @@ function drawnAsStarIndex(){
     if (!mapDrawnAsStar.length){ indexBodies(); }
     return mapDrawnAsStar;
 }
-// A true distance through space, which needs mapFocus to be at the right depth — see refocus(). A
-// screen-plane distance would instead keep any star that merely lines up with the view: Lalande
-// 21185 sits only 45,000 AU to the side of Tau Ceti while being 1.2 million AU beyond it, and would
-// have had its whole system drawn over Tau Ceti's.
+// A true distance through space, which needs mapFocus to be at the right depth — see refocus().
 function starCulled(pos){
     const range = starRange();
     if (range !== STAR_RANGE_INF && dist3(pos, mapAnchor) > range * AU_PER_LY){ return true; }
     return mapScale >= planetLabelMinScale && dist3(pos, mapFocus) > STAR_CULL_AU;
 }
-// The colour the map paints a star of a given class. Shared by the discs drawn in the scene and by
-// the backdrop sky, which has to agree with them — a star should be the same colour whichever of the
+// The color the map paints a star of a given class. Shared by the discs drawn in the scene and by
+// the backdrop sky, which has to agree with them — a star should be the same color whichever of the
 // two is showing it.
 function starTint(type){
     switch (type){
@@ -14186,22 +14176,18 @@ function skyFlux(star, ly){
 function starNamesHidden(){
     return mapScale < systemLabelAbsMinScale;
 }
+// Whether what holds the home world's orbit is a debris field rather than a planet.
+function homeDebris(id){
+    if (id !== 'spc_home'){ return false; }
+    if (!global.race['orbit_decayed'] && !global.race['tidal_decay']){ return false; }
+    return !global.tech['resettle'] || global.tech.resettle < 8;
+}
+
 // The name to show for a home-system body, or false if it has none.
-//
-// A body that is somewhere you can go is named by its space action — the same race-flavoured name
-// the map labels it with. Everything else in the Sol system is scenery with no action behind it,
-// and falls back to the real name of the world it stands for (see SOL_BODY_LABEL).
-//
-// Deliberately not gated on the reveal flags the label pass consults (showDest().l, or the sector's
-// settings entry). Those decide whether the name is printed beside the body, which is the very
-// thing hovering is here to make up for — Eris is drawn from the start but goes unlabelled, and
-// under that gate it was the one world you could see and still not identify. What matters instead
-// is whether the body is on the map at all, and that is already settled: showDest().r keeps an
-// undrawn body out of the draw, and only bodies that were drawn reach the pick list this reads.
 function bodyName(id){
     let planet = spacePlanetStats[id];
     if (!planet || planet.startype || planet.star){ return false; }
-    if (global.race['orbit_decayed'] && id === 'spc_home'){ return false; }
+    if (homeDebris(id)){ return loc('space_home_debris',[races[global.race.species].home]); }
     if (actions.space[id] && actions.space[id].info){
         let nameRef = actions.space[id].info.name;
         return typeof nameRef === 'function' ? nameRef() : nameRef;
@@ -14210,11 +14196,6 @@ function bodyName(id){
 }
 
 // The name to float beside the cursor for whatever it is resting on, or false for nothing to say.
-//
-// A star answers only once its own label has shrunk away, which is the case the hover label was
-// built for. A planet or moon answers whenever names are switched on and the map is not already
-// showing that one — pointing at a world the map has left unlabelled tells you what it is, and
-// pointing at one that is labelled anyway does not repeat it.
 function hoverName(id){
     let body = spacePlanetStats[id];
     if (!body){ return false; }
@@ -14399,26 +14380,18 @@ function strokeOrbitSide(ctx, id, origin, primary, near){
 
 // One side of every orbit sharing a primary, in the map's orbit style.
 function strokeOrbitGroup(ctx, ids, origin, primary, near){
+    if (!ids || !ids.length){ return; }
     ctx.strokeStyle = "#c0c0c0";
     ctx.lineWidth = 1 / mapScale;
     for (let id of ids){
         let planet = spacePlanetStats[id];
-        ctx.setLineDash(planet.belt || (global.race['orbit_decayed'] && id === 'spc_home') ? [0.01, 0.01] : []);
+        ctx.setLineDash(planet.belt || homeDebris(id) ? [0.01, 0.01] : []);
         strokeOrbitSide(ctx, id, origin, primary, near);
     }
     ctx.setLineDash([]);
 }
 
 // --- Solar map body textures --------------------------------------------------------------------
-// Bodies keep the flat fill the map has always used — setColor() encodes syndicate strength,
-// habitable zone, gate/dwarf highlights and spectral type, and none of that should move — and get a
-// texture painted over the top. Planet textures are deliberately color-free: pure light and shadow
-// in the alpha channel, so one texture serves every body of a kind whatever color the game picked
-// for it, and the cache can't grow with the continuously-varying syndicate colors. Stars are the
-// exception, since for a star the color *is* the texture (core, disc, corona) — those are cached per
-// spectral color, of which there are eight.
-// Everything is generated once into an offscreen canvas and reused; nothing here runs at import
-// time, so the wiki bundle (which also imports this module) never touches the DOM for it.
 const bodyTexCache = {};
 
 // Deterministic per-body PRNG (mulberry32), so a planet's surface is identical on every redraw but
@@ -14477,7 +14450,7 @@ function hexShade(hex, f){
 
 const PLANET_TEX = 128;
 
-// The Sol bodies get their own colour and surface rather than the generic pool.
+// The Sol bodies get their own color and surface rather than the generic pool.
 const SOL_BODY_COLOR = {
     spc_home:      '2f6fb5',   // Earth, ocean blue
     spc_moon:      '9d9a93',   // Luna, grey regolith
@@ -14531,6 +14504,7 @@ const SOL_BODY_STYLE = {
     spc_gas_moon: 'cratered', spc_saturn: 'saturn', spc_titan: 'haze',
     spc_enceladus: 'ice',   spc_uranus: 'icegiant', spc_neptune: 'neptune',
     spc_titania: 'cratered', spc_oberon: 'cratered',
+    spc_phobos: 'moonlet',  spc_deimos: 'moonlet',
     spc_triton: 'ice',      spc_dwarf: 'cratered',  spc_eris: 'ice',
     spc_pluto: 'ice',       spc_haumea: 'ice',      spc_makemake: 'cratered',
 };
@@ -14558,13 +14532,19 @@ function homeBiome(){
     return biome && BIOME_LOOK[biome] ? biome : false;
 }
 
-// A Sol body's colour, with the home world answering for its biome first.
+// A Sol body's color, with the home world answering for its biome first.
 function solBodyColor(id){
     if (id === 'spc_home'){
         let biome = homeBiome();
         if (biome){ return BIOME_LOOK[biome].color; }
     }
     return SOL_BODY_COLOR[id];
+}
+
+
+// Whether a body is drawn with an irregular outline rather than as a disc.
+function bodyLumpy(planet, id){
+    return !!planet.lumpy || (!!planet.belt && !planet.gate);
 }
 
 // Which surface a body gets. Nothing in the table marks gas giants, but the big non-moon bodies are
@@ -14637,7 +14617,7 @@ function sphWorley(x, y, z, s){
     return { f1: Math.sqrt(f1), f2: Math.sqrt(f2) };
 }
 const sphMix = (a, b, t) => a + (b - a) * t;
-function sphereBandColour(bands, lat){
+function sphereBandcolor(bands, lat){
     for (let i = 1; i < bands.length; i++){
         if (lat <= bands[i][0]){
             const a = bands[i-1], b = bands[i];
@@ -14650,10 +14630,10 @@ function sphereBandColour(bands, lat){
 }
 
 // What each surface is made of. One rasteriser reads them all:
-//   base    the colour to start from
-//   bands   latitude bands, replacing base — [degrees, r, g, b] with the colour interpolated between
+//   base    the color to start from
+//   bands   latitude bands, replacing base — [degrees, r, g, b] with the color interpolated between
 //   banded  stretches the noise along latitude, so it flows with the bands instead of mottling across
-//   mottle  [amount, frequency, octaves, r,g,b]   drift toward a colour, driven by noise
+//   mottle  [amount, frequency, octaves, r,g,b]   drift toward a color, driven by noise
 //   land    [threshold, freq, octaves, r,g,b, sharpness]   continents where the noise runs high
 //   craters [amount, frequency]
 //   cracks  [amount, frequency, r,g,b]
@@ -14701,6 +14681,8 @@ const SPHERE_STYLES = {
     ice:    { base: [0xd8,0xcb,0xb4], mottle: [0.16, 4, 3, 0xa8, 0x9c, 0x8c],
               cracks: [0.5, 6, 0x8a, 0x6a, 0x52], poles: [70, 0.5, 0xff, 0xff, 0xff] },
     rock:   { base: [0x8a,0x7e,0x70], mottle: [0.30, 4, 4, 0x54, 0x4a, 0x40], craters: [0.28, 8] },
+    moonlet:{ base: [0x8b,0x7f,0x72], mottle: [0.34, 5, 4, 0x4a,0x42,0x3a],
+              craters: [0.55, 3.1,  0.40, 8,  0.26, 19] },
     belt:   { base: [0x76,0x6d,0x64], mottle: [0.40, 7, 4, 0x42, 0x3c, 0x36], craters: [0.45, 12] },
     bio_oceanic:  { base: [0x1b,0x4d,0x8c], land: [0.66, 2.4, 5, 0x3f,0x7a,0x3c, 7],
                     poles: [70, 0.85, 0xf4,0xf8,0xfc], clouds: [0.4, 3.4, 4] },
@@ -14739,8 +14721,10 @@ const SPIN_DATA = {
     spc_hell:   { tilt: 0.03,   hours: 1407.6 },
     spc_venus:  { tilt: 177.36, hours: -5832.5 },
     spc_home:   { tilt: 23.44,  hours: 23.934 },
-    spc_moon:   { tilt: 6.68,   hours: 655.7 },      // tidally locked, so its day is its month
+    spc_moon:   { tilt: 6.68,   hours: 655.7 }, // tidally locked, so its day is its month
     spc_red:    { tilt: 25.19,  hours: 24.623 },
+    spc_phobos: { tilt: 0,      hours: 7.654 }, // tidally locked, so its day is its orbit
+    spc_deimos: { tilt: 0,      hours: 30.299 }, // tidally locked, so its day is its orbit
     spc_gas:    { tilt: 3.13,   hours: 9.925 },
     spc_io:     { tilt: 0,      hours: 42.5 },
     spc_europa: { tilt: 0.1,    hours: 85.2 },
@@ -14760,14 +14744,9 @@ const SPIN_DATA = {
     spc_eris:   { tilt: 0,      hours: 379.1 },
     spc_dwarf:  { tilt: 4,      hours: 9.07 },       // Ceres
 };
-// Rotation runs at a tenth of true rate. At the redraw rates on offer a real Jupiter day would turn
-// the planet most of the way round between frames and read as a flicker rather than as spin; a tenth
-// keeps every body under twenty degrees a frame while leaving the rates correct RELATIVE to each
-// other — Jupiter still turns some two and a half times for each of Earth's.
+// Rotation runs at a tenth of true rate.
 const SPIN_SCALE = 0.1;
-// Game days the map has been running, for axial rotation only. Deliberately not saved: it drives
-// nothing but which face of a planet is toward you, and a body starting at a different phase after a
-// reload is not something anyone can notice.
+// Game days the map has been running, for axial rotation only.
 var mapDays = 0;
 // Advanced from the map's own simulation step in main.js, so rotation keeps pace with everything
 // else on the map however often that step runs.
@@ -14815,7 +14794,9 @@ function sphereAngleStep(){
     return mapCameraMoving ? SPHERE_ANGLE_STEP * 3 : SPHERE_ANGLE_STEP;
 }
 
-function sphereTexture(kind, S, id, sun){
+// `lumpy` says the subject is not round, and is passed rather than looked up: this renders what it
+// is told to, and a body's own entry in the table is the caller's business.
+function sphereTexture(kind, S, id, sun, lumpy){
     const spin = spinOf(id);
     const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * SPIN_SCALE : 0;
     const step = sphereAngleStep();
@@ -14832,7 +14813,7 @@ function sphereTexture(kind, S, id, sun){
         const m = Math.hypot(Math.round(Lx*24), Math.round(Ly*24), Math.round(Lz*24)) || 1;
         Lx = Math.round(Lx*24)/m; Ly = Math.round(Ly*24)/m; Lz = Math.round(Lz*24)/m;
     }
-    const key = `${kind}:${S}:${qy}:${qp}:${qs}:${seed}:${step.toFixed(4)}:${lk}`;
+    const key = `${kind}:${S}:${qy}:${qp}:${qs}:${seed}:${step.toFixed(4)}:${lk}:${lumpy ? 'L' : 'o'}`;
     if (sphereCache.has(key)){ return sphereCache.get(key); }
 
     const st = SPHERE_STYLES[kind];
@@ -14858,16 +14839,37 @@ function sphereTexture(kind, S, id, sun){
     const px = img.data;
     const R = S / 2;
 
+    let lut = false;
+    if (lumpy){
+        const norm = lumpNorm(seed), turn = lumpSpin(id);
+        lut = new Float32Array(LUMP_LUT);
+        for (let i = 0; i < LUMP_LUT; i++){
+            lut[i] = norm * lumpFactor(seed, i / LUMP_LUT * Math.PI * 2 + turn);
+        }
+    }
+    const TAU = Math.PI * 2;
+
     for (let iy = 0; iy < S; iy++){
         for (let ix = 0; ix < S; ix++){
             const u = (ix + 0.5 - R) / R, v = (iy + 0.5 - R) / R;
             const q = u*u + v*v;
             const o = (iy*S + ix) * 4;
-            if (q > 1){ continue; }                      // off the disc
-            const w = Math.sqrt(1 - q);                  // toward the viewer
-            const nx = u*Xx + v*Yx - w*Dx;
-            const ny = u*Xy + v*Yy - w*Dy;
-            const nz = u*Xz + v*Yz - w*Dz;
+            // How far the body reaches in this direction: 1 for a sphere, the outline for a rock.
+            let Lr = 1;
+            if (lut){
+                let a = Math.atan2(v, u);
+                if (a < 0){ a += TAU; }
+                Lr = lut[(a / TAU * LUMP_LUT) | 0];
+            }
+            if (q > Lr*Lr){ continue; }                  // outside the body
+            // Height toward the viewer, then everything divided through by the local radius so the
+            // surface normal is a unit vector again and every line below is the sphere's own.
+            const wRaw = Math.sqrt(Lr*Lr - q);
+            const inv = Lr === 1 ? 1 : 1 / Lr;
+            const uu = u * inv, vv = v * inv, w = wRaw * inv;
+            const nx = uu*Xx + vv*Yx - w*Dx;
+            const ny = uu*Xy + vv*Yy - w*Dy;
+            const nz = uu*Xz + vv*Yz - w*Dz;
             const dotA = nx*Ax + ny*Ay + nz*Az;
             const lat = Math.asin(dotA < -1 ? -1 : dotA > 1 ? 1 : dotA) * 180 / Math.PI;
             const e1 = nx*E1x + ny*E1y + nz*E1z, e2 = nx*E2x + ny*E2y + nz*E2z;
@@ -14879,7 +14881,7 @@ function sphereTexture(kind, S, id, sun){
             const sz = p1*E1z + p2*E2z + dotA*Az;
 
             let r, g, b;
-            if (st.bands){ const col = sphereBandColour(st.bands, lat); r = col[0]; g = col[1]; b = col[2]; }
+            if (st.bands){ const col = sphereBandcolor(st.bands, lat); r = col[0]; g = col[1]; b = col[2]; }
             else { r = st.base[0]; g = st.base[1]; b = st.base[2]; }
 
             if (st.mottle){
@@ -14898,12 +14900,15 @@ function sphereTexture(kind, S, id, sun){
                 r = sphMix(r, st.land[3], k); g = sphMix(g, st.land[4], k); b = sphMix(b, st.land[5], k);
             }
             if (st.craters){
-                const amp = st.craters[0], f = st.craters[1];
-                const cw = sphWorley(sx*f, sy2*f, sz*f, seed+53);
-                // A dark floor with a bright rim just outside it — what makes a body read as airless.
-                const floor = Math.max(0, 1 - cw.f1*3.2), rim = Math.max(0, 1 - Math.abs(cw.f1-0.34)*7);
-                const k = (rim*0.5 - floor*0.6) * amp;
-                r = Math.max(0, r*(1+k)); g = Math.max(0, g*(1+k)); b = Math.max(0, b*(1+k));
+                // Amplitude and frequency in pairs, coarsest first..
+                for (let ci = 0; ci + 1 < st.craters.length; ci += 2){
+                    const amp = st.craters[ci], f = st.craters[ci+1];
+                    const cw = sphWorley(sx*f, sy2*f, sz*f, seed + 53 + ci*17);
+                    // A dark floor with a bright rim just outside it — what makes a body read as airless.
+                    const floor = Math.max(0, 1 - cw.f1*3.2), rim = Math.max(0, 1 - Math.abs(cw.f1-0.34)*7);
+                    const k = (rim*0.5 - floor*0.6) * amp;
+                    r = Math.max(0, r*(1+k)); g = Math.max(0, g*(1+k)); b = Math.max(0, b*(1+k));
+                }
             }
             if (st.cracks){
                 const amp = st.cracks[0], f = st.cracks[1];
@@ -14921,7 +14926,7 @@ function sphereTexture(kind, S, id, sun){
                 r = sphMix(r,255,k); g = sphMix(g,255,k); b = sphMix(b,255,k);
             }
 
-            const diff = u*Lx + v*Ly + (-w)*Lz;
+            const diff = uu*Lx + vv*Ly + (-w)*Lz;
             // Ambient enough that the unlit limb still reads as the body rather than as a hole.
             const shade = 0.30 + 0.85*(diff > 0 ? diff : 0);
             const limb = 0.55 + 0.45*Math.pow(w, 0.45);
@@ -14954,8 +14959,9 @@ function sphereTexture(kind, S, id, sun){
             px[o]   = r < 0 ? 0 : r > 255 ? 255 : r;
             px[o+1] = g < 0 ? 0 : g > 255 ? 255 : g;
             px[o+2] = b < 0 ? 0 : b > 255 ? 255 : b;
-            // Feathered edge, so the disc is not left aliased against the black.
-            const a = 255 * Math.min(1, (1 - Math.sqrt(q)) * R * 0.9);
+            // Feathered edge, so the outline is not left aliased against the black. Measured from
+            // the body's own reach in this direction, which is the disc for everything round.
+            const a = 255 * Math.min(1, (Lr - Math.sqrt(q)) * R * 0.9);
             px[o+3] = a < 0 ? 0 : a > 255 ? 255 : a;
         }
     }
@@ -15160,9 +15166,6 @@ function planetTexture(kind, seed){
             break;
 
         // --- home world biomes (see BIOME_LOOK) ---------------------------------------------------
-        // Each is built from the same primitives, varied on what the biome is made of: how much land
-        // against water, whether it bands or mottles, how far the ice reaches, and whether anything
-        // on the surface is giving off its own light.
         case 'bio_grassland':
             // Open plains: broad soft patches at low contrast under a thin veil, modest caps.
             texBlobs(x, rnd, S, 14, 0.10, 0.22, 0.55, 0.22);
@@ -15320,10 +15323,7 @@ function planetTexture(kind, seed){
 }
 
 const STAR_TEX = 256;
-// Fraction of the texture's half-width taken up by the star's disc; the rest is corona. Bodies are
-// drawn scaled so the disc lands exactly on the radius the map asks for, and the corona spills out
-// around it — so this also sets how far the glow reaches (here, one disc radius beyond the edge).
-// Keep it modest: the corona scales with the disc, and a wide one swamps the view on a close-up.
+// Fraction of the texture's half-width taken up by the star's disc; the rest is corona.
 const STAR_CORE = 0.5;
 
 function starTexture(color){
@@ -15406,19 +15406,13 @@ function gateGlyphs(seed){
     return out;
 }
 
-// Whether Tau Ceti's jump gate should appear beside the home planet on the map. The structure's own
-// `reqs: { tauceti: 3 }` is not consulted by condition() — that only covers the isolation/resettle
-// case — so the tech level is checked here alongside it. Optional chaining because drawMap runs for
-// saves that never reach Tau Ceti.
+// Whether Tau Ceti's jump gate should appear beside the home planet on the map.
 function tauJumpGate(){
     return global.tech['tauceti'] && global.tech.tauceti >= 3
         && actions.tauceti?.tau_home?.jump_gate?.condition?.() ? true : false;
 }
 
-// The sun gate is a stargate, not a world, so it is drawn as an open ring with space showing through
-// the middle. Stroked as a path rather than blitted from a texture: the gate is only a few pixels
-// across at most useful zooms, and a ring texture scaled down that far smears back into the dot this
-// is meant to stop it being.
+// The sun gate is a stargate, not a world, so it is drawn as an open ring with space showing through the middle.
 function drawGate(ctx, x, y, r, color, seed){
     let lw = r * 0.42;              // ring thickness
     let mid = r - lw / 2;           // centreline the stroke is laid along
@@ -15542,7 +15536,7 @@ function ringDensityAt(x){
     return 0.10;                                                       // F, a thin thread
 }
 // How warm the ring is at a given radius, 0 grey to 1 fully tinted. The B ring is the ruddiest, the
-// C ring nearly colourless — the same contrast that shows in a photograph.
+// C ring nearly colorless — the same contrast that shows in a photograph.
 function ringWarmthAt(x){
     if (x < 1.525){ return 0.15; }
     if (x < 1.950){ return 1.0; }
@@ -15613,7 +15607,7 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
         sunR = Math.hypot(sunP, sunQ);
         shadowMid = Math.atan2(sunQ, sunP) + Math.PI;
     }
-    // The far end of the ramp. The near end is the band's own lit colour, which varies with warmth.
+    // The far end of the ramp. The near end is the band's own lit color, which varies with warmth.
     const darkRGB = shadeRGB(color, SHADOW_SHADE);
 
     for (let band of bands){
@@ -15624,7 +15618,7 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
             alpha = 1 - Math.pow(1 - alpha, 1 / open);
         }
         let rad = r * (inner + outer) / 2;
-        // Warmth: the B ring is the ruddiest of them, the C ring nearly colourless.
+        // Warmth: the B ring is the ruddiest of them, the C ring nearly colorless.
         const litShade = hi ? 1.15 + 0.5 * band[3] : 1.5;
         const litRGB = shadeRGB(color, litShade);
         const lit = rgba(litRGB, alpha);
@@ -15656,7 +15650,7 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
             }
             return 0;
         };
-        // In shadow the ring keeps its own colour, heavily darkened rather than blacked out.
+        // In shadow the ring keeps its own color, heavily darkened rather than blacked out.
         const tones = new Array(PEN_STEPS + 2);
         const toneFor = (lv) => {
             if (!tones[lv]){
@@ -15690,7 +15684,7 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
             return [x + (ox * camCY - oy * camSY), y + (ox * camSY + oy * camCY) * camCP - oz * camSP];
         });
 
-        // Walked in runs of one shade rather than as one path, since a stroke cannot change colour
+        // Walked in runs of one shade rather than as one path, since a stroke cannot change color
         // along its length. Consecutive runs share their end point, so there is no seam.
         let run = [], runLevel = -1;
         const flush = () => {
@@ -15783,6 +15777,9 @@ function drawDanger(ctx, x, y, r){
 //     to clip it to it would spill past a silhouette that is not round. So an irregular body takes
 //     its shading from a second, offset fill rather than from a texture.
 const LUMP_STEPS = 40;
+// Entries in the outline table the rasteriser reads. At 128 across, the widest a body is drawn, the
+// rim spans about 400 pixels, so this is finer than the thing it is cutting.
+const LUMP_LUT = 512;
 // Harmonic, amplitude. A polar curve r = 1 + a*cos(k*theta) stays convex while its curvature,
 // r^2 + 2r'^2 - r*r'', holds non-negative; at the tightest point that comes out as a <= 1/(k^2 + 1).
 // What has to be checked is the SUM of a*(k^2 + 1) over all the harmonics, not each one alone: the
@@ -15809,13 +15806,36 @@ function lumpFactor(seed, theta){
     }
     return f;
 }
+// Scale that brings the widest point of the outline onto the body's nominal radius, so a lumpy body
+// occupies the same circle a round one of the same size would.
+const lumpNormCache = {};
+function lumpNorm(seed){
+    if (lumpNormCache[seed] === undefined){
+        let max = 0;
+        for (let i = 0; i < 720; i++){
+            const f = lumpFactor(seed, i * Math.PI / 360);
+            if (f > max){ max = f; }
+        }
+        lumpNormCache[seed] = 1 / max;
+    }
+    return lumpNormCache[seed];
+}
+// Which way the outline is turned. Both the camera swinging round and the body's own rotation change
+// which profile is presented, and both belong here — the surface texture is turned by the same
+// rotation, so a silhouette that ignored it would have the features sliding inside a fixed outline.
+function lumpSpin(id){
+    const spin = spinOf(id);
+    const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * SPIN_SCALE : 0;
+    return mapYaw + turn * Math.PI / 180;
+}
 // Lay the outline down as a path. `spin` turns it, which is what makes it read as a solid object
 // being looked at from a new angle rather than a shape painted on the screen.
 function lumpPath(ctx, x, y, r, seed, spin, scale){
+    const norm = r * lumpNorm(seed) * (scale || 1);
     ctx.beginPath();
     for (let i = 0; i <= LUMP_STEPS; i++){
         const t = i / LUMP_STEPS * Math.PI * 2;
-        const rr = r * (scale || 1) * lumpFactor(seed, t + spin);
+        const rr = norm * lumpFactor(seed, t + spin);
         const px = x + Math.cos(t) * rr, py = y + Math.sin(t) * rr;
         if (i === 0){ ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
     }
@@ -15823,9 +15843,9 @@ function lumpPath(ctx, x, y, r, seed, spin, scale){
 }
 function drawLumpy(ctx, x, y, r, color, opts){
     const seed = opts.seed || 1;
-    // Turned with the camera. Pitch is left out: it tips the view rather than spinning it, and
-    // rolling the outline for it would look like the rock rotating when the camera merely leaned.
-    const spin = mapYaw;
+    // Pitch is left out of the turn: it tips the view rather than spinning it, and rolling the
+    // outline for it would look like the rock turning when the camera merely leaned.
+    const spin = lumpSpin(opts.id);
     ctx.fillStyle = hexShade(color, LUMP_DARK_SHADE);
     lumpPath(ctx, x, y, r, seed, spin);
     ctx.fill();
@@ -15847,10 +15867,237 @@ function drawLumpy(ctx, x, y, r, color, opts){
     }
 }
 
+// Debris field left by a shattered world.
+const DEBRIS_ALONG = 2.6;     // reach along the orbit, as a multiple of the world's old radius
+const DEBRIS_ACROSS = 0.55;   // ...out across it, in the orbital plane
+const DEBRIS_THICK = 0.30;    // ...and above and below that plane
+// Piece size, likewise. Cubing the roll gives a few big fragments among a great many small ones.
+const DEBRIS_MIN = 0.06, DEBRIS_MAX = 0.34;
+// The field answers to the map's surface-detail setting, the same as every other body.
+const DEBRIS_ROCKS_HIGH = 22, DEBRIS_ROCKS_LOW = 9;
+// Dust too fine to draw as rock.
+const DEBRIS_DUST = 6;
+const DEBRIS_DUST_ALPHA = 0.09;
+// The cap on rasterised pieces lives with drawRocks, which is what applies it (see ROCK_SPHERES).
+// Below this a piece is drawn as a plain dot rather than a shaped silhouette (see drawRocks).
+const ROCK_DOT_PX = 2;
+// Below this the whole field is a couple of pixels, where one mark reads better than twenty
+// sub-pixel ones — the same threshold the surface textures give up at.
+const DEBRIS_MIN_PX = 2.5;
+function drawDebris(ctx, x, y, r, color, opts){
+    const seed = opts.seed || 1;
+    const rnd = (i, k) => sphHash(seed, i, k, 11) / 4294967296;
+
+    if (r * mapScale < DEBRIS_MIN_PX){
+        ctx.fillStyle = hexShade(color, LUMP_DARK_SHADE);
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2, true);
+        ctx.fill();
+        return;
+    }
+
+    // The wreck lies in the orbital plane, so it is built in world coordinates and
+    // projected like any other body.
+    //
+    // The frame it is built in: radial straight out from the star, the orbit normal off the same
+    // inclination the orbit is drawn with, and along-track the two crossed.
+    let rx = 1, ry = 0, rz = 0;
+    if (opts.sun){
+        // sunDirection() points at the star, so the outward radial is its opposite.
+        const n = Math.hypot(opts.sun.x, opts.sun.y, opts.sun.z);
+        if (n > 1e-6){ rx = -opts.sun.x / n; ry = -opts.sun.y / n; rz = -opts.sun.z / n; }
+    }
+    // orbitPoint() tilts about the x axis, so the plane is spanned by x and (0, cos i, sin i) and the
+    // normal is their cross product.
+    const inc = orbitIncline(opts.id) * Math.PI / 180;
+    const nx = 0, ny = -Math.sin(inc), nz = Math.cos(inc);
+    let tx = ny * rz - nz * ry, ty = nz * rx - nx * rz, tz = nx * ry - ny * rx;
+    const tn = Math.hypot(tx, ty, tz);
+    if (tn > 1e-6){ tx /= tn; ty /= tn; tz /= tn; }
+    else { tx = 0; ty = 1; tz = 0; }
+
+    const place = (u, v, w) => {
+        const o = { x: tx*u + rx*v + nx*w, y: ty*u + ry*v + ny*w, z: tz*u + rz*v + nz*w };
+        return { x: x + pX(o), y: y + pY(o), d: pD(o) };
+    };
+    const spot = (i, ka, kd, scale) => {
+        const a = rnd(i, ka) * Math.PI * 2;
+        const d = Math.sqrt(rnd(i, kd)) * scale;
+        return {
+            u: Math.cos(a) * d * r * DEBRIS_ALONG,
+            v: Math.sin(a) * d * r * DEBRIS_ACROSS,
+            w: (rnd(i, ka + 20) * 2 - 1) * r * DEBRIS_THICK * scale
+        };
+    };
+
+    if (mapView().texture === 'high'){
+        for (let i = 0; i < DEBRIS_DUST; i++){
+            const s = spot(i, 5, 6, 0.8);
+            const p = place(s.u, s.v, s.w);
+            ctx.fillStyle = hexRGBA(color, DEBRIS_DUST_ALPHA);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, r * (0.45 + 0.55 * rnd(i, 7)), 0, Math.PI * 2, true);
+            ctx.fill();
+        }
+    }
+
+    // Every candidate piece is worked out whatever the setting, and drawRocks then drops the smallest,
+    // so the low-detail field is the same wreck rather than a different one.
+    let rocks = [];
+    for (let i = 0; i < DEBRIS_ROCKS_HIGH; i++){
+        const s = spot(i, 1, 2, 1);
+        const p = place(s.u, s.v, s.w);
+        const g = rnd(i, 3);
+        rocks.push({
+            i: i,
+            d: p.d,
+            x: p.x,
+            y: p.y,
+            r: r * (DEBRIS_MIN + (DEBRIS_MAX - DEBRIS_MIN) * g * g * g)
+        });
+    }
+    drawRocks(ctx, rocks, color, { id: opts.id, sun: opts.sun, keepLow: DEBRIS_ROCKS_LOW });
+}
+
+// Draw a population of rock — the pieces of a wrecked world, or the asteroids of a belt.
+function drawRocks(ctx, rocks, color, opts){
+    const hi = mapView().texture === 'high';
+    // Biggest first: it is both the order the rasterised surfaces are handed out in and, on the low
+    // setting, which pieces survive at all.
+    rocks.sort((p,q) => q.r - p.r);
+    if (!hi && opts.keepLow){ rocks = rocks.slice(0, opts.keepLow); }
+    // One field must never evict every planet's sphere from the shared cache to light up rubble a few
+    // pixels across, so only this many of its largest pieces are ever rasterised.
+    const budget = hi ? (opts.budget === undefined ? ROCK_SPHERES : opts.budget) : 0;
+    rocks.forEach(function(rock, n){ rock.sphere = n < budget; });
+
+    // Then furthest from the camera first, on the same projected depth and the same descending order
+    // the bodies themselves are painted in, so a piece in front covers one behind it however the view
+    // is turned.
+    rocks.sort((p,q) => q.d - p.d);
+    for (let rock of rocks){
+        // Each piece is given an id of its own so it tumbles at its own rate and wears its own face —
+        // spinOf() and sphereTexture() both take an unrecognised id's rotation and seed off the id
+        // itself — instead of the field turning and looking as one lump.
+        const id = `${opts.id}#${rock.i}`;
+        const sun = rock.sun || opts.sun;
+        // sphereSize() is the same gate the round bodies use: it comes back 0 on the low setting, and
+        // on the high one for anything still too small on screen to tell a lit surface from a stamp.
+        const sph = rock.sphere ? sphereSize('belt', rock.r) : 0;
+        if (sph){
+            ctx.drawImage(sphereTexture('belt', sph, id, sun, true),
+                          rock.x - rock.r, rock.y - rock.r, rock.r * 2, rock.r * 2);
+        }
+        else if (rock.r * mapScale < ROCK_DOT_PX){
+            // A couple of pixels across there is no outline to read, and a belt is a great many of
+            // them: one arc rather than a forty-segment silhouette that would rasterise to the
+            // same speck.
+            ctx.fillStyle = hexShade(color, LUMP_DARK_SHADE);
+            ctx.beginPath();
+            ctx.arc(rock.x, rock.y, rock.r, 0, Math.PI * 2, true);
+            ctx.fill();
+        }
+        else {
+            drawLumpy(ctx, rock.x, rock.y, rock.r, color, { id: id, seed: texSeed(id), sun: sun });
+        }
+    }
+}
+
+// --- Asteroid fields ------------------------------------------------------------------------------
+//   rocks   pieces to ring the orbit with at high detail
+//   keep    how many of them survive on the low setting — the largest, so the belt thins rather than moves
+//   width   how far the ring spreads either side of the nominal orbit, as a fraction of its radius
+//   thick   ...and above and below the orbital plane, likewise
+//   size    piece radius, as a multiple of the radius the body standing for the belt is drawn at
+const ASTEROID_FIELDS = {
+    spc_belt: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] },
+    tau_roid: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] }
+};
+// How many of a field's rocks may carry a rasterised surface.
+const ROCK_SPHERES = 6;
+// The ring has to be this many pixels in radius before its rocks are worth drawing individually.
+const FIELD_MIN_RING_PX = 60;
+// Asteroids are drawn at the same true relative scale as everything else, which puts them far under a
+// pixel at any zoom that also fits the ring on screen — so they are floored exactly as visibleRadius()
+// floors a body, and a belt reads as a ring of specks until you are close enough for the rock to have
+// a shape.
+const FIELD_MIN_ROCK_PX = 0.8;
+
+// Where a field's rocks sit, as offsets from the star they ring. Worked out once and kept: a belt does
+// not move, and orbitPoint() is far too expensive to run a hundred times a frame.
+const asteroidFieldCache = {};
+function asteroidField(id){
+    if (asteroidFieldCache[id]){ return asteroidFieldCache[id]; }
+    const cfg = ASTEROID_FIELDS[id];
+    const seed = texSeed(`${id}#field`);
+    const rnd = (i, k) => sphHash(seed, i, k, 23) / 4294967296;
+    // The orbit's own plane, so the spread out of it leans with the orbit. orbitPoint() tilts about
+    // the x axis, so the plane is spanned by x and (0, cos i, sin i) and the normal is their cross.
+    const inc = orbitIncline(id) * Math.PI / 180;
+    const nx = 0, ny = -Math.sin(inc), nz = Math.cos(inc);
+    const body = spacePlanetStats[id];
+    // The star the ring is centred on. drawMap's own ORIGIN is local to it, and this runs from the
+    // module, so the Sun's is written out here.
+    const primary = body.star ? genXYZcoord(body.star) : { x: 0, y: 0, z: 0 };
+    const radius = orbitRadius(id);
+    let list = [];
+    for (let i = 0; i < cfg.rocks; i++){
+        // Anywhere on the ring, then in or out of it, then up or down out of its plane.
+        const q = rel(orbitPoint(id, rnd(i, 1) * 360), primary);
+        const spread = 1 + (rnd(i, 2) * 2 - 1) * cfg.width;
+        const w = (rnd(i, 3) * 2 - 1) * radius * cfg.thick;
+        const g = rnd(i, 4);
+        list.push({
+            i: i,
+            o: { x: q.x*spread + nx*w, y: q.y*spread + ny*w, z: q.z*spread + nz*w },
+            // Cubed, so the ring is mostly gravel with a few proper rocks in it.
+            rs: cfg.size[0] + (cfg.size[1] - cfg.size[0]) * g * g * g
+        });
+    }
+    asteroidFieldCache[id] = list;
+    return list;
+}
+
+// Draw the asteroids of `id`'s belt, in the frame centred on `origin` (the Sun, or a star drawn in its
+// own translated frame), at the `scale` that frame's bodies are shrunk by. Returns whether it drew.
+function drawAsteroidField(ctx, id, origin, scale, color){
+    if (!ASTEROID_FIELDS[id] || !spacePlanetStats[id]){ return false; }
+    const body = spacePlanetStats[id];
+    if (body.unlock && !global.tech[body.unlock]){ return false; }
+    // Zoomed out the whole ring is a smudge, and a hundred sub-pixel specks would only dirty it.
+    if (orbitRadius(id) * mapScale < FIELD_MIN_RING_PX){ return false; }
+
+    const drawn = body.size / 10 * (scale || 1);
+    const floor = FIELD_MIN_ROCK_PX / mapScale;
+    const field = asteroidField(id);
+    const hi = mapView().texture === 'high';
+    let rocks = [];
+    for (const rock of field){
+        const r = Math.max(drawn * rock.rs, floor);
+        rocks.push({
+            i: rock.i,
+            x: pX(rock.o),
+            y: pY(rock.o),
+            d: pD(rock.o),
+            r: r,
+            // Each rock is lit from the star it rings, which is the frame's own origin — so on the far
+            // side of the belt they are lit from the other side, as they should be.
+            sun: sunDirection(rock.o)
+        });
+    }
+    if (!rocks.length){ return false; }
+    drawRocks(ctx, rocks, color, { id: id, keepLow: ASTEROID_FIELDS[id].keep, budget: hi ? ROCK_SPHERES : 0 });
+    return true;
+}
+
 function drawBody(ctx, x, y, r, color, opts){
     opts = opts || {};
     if (opts.glyph){
         drawGlyph(ctx, x, y, r, opts.glyph);
+        return;
+    }
+    if (opts.debris){
+        drawDebris(ctx, x, y, r, color, opts);
         return;
     }
     if (opts.gate){
@@ -15877,10 +16124,15 @@ function drawBody(ctx, x, y, r, color, opts){
     // surface texture is, since a few pixels of ring is just a smudge.
     let rings = opts.rings && r * mapScale >= 2.5;
     if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt, opts.sun); }
-    // A body too small to have pulled itself round is drawn as one, and takes no texture — see the
-    // note above drawLumpy.
+    // For small bodies that are not round.
     if (opts.lumpy){
-        drawLumpy(ctx, x, y, r, color, opts);
+        const sph = sphereSize(opts.kind, r);
+        if (sph){
+            ctx.drawImage(sphereTexture(opts.kind, sph, opts.id, opts.sun, true), x - r, y - r, r * 2, r * 2);
+        }
+        else {
+            drawLumpy(ctx, x, y, r, color, opts);
+        }
         if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt, opts.sun); }
         return;
     }
@@ -16166,8 +16418,11 @@ export function drawMap() {
         else if (id === 'spc_sun_gate' || id === 'tau_home'){
             color = '31a557';
         }
+        else if (homeDebris(id)){
+            color = SOL_BODY_COLOR.spc_belt;   // rubble, not the ocean blue of the world it was
+        }
         else if (solBodyColor(id)){
-            // The named Sol bodies get their real colour; the home world gets its biome's.
+            // The named Sol bodies get their real color; the home world gets its biome's.
             color = solBodyColor(id);
         }
         else if (spacePlanetStats[id].hz){
@@ -16192,9 +16447,7 @@ export function drawMap() {
             // Stars other than the Sun (which sits at the origin) are drawn in their own translated
             // frame below, along with Tau-Ceti-style orbiting bodies (planet.star).
             if (planet.star || (planet.startype && id !== 'spc_sun')){ continue; }
-            if (global.race['orbit_decayed'] && ['spc_home','spc_moon'].includes(id)){
-                continue;
-            }
+            if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && id === 'spc_moon'){ continue; }
             if (actions.space[id] && actions.space[id].info.showDest && !actions.space[id].info.showDest().r){ continue; }
             let p = planetLocation[id];
             let bx = pX(p), by = pY(p);
@@ -16222,14 +16475,22 @@ export function drawMap() {
         // further out than its primary and so is drawn before it — laying that half down just ahead
         // of the primary would put the ring line over the very world riding on it.
         for (let primary of Object.keys(orbitsBy)){
+            if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && ['spc_home'].includes(primary)){ continue; }
             strokeOrbitGroup(ctx, orbitsBy[primary], ORIGIN, planetLocation[primary], false);
         }
+        // The asteroids go down between the orbit rings and the bodies
+        for (let id of Object.keys(ASTEROID_FIELDS)){
+            if (spacePlanetStats[id] && !spacePlanetStats[id].star){
+                drawAsteroidField(ctx, id, ORIGIN, homeScale, setColor(id));
+            }
+        }
         for (let b of bodies){
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id), lumpy: !!b.planet.lumpy });
-            // The near half belongs in front of the primary, and still behind anything nearer than
-            // it — which is exactly where drawing it here puts it, since the bodies left to come are
-            // the nearer ones.
-            if (orbitsBy[b.id]){ strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true); }
+            if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && ['spc_moon'].includes(b.id)){ continue; }
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id), lumpy: bodyLumpy(b.planet, b.id), debris: homeDebris(b.id) });
+
+            if (orbitsBy[b.id] && !((global.race['orbit_decayed'] || global.race['tidal_decay']) && b.id === 'spc_home')){
+                strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true);
+            }
             if (dangerAt(b.id)){ drawDanger(ctx, b.bx, b.by, b.size); }
             addPickable(b.id, b.bx, b.by, b.size, b.sep);
         }
@@ -16336,11 +16597,10 @@ export function drawMap() {
             if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
             if (mapScale < planetLabelMinScale){ continue; }   // zoomed out: planet names give way to star labels
             if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
-                if (global.race['orbit_decayed'] && ['spc_home'].includes(id)){
-                    continue;
-                }
-                let nameRef = actions.space[id].info.name;
-                let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
+                // bodyName() rather than the action's own name, so the wreck of the home world is
+                // labelled as the debris field it is drawn as instead of as the planet it was.
+                let nameText = bodyName(id);
+                if (!nameText){ continue; }
                 let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
                 mapLabelled[id] = true;   // so the hover label knows not to repeat this one
                 if (planet.moon) {
@@ -16438,9 +16698,14 @@ export function drawMap() {
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
         // Every one of these orbits is centred on the star, so they split around it.
         if (starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
+        // Any belt around this star, drawn in the star's own frame — same table, same code (see the
+        // matching pass in the Sun's frame above).
+        for (const id of bodies){
+            drawAsteroidField(ctx, id, sc, scale, setColor(id));
+        }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: !!m.planet.lumpy });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: bodyLumpy(m.planet, m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr, m.sep);
@@ -17756,15 +18021,77 @@ export function fleetCmdDay(){
     if (moved){ drawShips(); }
 }
 
-// Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already
-// under way, they are crewed.
+// Sedn ships back to shipyard
+export function withdrawShips(regions,destination){
+    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return 0; }
+    let moved = 0;
+
+    // Where a ship counts as being: on station, or on its way somewhere.
+    let posted = function(ship){
+        return regions.includes(ship.inTransit ? ship.destination.name : ship.location.name);
+    };
+    // The posting they are being pulled off no longer exists, so nothing is left to go back to.
+    let clearOrders = function(ship){
+        delete ship.ret;
+        delete ship.rfid;
+    };
+
+    global.space.shipyard.ships.forEach(function(ship){
+        if (!posted(ship) || !ship.flag || !shipFlagship(ship)){ return; }
+        let fleet = shipFleet(ship);
+        if (fleet.length <= 1){ return; }
+        fleet.forEach(clearOrders);
+        if (orderFleetTo(fleet,destination)){ moved += fleet.length; }
+    });
+
+    global.space.shipyard.ships.forEach(function(ship){
+        if (!posted(ship)){ return; }
+        if (ship.fid){ leaveFleet(ship); }
+        clearOrders(ship);
+        if (orderShipTo(ship,destination)){ moved++; }
+    });
+
+    if (moved){ drawShips(); }
+    return moved;
+}
+
+// Syndicate withdrawal from TP3 combat zones
+export function syndicateWithdrawal(){
+    const abandoned = ['spc_eris','spc_triton'];
+
+    global.tech['shadow'] = 4;
+    delete global.race['syndicate_withdraw'];
+
+    withdrawShips(abandoned,'spc_dwarf');
+
+    // The outposts stay standing, but nothing is running in them any more.
+    abandoned.forEach(function(region){
+        Object.keys(actions.space[region]).forEach(function(k){
+            if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('on')){
+                global.space[k].on = 0;
+            }
+        });
+    });
+
+    // Both worlds stop being places you can send a ship (their nav() reads this) and drop off the outer system tab.
+    global.settings.space.eris = false;
+    global.settings.space.triton = false;
+
+    // The Server Farm takes over as the source of encrypted data.
+    global.resource.Cipher.display = true;
+
+    messageQueue(loc('space_syndicate_withdraw',[govTitle(4),planetName().eris,planetName().triton]),'info',false,['progress','combat']);
+    renderSpace();
+    setPowerGrid();
+    drawTech();
+}
+
+// Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already under way, they are crewed.
 function shipManned(ship){
     return ship.inTransit || !shipyardLocations.includes(ship.location.name);
 }
 
-// Send a ship to a destination region, or its whole fleet if it belongs to one. Every ship takes the
-// identical trip computed for the slowest, so the group stays together the whole way and arrives at
-// the same tick rather than trickling in.
+// Send a ship to a destination region, or its whole fleet if it belongs to one.
 function sendShipTo(id, locationName){
     let ship = global.space.shipyard.ships[id];
     if (!ship || (!ship.inTransit && locationName === ship.location.name) || (ship.inTransit && ship.destination.name === locationName)){ return; }
@@ -17782,9 +18109,7 @@ function sendShipTo(id, locationName){
     if (trip) {
         for (let s of group){
             if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
-            // An order from the player overrides the standing one: wherever it was posted before, this is
-            // where it is going now, it will not wander back on its own, and it is no longer holding a
-            // berth open in a fleet it was told to leave.
+            // An order from the player overrides the standing one
             if (s['ret']){ delete s.ret; }
             if (s['rfid']){ delete s.rfid; }
             initializeShipTrip(s, locationName, trip);

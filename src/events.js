@@ -5,7 +5,7 @@ import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { flib, drawPet } from './functions.js';
 import { tradeRatio } from './resources.js';
-import { checkControlling, soldierDeath } from './civics.js';
+import { checkControlling, soldierDeath, rivalActive } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { jobScale } from './jobs.js';
@@ -279,7 +279,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && rivalActive() && global.civic.foreign.gov3.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov3`,true);

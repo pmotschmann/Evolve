@@ -2,7 +2,7 @@ import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
-import { govCivics, govTitle, govEffect } from './civics.js';
+import { govCivics, govTitle, govEffect, rivalActive, spyActive } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment, mechGeneralSlots, wlEquipSlots } from './portal.js';
@@ -568,7 +568,7 @@ export function drawnGovernOffice(){
         let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_spyop`)}</div></div>`);
         options.append(contain);
         Object.keys(global.civic.foreign).forEach(function (gov){
-            if ((gov.substr(3,1) < 3 && !global.tech['world_control']) || (gov === 'gov3' && global.tech['rival'])){
+            if ((gov.substr(3,1) < 3 && !global.tech['world_control']) || (gov === 'gov3' && rivalActive())){
                 let spyop = $(`<div></div>`);
                 contain.append(spyop);
                 spyop.append(`
@@ -1371,7 +1371,7 @@ export const gov_tasks = {
     spy: { // Spy Recruiter
         name: loc(`gov_task_spy`),
         req(){
-            if (global.tech['isolation']){
+            if (!spyActive()){
                 return false;
             }
             if (global.race['truepath'] && global.tech['spy']){
@@ -1382,7 +1382,7 @@ export const gov_tasks = {
         task(){
             if ( $(this)[0].req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.spy.reserve / 100);
-                let max = global.race['truepath'] && global.tech['rival'] ? 4 : 3;
+                let max = global.race['truepath'] && rivalActive() ? 4 : 3;
                 let min = global.tech['world_control'] ? 3 : 0;
                 for (let i=min; i<max; i++){
                     let cost = govCivics('s_cost',i);
@@ -1396,7 +1396,7 @@ export const gov_tasks = {
     spyop: { // Spy Operator
         name: loc(`gov_task_spyop`),
         req(){
-            if (global.tech['isolation']){
+            if (!spyActive()){
                 return false;
             }
             if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
@@ -1406,7 +1406,7 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                let range = global.race['truepath'] && global.tech['rival'] ? [0,1,2,3] : [0,1,2];
+                let range = global.race['truepath'] && rivalActive() ? [0,1,2,3] : [0,1,2];
                 if (global.tech['world_control']){ range = [3]; }
                 range.forEach(function(gov){
                     if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){

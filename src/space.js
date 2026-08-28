@@ -5,7 +5,7 @@ import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
-import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
+import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
@@ -22,7 +22,7 @@ const spaceProjects = {
             name(){
                 return races[global.race.species].home;
             },
-            desc(){ return global.tech['resettle'] && global.tech.resettle >= 8 ? (global.race['tidal_decay'] ? loc('space_home_info_desc_mystery') : loc('space_home_info_desc_infested')) : loc('space_home_info_desc'); },
+            desc(){ return global.tech['resettle'] && global.tech.resettle >= 8 ? (global.race['tidal_decay'] || global.race['orbit_decayed'] ? loc('space_home_info_desc_mystery') : loc('space_home_info_desc_infested')) : loc('space_home_info_desc'); },
             zone: 'inner',
             showDest(){
                 return {r: true, l: global.settings.space.home || global.tech?.resettle >= 3};
@@ -239,7 +239,7 @@ const spaceProjects = {
             support: 'moon_base',
             zone: 'inner',
             syndicate(){ return global.tech['resettle'] ? false : true; },
-            nav(){ return global.race['orbit_decayed'] || (global.tech['resettle'] && global.tech.resettle < 7) ? false : true; }
+            nav(){ return global.race['orbit_decayed'] || global.race['tidal_decay'] || (global.tech['resettle'] && global.tech.resettle < 7) ? false : true; }
         },
         moon_mission: {
             id: 'space-moon_mission',
@@ -295,7 +295,7 @@ const spaceProjects = {
                     }
                     if (!global.tech['luna']){
                         global.tech['luna'] = 1;
-                        if (global.race['truepath']){
+                        if (global.race['truepath'] && !rivalCollapsed()){
                             let msg = loc('space_moon_base_msg',[govTitle(3)]);
                             if (global.civic.foreign.gov3.hstl < 10){
                                 msg = `${msg} ${loc('space_moon_base_msg_ally')}`;
@@ -341,7 +341,7 @@ const spaceProjects = {
                 let values = production('iridium_mine','iridium');
                 let iridium = +(values.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath'] && !global.tech['resettle']){
+                if (global.race['truepath'] && !global.tech['resettle'] && !rivalCollapsed()){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(values.g * 100).toFixed(1)])}</div>`;
                     }
@@ -392,7 +392,7 @@ const spaceProjects = {
                 let values = production('helium_mine');
                 let helium = +(values.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath'] && !global.tech['resettle']){
+                if (global.race['truepath'] && !global.tech['resettle'] && !rivalCollapsed()){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(values.g * 100).toFixed(1)])}</div>`;
                     }
@@ -1028,7 +1028,7 @@ const spaceProjects = {
                 let copper = +(cop_val.b).toFixed(3);
                 let titanium = +(tit_val.b).toFixed(3);
                 let rival = ``;
-                if (global.race['truepath'] && !global.tech['resettle']){
+                if (global.race['truepath'] && !global.tech['resettle'] && !rivalCollapsed()){
                     if (global.civic.foreign.gov3.hstl < 10){
                         rival = `<div class="has-text-success">${loc('space_rival_ally',[+(cop_val.g * 100).toFixed(1)])}</div>`;
                     }
@@ -7160,18 +7160,25 @@ function space(zone){
         if (global.race['orbit_decayed'] || global.race['cataclysm']){
             if (region !== 'spc_home'){
                 regionOrder.push(region);
-                if (global.race['orbit_decayed'] && region === 'spc_red'){
+                // Earth is relisted after Mars on a decayed run. Once resettled it is back in its own
+                // place above instead, so this must not list it a second time.
+                if (global.race['orbit_decayed'] && !global.tech['resettle'] && region === 'spc_red'){
                     regionOrder.push('spc_home');
                 }
                 else if (global.race['cataclysm'] && region === 'spc_moon'){
                     regionOrder.push('spc_home');
                 }
             }
+            else if (region === 'spc_home' && global.race['orbit_decayed'] && global.tech['resettle']){
+                regionOrder.push(region);
+            }
         }
         else {
             regionOrder.push(region);
         }
     });
+    // A region listed twice renders two elements carrying the same id, and the appends below look their parent up by id
+    regionOrder = [...new Set(regionOrder)];
 
     regionOrder.forEach(function (region){
         let show = region.replace("spc_","");
@@ -7180,7 +7187,7 @@ function space(zone){
                 return;
             }
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
-            let noHome = global.race['orbit_decayed'] || global.race['cataclysm'] ? true : false;
+            let noHome = (global.race['orbit_decayed'] && !global.tech['resettle']) || global.race['cataclysm'] ? true : false;
 
             if ((noHome && region !== 'spc_home') || !noHome){
                 // The horde readout follows the support line when there is one.
