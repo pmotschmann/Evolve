@@ -78,9 +78,9 @@ const FEATHER = 1.0;
 // zoomed out would otherwise mean tens of thousands of quads for a line that reads as solid.
 const DASH_MIN_PX = 1.5;
 
-// Rendered labels held in the texture cache. Map labels are drawn from a small, stable set (planet,
-// star and ship names, gate glyphs), so this is far more than a frame needs and the cache settles.
-const TEXT_CACHE_MAX = 512;
+// Rendered labels held in the texture cache.
+const TEXT_CACHE_MAX = 2048;
+const TEXT_CACHE_BYTES = 24 * 1024 * 1024;
 
 // --- small helpers ------------------------------------------------------------------------------
 
@@ -201,20 +201,12 @@ class GLContext {
 
         this.prog = this._program(VERT_SRC, FRAG_SRC);
         gl.useProgram(this.prog);
-        this.loc = {
-            pos: gl.getAttribLocation(this.prog, 'a_pos'),
-            uv: gl.getAttribLocation(this.prog, 'a_uv'),
-            color: gl.getAttribLocation(this.prog, 'a_color'),
-            mode: gl.getAttribLocation(this.prog, 'a_mode'),
-            aux: gl.getAttribLocation(this.prog, 'a_aux'),
-            res: gl.getUniformLocation(this.prog, 'u_res'),
-            tex: gl.getUniformLocation(this.prog, 'u_tex')
-        };
-        gl.uniform1i(this.loc.tex, 0);
+        this._locations();
 
         this.buf = gl.createBuffer();
         this.data = new Float32Array(BATCH_VERTS * FLOATS_PER_VERT);
         this.count = 0;
+        this._bindAttribs();
 
         // Bound whenever a batch has no image in it, so the sampler always has something valid.
         this.blank = this._blankTexture();
@@ -222,8 +214,11 @@ class GLContext {
         // Textures for the map's cached body/star canvases. Weak, so a texture cannot outlive the
         // canvas it came from.
         this.imgTex = new WeakMap();
-        // Rasterised labels, in insertion order so the oldest can be dropped first.
+        // Rasterised labels, in least-recently-used order so the coldest can be dropped first.
         this.textCache = new Map();
+        // What those labels cost in texture memory, kept in step with the map on every insert and
+        // evict so the budget never has to walk the cache to find out.
+        this.textBytes = 0;
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
@@ -281,14 +276,52 @@ class GLContext {
         return t;
     }
 
+    // Where the shader's inputs live. Re-read whenever the program is (re)linked.
+    _locations(){
+        let gl = this.gl;
+        this.loc = {
+            pos: gl.getAttribLocation(this.prog, 'a_pos'),
+            uv: gl.getAttribLocation(this.prog, 'a_uv'),
+            color: gl.getAttribLocation(this.prog, 'a_color'),
+            mode: gl.getAttribLocation(this.prog, 'a_mode'),
+            aux: gl.getAttribLocation(this.prog, 'a_aux'),
+            res: gl.getUniformLocation(this.prog, 'u_res'),
+            tex: gl.getUniformLocation(this.prog, 'u_tex')
+        };
+        gl.uniform1i(this.loc.tex, 0);
+    }
+
+    // The vertex layout, set once rather than per flush.
+    _bindAttribs(){
+        let gl = this.gl, l = this.loc, stride = FLOATS_PER_VERT * 4;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
+        gl.enableVertexAttribArray(l.pos);
+        gl.vertexAttribPointer(l.pos, 2, gl.FLOAT, false, stride, 0);
+        gl.enableVertexAttribArray(l.uv);
+        gl.vertexAttribPointer(l.uv, 2, gl.FLOAT, false, stride, 8);
+        gl.enableVertexAttribArray(l.color);
+        gl.vertexAttribPointer(l.color, 4, gl.FLOAT, false, stride, 16);
+        gl.enableVertexAttribArray(l.mode);
+        gl.vertexAttribPointer(l.mode, 1, gl.FLOAT, false, stride, 32);
+        gl.enableVertexAttribArray(l.aux);
+        gl.vertexAttribPointer(l.aux, 1, gl.FLOAT, false, stride, 36);
+        // Nothing in this context ever selects another texture unit, so this is set here too and the
+        // per-flush bindTexture below lands on unit 0 every time.
+        gl.activeTexture(gl.TEXTURE0);
+    }
+
     _rebuild(){
         this.prog = this._program(VERT_SRC, FRAG_SRC);
         this.gl.useProgram(this.prog);
+        this._locations();
         this.buf = this.gl.createBuffer();
+        // New buffer, so the attribute pointers have to be aimed at it again.
+        this._bindAttribs();
         this.blank = this._blankTexture();
         this.batchTex = this.blank;
         this.imgTex = new WeakMap();
         this.textCache = new Map();
+        this.textBytes = 0;
         this.count = 0;
     }
 
@@ -703,25 +736,31 @@ class GLContext {
         let key = `${text}|${this.font}|${fill}|${this.textAlign}|${this.textBaseline}|${q}|`
                 + (hasShadow ? `${this.shadowColor}:${this.shadowOffsetX}:${this.shadowOffsetY}:${this.shadowBlur}` : '');
         let entry = this.textCache.get(key);
-        if (!entry){
+        if (entry){
+            // A Map iterates in insertion order, so re-inserting a hit moves it to the back and makes
+            // the eviction below least-recently-USED.
+            this.textCache.delete(key);
+            this.textCache.set(key, entry);
+        }
+        else {
             entry = this._rasterText(text, fill, q, hasShadow);
             if (!entry){ return; }
             this.textCache.set(key, entry);
-            if (this.textCache.size > TEXT_CACHE_MAX){
+            this.textBytes += entry.w * entry.h * 4;
+            while (this.textCache.size > 1 &&
+                   (this.textCache.size > TEXT_CACHE_MAX || this.textBytes > TEXT_CACHE_BYTES)){
                 let oldest = this.textCache.keys().next().value;
                 let dead = this.textCache.get(oldest);
                 this.textCache.delete(oldest);
-                if (dead && dead.tex){ this.gl.deleteTexture(dead.tex); }
-                if (this.batchTex === (dead && dead.tex)){ this.batchTex = false; }
+                if (dead){
+                    this.textBytes -= dead.w * dead.h * 4;
+                    if (dead.tex){ this.gl.deleteTexture(dead.tex); }
+                    if (this.batchTex === dead.tex){ this.batchTex = false; }
+                }
             }
         }
         // The bitmap holds q device pixels per user unit, so its extent in user units is size/q.
         let ux = x + entry.ox / q, uy = y + entry.oy / q;
-        // A bitmap sampled at a fractional offset comes out soft. Every label the map draws sits
-        // under a plain translate-and-scale, and there the quad is placed in device space and
-        // snapped to the pixel grid — with the usual net scale of 1 the texture then maps one to one
-        // and the glyphs land on exactly the pixels the 2D renderer would have used. A rotated
-        // transform (the gate's engraved glyphs) has no grid to snap to and goes through as normal.
         if (Math.abs(this.m[1]) < 1e-9 && Math.abs(this.m[2]) < 1e-9 && this.m[0] > 0 && this.m[3] > 0){
             let k = s / q;
             this._quadDev(entry.tex, Math.round(this._tx(ux, uy)), Math.round(this._ty(ux, uy)),
@@ -852,21 +891,11 @@ class GLContext {
     flush(){
         if (this.count === 0 || this.lost){ this.count = 0; return; }
         let gl = this.gl;
+        // The layout is already set (see _bindAttribs); only the contents, the texture and the draw
+        // change from one flush to the next. The bind stays because bufferData writes to whatever is
+        // bound, and a texture upload elsewhere may have left another buffer or texture in place.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
         gl.bufferData(gl.ARRAY_BUFFER, this.data.subarray(0, this.count * FLOATS_PER_VERT), gl.STREAM_DRAW);
-        let stride = FLOATS_PER_VERT * 4;
-        let l = this.loc;
-        gl.enableVertexAttribArray(l.pos);
-        gl.vertexAttribPointer(l.pos, 2, gl.FLOAT, false, stride, 0);
-        gl.enableVertexAttribArray(l.uv);
-        gl.vertexAttribPointer(l.uv, 2, gl.FLOAT, false, stride, 8);
-        gl.enableVertexAttribArray(l.color);
-        gl.vertexAttribPointer(l.color, 4, gl.FLOAT, false, stride, 16);
-        gl.enableVertexAttribArray(l.mode);
-        gl.vertexAttribPointer(l.mode, 1, gl.FLOAT, false, stride, 32);
-        gl.enableVertexAttribArray(l.aux);
-        gl.vertexAttribPointer(l.aux, 1, gl.FLOAT, false, stride, 36);
-        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.batchTex || this.blank);
         gl.drawArrays(gl.TRIANGLES, 0, this.count);
         this.count = 0;
@@ -908,6 +937,7 @@ class GLContext {
             if (entry && entry.tex){ this.gl.deleteTexture(entry.tex); }
         }
         this.textCache.clear();
+        this.textBytes = 0;
         this.lost = true;
         let ext = this.gl.getExtension('WEBGL_lose_context');
         if (ext){ ext.loseContext(); }

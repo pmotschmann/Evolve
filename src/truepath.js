@@ -9400,11 +9400,6 @@ export function erisWar(){
 // so it adds height without disturbing orbital radii. Bodies without one get a small deterministic
 // tilt (see orbitIncline) so the decorative systems have depth too. Values here follow the real
 // solar system, with the reference plane on the home world.
-//
-// All stars upto 50 light years are included, except red dwarfs beyond 30 light years.
-// Adding all red dwarves from 30-50 ly would add another 500-600 stars to the existing 461.
-// The game could likely render it smoothly after recent improvements in performance but the added value to game play is questionable.
-// I rather add additional larger stars beyond 50 light years then include all the red dwarves.
 export const spacePlanetStats = {
     spc_sun: { x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
@@ -11626,18 +11621,6 @@ export const spacePlanetStats = {
     hd21197_p1: { dist: 0.105, orbit: 15, size: 0.296, star: 'hd21197' },
     hd21197_p2: { dist: 0.503, orbit: 153, size: 0.191, star: 'hd21197', hz: true },
     // --- M dwarfs, 20 to 30 light years ------------------------------------------------------
-    // The red dwarfs of the same shell as the O/B/A/F/G/K stars above, which the earlier passes
-    // deliberately left out. Positions and sizes are derived exactly as they were there.
-    // Almost none of these carry a name: every M dwarf famous enough to have earned one --
-    // Barnard's Star, Wolf 359, Lalande 21185, Kapteyn's Star, Ross 128 -- is inside 20 ly and
-    // already on the map, which is precisely why it was found early enough to be named. Out here
-    // they are catalogue designations, and that is what they are labelled with.
-    // Planets: seventeen of these systems have real ones and keep every one, measured orbits and
-    // all -- GJ 581's three, LTT 1445 A's two, GJ 433's three among them. The rest are generated
-    // from each star's own id on a deliberate split: a fifth get three worlds, two fifths two, and
-    // two fifths a single one. Giants are rare here, unlike around the F and G stars, because an M
-    // dwarf's disc rarely has the mass to build one.
-    // HD 191849.
     // M0V, 0.588 solar radii, 20.11 ly.
     hd191849: { x: 1062325.788, y: -96553.943, z: -692057.697, dist: 1271535.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd191849'), zlabel: loc('star_hd191849') },
     // hd191849 planets (M0V, 1, generated; habitable-zone world at ~0.313 AU); HZ 0.250-0.360 AU.
@@ -11680,12 +11663,6 @@ export const spacePlanetStats = {
     bd362219_p1: { dist: 0.0504, orbit: 6.03, size: 0.234, star: 'bd362219' },
     bd362219_p2: { dist: 0.132, orbit: 26, size: 0.296, star: 'bd362219' },
     bd362219_p3: { dist: 0.23, orbit: 59, size: 0.234, star: 'bd362219', hz: true },
-    // 41 Ara B.
-    // M0VpCa-3Cr-1, 0.588 solar radii, 28.79 ly.
-    arab41: { x: 1727203.384, y: -551325.537, z: -167119.956, dist: 1820747.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_arab41'), zlabel: loc('star_arab41') },
-    // arab41 planets (M0VpCa-3Cr-1, 2, generated; habitable-zone world at ~0.282 AU); HZ 0.250-0.360 AU.
-    arab41_p1: { dist: 0.173, orbit: 35, size: 0.191, star: 'arab41' },
-    arab41_p2: { dist: 0.282, orbit: 72, size: 0.191, star: 'arab41', hz: true },
     // FL Aquarii -- 2 components.
     // M3.5V, 0.3 solar radii, 28.87 ly.
     flaquarii: { x: 741097.016, y: 575498.648, z: -1565973.141, dist: 1825567.1, orbit: -2, size: 1.095, startype: 'M', label: loc('star_flaquarii'), zlabel: loc('star_flaquarii') + ' A' },
@@ -12540,6 +12517,368 @@ export const spacePlanetStats = {
     // Zeta1 Scorpii — Scorpius.
     // B1Iae, V 4.7, 12.97 solar radii, 2568.2 ly.
     zeta1scorpii: { x: 155321448.814, y: -47404899.636, z: 2466030.299, dist: 162413233.1, orbit: -2, size: 7.202, startype: 'B', label: loc('star_zeta1scorpii'), zlabel: loc('star_zeta1scorpii') },
+    // --- the stars of ten more constellations ---------------------------------------------------
+    // Orion, Ursa Major, Ursa Minor, Cygnus, Pegasus, Cassiopeia, Canis Major, Centaurus, Crux and Carina
+    // Xi Pegasi — Pegasus.
+    // F7V, V 4.2, 1.79 solar radii, 53.2 ly.
+    xipegasi: { x: 388322.108, y: 2530416.09, z: -2178584.286, dist: 3361551.6, orbit: -2, size: 2.679, startype: 'F', label: loc('star_xipegasi'), zlabel: loc('star_xipegasi') },
+    // Caph — Cassiopeia.
+    // F2III-IV, V 2.28, 3.74 solar radii, 54.7 ly.
+    caph: { x: -1597388.839, y: 3065043.217, z: -197911.252, dist: 3461980.6, orbit: -2, size: 3.868, startype: 'F', label: loc('star_caph'), zlabel: loc('star_caph') },
+    // Iota Centauri — Centaurus.
+    // A2V, V 2.75, 2.00 solar radii, 58.8 ly.
+    iotacentauri: { x: 2125231.027, y: -2585494.567, z: 1617354.469, dist: 3717152.7, orbit: -2, size: 2.83, startype: 'A', label: loc('star_iotacentauri'), zlabel: loc('star_iotacentauri') },
+    // Menkent — Centaurus.
+    // K0IIIb, V 2.06, 8.13 solar radii, 58.8 ly.
+    menkent: { x: 2580773.92, y: -2207672.781, z: 1517548.446, dist: 3719834.2, orbit: -2, size: 5.703, startype: 'KIII', label: loc('star_menkent'), zlabel: loc('star_menkent') },
+    // Nu2 Canis Majoris — Canis Major.
+    // K1III+..., V 3.95, 3.94 solar radii, 64.4 ly.
+    nu2canismajoris: { x: -2632658.744, y: -2995440.905, z: -832841.999, dist: 4073964.2, orbit: -2, size: 3.969, startype: 'KIII', label: loc('star_nu2canismajoris'), zlabel: loc('star_nu2canismajoris') },
+    // Mu1 Cygni — Cygnus.
+    // F6V, V 4.49, 2.09 solar radii, 72.5 ly.
+    mu1cygni: { x: 712210.407, y: 4295098.784, z: -1443220.247, dist: 4586720.2, orbit: -2, size: 2.891, startype: 'F', label: loc('star_mu1cygni'), zlabel: loc('star_mu1cygni') },
+    // Aljanah — Cygnus.
+    // K0III, V 2.48, 8.28 solar radii, 72.7 ly.
+    aljanah: { x: 1110678.943, y: 4438246.858, z: -457885.312, dist: 4597967.1, orbit: -2, size: 5.756, startype: 'KIII', label: loc('star_aljanah'), zlabel: loc('star_aljanah') },
+    // 23 Ursae Majoris — Ursa Major.
+    // F0IV, V 3.65, 2.50 solar radii, 77.7 ly.
+    ursaemajoris23: { x: -3194427.807, y: 1797034.523, z: 3270529.66, dist: 4912236.4, orbit: -2, size: 3.164, startype: 'F', label: loc('star_ursaemajoris23'), zlabel: loc('star_ursaemajoris23') },
+    // Merak — Ursa Major.
+    // A1V, V 2.34, 3.03 solar radii, 79.7 ly.
+    merak: { x: -2495906.749, y: 1489840.932, z: 4121186.512, dist: 5043149.3, orbit: -2, size: 3.483, startype: 'A', label: loc('star_merak'), zlabel: loc('star_merak') },
+    // Megrez — Ursa Major.
+    // A3Vvar, V 3.32, 2.18 solar radii, 80.5 ly.
+    megrez: { x: -1752417.081, y: 1907936.896, z: 4383403.913, dist: 5091701, orbit: -2, size: 2.952, startype: 'A', label: loc('star_megrez'), zlabel: loc('star_megrez') },
+    // Alioth — Ursa Major.
+    // A0p, V 1.76, 3.89 solar radii, 82.6 ly.
+    alioth: { x: -1340982.908, y: 2131044.621, z: 4573268.78, dist: 5220572.2, orbit: -2, size: 3.947, startype: 'A', label: loc('star_alioth'), zlabel: loc('star_alioth') },
+    // Phecda — Ursa Major.
+    // A0V SB, V 2.41, 2.91 solar radii, 83.2 ly.
+    phecda: { x: -1953512.136, y: 1590952.163, z: 4617973.913, dist: 5260515.3, orbit: -2, size: 3.411, startype: 'A', label: loc('star_phecda'), zlabel: loc('star_phecda') },
+    // Mizar — Ursa Major.
+    // A2V, V 2.23, 3.71 solar radii, 85.8 ly.
+    mizar: { x: -1013774.247, y: 2375482.625, z: 4772552.503, dist: 5426593.2, orbit: -2, size: 3.854, startype: 'A', label: loc('star_mizar'), zlabel: loc('star_mizar') },
+    // Gacrux — Crux.
+    // M4III, V 1.59, 118.97 solar radii, 88.6 ly.
+    gacrux: { x: 2800853.844, y: -4818326.995, z: 551410.577, dist: 5600456.3, orbit: -2, size: 21.815, startype: 'M', label: loc('star_gacrux'), zlabel: loc('star_gacrux') },
+    // Biham — Pegasus.
+    // A2V, V 3.52, 2.21 solar radii, 92.3 ly.
+    biham: { x: 1748880.563, y: 4204791.28, z: -3650593.91, dist: 5836581.9, orbit: -2, size: 2.97, startype: 'A', label: loc('star_biham'), zlabel: loc('star_biham') },
+    // HD 94510 — Carina.
+    // K0III-IV..., V 3.78, 5.95 solar radii, 95.0 ly.
+    hd94510: { x: 1874689.725, y: -5707995.799, z: 62807.089, dist: 6008296.1, orbit: -2, size: 4.878, startype: 'KIII', label: loc('star_hd94510'), zlabel: loc('star_hd94510') },
+    // Eta Ursae Minoris — Ursa Minor.
+    // F5V, V 4.95, 2.12 solar radii, 97.0 ly.
+    etaursaeminoris: { x: -1651863.284, y: 4723481.425, z: 3546567.733, dist: 6133357.3, orbit: -2, size: 2.909, startype: 'F', label: loc('star_etaursaeminoris'), zlabel: loc('star_etaursaeminoris') },
+    // Alpheratz — Pegasus.
+    // B9p, V 2.07, 3.59 solar radii, 97.0 ly.
+    alpheratz: { x: -1908542.073, y: 4788187.153, z: -3327338.941, dist: 6135181.6, orbit: -2, size: 3.79, startype: 'B', label: loc('star_alpheratz'), zlabel: loc('star_alpheratz') },
+    // Ruchbah — Cassiopeia.
+    // A5Vv SB, V 2.66, 4.03 solar radii, 99.4 ly.
+    ruchbah: { x: -3796767.919, y: 5003988.015, z: -257985.201, dist: 6286644.5, orbit: -2, size: 4.017, startype: 'A', label: loc('star_ruchbah'), zlabel: loc('star_ruchbah') },
+    // Alkaid — Ursa Major.
+    // B3V SB, V 1.85, 2.83 solar radii, 103.9 ly.
+    alkaid: { x: -509303.732, y: 2696700.258, z: 5972809.206, dist: 6573129.6, orbit: -2, size: 3.362, startype: 'B', label: loc('star_alkaid'), zlabel: loc('star_alkaid') },
+    // Sadalbari — Pegasus.
+    // M2III, V 3.51, 31.77 solar radii, 106.1 ly.
+    sadalbari: { x: -68503.843, y: 5777669.272, z: -3411405.236, dist: 6709980.7, orbit: -2, size: 11.273, startype: 'M', label: loc('star_sadalbari'), zlabel: loc('star_sadalbari') },
+    // Kappa Pegasi — Pegasus.
+    // F5IV, V 4.14, 3.54 solar radii, 111.6 ly.
+    kappapegasi: { x: 1326934.205, y: 6470150.308, z: -2491240.796, dist: 7059028.3, orbit: -2, size: 3.761, startype: 'F', label: loc('star_kappapegasi'), zlabel: loc('star_kappapegasi') },
+    // Miaplacidus — Carina.
+    // A2IV, V 1.67, 6.34 solar radii, 113.2 ly.
+    miaplacidus: { x: 1908240.302, y: -6664101.035, z: -1780746.508, dist: 7157002.3, orbit: -2, size: 5.035, startype: 'A', label: loc('star_miaplacidus'), zlabel: loc('star_miaplacidus') },
+    // Upsilon Ursae Majoris — Ursa Major.
+    // F0IV, V 3.78, 3.53 solar radii, 116.2 ly.
+    upsilonursaemajoris: { x: -4636961.479, y: 2230650.082, z: 5249548.609, dist: 7350848.4, orbit: -2, size: 3.756, startype: 'F', label: loc('star_upsilonursaemajoris'), zlabel: loc('star_upsilonursaemajoris') },
+    // Pi1 Orionis — Orion.
+    // A0V, V 4.64, 1.46 solar radii, 116.3 ly.
+    pi1orionis: { x: -6809676.887, y: -1120697.771, z: -2546452.342, dist: 7356091.5, orbit: -2, size: 2.414, startype: 'A', label: loc('star_pi1orionis'), zlabel: loc('star_pi1orionis') },
+    // Iota2 Cygni — Cygnus.
+    // A5Vn, V 3.76, 2.97 solar radii, 121.3 ly.
+    iota2cygni: { x: 822970.652, y: 7350364.539, z: 2044041.484, dist: 7673541.9, orbit: -2, size: 3.445, startype: 'A', label: loc('star_iota2cygni'), zlabel: loc('star_iota2cygni') },
+    // Dubhe — Ursa Major.
+    // F7V comp, V 1.81, 12.47 solar radii, 122.9 ly.
+    dubhe: { x: -3897568.04, y: 2953245.404, z: 6040604.515, dist: 7771846.5, orbit: -2, size: 7.062, startype: 'F', label: loc('star_dubhe'), zlabel: loc('star_dubhe') },
+    // Kappa Cygni — Cygnus.
+    // K0III, V 3.8, 7.70 solar radii, 124.2 ly.
+    kappacygni: { x: 729113.762, y: 7437973.183, z: 2407182.524, dist: 7851724.6, orbit: -2, size: 5.55, startype: 'KIII', label: loc('star_kappacygni'), zlabel: loc('star_kappacygni') },
+    // Gamma Centauri — Centaurus.
+    // A1IV, V 2.2, 5.28 solar radii, 130.2 ly.
+    gammacentauri: { x: 4145892.393, y: -6830805.337, z: 1974429.703, dist: 8230838.2, orbit: -2, size: 4.596, startype: 'A', label: loc('star_gammacentauri'), zlabel: loc('star_gammacentauri') },
+    // Kochab — Ursa Minor.
+    // K4IIIvar, V 2.07, 27.46 solar radii, 130.9 ly.
+    kochab: { x: -2424386.399, y: 5810745.275, z: 5377977.502, dist: 8280401.7, orbit: -2, size: 10.481, startype: 'KIII', label: loc('star_kochab'), zlabel: loc('star_kochab') },
+    // Markab — Pegasus.
+    // B9.5III, V 2.49, 4.19 solar radii, 133.3 ly.
+    markab: { x: 192842.759, y: 6420780.345, z: -5463285.221, dist: 8432739.4, orbit: -2, size: 4.093, startype: 'B', label: loc('star_markab'), zlabel: loc('star_markab') },
+    // Eta Cygni — Cygnus.
+    // K0IIIvar, V 3.89, 8.03 solar radii, 134.9 ly.
+    etacygni: { x: 2771397.842, y: 8055821.853, z: 500849.582, dist: 8533918.3, orbit: -2, size: 5.668, startype: 'KIII', label: loc('star_etacygni'), zlabel: loc('star_etacygni') },
+    // Tania Borealis — Ursa Major.
+    // A2IV, V 3.45, 3.39 solar radii, 137.5 ly.
+    taniaborealis: { x: -4964422.816, y: 358377.918, z: 7130450.497, dist: 8695818.1, orbit: -2, size: 3.684, startype: 'A', label: loc('star_taniaborealis'), zlabel: loc('star_taniaborealis') },
+    // Zeta Cygni — Cygnus.
+    // G8II SB, V 3.21, 10.50 solar radii, 143.1 ly.
+    zetacygni: { x: 2025030.913, y: 8602638.267, z: -1951543.3, dist: 9050671.6, orbit: -2, size: 6.482, startype: 'G', label: loc('star_zetacygni'), zlabel: loc('star_zetacygni') },
+    // Psi Ursae Majoris — Ursa Major.
+    // K1III, V 3, 13.68 solar radii, 144.5 ly.
+    psiursaemajoris: { x: -3990465.091, y: 1009489.1, z: 8159441.04, dist: 9138892.6, orbit: -2, size: 7.398, startype: 'KIII', label: loc('star_psiursaemajoris'), zlabel: loc('star_psiursaemajoris') },
+    // Mu Orionis — Orion.
+    // Am..., V 4.12, 3.21 solar radii, 154.9 ly.
+    muorionis: { x: -9226147.55, y: -3119921.144, z: -1077421.149, dist: 9798803.1, orbit: -2, size: 3.583, startype: 'A', label: loc('star_muorionis'), zlabel: loc('star_muorionis') },
+    // Fawaris — Cygnus.
+    // B9.5III, V 2.86, 4.37 solar radii, 165.0 ly.
+    fawaris: { x: 2010116.764, y: 10068241.748, z: 1855280.961, dist: 10433222.4, orbit: -2, size: 4.181, startype: 'B', label: loc('star_fawaris'), zlabel: loc('star_fawaris') },
+    // Yildun — Ursa Minor.
+    // A1Vn, V 4.35, 2.59 solar radii, 172.1 ly.
+    yildun: { x: -4690806.432, y: 8363699.479, z: 5149879.863, dist: 10884686.3, orbit: -2, size: 3.222, startype: 'A', label: loc('star_yildun'), zlabel: loc('star_yildun') },
+    // Muscida — Ursa Major.
+    // G4II-III, V 3.35, 11.26 solar radii, 179.1 ly.
+    muscida: { x: -8430317.042, y: 3757645.525, z: 6565893.151, dist: 11327007.5, orbit: -2, size: 6.712, startype: 'G', label: loc('star_muscida'), zlabel: loc('star_muscida') },
+    // Taiyangshou — Ursa Major.
+    // K0III, V 3.69, 11.98 solar radii, 183.6 ly.
+    taiyangshou: { x: -4148533.198, y: 2364443.91, z: 10586986.843, dist: 11614009.3, orbit: -2, size: 6.923, startype: 'KIII', label: loc('star_taiyangshou'), zlabel: loc('star_taiyangshou') },
+    // Scheat — Pegasus.
+    // M2II-IIIvar, V 2.44, 96.07 solar radii, 196.0 ly.
+    scheat: { x: -1085327.233, y: 10782332.385, z: -6018079.843, dist: 12395721.5, orbit: -2, size: 19.603, startype: 'M', label: loc('star_scheat'), zlabel: loc('star_scheat') },
+    // Homam — Pegasus.
+    // B8.5V, V 3.41, 3.56 solar radii, 204.4 ly.
+    homam: { x: 1894368.951, y: 9618842.436, z: -8421127.859, dist: 12923860, orbit: -2, size: 3.775, startype: 'B', label: loc('star_homam'), zlabel: loc('star_homam') },
+    // Matar — Pegasus.
+    // G2II-III.., V 2.93, 15.74 solar radii, 214.3 ly.
+    matar: { x: -535054.542, y: 12275482.759, z: -5717424.065, dist: 13552221.2, orbit: -2, size: 7.934, startype: 'G', label: loc('star_matar'), zlabel: loc('star_matar') },
+    // Pi2 Orionis — Orion.
+    // A1Vn, V 4.35, 3.38 solar radii, 224.5 ly.
+    pi2orionis: { x: -12984782.93, y: -2248142.968, z: -5278415.938, dist: 14195788.4, orbit: -2, size: 3.679, startype: 'A', label: loc('star_pi2orionis'), zlabel: loc('star_pi2orionis') },
+    // Schedar — Cassiopeia.
+    // K0II-IIIvar, V 2.24, 29.04 solar radii, 228.2 ly.
+    schedar: { x: -7478391.462, y: 12243750.322, z: -1584470.448, dist: 14434206.2, orbit: -2, size: 10.778, startype: 'KIII', label: loc('star_schedar'), zlabel: loc('star_schedar') },
+    // Tania Australis — Ursa Major.
+    // M0III SB, V 3.06, 58.43 solar radii, 230.3 ly.
+    taniaaustralis: { x: -8064057.407, y: 295234.775, z: 12127376.082, dist: 14566723.6, orbit: -2, size: 15.288, startype: 'M', label: loc('star_taniaaustralis'), zlabel: loc('star_taniaaustralis') },
+    // Bellatrix — Orion.
+    // B2III, V 1.64, 6.45 solar radii, 252.4 ly.
+    bellatrix: { x: -14684835.494, y: -4469384.491, z: -4387941.952, dist: 15964768.3, orbit: -2, size: 5.08, startype: 'B', label: loc('star_bellatrix'), zlabel: loc('star_bellatrix') },
+    // Theta Canis Majoris — Canis Major.
+    // K4III, V 4.08, 21.67 solar radii, 260.7 ly.
+    thetacanismajoris: { x: -11821442.162, y: -11408749.001, z: -1395672.022, dist: 16487994.1, orbit: -2, size: 9.31, startype: 'KIII', label: loc('star_thetacanismajoris'), zlabel: loc('star_thetacanismajoris') },
+    // Mimosa — Crux.
+    // B0.5III, V 1.25, 6.21 solar radii, 278.5 ly.
+    mimosa: { x: 9439901.452, y: -14839182.798, z: 977010.415, dist: 17614415.5, orbit: -2, size: 4.985, startype: 'B', label: loc('star_mimosa'), zlabel: loc('star_mimosa') },
+    // Pi1 Pegasi — Pegasus.
+    // G6III:, V 5.58, 6.73 solar radii, 288.6 ly.
+    pi1pegasi: { x: 627118.443, y: 17303674.989, z: -5777598.432, dist: 18253522.7, orbit: -2, size: 5.19, startype: 'G', label: loc('star_pi1pegasi'), zlabel: loc('star_pi1pegasi') },
+    // Epsilon Ursae Minoris — Ursa Minor.
+    // G5IIIvar, V 4.21, 12.98 solar radii, 304.0 ly.
+    epsilonursaeminoris: { x: -6959143.505, y: 14926560.532, z: 9914588.484, dist: 19223187.9, orbit: -2, size: 7.207, startype: 'G', label: loc('star_epsilonursaeminoris'), zlabel: loc('star_epsilonursaeminoris') },
+    // Eta Centauri — Centaurus.
+    // B1Vn + A, V 2.33, 4.60 solar radii, 305.7 ly.
+    etacentauri: { x: 14745817.442, y: -11203189.348, z: 5545085.95, dist: 19331284.5, orbit: -2, size: 4.288, startype: 'B', label: loc('star_etacentauri'), zlabel: loc('star_etacentauri') },
+    // Canopus — Carina.
+    // F0Ib, V -0.62, 71.17 solar radii, 309.2 ly.
+    canopus: { x: -2700626.482, y: -17469482.404, z: -8352958.19, dist: 19551166.4, orbit: -2, size: 16.873, startype: 'F', label: loc('star_canopus'), zlabel: loc('star_canopus') },
+    // Acrux — Crux.
+    // B0.5IV, V 0.77, 8.96 solar radii, 322.0 ly.
+    acrux: { x: 10219639.256, y: -17610915.484, z: -128887.404, dist: 20361777.5, orbit: -2, size: 5.986, startype: 'B', label: loc('star_acrux'), zlabel: loc('star_acrux') },
+    // Omega Carinae — Carina.
+    // B8III, V 3.29, 6.30 solar radii, 341.9 ly.
+    omegacarinae: { x: 7311492.488, y: -19910779.12, z: -4191981.117, dist: 21621048.8, orbit: -2, size: 5.02, startype: 'B', label: loc('star_omegacarinae'), zlabel: loc('star_omegacarinae') },
+    // Imai — Crux.
+    // B2IV, V 2.79, 5.19 solar radii, 345.1 ly.
+    imai: { x: 10301503.549, y: -19188867.817, z: 1443161.961, dist: 21826963.6, orbit: -2, size: 4.558, startype: 'B', label: loc('star_imai'), zlabel: loc('star_imai') },
+    // Alkaphrah — Ursa Major.
+    // A1Vn, V 3.57, 7.74 solar radii, 358.4 ly.
+    alkaphrah: { x: -16801136.362, y: 2173958.278, z: 15058692.869, dist: 22666462.2, orbit: -2, size: 5.564, startype: 'A', label: loc('star_alkaphrah'), zlabel: loc('star_alkaphrah') },
+    // Furud — Canis Major.
+    // B2.5V, V 3.02, 5.40 solar radii, 362.4 ly.
+    furud: { x: -11605446.042, y: -18232338.68, z: -7625251.68, dist: 22918311.8, orbit: -2, size: 4.646, startype: 'B', label: loc('star_furud'), zlabel: loc('star_furud') },
+    // Lambda Pegasi — Pegasus.
+    // G8II-III, V 3.97, 18.89 solar radii, 365.2 ly.
+    lambdapegasi: { x: 256380.597, y: 19793850.784, z: -11901832.477, dist: 23097962.6, orbit: -2, size: 8.693, startype: 'G', label: loc('star_lambdapegasi'), zlabel: loc('star_lambdapegasi') },
+    // Zeta Ursae Minoris — Ursa Minor.
+    // A3Vn, V 4.29, 6.39 solar radii, 369.0 ly.
+    zetaursaeminoris: { x: -7310179.346, y: 17492464.049, z: 13601823.458, dist: 23333122.9, orbit: -2, size: 5.054, startype: 'A', label: loc('star_zetaursaeminoris'), zlabel: loc('star_zetaursaeminoris') },
+    // Nu Puppis — Carina.
+    // B8III SB, V 3.17, 7.23 solar radii, 371.5 ly.
+    nupuppis: { x: -6821841.122, y: -20915081.402, z: -8241536.29, dist: 23492574.7, orbit: -2, size: 5.379, startype: 'B', label: loc('star_nupuppis'), zlabel: loc('star_nupuppis') },
+    // Zeta Centauri — Centaurus.
+    // B2.5IV, V 2.55, 7.06 solar radii, 381.9 ly.
+    zetacentauri: { x: 16286069.774, y: -16824182.11, z: 5921822.007, dist: 24152787.6, orbit: -2, size: 5.314, startype: 'B', label: loc('star_zetacentauri'), zlabel: loc('star_zetacentauri') },
+    // Kappa Centauri — Centaurus.
+    // B2IV, V 3.13, 4.93 solar radii, 383.3 ly.
+    kappacentauri: { x: 19628867.278, y: -12809548.888, z: 6172552.224, dist: 24237932.5, orbit: -2, size: 4.441, startype: 'B', label: loc('star_kappacentauri'), zlabel: loc('star_kappacentauri') },
+    // Algenib — Pegasus.
+    // B2IV, V 2.83, 5.78 solar radii, 391.5 ly.
+    algenib: { x: -5651839.014, y: 16019098.21, z: -18016272.469, dist: 24761681.4, orbit: -2, size: 4.81, startype: 'B', label: loc('star_algenib'), zlabel: loc('star_algenib') },
+    // Hadar — Centaurus.
+    // B1III, V 0.61, 13.02 solar radii, 392.0 ly.
+    hadar: { x: 16509733.379, y: -18486517.49, z: 541315.333, dist: 24791443, orbit: -2, size: 7.216, startype: 'B', label: loc('star_hadar'), zlabel: loc('star_hadar') },
+    // Adhara — Canis Major.
+    // B2II, V 1.5, 11.04 solar radii, 405.2 ly.
+    adhara: { x: -12625918.932, y: -21720572.411, z: -5033770.394, dist: 25622957.3, orbit: -2, size: 6.646, startype: 'B', label: loc('star_adhara'), zlabel: loc('star_adhara') },
+    // Segin — Cassiopeia.
+    // B2pvar, V 3.35, 4.79 solar radii, 411.8 ly.
+    segin: { x: -16679539.336, y: 19987463.898, z: 748349.943, dist: 26043536.1, orbit: -2, size: 4.376, startype: 'B', label: loc('star_segin'), zlabel: loc('star_segin') },
+    // Sigma Centauri — Centaurus.
+    // B3V, V 3.91, 4.34 solar radii, 411.8 ly.
+    sigmacentauri: { x: 12368582.251, y: -22218776.751, z: 5622268.755, dist: 26043536.1, orbit: -2, size: 4.164, startype: 'B', label: loc('star_sigmacentauri'), zlabel: loc('star_sigmacentauri') },
+    // Delta Centauri — Centaurus.
+    // B2IVne, V 2.58, 6.88 solar radii, 415.0 ly.
+    deltacentauri: { x: 11268771.449, y: -23108027.63, z: 5262542.023, dist: 26242341.7, orbit: -2, size: 5.245, startype: 'B', label: loc('star_deltacentauri'), zlabel: loc('star_deltacentauri') },
+    // Lambda Centauri — Centaurus.
+    // B9II:, V 3.11, 9.63 solar radii, 419.8 ly.
+    lambdacentauri: { x: 10993833.896, y: -24154150.413, z: -647343.485, dist: 26546307.1, orbit: -2, size: 6.205, startype: 'B', label: loc('star_lambdacentauri'), zlabel: loc('star_lambdacentauri') },
+    // HD 100673 — Centaurus.
+    // B9V, V 4.62, 4.88 solar radii, 426.3 ly.
+    hd100673: { x: 9936580.273, y: -24852280.299, z: 3258341.928, dist: 26962719.7, orbit: -2, size: 4.417, startype: 'B', label: loc('star_hd100673'), zlabel: loc('star_hd100673') },
+    // Epsilon Centauri — Centaurus.
+    // B1III, V 2.29, 6.55 solar radii, 427.5 ly.
+    epsiloncentauri: { x: 17244308.245, y: -20411693.441, z: 4098910.158, dist: 27033395.3, orbit: -2, size: 5.118, startype: 'B', label: loc('star_epsiloncentauri'), zlabel: loc('star_epsiloncentauri') },
+    // Upsilon1 Centauri — Centaurus.
+    // B2IV-V, V 3.87, 3.91 solar radii, 427.5 ly.
+    upsilon1centauri: { x: 18424478.184, y: -18241315.756, z: 7654898.015, dist: 27033395.3, orbit: -2, size: 3.956, startype: 'B', label: loc('star_upsilon1centauri'), zlabel: loc('star_upsilon1centauri') },
+    // Polaris — Ursa Minor.
+    // F7:Ib-IIv SB, V 1.97, 40.77 solar radii, 432.6 ly.
+    polaris: { x: -13438636.487, y: 20473611.57, z: 12189713.765, dist: 27356075.1, orbit: -2, size: 12.771, startype: 'F', label: loc('star_polaris'), zlabel: loc('star_polaris') },
+    // Albireo — Cygnus.
+    // K3II+..., V 3.05, 49.22 solar radii, 434.3 ly.
+    albireo: { x: 12806894.185, y: 24197873.193, z: 2189074.24, dist: 27465353.7, orbit: -2, size: 14.031, startype: 'KIII', label: loc('star_albireo'), zlabel: loc('star_albireo') },
+    // Nu Centauri — Centaurus.
+    // B2IV, V 3.41, 4.94 solar radii, 436.6 ly.
+    nucentauri: { x: 18171935.985, y: -18547552.056, z: 9392284.333, dist: 27612423.8, orbit: -2, size: 4.445, startype: 'B', label: loc('star_nucentauri'), zlabel: loc('star_nucentauri') },
+    // Xi2 Canis Majoris — Canis Major.
+    // A0III, V 4.54, 5.79 solar radii, 441.3 ly.
+    xi2canismajoris: { x: -16700693.702, y: -21367756.717, z: -6599146.086, dist: 27911340.5, orbit: -2, size: 4.811, startype: 'A', label: loc('star_xi2canismajoris'), zlabel: loc('star_xi2canismajoris') },
+    // HD 50896 — Canis Major.
+    // WN5 (SB1), V 6.65, 13.43 solar radii, 441.9 ly.
+    hd50896: { x: -15878917.76, y: -22473789.608, z: -4893294.953, dist: 27949160.7, orbit: -2, size: 7.329, startype: 'O', label: loc('star_hd50896'), zlabel: loc('star_hd50896') },
+    // Omicron2 Canis Majoris — Canis Major.
+    // B3Ia, V 3.02, 3.61 solar radii, 441.9 ly.
+    omicron2canismajoris: { x: -15645880.846, y: -22811466.286, z: -3999875.314, dist: 27949160.7, orbit: -2, size: 3.8, startype: 'B', label: loc('star_omicron2canismajoris'), zlabel: loc('star_omicron2canismajoris') },
+    // Muliphein — Canis Major.
+    // B8II, V 4.11, 5.58 solar radii, 441.9 ly.
+    muliphein: { x: -18555164.952, y: -20790642.19, z: -2147238.926, dist: 27949160.7, orbit: -2, size: 4.725, startype: 'B', label: loc('star_muliphein'), zlabel: loc('star_muliphein') },
+    // Aludra — Canis Major.
+    // B5Ia, V 2.45, 3.36 solar radii, 441.9 ly.
+    aludra: { x: -12772761.56, y: -24658577.128, z: -3157011.283, dist: 27949160.7, orbit: -2, size: 3.666, startype: 'B', label: loc('star_aludra'), zlabel: loc('star_aludra') },
+    // HD 79351 — Carina.
+    // B2IV, V 3.43, 5.01 solar radii, 446.8 ly.
+    hd79351: { x: 3750036.345, y: -27769793.505, z: -3625798.309, dist: 28255452.9, orbit: -2, size: 4.475, startype: 'B', label: loc('star_hd79351'), zlabel: loc('star_hd79351') },
+    // Theta Carinae — Carina.
+    // B0Vp, V 2.74, 4.70 solar radii, 455.5 ly.
+    thetacarinae: { x: 9627306.882, y: -27039837.187, z: -2461547.653, dist: 28807933.8, orbit: -2, size: 4.335, startype: 'B', label: loc('star_thetacarinae'), zlabel: loc('star_thetacarinae') },
+    // Pherkad — Ursa Minor.
+    // A3II-III, V 3, 15.26 solar radii, 486.8 ly.
+    pherkad: { x: -7376405.112, y: 22092733.559, z: 20131188.661, dist: 30785791.9, orbit: -2, size: 7.813, startype: 'A', label: loc('star_pherkad'), zlabel: loc('star_pherkad') },
+    // Mirzam — Canis Major.
+    // B1II/III, V 1.98, 8.71 solar radii, 492.7 ly.
+    mirzam: { x: -20953698.445, y: -21743594.587, z: -7679109.129, dist: 31157825.7, orbit: -2, size: 5.901, startype: 'B', label: loc('star_mirzam'), zlabel: loc('star_mirzam') },
+    // Betelgeuse — Orion.
+    // M2Ib, V 0.45, 610.26 solar radii, 497.9 ly.
+    betelgeuse: { x: -29269998.704, y: -10530474.629, z: -4903814.762, dist: 31490810.1, orbit: -2, size: 49.407, startype: 'M', label: loc('star_betelgeuse'), zlabel: loc('star_betelgeuse') },
+    // Mu Centauri — Centaurus.
+    // B2IV-Ve, V 3.47, 5.56 solar radii, 505.7 ly.
+    mucentauri: { x: 21079402.839, y: -21647850.535, z: 10473219.309, dist: 31979039.7, orbit: -2, size: 4.717, startype: 'B', label: loc('star_mucentauri'), zlabel: loc('star_mucentauri') },
+    // Phi Ursae Majoris — Ursa Major.
+    // A3IV, V 4.55, 7.81 solar radii, 508.8 ly.
+    phiursaemajoris: { x: -20461269.325, y: 7098139.643, z: 23799474.12, dist: 32178596.9, orbit: -2, size: 5.59, startype: 'A', label: loc('star_phiursaemajoris'), zlabel: loc('star_phiursaemajoris') },
+    // Nu Orionis — Orion.
+    // B3IV, V 4.42, 4.30 solar radii, 516.1 ly.
+    nuorionis: { x: -31517546.067, y: -8331056.601, z: -1549475.883, dist: 32636836.4, orbit: -2, size: 4.145, startype: 'B', label: loc('star_nuorionis'), zlabel: loc('star_nuorionis') },
+    // 69 Orionis — Orion.
+    // B5Vn, V 4.95, 3.69 solar radii, 528.6 ly.
+    orionis69: { x: -32412025.156, y: -8162020.609, z: -652251.22, dist: 33430276.5, orbit: -2, size: 3.84, startype: 'B', label: loc('star_orionis69'), zlabel: loc('star_orionis69') },
+    // Gamma Cassiopeiae — Cassiopeia.
+    // B0IV:evar, V 2.15, 7.43 solar radii, 549.1 ly.
+    gammacassiopeiae: { x: -19191155.748, y: 28910392.445, z: -1301755.998, dist: 34724714.8, orbit: -2, size: 5.452, startype: 'B', label: loc('star_gammacassiopeiae'), zlabel: loc('star_gammacassiopeiae') },
+    // 5 Orionis — Orion.
+    // M1III, V 5.33, 66.03 solar radii, 590.9 ly.
+    orionis5: { x: -32616714.753, y: -9401010.37, z: -15622087.334, dist: 37366812.7, orbit: -2, size: 16.252, startype: 'M', label: loc('star_orionis5'), zlabel: loc('star_orionis5') },
+    // Avior — Carina.
+    // K3III+B2V, V 1.86, 118.62 solar radii, 605.1 ly.
+    avior: { x: 2790803.408, y: -37241875.997, z: -8348531.229, dist: 38268053.1, orbit: -2, size: 21.783, startype: 'KIII', label: loc('star_avior'), zlabel: loc('star_avior') },
+    // HD 96918 — Carina.
+    // G0Ia0, V 3.93, 1.10 solar radii, 605.1 ly.
+    hd96918: { x: 13089775.61, y: -35949376.768, z: 862536.72, dist: 38268053.1, orbit: -2, size: 2.098, startype: 'G', label: loc('star_hd96918'), zlabel: loc('star_hd96918') },
+    // Alnilam — Orion.
+    // B0Ia, V 1.69, 7.16 solar radii, 607.4 ly.
+    alnilam: { x: -33189849.287, y: -15626493.212, z: -11385040.497, dist: 38410578.4, orbit: -2, size: 5.352, startype: 'B', label: loc('star_alnilam'), zlabel: loc('star_alnilam') },
+    // Xi Orionis — Orion.
+    // B3IV, V 4.45, 4.99 solar radii, 607.4 ly.
+    xiorionis: { x: -36933999.567, y: -10456424.383, z: -1383979.036, dist: 38410578.4, orbit: -2, size: 4.466, startype: 'B', label: loc('star_xiorionis'), zlabel: loc('star_xiorionis') },
+    // Saiph — Orion.
+    // B0.5Iavar, V 2.07, 9.90 solar radii, 647.1 ly.
+    saiph: { x: -31980052.256, y: -21991060.137, z: -12983478.992, dist: 40925556.7, orbit: -2, size: 6.291, startype: 'B', label: loc('star_saiph'), zlabel: loc('star_saiph') },
+    // HD 89388 — Carina.
+    // K3II, V 3.39, 63.72 solar radii, 657.6 ly.
+    hd89388: { x: 11075907.605, y: -39988424.831, z: -2759734.474, dist: 41585646.4, orbit: -2, size: 15.965, startype: 'KIII', label: loc('star_hd89388'), zlabel: loc('star_hd89388') },
+    // Kappa Canis Majoris — Canis Major.
+    // B1.5IVne, V 3.5, 6.11 solar radii, 658.9 ly.
+    kappacanismajoris: { x: -18718869.7, y: -35737839.507, z: -10429339.57, dist: 41669657.8, orbit: -2, size: 4.942, startype: 'B', label: loc('star_kappacanismajoris'), zlabel: loc('star_kappacanismajoris') },
+    // Enif — Pegasus.
+    // K2Ibvar, V 2.38, 90.50 solar radii, 689.5 ly.
+    enif: { x: 15384111.931, y: 33868393.483, z: -22757408.052, dist: 43607781.4, orbit: -2, size: 19.026, startype: 'KIII', label: loc('star_enif'), zlabel: loc('star_enif') },
+    // Mintaka — Orion.
+    // O9.5II, V 2.25, 8.75 solar radii, 692.5 ly.
+    mintaka: { x: -38147085.827, y: -16869357.775, z: -13343436.39, dist: 43792952.4, orbit: -2, size: 5.916, startype: 'O', label: loc('star_mintaka'), zlabel: loc('star_mintaka') },
+    // Alnitak — Orion.
+    // O9.5Ib SB, V 1.74, 11.77 solar radii, 736.2 ly.
+    alnitak: { x: -39951981.423, y: -19877706.7, z: -13290363.613, dist: 46560904.3, orbit: -2, size: 6.861, startype: 'O', label: loc('star_alnitak'), zlabel: loc('star_alnitak') },
+    // Aspidiske — Carina.
+    // A8Ib, V 2.21, 43.13 solar radii, 765.6 ly.
+    aspidiske: { x: 7069428.086, y: -47534094.22, z: -5910125.902, dist: 48418968.5, orbit: -2, size: 13.134, startype: 'A', label: loc('star_aspidiske'), zlabel: loc('star_aspidiske') },
+    // Rigel — Orion.
+    // B8Ia, V 0.18, 66.58 solar radii, 862.8 ly.
+    rigel: { x: -43066329.648, y: -24109594.482, z: -23272748.633, dist: 54567409, orbit: -2, size: 16.319, startype: 'B', label: loc('star_rigel'), zlabel: loc('star_rigel') },
+    // HD 117440 — Centaurus.
+    // G8II/III, V 3.9, 48.39 solar radii, 906.0 ly.
+    hd117440: { x: 34798490.429, y: -39721835.853, z: 22227171.715, dist: 57295779.4, orbit: -2, size: 13.913, startype: 'G', label: loc('star_hd117440'), zlabel: loc('star_hd117440') },
+    // Omega Canis Majoris — Canis Major.
+    // B2IV/Ve, V 4.01, 7.82 solar radii, 911.1 ly.
+    omegacanismajoris: { x: -29094459.523, y: -49210188.929, z: -7173418.273, dist: 57615867.6, orbit: -2, size: 5.592, startype: 'B', label: loc('star_omegacanismajoris'), zlabel: loc('star_omegacanismajoris') },
+    // Pi6 Orionis — Orion.
+    // K2IIvar, V 4.47, 47.39 solar radii, 945.4 ly.
+    pi6orionis: { x: -52065640.302, y: -16474450.783, z: -24335879.223, dist: 59786900.3, orbit: -2, size: 13.768, startype: 'KIII', label: loc('star_pi6orionis'), zlabel: loc('star_pi6orionis') },
+    // Pi4 Orionis — Orion.
+    // B2III SB, V 3.68, 10.51 solar radii, 1052.1 ly.
+    pi4orionis: { x: -59470672.616, y: -13610013.875, z: -26555292.132, dist: 66537034.2, orbit: -2, size: 6.483, startype: 'B', label: loc('star_pi4orionis'), zlabel: loc('star_pi4orionis') },
+    // Naos — Carina.
+    // O5IAf, V 2.21, 11.70 solar radii, 1083.6 ly.
+    naos: { x: -16549998.877, y: -66259921.65, z: -5621689.171, dist: 68526513.6, orbit: -2, size: 6.84, startype: 'O', label: loc('star_naos'), zlabel: loc('star_naos') },
+    // Meissa — Orion.
+    // O..., V 3.39, 6.88 solar radii, 1098.2 ly.
+    meissa: { x: -65602326.456, y: -17641780.231, z: -14433489.868, dist: 69449429.6, orbit: -2, size: 5.248, startype: 'O', label: loc('star_meissa'), zlabel: loc('star_meissa') },
+    // Nganurganity — Canis Major.
+    // K4III, V 3.49, 122.25 solar radii, 1120.8 ly.
+    nganurganity: { x: -35744934.347, y: -59888673.893, z: -12641833.773, dist: 70881376.6, orbit: -2, size: 22.113, startype: 'KIII', label: loc('star_nganurganity'), zlabel: loc('star_nganurganity') },
+    // HD 93070 — Carina.
+    // K3Ib, V 4.58, 63.88 solar radii, 1140.4 ly.
+    hd93070: { x: 22091148.29, y: -68628013.666, z: -1884755.697, dist: 72120561.5, orbit: -2, size: 15.985, startype: 'KIII', label: loc('star_hd93070'), zlabel: loc('star_hd93070') },
+    // Pi5 Orionis — Orion.
+    // B2III SB, V 3.71, 13.22 solar radii, 1342.2 ly.
+    pi5orionis: { x: -74110884.114, y: -21625127.567, z: -35284453.293, dist: 84882636.2, orbit: -2, size: 7.273, startype: 'B', label: loc('star_pi5orionis'), zlabel: loc('star_pi5orionis') },
+    // HD 90853 — Carina.
+    // F2II, V 3.81, 45.34 solar radii, 1342.2 ly.
+    hd90853: { x: 22279691.145, y: -81895781.139, z: -1326018.382, dist: 84882636.2, orbit: -2, size: 13.467, startype: 'F', label: loc('star_hd90853'), zlabel: loc('star_hd90853') },
+    // Deneb — Cygnus.
+    // A2Ia, V 1.25, 95.96 solar radii, 1411.9 ly.
+    deneb: { x: 8886756.74, y: 88794266.231, z: 3112428.886, dist: 89292123.8, orbit: -2, size: 19.591, startype: 'A', label: loc('star_deneb'), zlabel: loc('star_deneb') },
+    // HD 74375 — Carina.
+    // B1.5III, V 4.31, 9.21 solar radii, 1443.2 ly.
+    hd74375: { x: 9092489.336, y: -89170753.264, z: -17195366.609, dist: 91267613.3, orbit: -2, size: 6.069, startype: 'B', label: loc('star_hd74375'), zlabel: loc('star_hd74375') },
+    // Wezen — Canis Major.
+    // F8Ia, V 1.83, 167.18 solar radii, 1606.7 ly.
+    wezen: { x: -52662003.246, y: -85659385.305, z: -14609087.84, dist: 101608278.8, orbit: -2, size: 25.859, startype: 'F', label: loc('star_wezen'), zlabel: loc('star_wezen') },
+    // Chi2 Orionis — Orion.
+    // B2Iavar, V 4.64, 11.57 solar radii, 1802.0 ly.
+    chi2orionis: { x: -112319343.731, y: -19182444.928, z: -1711316.712, dist: 113958456.4, orbit: -2, size: 6.802, startype: 'B', label: loc('star_chi2orionis'), zlabel: loc('star_chi2orionis') },
+    // Sadr — Cygnus.
+    // F8Ib, V 2.23, 158.58 solar radii, 1832.3 ly.
+    sadr: { x: 23785965.7, y: 113348755.913, z: 3775477.084, dist: 115879104.5, orbit: -2, size: 25.186, startype: 'F', label: loc('star_sadr'), zlabel: loc('star_sadr') },
+    // Iota Canis Majoris — Canis Major.
+    // B3Ib/II, V 4.36, 21.47 solar radii, 2508.9 ly.
+    iotacanismajoris: { x: -104002677.583, y: -118396301.586, z: -18450358.971, dist: 158665235.4, orbit: -2, size: 9.267, startype: 'B', label: loc('star_iotacanismajoris'), zlabel: loc('star_iotacanismajoris') },
 };
 
 // --- The cow -------------------------------------------------------------------------------------
@@ -13942,6 +14281,11 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 var starLockOn = false;
 // Whether the map's settings panel is showing.
 var mapSettingsOpen = false;
+// Whether the map's star search is showing, and what was last typed into it. Held out here rather
+// than in the panel so a renderer switch, which rebuilds every control, does not close the search or
+// lose the query from under someone mid-word.
+var mapSearchOpen = false;
+var mapSearchQuery = '';
 // Redraw only once per displayed frame 
 var mapDrawPending = false;
 function requestDraw(){
@@ -17233,14 +17577,161 @@ function buildSolarMap(parentNode, keep) {
             .appendTo(currentNode);
     }
 
-    // Everything that decides what the map draws, behind one gear in the bottom-left corner. As a
-    // row of labelled buttons along the bottom edge these crowded the map itself, and the row grew
-    // every time another was added; a panel costs one click to reach and takes no space until then.
-    // Each button reads and writes its own key in global.settings.mapView, so the panel is rebuilt
-    // from the saved setting every time the map opens and the click is what persists the change.
-    // Each label states the setting it is IN rather than what a press would do to it, so the panel
-    // can be read as a report of what is on screen. Every button in it follows that: the ones with
-    // more than two positions always did, and the plain toggles were brought into line with them.
+    // --- Find a star ------------------------------------------------------------------------------
+    const SEARCH_RESULTS_MAX = 8;
+
+    // Everything drawn as a star, which takes in the components that orbit an invisible barycenter
+    // (Gliese 570 B and C, the Epsilon Indi brown dwarfs).
+    function searchableStars(){
+        let out = [];
+        for (const id of drawnAsStarIndex()){
+            const body = spacePlanetStats[id];
+            if (body.hidden){ continue; }
+            // zlabel names the component ("Sirius A"), label the system ("Sirius"). Worth matching on
+            // both — a player looking for Sirius B will type "Sirius" — while the more specific one
+            // is what gets shown.
+            const name = body.zlabel || body.label;
+            if (!name){ continue; }
+            out.push({ id, name, alt: body.label && body.label !== name ? body.label : '' });
+        }
+        return out;
+    }
+
+    function searchMatches(query){
+        const q = String(query || '').trim().toLowerCase();
+        if (!q){ return []; }
+        let hits = [];
+        for (const s of searchableStars()){
+            let at = s.name.toLowerCase().indexOf(q);
+            if (at < 0 && s.alt){ at = s.alt.toLowerCase().indexOf(q); }
+            if (at < 0){ continue; }
+            // Distance is measured from the coordinates rather than read off `dist`: for a component
+            // that orbits a barycenter `dist` is the radius of that little orbit, not how far away
+            // the thing is, and reporting 0.4 ly for Gliese 570 B would be nonsense.
+            const pos = genXYZcoord(s.id);
+            hits.push({ id: s.id, name: s.name, pre: at === 0 ? 0 : 1,
+                        ly: Math.hypot(pos.x, pos.y, pos.z) / AU_PER_LY });
+        }
+        // Names that BEGIN with what was typed come first, and everything after that is ordered by
+        // distance from the sun.
+        hits.sort((a,b) => (a.pre - b.pre) || (a.ly - b.ly) || a.name.localeCompare(b.name));
+        return hits.slice(0, SEARCH_RESULTS_MAX);
+    }
+
+    let searchHits = [], searchSel = 0, searchRows = [];
+    const SEARCH_SEL_BG = 'rgba(255,165,0,0.25)';
+    let searchPanel = $(`<div class="mapSearch" style="position: absolute; top: 2px; right: 36px; display: ${mapSearchOpen ? 'block' : 'none'}; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; width: 15em; max-width: calc(100% - 40px);"></div>`);
+    let searchInput = $(`<input type="text" class="mapSearchInput" aria-label="${loc('solar_map_search')}" placeholder="${loc('solar_map_search_hint')}" style="width: 100%; height: 26px; box-sizing: border-box;">`);
+    let searchList = $(`<div class="mapSearchResults" style="margin-top: 4px; max-height: 13em; overflow-y: auto;"></div>`);
+    searchPanel.append(searchInput, searchList);
+    searchInput.val(mapSearchQuery);
+
+    // Moving the highlight only restyles the rows that are already there. It must not rebuild them:
+    // hovering a row is what selects it, and a rebuild would destroy the row under the pointer. A
+    // click is only delivered to an element that received both the press and the release, so with the
+    // row replaced in between — which any stir of the mouse mid-click is enough to cause — the browser
+    // has nothing to fire at and clicking a result does nothing at all.
+    function highlightSearch(){
+        searchRows.forEach(function(row, i){
+            row.css('background', i === searchSel ? SEARCH_SEL_BG : 'transparent');
+        });
+        // Keep the selection visible when the arrow keys walk it past the edge of the scroll box.
+        let row = searchRows[searchSel];
+        if (!row || !row[0] || !row[0].scrollIntoView){ return; }
+        let box = searchList[0], top = row[0].offsetTop, bottom = top + row[0].offsetHeight;
+        if (top < box.scrollTop){ box.scrollTop = top; }
+        else if (bottom > box.scrollTop + box.clientHeight){ box.scrollTop = bottom - box.clientHeight; }
+    }
+
+    function renderSearch(){
+        clearElement(searchList);
+        searchRows = [];
+        if (!searchHits.length){
+            // Only say there is nothing once something has actually been asked for; an empty box has
+            // simply not been used yet.
+            if (searchInput.val().trim()){
+                $(`<div style="padding: 2px 4px; opacity: 0.7;">${loc('solar_map_search_none')}</div>`).appendTo(searchList);
+            }
+            return;
+        }
+        searchHits.forEach(function(hit, i){
+            searchRows.push(
+                $(`<div class="mapSearchHit" style="padding: 2px 4px; cursor: pointer; display: flex; justify-content: space-between; gap: 8px;"><span>${hit.name}</span><span style="opacity: 0.7; white-space: nowrap;">${loc('solar_map_search_ly',[hit.ly < 10 ? hit.ly.toFixed(1) : Math.round(hit.ly)])}</span></div>`)
+                    .on('mouseenter', function(){ searchSel = i; highlightSearch(); })
+                    .on('click', function(){ snapToStar(hit.id); })
+                    .appendTo(searchList)
+            );
+        });
+        highlightSearch();
+    }
+
+    // Centre on a star and lock the camera to it, exactly as clicking one on the map does — so the
+    // next zoom pulls in on it rather than drifting off toward the pointer.
+    function snapToStar(id){
+        starLockOn = id;
+        recenterOn(genXYZcoord(id));
+        setSearchOpen(false);
+        drawMap();
+    }
+
+    function setSearchOpen(open){
+        mapSearchOpen = open;
+        searchPanel.css('display', open ? 'block' : 'none');
+        if (!open){ return; }
+        // Re-run the query on the way in: the bodies have moved along their orbits since it was last
+        // answered, so the distances would otherwise be stale.
+        searchHits = searchMatches(searchInput.val());
+        searchSel = 0;
+        renderSearch();
+        searchInput.trigger('focus').trigger('select');
+    }
+
+    searchInput.on('input', function(){
+        mapSearchQuery = $(this).val();
+        searchHits = searchMatches(mapSearchQuery);
+        searchSel = 0;
+        renderSearch();
+    });
+    searchInput.on('keydown', function(e){
+        // Anything acted on here is stopped from travelling on. The game's own key handling already
+        // stands aside while an input has focus, but the modal around the map does not, and Escape
+        // reaching it would shut the whole map instead of the search.
+        if (e.key === 'Escape'){
+            setSearchOpen(false);
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        else if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+            if (!searchHits.length){ return; }
+            searchSel = (searchSel + (e.key === 'ArrowDown' ? 1 : searchHits.length - 1)) % searchHits.length;
+            highlightSearch();
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        else if (e.key === 'Enter'){
+            if (searchHits[searchSel]){ snapToStar(searchHits[searchSel].id); }
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    });
+    // Keep the pointer to itself. The camera's own handlers hang off the canvas element rather than
+    // this container, so they are not what this is for — it is the modal wrapped around the map, and
+    // anything else upstream that might read a click in its background as "close".
+    searchPanel.on('mousedown mouseup click wheel touchstart', function(e){ e.stopPropagation(); });
+    searchPanel.appendTo(currentNode);
+    // Left open from last time — a renderer switch, or simply how the map was closed. Fill the list
+    // back in, but do not grab focus: the player is opening a map, not necessarily returning to a
+    // half-typed search.
+    if (mapSearchOpen){
+        searchHits = searchMatches(mapSearchQuery);
+        renderSearch();
+    }
+
+    $(`<input type="button" value="🔍" title="${loc('solar_map_search')}" aria-label="${loc('solar_map_search')}" style="position: absolute; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 15px; line-height: 1;">`)
+        .on("click", function(){ setSearchOpen(!mapSearchOpen); })
+        .appendTo(currentNode);
+
+    // Settings for the Star Map.
     let mapSettings = $(`<div class="mapSettings" style="position: absolute; bottom: 36px; left: 2px; display: ${mapSettingsOpen ? 'flex' : 'none'}; flex-direction: column; align-items: stretch; gap: 4px; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; max-width: 15em;"></div>`);
     // Orbits: one button, four positions. See ORBIT_STATES.
     $(`<input type="button" value="${orbitLabel()}" style="height: 30px;">`)
