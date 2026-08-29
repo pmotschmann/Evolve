@@ -14,7 +14,7 @@ import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask } from './achieve.js';
-import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap } from './stars.js';
+import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap } from './stars.js';
 import { loc } from './locale.js';
 
 const outerTruth = {
@@ -9001,14 +9001,11 @@ function initializeShipTrip(ship, locationName, trip){
     // Liftoff
     ship.inTransit = true;
 }
-// How far along its orbit a body has moved after `days`, in degrees. Matches the rate the position
-// update in main.js advances at: it runs on the mid loop, five of which make a game day, so its
-// 72/orbit per tick is 360/orbit per day — one full circuit in exactly `orbit` days.
+// How far along its orbit a body has moved after `days`, in degrees. Angles are derived from the run
+// seed and the day count (see orbitAngle in stars.js), so looking ahead is just asking for the angle
+// at a later day — nothing has to be advanced to find out where a body will be.
 function orbitDegrees(id, days){
-    let orbit = orbitPeriod(id);
-    let now = global.space.position[id] || 0;
-    if (!(orbit > 0)){ return now; }
-    return (now + days * (360 / orbit)) % 360;
+    return orbitAngle(id, days);
 }
 
 // Where a body will actually be `days` from now — a plain projection along the orbits it already
@@ -9119,7 +9116,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     let planet_speed = 360 / planet_orbit;
     // `i` counts flight days from where the ship is now, but the planet has also been moving through
     // whatever the ship spent getting here, so the angle is wound by elapsed as well.
-    let planet_degree = (global.space.position[planet] + ((elapsed + cross1_days) * planet_speed)) % 360;
+    let planet_degree = orbitAngle(planet, elapsed + cross1_days);
     for (let i = cross1_days; i <= cross2_days; i++) {
         // orbitPoint rather than open-coded trig, so the landing point is on the same 3D orbit the
         // body travels and the map draws.

@@ -139,8 +139,19 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+// Assign a hellseed to old save files
 if (!global.hasOwnProperty('hellseed') || typeof global['hellseed'] !== 'number' || isNaN(global['hellseed'])){
     global['hellseed'] = (global.hasOwnProperty('warseed') ? global['warseed'] : global['seed']) + 2;
+}
+
+// Assign a starseed to old save files
+if (!global.hasOwnProperty('starseed') || typeof global['starseed'] !== 'number' || isNaN(global['starseed'])){
+    global['starseed'] = (global.hasOwnProperty('hellseed') ? global['hellseed'] : global['seed']) + 3;
+}
+
+// position data is no longer stored, delete it from old save files
+if (global['space'] && global.space['position']){
+    delete global.space['position'];
 }
 
 if (convertVersion(global['version']) < 2060){
@@ -2512,6 +2523,7 @@ function newGameData(){
     global['seed'] = Math.rand(0,10000);
     global['warseed'] = Math.rand(0,10000);
     global['hellseed'] = Math.rand(0,10000);
+    global['starseed'] = Math.rand(0,10000);
     global['new'] = true;
 }
 
@@ -2766,6 +2778,7 @@ window.soft_reset = function reset(source){
     global.seed = Math.rand(0,10000);
     global.warseed = Math.rand(0,10000);
     global.hellseed = Math.rand(0,10000);
+    global.starseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
     writeSave();

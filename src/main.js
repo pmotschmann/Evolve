@@ -12,7 +12,7 @@ import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, ziggurat
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, syndicateActive, shipFuelUse, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
-import { starData, genXYZcoord, drawMap, randomCoord, advanceMapDays, orbitPeriod } from './stars.js';
+import { genXYZcoord, drawMap, randomCoord, advanceMapDays, advanceOrbits } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -972,23 +972,8 @@ function updateSolarMap(ticks){
     let days = ticks / webWorker.longRatio;
     if (webWorker.offline){ days *= webWorker.offlineScale; }
 
-    if (global.space.hasOwnProperty('position')){
-        Object.keys(starData).forEach(function(planet){
-            if (starData[planet].startype){ return; }   // stars use fixed coordinates
-            if (global.space.position.hasOwnProperty(planet)){
-                let orbit = orbitPeriod(planet);
-                if (orbit === 0){
-                    global.space.position[planet] = 0;
-                }
-                else {
-                    let pos = (((global.space.position[planet] + 360 * days / orbit) % 360) + 360) % 360;
-                    pos = Math.round(pos * 1e6) / 1e6;
-                    // Rounding up from just under a full turn lands on 360, which is 0 by another name.
-                    global.space.position[planet] = pos >= 360 ? 0 : pos;
-                }
-            }
-        });
-    }
+    // Move planet orbits
+    advanceOrbits(days);
     moveTempCoordinates(days);
     moveShips(days);
     // Axial rotation for the high-detail surfaces.
@@ -999,10 +984,7 @@ function updateSolarMap(ticks){
     }
 }
 
-// How much game time one pass of each loop stands for, in units of that loop's live cadence.
-// During offline catch-up a single pass of all three loops covers offlineScale whole game days,
-// so anything that counts loop passes (rather than scaling off time_multiplier) has to advance
-// by that many passes' worth or it runs 1/step as fast as it does in live play.
+// How much game time one pass of each loop stands for.
 function dayStep(){ return webWorker.offline ? webWorker.offlineScale : 1; }
 function midSteps(){ return webWorker.offline ? (webWorker.longRatio / webWorker.midRatio) * webWorker.offlineScale : 1; }
 function fastSteps(){ return webWorker.offline ? webWorker.longRatio * webWorker.offlineScale : 1; }

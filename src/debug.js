@@ -5,6 +5,7 @@ import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } fro
 import { actions, checkAffordable } from './actions.js';
 import { fuel_adjust, int_fuel_adjust } from './space.js';
 import { shipCosts } from './truepath.js';
+import { starData, starInfo } from './stars.js';
 import { f_rate } from './industry.js';
 import { armyRating } from './civics.js';
 import { alevel } from './achieve.js';
@@ -35,6 +36,10 @@ export function enableDebug(){
             global: {},
             breakdown: {},
         };
+        if (global['beta']){
+            window.evolve['starData'] = deepClone(starData);
+            window.evolve['starInfo'] = starInfo;
+        }
     }
 }
 
