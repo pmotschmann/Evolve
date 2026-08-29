@@ -9131,6 +9131,7 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
 
 // Whether the syndicate is operating at all
 export function syndicateActive(){
+    if (global.tech['shadow'] && global.tech['shadow'] >= 5){ return false; }
     return !global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] ? true : false;
 }
 

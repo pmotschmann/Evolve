@@ -13617,9 +13617,10 @@ const techs = {
         title(){ return loc('tech_fleet_command'); },
         desc(){ return loc('tech_fleet_command'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { resettle: 8 },
+        reqs(r){ return r.era === 'matrioshka' ? { resettle: 8 } : { shadow: 5 }; },
         grant: ['syard_fleet',1],
         cost: {
             Knowledge(){ return 21000000; }
@@ -16848,6 +16849,29 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.tauceti.tau_star.server_farm);
+                return true;
+            }
+            return false;
+        }
+    },
+    syndicate_threat: {
+        id: 'tech-syndicate_threat_analysis',
+        title(){ return loc('tech_syndicate_threat_analysis'); },
+        desc(){ return loc('tech_syndicate_threat_analysis'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 4 },
+        grant: ['shadow',5],
+        cost: {
+            Knowledge(){ return 20000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_syndicate_threat_analysis_msg'),'info',false,['progress']);
                 return true;
             }
             return false;

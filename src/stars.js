@@ -382,6 +382,8 @@ const starConstants = {
     // Rendered at the size it will be drawn at, rounded up to one of these, so a small body costs a
     // fraction of a large one. Nothing above 128: past that the disc is being scaled up anyway.
     SPHERE_SIZES: [32, 64, 128],
+    // Below this a disc is too small to tell a lit sphere from a stamp, and not worth the render.
+    SPHERE_MIN_PX: 8,
     // Camera and rotation angles are quantised before they key the cache, so nudging the view — or a
     // slow rotation — does not throw the render away.
     SPHERE_ANGLE_STEP: 2 * Math.PI / 180,
@@ -483,9 +485,11 @@ const starConstants = {
     // Dust too fine to draw as rock.
     DEBRIS_DUST: 6,
     DEBRIS_DUST_ALPHA: 0.09,
-    // The cap on rasterised pieces lives with drawRocks, which is what applies it (see ROCK_SPHERES).
     // Below this a piece is drawn as a plain dot rather than a shaped silhouette (see drawRocks).
     ROCK_DOT_PX: 2,
+    // A dot is drawn lit rather than shaded. LUMP_DARK_SHADE is the *unlit* side of a
+    // silhouette, which only makes sense while there is a lit side beside it to read against.
+    ROCK_DOT_SHADE: 1.25,
     // Below this the whole field is a couple of pixels, where one mark reads better than twenty
     // sub-pixel ones — the same threshold the surface textures give up at.
     DEBRIS_MIN_PX: 2.5,
@@ -498,15 +502,43 @@ const starConstants = {
         spc_belt: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] },
         tau_roid: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] }
     },
-    // How many of a field's rocks may carry a rasterised surface.
-    ROCK_SPHERES: 6,
+    // Every rock in a field carries a rasterised surface on the high setting.
+    //
+    // How many faces there are.
+    ROCK_FACES: 6,
+    // The light is bucketed by where it lies on screen — this many steps around, this many across —
+    // rather than by its components, which bounds the count however the field is laid out. Around is
+    // the axis the counter-roll sweeps, so every step of it is another render the atlas has to hold;
+    // eight is 22 degrees of slack in where the terminator falls, which nothing this size shows.
+    ROCK_LIGHT_AZ: 8,
+    ROCK_LIGHT_EL: 3,
+    // Rubble is never the thing being examined, so it is not worth a full-sized render.
+    ROCK_TEX_MAX: 64,
+    // Faces are keyed on a fixed camera step, and keep their size while the camera moves, rather than
+    // following the two things a planet's surface does to go easier on a drag. Both of those change
+    // the key, and a shared face has a whole set behind it: dropping to them on the first frame of a
+    // drag and back on the first frame after would leave every rock a silhouette twice over, for a
+    // saving that is already covered by the frame budget. This is the coarse step, kept throughout.
+    ROCK_ANGLE_STEP: 6 * Math.PI / 180,
+    // Rock faces get a cache of their own, so a field cannot evict the planets' surfaces and the
+    // planets cannot evict the field. Around ninety faces are live in any one frame, and the roll walks
+    // each rock through every light bucket as it turns, so what has to fit is the whole product — faces
+    // by light by the sizes a field spans — or it would rebuild itself forever (see ROCK_TEX_BUDGET).
+    // At 32 and 64 square that is a few megabytes.
+    ROCK_CACHE_MAX: 512,
+    // New rock faces allowed per frame. A rock whose face is not rendered yet is drawn as a plain
+    // silhouette and another frame is asked for, so arriving at a fresh view fills the faces in over
+    // the following second instead of stalling on the frame that got there.
+    ROCK_TEX_BUDGET: 2,
     // The ring has to be this many pixels in radius before its rocks are worth drawing individually.
     FIELD_MIN_RING_PX: 60,
     // Asteroids are drawn at the same true relative scale as everything else, which puts them far under a
     // pixel at any zoom that also fits the ring on screen — so they are floored exactly as visibleRadius()
     // floors a body, and a belt reads as a ring of specks until you are close enough for the rock to have
-    // a shape.
-    FIELD_MIN_ROCK_PX: 0.8,
+    // a shape. The floor is above a pixel on purpose: below that the arc is smaller than the pixel it
+    // lands in, so antialiasing pays it out as a fraction of its colour and the ring fades out rather
+    // than thinning.
+    FIELD_MIN_ROCK_PX: 1.25,
     // Rate the beacons pulse at
     BEACON_FPS: 12,
 
@@ -553,6 +585,13 @@ const starConstants = {
     // Orbits are laid out as a geometric progression — each one this many times the last, jittered —
     // which is roughly how real systems space themselves.
     ORBIT_RATIO: [1.4, 2.1],
+    // A body orbiting a catalogued star rides a stretched, off-centre circle rather than a true
+    // ellipse (see orbitPoint), so how far it reads from its star runs between two fractions of its
+    // recorded distance. Every orbit in a system is that same shape scaled about the star, so two of
+    // them never cross, and the closest a world comes to the star — or to the orbit inside it — is the
+    // recorded gap times the inner fraction. Both fractions are read off the shape itself below.
+    SYS_ORBIT_STRETCH: 1.2,
+    SYS_ORBIT_SHIFT: 1 / 3,
     // Where the innermost world sits, as a fraction of the habitable zone's inner edge.
     INNER_EDGE: [0.25, 0.7],
     // Body radii, in the table's own units (0.191 is Earth, 0.376 Neptune, 0.634 Jupiter).
@@ -577,6 +616,24 @@ const starConstants = {
     MOON_FIRST_RADII: [4, 12],
     MOON_MAX_RADII: 60,
     MOON_GAP: [1.4, 2.2],
+    // A world only holds on to what is well inside its Hill sphere — past about half of it a prograde
+    // moon is pulled off by the star — so this is the real outer limit, and MOON_MAX_RADII only the
+    // cosmetic one. It matters for the worlds a red dwarf keeps: they orbit inside a tenth of an AU,
+    // where the Hill sphere is a few planetary radii across, so such a world keeps one moon or none
+    // rather than the family the roll dealt it. Everything at a sensible distance is unaffected —
+    // Jupiter's limit works out at three hundred radii, five times what it is allowed to use.
+    HILL_FRACTION: 0.4,
+    // The closest in a moon may sit, and the least each orbit may be past the one inside it. Both bite
+    // once a Hill sphere is small enough that the whole family has to be packed into a few radii:
+    // without them the progression collapsed and the moons dealt to such a world shared one orbit.
+    MOON_MIN_RADII: 2.5,
+    MOON_GAP_MIN: 1.25,
+    // Moon orbits are drawn exaggerated so they clear their planet's disc (see moonSpread), and that
+    // exaggeration is what has to be kept in bounds: what fits comfortably in reality can still be
+    // *drawn* across the orbit next door or straight through the star. A family is held to this
+    // fraction of the room between its world and whatever is nearest — the star, the neighbouring
+    // orbits, the belt — and a world with no room for one keeps no moons at all.
+    MOON_ROOM_FRACTION: 0.75,
     // Earth's radius in AU, for turning a recorded size into a real one.
     EARTH_RADIUS_AU: 4.2635e-5,
     // A planet's axial tilt in degrees. Its moons ride its equator and so share it, and its rings sit
@@ -632,6 +689,20 @@ const starConstants = {
 // stumbled over while doing something else.
 starConstants.COW_MIN_SOL = 10 * starConstants.AU_PER_LY;
 starConstants.COW_MIN_TAU = 5 * starConstants.AU_PER_LY;
+// How close and how far a body on a star-centred orbit reads from its star, per AU of recorded
+// distance. Sampled off the shape orbitPoint actually draws rather than written out by hand, so the
+// figure the systems are laid out against cannot drift from the figure they are drawn at.
+function sysOrbitExtreme(pick){
+    let r = false;
+    for (let i = 0; i < 720; i++){
+        const rad = i * Math.PI / 360;
+        const at = Math.hypot(Math.cos(rad) * starConstants.SYS_ORBIT_STRETCH + starConstants.SYS_ORBIT_SHIFT, Math.sin(rad));
+        r = r === false ? at : pick(r, at);
+    }
+    return r;
+}
+starConstants.SYS_ORBIT_MIN = sysOrbitExtreme(Math.min);
+starConstants.SYS_ORBIT_MAX = sysOrbitExtreme(Math.max);
 // Every biome surface is a named style too: there is only ever one home world, so there is nothing
 // for a pool of random variants to tell apart.
 starConstants.NAMED_STYLES = starConstants.NAMED_STYLES.concat(Object.values(starConstants.BIOME_LOOK).map(b => b.style));
@@ -3008,15 +3079,37 @@ function dealSystem(starId){
     const wantsGrand = rules.giants === 'grand';
 
     // Lay the orbits out as a jittered geometric progression from an inner edge set by the star's own
-    // habitable zone, then stop at whatever a companion leaves room for.
+    // habitable zone, then stop at whatever a companion leaves room for. Dealt in full before a single
+    // world is placed: a planet's moons have to be fitted into the room between it and its neighbours,
+    // and the orbit outside it is not known until the whole ladder has been rolled.
     let au = Math.max(hz.inner * sysRandom(starId, 'edge', ...starConstants.INNER_EDGE), rules.innerAU || 0.02);
     let grandIndex = wantsGrand && count > 0 ? sysInt(starId, 'grand', Math.max(0, count - 3), count - 1) : -1;
-
+    const ladder = [];
     for (let i = 0; i < count; i++){
         // Tested on the rounded figure the body will actually carry, not on the running one — a
         // rounding of a ten-thousandth is enough to put a world outside a tight pair's limit.
         const dist = +au.toFixed(4);
         if (dist > reach){ break; }
+        ladder.push({ au, dist });
+        au *= sysRandom(starId, `gap${i}`, ...starConstants.ORBIT_RATIO);
+    }
+
+    // Where the belt would go, rolled here rather than after the worlds because the outermost of them
+    // fits its moons against it the same way the others fit theirs against the orbit outside. Blue
+    // giants blow their discs away before anything can collect into one, so they never get it.
+    const beltAu = star.startype !== 'O' && sysRandom(starId, 'belt') < starConstants.BELT_ODDS
+        ? +Math.min(au, reach).toFixed(4) : 0;
+
+    // What the map will shrink this system's bodies down by, so a moon's orbit can be sized against
+    // the discs that will really be drawn rather than their nominal ones. A compact system — anything
+    // a red dwarf holds — is drawn several times down, and moon orbits sized against the unscaled
+    // figures were flung clean out of the system and through the star.
+    const drawScale = ladder.length
+        ? scaleForClearance(star.size, ladder[0].dist * starConstants.SYS_ORBIT_MIN) : 1;
+    const starDrawn = star.size / 10 * drawScale;
+
+    for (let i = 0; i < ladder.length; i++){
+        const { au, dist } = ladder[i];
         const id = `${starId}_p${i + 1}`;
         const grand = i === grandIndex;
         // What kind of world this is. Giants form beyond the snow line, where there is ice to gather.
@@ -3053,35 +3146,99 @@ function dealSystem(starId){
         const moonRange = grand ? starConstants.MOONS_GRAND : giant ? starConstants.MOONS_GAS : starConstants.MOONS_ROCKY;
         let moons = sysInt(starId, `moons${i}`, ...moonRange);
         if (!giant && sysRandom(starId, `hasmoons${i}`) >= starConstants.MOON_ODDS_ROCKY){ moons = 0; }
-        // The moon-orbit exaggeration is worked out here rather than left to moonSpread, which finds
-        // a planet's moons by walking the whole table — affordable for Sol's handful of parents, but
-        // not once the table holds a few thousand generated bodies.
-        let spreadWanted = 1;
+        // The room the map has to draw a family of moons in: how near this world comes to the star and
+        // to the orbits either side of it, at its closest approach to each. Every orbit in the system
+        // is the one shape scaled about the star, so two of them are nearest where the inner one comes
+        // closest in, and that is what the inner fraction measures. Each of a neighbouring pair gets
+        // half the gap between them, so the two families cannot meet even at conjunction.
+        const inward = i > 0 ? (dist - ladder[i - 1].dist) * starConstants.SYS_ORBIT_MIN / 2 : Infinity;
+        const outward = i + 1 < ladder.length ? (ladder[i + 1].dist - dist) * starConstants.SYS_ORBIT_MIN / 2
+                      : (beltAu > dist ? (beltAu - dist) * starConstants.SYS_ORBIT_MIN / 2 : Infinity);
+        const toStar = dist * starConstants.SYS_ORBIT_MIN - starDrawn;
+        const room = Math.min(inward, outward, toStar) * starConstants.MOON_ROOM_FRACTION;
+
         // Moons run outward from an inner edge, each orbit a jittered multiple of the one inside it,
         // all of it measured in the planet's own radii. Drawing each distance independently, as this
         // first did, let a second moon land inside the first and the pair crossed orbits.
         //
-        // The gap is capped so the outermost still lands inside MOON_MAX_RADII rather than being
-        // flung out to where it would take a year to come round: the whole family is fitted into the
-        // span, so a world keeps every moon it was dealt instead of losing the far ones to a limit.
+        // The outer limit is whichever is nearer of the cosmetic MOON_MAX_RADII and the slice of the
+        // Hill sphere a moon is really bound in. The gap is then capped so the outermost still lands
+        // inside that limit rather than being flung out to where it would take a year to come round,
+        // and capped again by the room above: what has to fit there is the *span* from the innermost
+        // ring to the outermost, because the exaggeration that lifts the first moon clear of its
+        // planet's disc lifts the last one by the same factor. Squeezing the progression is how a
+        // world keeps the whole family it was dealt rather than having its outer moons thrown away.
         const pr = planetRadiusAU(size);
-        let mR = sysRandom(starId, `moon0${i}`, ...starConstants.MOON_FIRST_RADII);
-        const roomiest = moons > 1 ? Math.pow(starConstants.MOON_MAX_RADII / mR, 1 / (moons - 1)) : Infinity;
-        const gap = Math.min(sysRandom(starId, `moongap${i}`, ...starConstants.MOON_GAP), roomiest);
+        const hill = dist * Math.pow(planetMass(size) / (3 * mass), 1 / 3) * starConstants.HILL_FRACTION;
+        const outerR = Math.min(starConstants.MOON_MAX_RADII, hill / pr);
+        const planetDrawn = size / 10 * drawScale;
+        let mR = Math.min(sysRandom(starId, `moon0${i}`, ...starConstants.MOON_FIRST_RADII), outerR);
+        if (mR < starConstants.MOON_MIN_RADII){ moons = 0; }
+        else if (moons > 1){
+            // However many still fit between that first orbit and the outer limit without landing on
+            // top of one another. Without this a Hill sphere a few radii across left every moon the
+            // world was dealt sharing the one orbit.
+            moons = Math.min(moons, 1 + Math.floor(Math.log(outerR / mR) / Math.log(starConstants.MOON_GAP_MIN)));
+        }
+        let gap = 1;   // unused below a second moon, but never left as a number that could travel
+        if (moons > 1){
+            // The widest drawn span that still fits the room, taken against the largest moon the roll
+            // below can produce so the cap does not depend on rolls not yet made.
+            const fat = starConstants.SIZE_MOON[1] / 10 * drawScale;
+            const span = Math.max(room / ((planetDrawn + fat) * starConstants.MOON_ORBIT_CLEARANCE), 1);
+            gap = Math.min(Math.pow(outerR / mR, 1 / (moons - 1)), Math.pow(span, 1 / (moons - 1)));
+            gap = Math.max(Math.min(sysRandom(starId, `moongap${i}`, ...starConstants.MOON_GAP), gap), starConstants.MOON_GAP_MIN);
+        }
         let mAu = pr * mR;
+        // Dealt into a list first, because how many of them the world keeps is not settled until the
+        // exaggerated family has been measured against the room around it.
+        const family = [];
         for (let m = 0; m < moons; m++){
-            const mid = `${id}_m${m + 1}`;
-            const mSize = +sysRandom(starId, `moonsize${i}_${m}`, ...starConstants.SIZE_MOON).toFixed(3);
             // Rounded once, here, and used for everything after: the spread below is what moonSpread
-            // would work out from the stored figure, so it has to be that same figure.
-            const mDist = +mAu.toFixed(6);
+            // would work out from the stored figure, so it has to be that same figure. Nine places,
+            // not six: a moon of a small rocky world orbits a few hundredths of a millionth of an AU
+            // out, and six left barely two figures of it.
+            family.push({
+                dist: +mAu.toFixed(9),
+                size: +sysRandom(starId, `moonsize${i}_${m}`, ...starConstants.SIZE_MOON).toFixed(3),
+            });
+            mAu *= gap;
+        }
+
+        // How far the family has to be exaggerated to keep every ring clear of the planet's disc and
+        // of the rings either side of it, and how far out that puts the outermost. The exaggeration is
+        // worked out here rather than left to moonSpread, which finds a planet's moons by walking the
+        // whole table — affordable for Sol's handful of parents, but not once the table holds a few
+        // thousand generated bodies. Squeezing the progression above settles nearly every family; what
+        // still will not fit loses its outer moons one at a time, and a world with room for none keeps
+        // none. A red dwarf's worlds orbit close enough in that an unbounded spread drew their moons
+        // clean across the orbit next door and through the star itself.
+        let spreadWanted = 1;
+        while (family.length){
+            spreadWanted = 1;
+            for (let m = 0; m < family.length; m++){
+                const mDrawn = family[m].size / 10 * drawScale;
+                spreadWanted = Math.max(spreadWanted,
+                    (planetDrawn + mDrawn) * starConstants.MOON_ORBIT_CLEARANCE / family[m].dist);
+                if (m + 1 < family.length){
+                    const nDrawn = family[m + 1].size / 10 * drawScale;
+                    spreadWanted = Math.max(spreadWanted,
+                        (mDrawn + nDrawn) * starConstants.MOON_ORBIT_CLEARANCE / (family[m + 1].dist - family[m].dist));
+                }
+            }
+            if (family[family.length - 1].dist * spreadWanted <= room){ break; }
+            family.pop();
+        }
+
+        for (let m = 0; m < family.length; m++){
+            const mid = `${id}_m${m + 1}`;
             // `star` as well as `parent`: orbitPoint takes the parent branch either way, and the star
             // is what puts the moon in its system's body list so the map draws it at all. `inc` is the
             // planet's own tilt, give or take, so the family shares a plane the way a real one does.
             starData[mid] = {
-                dist: mDist,
-                orbit: moonPeriod(mDist, size),
-                size: mSize,
+                dist: family[m].dist,
+                orbit: moonPeriod(family[m].dist, size),
+                size: family[m].size,
                 moon: true, parent: id, star: starId,
                 // The planet's equator, give or take — unless this is the rare moon going round the
                 // wrong way, which is the same plane approached from the other side. Triton, in other
@@ -3090,32 +3247,23 @@ function dealSystem(starId){
                 name: body.name ? `${body.name} ${ROMAN[m] || (m + 1)}` : '',
             };
             sys.moons.push(mid);
-            spreadWanted = Math.max(spreadWanted,
-                (size / 10 + mSize / 10) * starConstants.MOON_ORBIT_CLEARANCE / mDist);
-            mAu *= gap;
         }
-        if (moons){ moonSpreadCache[id] = spreadWanted; }
-
-        au *= sysRandom(starId, `gap${i}`, ...starConstants.ORBIT_RATIO);
+        if (family.length){ moonSpreadCache[id] = spreadWanted; }
     }
 
-    // One belt, out past the worlds. Blue giants blow their discs away before anything can collect
-    // into one, so they never get it.
-    if (star.startype !== 'O' && sysRandom(starId, 'belt') < starConstants.BELT_ODDS){
-        const beltAu = +Math.min(au, reach).toFixed(4);
-        if (beltAu > 0 && beltAu <= reach){
-            const id = `${starId}_belt`;
-            starData[id] = {
-                dist: beltAu, orbit: keplerPeriod(beltAu, mass),
-                size: +sysRandom(starId, 'beltsize', ...starConstants.SIZE_BELT).toFixed(3),
-                star: starId, belt: true,
-                // A belt sits out past the worlds, where inclined orbits are the norm — Sol's own is
-                // 10 degrees off — so it rolls on the same table everything else does.
-                inc: orbitTilt(starId, 'belt', beltAu, snow),
-                name: name ? loc('star_belt', [name]) : '',
-            };
-            sys.belt = id;
-        }
+    // One belt, out past the worlds, at the distance rolled for it above.
+    if (beltAu > 0 && beltAu <= reach){
+        const id = `${starId}_belt`;
+        starData[id] = {
+            dist: beltAu, orbit: keplerPeriod(beltAu, mass),
+            size: +sysRandom(starId, 'beltsize', ...starConstants.SIZE_BELT).toFixed(3),
+            star: starId, belt: true,
+            // A belt sits out past the worlds, where inclined orbits are the norm — Sol's own is
+            // 10 degrees off — so it rolls on the same table everything else does.
+            inc: orbitTilt(starId, 'belt', beltAu, snow),
+            name: name ? loc('star_belt', [name]) : '',
+        };
+        sys.belt = id;
     }
 
     // What the system is made of, as multipliers on a solar baseline. Skewed by a per-star
@@ -3205,7 +3353,7 @@ export function orbitPoint(planet, deg){
         // Bodies with a `star` (the Tau Ceti system) ride a clean circular orbit centered on that
         // star — no eccentricity or per-orbit x-shift — so the system reads as concentric rings.
         origin = genXYZcoord(body.star);
-        u = Math.cos(rad) * body.dist * 1.2 + body.dist / 3;
+        u = Math.cos(rad) * body.dist * starConstants.SYS_ORBIT_STRETCH + body.dist * starConstants.SYS_ORBIT_SHIFT;
         v = Math.sin(rad) * body.dist;
     }
     else {
@@ -3409,6 +3557,13 @@ var mapCameraMoving = false;
 // re-deriving each body's projected size and its distance-based minimum outside the draw, and any
 // drift between the two shows up as a click that misses the thing under the pointer.
 var mapPickable = [];
+// The radius, in AU, each star was last drawn at — recorded for the same reason and skimmed off the
+// same figure. A star is not drawn at its table size: systemScale shrinks a system's bodies to bring
+// the star inside its innermost orbit, and a red dwarf, whose size is ordinary but whose whole system
+// fits inside a tenth of an AU, comes out several times smaller than the table says. starAt cannot
+// work that out from the table, and reaching for the table size gave such a star a grab radius many
+// times its own disc — swallowing the hover and the click of every world close in to it.
+var starDrawnAt = {};
 // Which bodies drawMap actually put a name on this frame, as a set of ids. Recorded where the label
 // is drawn rather than worked out again afterwards, for the same reason mapPickable is: the
 // conditions that decide whether a name appears are spread across zoom, reveal state and the
@@ -3651,15 +3806,26 @@ function orbitMinRadius(id, origin){
 function visibleRadius(r, offsetPx){
     return offsetPx >= starConstants.BODY_SEPARATION_PX ? Math.max(r, 1 / mapScale) : r;
 }
+// The factor a system's bodies are drawn down by, given how close anything orbiting the star comes to
+// it. Split out from systemScale so a system can be laid out against the sizes it will really be
+// drawn at without having to be drawn first.
+function scaleForClearance(starSize, clear){
+    let want = starSize / 10;
+    if (!(clear > 0) || clear === Infinity || want <= clear * starConstants.STAR_ORBIT_CLEARANCE){ return 1; }
+    return clear * starConstants.STAR_ORBIT_CLEARANCE / want;
+}
 function systemScale(starSize, ids, origin){
     let want = starSize / 10;
     if (want <= 1 / mapScale){ return 1; }     // zoomed out: orbits are sub-pixel, nothing to clear
     let clear = Infinity;
     for (let id of ids){
+        // Only what goes round the star itself. A moon is held by its planet, and its ring is centred
+        // on a body that moves, so measuring the star against it made the clearance rise and fall as
+        // the moon came round — and the star visibly swelled and shrank once a run turn.
+        if (starData[id].parent){ continue; }
         clear = Math.min(clear, orbitMinRadius(id, origin));
     }
-    if (clear === Infinity || want <= clear * starConstants.STAR_ORBIT_CLEARANCE){ return 1; }
-    return clear * starConstants.STAR_ORBIT_CLEARANCE / want;
+    return scaleForClearance(starSize, clear);
 }
 
 function strokeOrbit(ctx, id, origin){
@@ -3903,21 +4069,24 @@ function spinOf(id){
 
 const sphereCache = new Map();
 
-// Whether a camera-aware surface should be used for this body right now, and at what size.
-function sphereSize(kind, r){
+// Whether a camera-aware surface should be used for this body right now, and at what size. `minPx`
+// overrides the size a surface starts paying for itself at — rubble is cheaper textured than drawn
+// (see ROCK_DOT_PX) — and `steady` keeps that size while the camera moves (see ROCK_ANGLE_STEP).
+function sphereSize(kind, r, minPx, steady){
     if (!starConstants.SPHERE_STYLES[kind]){ return 0; }
     if (mapView().texture !== 'high'){ return 0; }
     const px = r * mapScale;
-    if (px < 8){ return 0; }        // too small to tell a sphere from a stamp
+    if (px < (minPx || starConstants.SPHERE_MIN_PX)){ return 0; }
+    const drop = mapCameraMoving && !steady;
     for (let i = 0; i < starConstants.SPHERE_SIZES.length; i++){
         if (px * 2 <= starConstants.SPHERE_SIZES[i]){
             // One size down while the camera is turning. A moving disc does not hold still long
             // enough to read the difference, and this is a quarter of the pixels.
-            return mapCameraMoving && i > 0 ? starConstants.SPHERE_SIZES[i-1] : starConstants.SPHERE_SIZES[i];
+            return drop && i > 0 ? starConstants.SPHERE_SIZES[i-1] : starConstants.SPHERE_SIZES[i];
         }
     }
     const last = starConstants.SPHERE_SIZES.length - 1;
-    return mapCameraMoving && last > 0 ? starConstants.SPHERE_SIZES[last-1] : starConstants.SPHERE_SIZES[last];
+    return drop && last > 0 ? starConstants.SPHERE_SIZES[last-1] : starConstants.SPHERE_SIZES[last];
 }
 // How finely the camera angle is quantised before it keys the cache. Coarser while turning, so a
 // drag walks through a third as many distinct renders; letting go returns to the fine step, which
@@ -3928,10 +4097,22 @@ function sphereAngleStep(){
 
 // `lumpy` says the subject is not round, and is passed rather than looked up: this renders what it
 // is told to, and a body's own entry in the table is the caller's business.
-function sphereTexture(kind, S, id, sun, lumpy){
+//
+// `opts` is how a shared subject asks for less of itself in the key, so that many callers can land on
+// one render (see rockTexture): `cache`/`max` put it somewhere of its own, `still` renders it at
+// rotation zero, `step` fixes the camera step it is keyed on, `lightAz`/`lightEl` bucket the light
+// coarsely, `roll` says the caller will turn the finished image and lights it to suit, and `budget`
+// caps how many fresh renders a frame may pay for, returning false instead of stalling on the one
+// that overruns.
+function sphereTexture(kind, S, id, sun, lumpy, opts){
+    opts = opts || {};
+    const cache = opts.cache || sphereCache;
     const spin = spinOf(id);
-    const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
-    const step = sphereAngleStep();
+    // A still subject is rendered facing one way and left there. Its own turn is what expires the
+    // render — a few degrees of spin and it has to be built again — so a subject that turns by being
+    // rolled on the way down (see `roll`, and ROCK_FACES) takes it out of the key entirely.
+    const turn = !opts.still && spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
+    const step = opts.step || sphereAngleStep();
     const qy = Math.round(mapYaw / step), qp = Math.round(mapPitch / step);
     const qs = Math.round((((turn % 360) + 360) % 360) / starConstants.SPHERE_SPIN_STEP);
     const seed = texSeed(id || kind);
@@ -3940,13 +4121,46 @@ function sphereTexture(kind, S, id, sun, lumpy){
     let Lx = -0.5/1.0106, Ly = -0.5/1.0106, Lz = -0.72/1.0106, lk = 'flat';
     if (sun){
         Lx = pX(sun); Ly = pY(sun); Lz = pD(sun);
-        lk = `${Math.round(Lx*24)},${Math.round(Ly*24)},${Math.round(Lz*24)}`;
-        // Snapped back to the quantised direction, so the render matches the key exactly.
-        const m = Math.hypot(Math.round(Lx*24), Math.round(Ly*24), Math.round(Lz*24)) || 1;
-        Lx = Math.round(Lx*24)/m; Ly = Math.round(Ly*24)/m; Lz = Math.round(Lz*24)/m;
+        if (opts.roll){
+            // The caller is going to turn this image by `roll` on the way down, which would carry the
+            // lit side round with it. Turned back by the same angle here, the two cancel and the light
+            // lands where the star actually is. Only the two screen axes move: a turn about the line of
+            // sight leaves how much the light comes toward the camera alone.
+            const c = Math.cos(opts.roll), s = Math.sin(opts.roll);
+            const rx = Lx*c + Ly*s, ry = -Lx*s + Ly*c;
+            Lx = rx; Ly = ry;
+        }
+        if (opts.lightAz){
+            // Bucketed by where the light lies on the screen — round it, and across it. Quantising the
+            // components instead, as below, gives no bound on how many buckets a caller can produce:
+            // a ring of rocks is lit from a different direction at every point of it and would take a
+            // bucket each, which is the whole of what a shared render is trying to avoid.
+            const m0 = Math.hypot(Lx, Ly, Lz) || 1;
+            const el = Math.round(Math.asin(Math.max(-1, Math.min(1, Lz/m0))) / (Math.PI/2) * opts.lightEl);
+            // Folded back into 0..az-1, or the two halves of the wrap would be two keys for one
+            // direction and the same render would be built twice.
+            const raw = Math.round(Math.atan2(Ly, Lx) / (Math.PI*2) * opts.lightAz);
+            const az = ((raw % opts.lightAz) + opts.lightAz) % opts.lightAz;
+            lk = `${az}/${el}`;
+            const ea = el / opts.lightEl * (Math.PI/2), aa = az / opts.lightAz * (Math.PI*2);
+            Lx = Math.cos(ea)*Math.cos(aa); Ly = Math.cos(ea)*Math.sin(aa); Lz = Math.sin(ea);
+        }
+        else {
+            lk = `${Math.round(Lx*24)},${Math.round(Ly*24)},${Math.round(Lz*24)}`;
+            // Snapped back to the quantised direction, so the render matches the key exactly.
+            const m = Math.hypot(Math.round(Lx*24), Math.round(Ly*24), Math.round(Lz*24)) || 1;
+            Lx = Math.round(Lx*24)/m; Ly = Math.round(Ly*24)/m; Lz = Math.round(Lz*24)/m;
+        }
     }
     const key = `${kind}:${S}:${qy}:${qp}:${qs}:${seed}:${step.toFixed(4)}:${lk}:${lumpy ? 'L' : 'o'}`;
-    if (sphereCache.has(key)){ return sphereCache.get(key); }
+    if (cache.has(key)){ return cache.get(key); }
+    // Over the frame's allowance. Ask for another frame — nothing else would come back to finish the
+    // job, since the view has stopped changing by the time it matters — and let the caller draw the
+    // cheap version of this one meanwhile.
+    if (opts.budget){
+        if (sphereBudget >= opts.budget){ requestDraw(); return false; }
+        sphereBudget++;
+    }
 
     const st = starConstants.SPHERE_STYLES[kind];
     const yaw = qy * step, pitch = qp * step;
@@ -3973,10 +4187,13 @@ function sphereTexture(kind, S, id, sun, lumpy){
 
     let lut = false;
     if (lumpy){
-        const norm = lumpNorm(seed), turn = lumpSpin(id);
+        // Turned by the quantised yaw rather than the live one, so the outline in the render is the
+        // outline the key was written for — the same render is handed back for every yaw in the step.
+        // (spinDeg is 0 for a still subject, which is what holds its outline as well as its face.)
+        const norm = lumpNorm(seed), roll = yaw + spinDeg * Math.PI / 180;
         lut = new Float32Array(starConstants.LUMP_LUT);
         for (let i = 0; i < starConstants.LUMP_LUT; i++){
-            lut[i] = norm * lumpFactor(seed, i / starConstants.LUMP_LUT * Math.PI * 2 + turn);
+            lut[i] = norm * lumpFactor(seed, i / starConstants.LUMP_LUT * Math.PI * 2 + roll);
         }
     }
     const TAU = Math.PI * 2;
@@ -4101,9 +4318,57 @@ function sphereTexture(kind, S, id, sun, lumpy){
 
     // Oldest out first. A drag walks the camera through a run of angles and would otherwise keep
     // every one of them.
-    if (sphereCache.size >= starConstants.SPHERE_CACHE_MAX){ sphereCache.delete(sphereCache.keys().next().value); }
-    sphereCache.set(key, c);
+    const max = opts.max || starConstants.SPHERE_CACHE_MAX;
+    if (cache.size >= max){ cache.delete(cache.keys().next().value); }
+    cache.set(key, c);
     return c;
+}
+
+// --- Rock faces -----------------------------------------------------------------------------------
+//
+// The shared surfaces every field's rocks are drawn from. See ROCK_FACES for why they are shared.
+const rockCache = new Map();
+// Fresh sphere renders already paid for this frame, against whatever budget the caller set. Reset by
+// drawMap at the top of every frame.
+var sphereBudget = 0;
+
+// Which face a rock wears. Off its own index, so it keeps the same one from frame to frame and two
+// rocks side by side are unlikely to match.
+function rockFace(field, i){
+    return sphHash(texSeed(field || 'rock'), i, 0, 3) % starConstants.ROCK_FACES;
+}
+// A face's identity, which is what everything about it is derived from: its seed, its outline, and the
+// key it is cached under. Deliberately not the rock's — that is the whole point.
+function rockFaceId(face){
+    return `rock#${face}`;
+}
+// A rock's own identity, which is what it keeps for itself: the rate it turns at. spinOf() takes an
+// unrecognised id's period off the id, so every piece of a field tumbles at a rate of its own instead
+// of the whole field turning as one lump.
+function rockId(field, i){
+    return `${field}#${i}`;
+}
+// How far round this rock has turned, in radians. The camera's own yaw is left out — the face is
+// rendered with it already in — so this is the rock's tumble and nothing else.
+function rockRoll(field, i){
+    const spin = spinOf(rockId(field, i));
+    if (!spin.hours){ return 0; }
+    return (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE * Math.PI / 180;
+}
+// The rasterised surface for one face, lit so that turning it by `roll` on the way down puts the light
+// back where the star is. False if the frame has already rendered as many new faces as it is allowed
+// and the caller should draw the cheap version instead.
+function rockTexture(S, face, sun, roll){
+    return sphereTexture('belt', S, rockFaceId(face), sun, true, {
+        cache: rockCache,
+        max: starConstants.ROCK_CACHE_MAX,
+        still: true,
+        roll: roll,
+        step: starConstants.ROCK_ANGLE_STEP,
+        lightAz: starConstants.ROCK_LIGHT_AZ,
+        lightEl: starConstants.ROCK_LIGHT_EL,
+        budget: starConstants.ROCK_TEX_BUDGET
+    });
 }
 
 function sphereStarSize(r){
@@ -5009,43 +5274,48 @@ function drawDebris(ctx, x, y, r, color, opts){
 // Draw a population of rock — the pieces of a wrecked world, or the asteroids of a belt.
 function drawRocks(ctx, rocks, color, opts){
     const hi = mapView().texture === 'high';
-    // Biggest first: it is both the order the rasterised surfaces are handed out in and, on the low
-    // setting, which pieces survive at all.
+    // Biggest first, which on the low setting is which pieces survive at all.
     rocks.sort((p,q) => q.r - p.r);
     if (!hi && opts.keepLow){ rocks = rocks.slice(0, opts.keepLow); }
-    // One field must never evict every planet's sphere from the shared cache to light up rubble a few
-    // pixels across, so only this many of its largest pieces are ever rasterised.
-    const budget = hi ? (opts.budget === undefined ? starConstants.ROCK_SPHERES : opts.budget) : 0;
-    rocks.forEach(function(rock, n){ rock.sphere = n < budget; });
 
     // Then furthest from the camera first, on the same projected depth and the same descending order
     // the bodies themselves are painted in, so a piece in front covers one behind it however the view
     // is turned.
     rocks.sort((p,q) => q.d - p.d);
     for (let rock of rocks){
-        // Each piece is given an id of its own so it tumbles at its own rate and wears its own face —
-        // spinOf() and sphereTexture() both take an unrecognised id's rotation and seed off the id
-        // itself — instead of the field turning and looking as one lump.
-        const id = `${opts.id}#${rock.i}`;
+        // The rock face
+        const face = rockFace(opts.id, rock.i);
         const sun = rock.sun || opts.sun;
+        const roll = rockRoll(opts.id, rock.i);
         // sphereSize() is the same gate the round bodies use: it comes back 0 on the low setting, and
-        // on the high one for anything still too small on screen to tell a lit surface from a stamp.
-        const sph = rock.sphere ? sphereSize('belt', rock.r) : 0;
-        if (sph){
-            ctx.drawImage(sphereTexture('belt', sph, id, sun, true),
-                          rock.x - rock.r, rock.y - rock.r, rock.r * 2, rock.r * 2);
+        // on the high one for anything still too small on screen to tell a lit surface from a stamp —
+        // for rubble, everything the dot branch below does not take, and never above ROCK_TEX_MAX.
+        const sph = Math.min(sphereSize('belt', rock.r, starConstants.ROCK_DOT_PX, true), starConstants.ROCK_TEX_MAX);
+        // False when the frame has spent its render budget; the silhouette below stands in until a
+        // later frame has built the face (see ROCK_TEX_BUDGET).
+        const tex = sph ? rockTexture(sph, face, sun, roll) : false;
+        if (tex){
+            // Turned about its own centre. The surface was lit for exactly this turn, so the light
+            // comes out of it pointing back at the star (see ROCK_FACES).
+            ctx.save();
+            ctx.translate(rock.x, rock.y);
+            ctx.rotate(roll);
+            ctx.drawImage(tex, -rock.r, -rock.r, rock.r * 2, rock.r * 2);
+            ctx.restore();
         }
         else if (rock.r * mapScale < starConstants.ROCK_DOT_PX){
             // A couple of pixels across there is no outline to read, and a belt is a great many of
             // them: one arc rather than a forty-segment silhouette that would rasterise to the
-            // same speck.
-            ctx.fillStyle = hexShade(color, starConstants.LUMP_DARK_SHADE);
+            // same speck. Lit rather than shaded — see ROCK_DOT_SHADE.
+            ctx.fillStyle = hexShade(color, starConstants.ROCK_DOT_SHADE);
             ctx.beginPath();
             ctx.arc(rock.x, rock.y, rock.r, 0, Math.PI * 2, true);
             ctx.fill();
         }
         else {
-            drawLumpy(ctx, rock.x, rock.y, rock.r, color, { id: id, seed: texSeed(id), sun: sun });
+            drawLumpy(ctx, rock.x, rock.y, rock.r, color, {
+                id: rockId(opts.id, rock.i), seed: texSeed(rockFaceId(face)), sun: sun
+            });
         }
     }
 }
@@ -5110,7 +5380,6 @@ function drawAsteroidField(ctx, id, origin, scale, color){
     const drawn = body.size / 10 * (scale || 1);
     const floor = starConstants.FIELD_MIN_ROCK_PX / mapScale;
     const field = asteroidField(id);
-    const hi = mapView().texture === 'high';
     let rocks = [];
     for (const rock of field){
         const r = Math.max(drawn * rock.rs, floor);
@@ -5126,7 +5395,7 @@ function drawAsteroidField(ctx, id, origin, scale, color){
         });
     }
     if (!rocks.length){ return false; }
-    drawRocks(ctx, rocks, color, { id: id, keepLow: profile.keep, budget: hi ? starConstants.ROCK_SPHERES : 0 });
+    drawRocks(ctx, rocks, color, { id: id, keepLow: profile.keep });
     return true;
 }
 
@@ -5203,6 +5472,10 @@ function drawBody(ctx, x, y, r, color, opts){
 // below it a visitable world is drawn with no name against it, and pointing at one is the only way
 // left to ask what it is.
 function addPickable(id, bx, by, size, sep){
+    // Anything drawn as a star also records the radius it was drawn at, for starAt — see starDrawnAt.
+    // Every star the map lays down comes through here, so this is the one place that knows.
+    const drawn = starData[id];
+    if (drawn && (drawn.startype || drawn.bodystar)){ starDrawnAt[id] = size; }
     mapPickable.push({
         id: id,
         x: mapShift.x + bx * mapScale,
@@ -5272,6 +5545,9 @@ export function drawMap() {
     camUpdate();
     mapPickable = [];
     mapLabelled = {};
+    // What this frame may spend on new rock faces, before it falls back to silhouettes and asks for
+    // another frame to finish in (see ROCK_TEX_BUDGET).
+    sphereBudget = 0;
     const ORIGIN = { x: 0, y: 0, z: 0 };
     // Where the range limit measures from, settled before anything asks to be culled — including the
     // home system on the very next line.
@@ -5794,8 +6070,9 @@ export function drawMap() {
             {
                 let starText = mapScale < starConstants.planetLabelMinScale ? star.label : star.zlabel;
                 // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
-                // stays close to the star at any zoom.
-                if (starText && showStarNames){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * mapScale, 1) + 2)); }
+                // stays close to the star at any zoom. Offset by the radius it was really drawn at,
+                // scale included — the table size left a shrunk star's name a long way clear of it.
+                if (starText && showStarNames){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * scale * mapScale, 1) + 2)); }
             }
             // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
             // label when zoomed out, zlabel when zoomed in — drawn just above the body at its orbit position.
@@ -5805,7 +6082,7 @@ export function drawMap() {
                 let bt = mapScale < starConstants.planetLabelMinScale ? planet.label : planet.zlabel;
                 if (!bt){ continue; }
                 let q = rel(genXYZcoord(id), sc);
-                ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * mapScale, 1) + 2));
+                ctx.fillText(bt, pX(q) * mapScale, pY(q) * mapScale - (Math.max(planet.size / 10 * scale * mapScale, 1) + 2));
             }
             // Tau Ceti's worlds are named on the map because they are places the player builds on.
             if (showPlanetNames && mapScale >= starConstants.planetLabelMinScale){
@@ -5952,7 +6229,10 @@ export function buildSolarMap(parentNode, keep) {
             let p = genXYZcoord(id);
             if (starCulled(p)){ continue; }
             let d = Math.hypot(mapShift.x + pX(p) * mapScale - cx, mapShift.y + pY(p) * mapScale - cy);
-            if (d <= Math.max(CLICK_GRAB_PX, body.size / 10 * mapScale) && d < bestD){
+            // The radius it was really drawn at, not the one its table entry implies. The fallback is
+            // only for a star the last frame never laid down, which starCulled has already skipped.
+            let r = starDrawnAt[id] === undefined ? body.size / 10 : starDrawnAt[id];
+            if (d <= Math.max(CLICK_GRAB_PX, r * mapScale) && d < bestD){
                 bestD = d;
                 best = id;
             }

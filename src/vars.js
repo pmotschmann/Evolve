@@ -1655,7 +1655,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 38;
+global['beta'] = 39;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

@@ -998,7 +998,7 @@ export const events = {
                 let pet = global.race['catnip'] && global.race['catnip'] >= 1 ? 'cat' : (global.race['anise'] && global.race['anise'] >= 1 ? 'dog' : (Math.rand(0,2) === 0 ? 'cat' : 'dog'));
                 global.race['pet'] = {
                     type: pet,
-                    name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),
+                    name: pet === 'cat' ? Math.rand(0,13) : Math.rand(0,10),
                     event: 0,
                     pet: 0
                 };
