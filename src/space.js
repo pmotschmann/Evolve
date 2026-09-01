@@ -7,7 +7,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -28,7 +28,7 @@ const spaceProjects = {
                 return {r: true, l: global.settings.space.home || global.tech?.resettle >= 3};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech['resettle'] && global.tech.resettle >= 7 ? true : false; }
+            nav(){ return (global.tech['shadow'] && global.tech.shadow >= 5) || (global.tech['resettle'] && global.tech.resettle >= 7) ? true : false; }
         },
         test_launch: {
             id: 'space-test_launch',
@@ -886,6 +886,7 @@ const spaceProjects = {
                 Sheet_Metal(r={}){ return spaceCostMultiplier('garage', r.offset, 1500, 1.28); }
             },
             wide: true,
+            supply(){ return 'spc_red'; },
             res(){
                 let r_list = ['Copper','Iron','Cement','Steel','Titanium','Alloy','Nano_Tube','Neutronium','Infernite'];
                 if (global.race['cataclysm'] || decayPerks()){
@@ -1799,7 +1800,7 @@ const spaceProjects = {
                 return global.tech['resettle'] && global.tech.resettle >= 4 ? {r: true, l: true} : {r: false, l: false};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
+            nav(){ return global.tech['resettle'] && global.tech.resettle >= 3 || global.tech['shadow'] && global.tech.shadow >= 4 ? true : false; }
         }
     },
     spc_sun: {
@@ -3529,6 +3530,7 @@ const interstellarProjects = {
                 Aluminium(r={}){ return spaceCostMultiplier('warehouse', r.offset, 120000, 1.28, 'interstellar'); },
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 45000, 1.28, 'interstellar'); }
             },
+            supply(){ return 'int_alpha'; },
             res(){
                 let r_list = ['Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal','Nano_Tube','Neutronium','Adamantite','Infernite'];
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
@@ -7241,7 +7243,7 @@ function space(zone){
                     });
                 }
 
-                if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
+                if (syndicateActive() && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate()){
                     $(`#${region}`).append(`<div id="${region}synd" v-show="${region}"></div>`);
 
                     $(`#${region}synd`).append(`<span class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}')"></span></span>`);

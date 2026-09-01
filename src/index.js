@@ -21,6 +21,24 @@ import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js'
 let offlineHandler = null;
 export function registerOfflineHandler(fn){ offlineHandler = fn; }
 
+// Keep Buefy modal close buttons positioned within their modal card.
+let modalCloseObserver = null;
+function placeModalCloseButtons(){
+    document.querySelectorAll('.modal').forEach(function(modal){
+        const close = modal.querySelector('.modal-close');
+        const content = modal.querySelector('.animation-content');
+        if (close && content && !content.contains(close)){
+            content.append(close);
+        }
+    });
+}
+function watchModalCloseButtons(){
+    placeModalCloseButtons();
+    if (modalCloseObserver){ return; }
+    modalCloseObserver = new MutationObserver(placeModalCloseButtons);
+    modalCloseObserver.observe(document.body, { childList: true, subtree: true });
+}
+
 export function mainVue(){
     vBind({
         el: '#mainColumn div.content',
@@ -648,6 +666,7 @@ export function loadTab(tab){
                     <b-tab-item id="resEjector" :visible="s.showEjector" :label="label('tab_ejector')"></b-tab-item>
                     <b-tab-item id="resCargo" :visible="s.showCargo" :label="label('tab_cargo')"></b-tab-item>
                     <b-tab-item id="resAlchemy" :visible="s.showAlchemy" :label="label('tab_alchemy')"></b-tab-item>
+                    <b-tab-item id="resSupplyZones" :visible="s.showSupplyZones" :label="label('tab_supply_zones')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabResource`,
@@ -658,7 +677,7 @@ export function loadTab(tab){
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`];
+                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`,`#resSupplyZones`];
                                 clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
@@ -684,6 +703,11 @@ export function loadTab(tab){
                                     case 4:
                                         {
                                             drawResourceTab('alchemy');
+                                        }
+                                        break;
+                                    case 5:
+                                        {
+                                            drawResourceTab('supply_zones');
                                         }
                                         break;
                                 }
@@ -813,6 +837,7 @@ export function index(){
     // timer can't fire after the rebuild and empty a panel that was just redrawn.
     flushTabPanelClears();
     clearElement($('body'));
+    watchModalCloseButtons();
 
     $('html').addClass(global.settings.font);
 

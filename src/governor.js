@@ -4,6 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle, govEffect, rivalActive, spyActive } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
+import { supplyMode, dealStacks } from './supply.js';
 import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment, mechGeneralSlots, wlEquipSlots } from './portal.js';
 import { loc } from './locale.js';
@@ -1312,6 +1313,15 @@ export const gov_tasks = {
                 if (active){
                     global.resource.Crates.max -= sCrate;
                     global.resource.Containers.max -= sCon;
+                }
+
+                // Distribute governor-assigned storage stacks across active supply regions.
+                if (supplyMode() !== 'global'){
+                    res_list.forEach(function(res){
+                        if (global.resource[res].stackable && atomic_mass[res]){
+                            dealStacks(res);
+                        }
+                    });
                 }
             }
         }

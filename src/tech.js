@@ -9,12 +9,13 @@ import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters } from './truepath.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
+import { activeSupplyRegions } from './supply.js';
 
 const techs = {
     club: {
@@ -13620,10 +13621,10 @@ const techs = {
         era: ['matrioshka','shadow_war'],
         era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs(r){ return r.era === 'matrioshka' ? { resettle: 8 } : { shadow: 5 }; },
+        reqs(r){ return r.era === 'matrioshka' ? { resettle: 8 } : { shadow: 4 }; },
         grant: ['syard_fleet',1],
         cost: {
-            Knowledge(){ return 21000000; }
+            Knowledge(){ return global.tech['shadow'] ? 20000000 : 21000000; }
         },
         effect: loc('tech_fleet_command_effect'),
         action(){
@@ -16854,23 +16855,25 @@ const techs = {
             return false;
         }
     },
-    syndicate_threat: {
+    syndicate_threat_analysis: {
         id: 'tech-syndicate_threat_analysis',
         title(){ return loc('tech_syndicate_threat_analysis'); },
         desc(){ return loc('tech_syndicate_threat_analysis'); },
         category: 'progress',
         era: 'shadow_war',
         path: ['truepath'],
-        reqs: { shadow: 4 },
+        reqs: { shadow: 4, syard_fleet: 1 },
         grant: ['shadow',5],
         cost: {
-            Knowledge(){ return 20000000; }
+            Knowledge(){ return 20500000; }
         },
         effect(){
             return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div>`;
         },
         action(){
             if (payCosts($(this)[0])){
+                global.settings.showSupplyZones = true;
+                grantSupplyFreighters(activeSupplyRegions());
                 messageQueue(loc('tech_syndicate_threat_analysis_msg'),'info',false,['progress']);
                 return true;
             }

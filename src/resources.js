@@ -4,11 +4,14 @@ import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} fr
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
-import { syndicate, womlingArtisans } from './truepath.js';
+import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter, startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes } from './truepath.js';
 import { govActive, defineGovernor } from './governor.js';
 import { govEffect, rivalCollapsed } from './civics.js';
 import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
 import { loc } from './locale.js';
+import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
+import { planetName } from './space.js';
+import { buildSolarMap } from './stars.js';
 
 export const resource_values = {
     Food: 5,
@@ -627,6 +630,9 @@ export function initResourceTabs(tab){
             case 'alchemy':
                 initAlchemy();
                 break;
+            case 'supply_zones':
+                initSupplyZones();
+                break;
         }
     }
     else {
@@ -635,6 +641,7 @@ export function initResourceTabs(tab){
         initEjector();
         initSupply();
         initAlchemy();
+        initSupplyZones();
     }
 }
 
@@ -719,10 +726,69 @@ export function drawResourceTab(tab){
             });
         }
     }
+    // Supply-zone controls now live in the Resources tab.
+    else if (tab === 'supply_zones'){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){
+            return;
+        }
+        initResourceTabs('supply_zones');
+    }
+    else if (tab === 'region'){
+        drawResourceTab('storage');
+    }
 }
 
 // Sets up resource definitions
+// Add the regional resource-list selector when supply zones unlock.
+export function loadRegionSwitch(){
+    const host = $('#resources');
+    if (!host.length){ return; }
+    $('#resRegionSwitch').remove();
+    if (supplyMode() === 'global'){ return; }
+    host.prepend($(`<div id="resRegionSwitch" class="resRegionSwitch">
+        <span role="button" aria-label="${loc('supply_switch_prev')}" class="sub has-text-danger" @click="cycle(-1)"><span>&laquo;</span></span>
+        <span class="viewing has-text-warning">{{ label() }}</span>
+        <span role="button" aria-label="${loc('supply_switch_next')}" class="add has-text-success" @click="cycle(1)"><span>&raquo;</span></span>
+    </div>`));
+    vBind({
+        el: '#resRegionSwitch',
+        data: global.settings,
+        methods: {
+            label(){
+                const at = global.settings.resRegion;
+                return !at || at === 'all' ? loc('supply_switch_all') : supplyRegionName(at);
+            },
+            cycle(step){
+                // Rebuild the selector from the current supply pools.
+                const stops = ['all'].concat(supplyPools());
+                let at = stops.indexOf(global.settings.resRegion || 'all');
+                if (at < 0){ at = 0; }
+                pointResourceListAt(stops[(at + step + stops.length) % stops.length]);
+            }
+        }
+    });
+}
+
+// Select a supply pool and redraw the resource rows.
+export function pointResourceListAt(zone){
+    if (!zone || global.settings.resRegion === zone){ return; }
+    global.settings.resRegion = zone;
+    for (const res of Object.keys(global.resource)){
+        vBind({ el: `#res${res}` }, 'update');
+    }
+    vBind({ el: '#resRegionSwitch' }, 'update');
+}
+
+// Show the resource pool that will pay for the selected building.
+export function showZoneFor(c_action){
+    if (supplyMode() === 'global' || !c_action){ return; }
+    supplyRegions();                        // make sure the tree has been tagged with its zones
+    if (!c_action.s_zone){ return; }        // not a building standing anywhere — a tech, say
+    pointResourceListAt(supplyPool(c_action.s_zone));
+}
+
 export function defineResources(wiki){
+    if (!wiki){ loadRegionSwitch(); }
     if (global.race.species === 'protoplasm'){
         let base = 100;
         if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
@@ -883,6 +949,19 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     if (!global['resource'][name]['containers']){
         global['resource'][name]['containers'] = 0;
     }
+    // Store per-pool amounts, capacity, and assigned stacks for regional resources.
+    if (!global['resource'][name].hasOwnProperty('reg')){
+        global['resource'][name]['reg'] = {};
+    }
+    if (!global['resource'][name].hasOwnProperty('regMax')){
+        global['resource'][name]['regMax'] = {};
+    }
+    if (!global['resource'][name].hasOwnProperty('regCrate')){
+        global['resource'][name]['regCrate'] = {};
+    }
+    if (!global['resource'][name].hasOwnProperty('regCon')){
+        global['resource'][name]['regCon'] = {};
+    }
     if (!global['resource'][name]['trade'] && tradable){
         global['resource'][name]['trade'] = 0;
     }
@@ -892,7 +971,8 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         res_container = $(`<div class="resource crafted" v-show="display"><div><h3 class="res has-text-${color}">{{ namespace(name) }}</h3><span id="cnt${name}" class="count">{{ diffSize(amount) }}</span></div></div>`);
     }
     else {
-        res_container = $(`<div class="resource${global.settings.resBar[name] ? ` showBar` : ``}" v-show="display" :style="{ '--percent-full': (bar && max > 0 ? (amount/max)*100 : 0) + '%' }"><div><h3 class="res has-text-${color} bar" @click="toggle('${name}')">{{ namespace(name) }}</h3><span id="cnt${name}" class="count">{{ size(amount) }} / {{ size(max) }}</span></div></div>`);
+        // Read amounts and capacity from the selected pool when applicable.
+        res_container = $(`<div class="resource${global.settings.resBar[name] ? ` showBar` : ``}" v-show="display" :style="{ '--percent-full': (bar && room() > 0 ? (held()/room())*100 : 0) + '%' }"><div><h3 class="res has-text-${color} bar" @click="toggle('${name}')">{{ namespace(name) }}</h3><span id="cnt${name}" class="count">{{ size(held()) }} / {{ size(room()) }}</span></div></div>`);
     }
     var bind_container = $(`<div id="res${name}"></div>`);
     bind_container.append(res_container);
@@ -906,7 +986,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
     
     let infopops = false;
     if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
-        res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diffSize(diff) }} /s</span>`));
+        res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diffSize(flow()) }} /s</span>`));
     }
     else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium'){
         let craft = $('<span class="craftable"></span>');
@@ -932,6 +1012,28 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         el: `#res${name}`,
         data: global['resource'][name],
         methods: {
+            // Return the selected pool’s resource amount and capacity.
+            viewingRegionalCitizens(){
+                const at = global.settings.resRegion;
+                return name === global.race.species && supplyMode() === 'regional' && at && at !== 'all';
+            },
+            held(){
+                const at = global.settings.resRegion;
+                if (this.viewingRegionalCitizens()){ return zoneCitizens(at); }
+                return zoneHeld(name);
+            },
+            room(){
+                const at = global.settings.resRegion;
+                if (this.viewingRegionalCitizens()){
+                    const housing = global.race.zoneHousing || {};
+                    return poolRegions(at).reduce((total, zone) => total + (housing[zone] || 0), 0);
+                }
+                return zoneRoom(name);
+            },
+            // Return the selected pool’s production rate without shadowing `rate` data.
+            flow(){
+                return zoneFlow(name);
+            },
             size: function (value){
                 return value ? sizeApproximation(value,0) : value;
             },
@@ -1917,21 +2019,44 @@ export function galacticTrade(modal){
     });
 }
 
-function unassignCrate(res){
+// Resolve the pool used for storage-stack assignment.
+function stackMod(res,field,pool,val){
+    if (supplyMode() === 'global'){ return; }
+    const ledger = field === 'crates' ? regCrates(res) : regContainers(res);
+    const regions = poolRegions(pool || CAPITAL);
+    if (val >= 0){
+        // Assign new stacks to the pool’s primary region.
+        const at = regions[0];
+        ledger[at] = Math.max(0, (ledger[at] || 0) + val);
+        return;
+    }
+    // Leaving one: taken off the world holding the most, so a shared store empties evenly rather
+    // than stripping one of its members bare while the other keeps everything.
+    let left = -val;
+    for (const region of regions.slice().sort((a,b) => (ledger[b] || 0) - (ledger[a] || 0))){
+        const take = Math.min(left, ledger[region] || 0);
+        ledger[region] = (ledger[region] || 0) - take;
+        left -= take;
+        if (left <= 0){ break; }
+    }
+}
+
+function unassignCrate(res,pool){
     let keyMutipler = keyMultiplier();
     let cap = crateValue();
-    if (keyMutipler > global.resource[res].crates){
-        keyMutipler = global.resource[res].crates;
+    if (keyMutipler > stackHeld(res,'crates',pool)){
+        keyMutipler = stackHeld(res,'crates',pool);
     }
     if (keyMutipler > 0){
         global.resource.Crates.amount += keyMutipler;
         global.resource.Crates.max += keyMutipler;
         global.resource[res].crates -= keyMutipler;
         global.resource[res].max -= (cap * keyMutipler);
+        stackMod(res,'crates',pool,-keyMutipler);
     }
 }
 
-function assignCrate(res){
+function assignCrate(res,pool){
     let keyMutipler = keyMultiplier();
     let cap = crateValue();
     if (keyMutipler > global.resource.Crates.amount){
@@ -1942,24 +2067,26 @@ function assignCrate(res){
         global.resource.Crates.max -= keyMutipler;
         global.resource[res].crates += keyMutipler;
         global.resource[res].max += (cap * keyMutipler);
+        stackMod(res,'crates',pool,keyMutipler);
     }
 }
 
-function unassignContainer(res){
+function unassignContainer(res,pool){
     let keyMutipler = keyMultiplier();
     let cap = containerValue();
-    if (keyMutipler > global.resource[res].containers){
-        keyMutipler = global.resource[res].containers;
+    if (keyMutipler > stackHeld(res,'containers',pool)){
+        keyMutipler = stackHeld(res,'containers',pool);
     }
     if (keyMutipler > 0){
         global.resource.Containers.amount += keyMutipler;
         global.resource.Containers.max += keyMutipler;
         global.resource[res].containers -= keyMutipler;
         global.resource[res].max -= (cap * keyMutipler);
+        stackMod(res,'containers',pool,-keyMutipler);
     }
 }
 
-function assignContainer(res){
+function assignContainer(res,pool){
     let keyMutipler = keyMultiplier();
     let cap = containerValue();
     if (keyMutipler > global.resource.Containers.amount){
@@ -1970,49 +2097,122 @@ function assignContainer(res){
         global.resource.Containers.max -= keyMutipler;
         global.resource[res].containers += keyMutipler;
         global.resource[res].max += (cap * keyMutipler);
+        stackMod(res,'containers',pool,keyMutipler);
     }
 }
+
+// Limit stack removal to the selected region’s assigned stacks.
+export function stackHeld(res,field,pool){
+    if (supplyMode() === 'global'){ return global.resource[res][field]; }
+    const ledger = field === 'crates' ? regCrates(res) : regContainers(res);
+    // Everything the store can draw on, which for two connected worlds is both their holdings —
+    // the same reckoning the storage figure beside it is made on, so the two agree.
+    let held = 0;
+    for (const region of poolRegions(pool || CAPITAL)){ held += ledger[region] || 0; }
+    return held;
+}
+
+// Keep only one regional resource breakdown expanded at a time.
+let openStack = false;
 
 export function containerItem(mount,market_item,name,color){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;
     }
 
-    market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
+    // If global storage is not enabled the each resource gets a sub section for distribution.
+    const zoned = supplyMode() !== 'global' && atomic_mass[name];
+    let head = market_item;
+    if (zoned){
+        market_item.addClass('stacked');
+        head = $(`<div role="button" class="stackHead" aria-label="show ${global.resource[name].name} distribution" @click="toggleZones"></div>`);
+        market_item.append(head);
+        head.append($(`<span class="expander has-text-warning" :aria-expanded="open()">{{ caret() }}</span>`));
+        head.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
+        head.append($(`<span class="stored">{{ whole() }}</span>`));
+        head.append(global.resource.Crates.display
+            ? $(`<span class="stackTotal" v-html="cCnt(crates,'${name}')"></span>`) : $(`<span></span>`));
+        head.append(global.resource.Containers.display
+            ? $(`<span class="stackTotal" v-html="trick(containers)"></span>`) : $(`<span></span>`));
 
-    if (global.resource.Crates.display){
-        let crate = $(`<span class="trade"><span class="has-text-warning">${global.resource.Crates.name}</span></span>`);
-        market_item.append(crate);
-
-        crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
-        crate.append($(`<span class="current" v-html="cCnt(crates,'${name}')"></span>`));
-        crate.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Crates.name}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
+        let zones = $(`<div class="stackZones" v-show="open()"></div>`);
+        market_item.append(zones);
+        for (const pool of supplyPools()){
+            const where = supplyRegionName(pool);
+            let line = $(`<div class="stackZone"></div>`);
+            zones.append(line);
+            line.append($(`<span class="zoneName">${where}</span>`));
+            line.append($(`<span class="stored">{{ held('${pool}') }}</span>`));
+            line.append(global.resource.Crates.display ? $(`<span class="adjust">
+                <span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name} from ${where}" class="sub has-text-danger" @click="subCrate('${name}','${pool}')">&laquo;</span>
+                <span class="current">{{ stacks('${pool}','crates') }}</span>
+                <span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Crates.name} to ${where}" class="add has-text-success" @click="addCrate('${name}','${pool}')">&raquo;</span>
+            </span>`) : $(`<span></span>`));
+            line.append(global.resource.Containers.display ? $(`<span class="adjust">
+                <span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name} from ${where}" class="sub has-text-danger" @click="subCon('${name}','${pool}')">&laquo;</span>
+                <span class="current">{{ stacks('${pool}','containers') }}</span>
+                <span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Containers.name} to ${where}" class="add has-text-success" @click="addCon('${name}','${pool}')">&raquo;</span>
+            </span>`) : $(`<span></span>`));
+        }
     }
+    else {
+        head.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
 
-    if (global.resource.Containers.display){
-        let container = $(`<span class="trade"><span class="has-text-warning">${global.resource.Containers.name}</span></span>`);
-        market_item.append(container);
+        if (global.resource.Crates.display){
+            let crate = $(`<span class="trade"><span class="has-text-warning">${global.resource.Crates.name}</span></span>`);
+            head.append(crate);
+            crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
+            crate.append($(`<span class="current" v-html="cCnt(crates,'${name}')"></span>`));
+            crate.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Crates.name}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
+        }
 
-        container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
-        container.append($(`<span class="current" v-html="trick(containers)"></span>`));
-        container.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Containers.name}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
+        if (global.resource.Containers.display){
+            let container = $(`<span class="trade"><span class="has-text-warning">${global.resource.Containers.name}</span></span>`);
+            head.append(container);
+            container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
+            container.append($(`<span class="current" v-html="trick(containers)"></span>`));
+            container.append($(`<span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Containers.name}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
+        }
     }
 
     vBind({
         el: mount,
         data: global.resource[name],
         methods: {
-            addCrate(res){
-                assignCrate(res);
+            open(){
+                return openStack === name;
             },
-            subCrate(res){
-                unassignCrate(res);
+            caret(){
+                return this.open() ? '▼' : '▶';
             },
-            addCon(res){
-                assignContainer(res);
+            toggleZones(){
+                const was = openStack;
+                openStack = was === name ? false : name;
+                // Each resource is its own Vue app, so the one being closed has to be told to
+                // repaint — nothing else is watching a variable that lives outside all of them.
+                if (was && was !== name){ vBind({ el: `#stack-${was}` }, 'update'); }
             },
-            subCon(res){
-                unassignContainer(res);
+            held(pool){
+                return `${sizeApproximation(regAmount(name,pool),1)} / ${sizeApproximation(regMax(name,pool),1)}`;
+            },
+            // The civilisation's own total, in the same column the zone lines put their share.
+            whole(){
+                return `${sizeApproximation(global.resource[name].amount,1)} / ${sizeApproximation(global.resource[name].max,1)}`;
+            },
+            stacks(pool,field){
+                return stackHeld(name,field,pool);
+            },
+            addCrate(res,pool){
+                assignCrate(res,pool);
+            },
+            subCrate(res,pool){
+                unassignCrate(res,pool);
+            },
+            addCon(res,pool){
+                assignContainer(res,pool);
+            },
+            subCon(res,pool){
+                unassignContainer(res,pool);
             },
             trick(v){
                 if (name === 'Stone' && global.resource[name].crates === 10 && global.resource[name].containers === 31){
@@ -2143,7 +2343,17 @@ export function craftingPopover(id,res,type,extra){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ namespace(res.name) }}</div></div>`);
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
-        
+
+        // The craftsmen work at home and what they make lands at home, so pointed anywhere else this
+        // is a rate the zone has no part in. The manual crafting popovers are the button's own help
+        // rather than a breakdown, and are left alone.
+        const away = viewedZone(res);
+        if (type === 'auto' && away && away !== supplyPool(CAPITAL)){
+            table.append($(`<div><div class="modal_bd"><span>${bdLabel(loc('supply_zone_inert',[global.resource[res].name]))}</span></div></div>`));
+            return bd;
+        }
+
+
         let craft_total = craftingRatio(res,type);
 
         let col1 = $(`<div></div>`);
@@ -2280,8 +2490,184 @@ export function craftingPopover(id,res,type,extra){
     });
 }
 
+// Return the selected pool when the resource uses regional storage.
+function viewedZone(name){
+    const at = global.settings.resRegion;
+    if (supplyMode() === 'global' || !at || at === 'all' || !atomic_mass[name]){ return false; }
+    return at;
+}
+
+// Return amount, capacity, and rate for the viewed region.
+function zoneHeld(name){
+    const at = viewedZone(name);
+    return at ? regAmount(name, at) : global.resource[name].amount;
+}
+
+function zoneRoom(name){
+    const at = viewedZone(name);
+    return at ? regMax(name, at) : global.resource[name].max;
+}
+
+function zoneFlow(name){
+    const at = viewedZone(name);
+    return at ? (regDiff(name)[at] || 0) : global.resource[name].diff;
+}
+
+// Return storage totals for the viewed pool or the global store.
+function bdSource(type,name){
+    const at = viewedZone(name);
+    if (type !== 'c' || !at){
+        return breakdown[type];
+    }
+    // Sum storage breakdown entries across every region in the viewed pool.
+    const merged = {};
+    for (const region of poolRegions(at)){
+        const from = breakdown.creg[region];
+        if (!from){ continue; }
+        for (const res in from){
+            if (!merged[res]){ merged[res] = {}; }
+            for (const label in from[res]){
+                // Two worlds in a zone may each have the same kind of building, and the popover
+                // should say what the pair of them provide rather than only the last one seen.
+                const add = parseFloat(from[res][label]);
+                const had = merged[res][label] ? parseFloat(merged[res][label]) : 0;
+                merged[res][label] = (had + (isNaN(add) ? 0 : add)) + 'v';
+            }
+        }
+    }
+    return merged;
+}
+
+// Map exceptional ledger labels to their owning structures for zone attribution.
+const BD_ALIASES = {
+    // Mars, and the four Makemake mines, are named after the world and the resource rather than
+    // after themselves.
+    space_red_mine_desc_bd:             { at: 'space:red_mine', vars: () => [planetName().red] },
+    space_makemake_mine:                {
+        at: { Uranium: 'space:uranium_mine', Neutronium: 'space:neutronium_mine',
+              Elerium: 'space:elerium_mine', Orichalcum: 'space:orichalcum_mine' },
+        vars: res => [global.resource[res].name]
+    },
+    // The infernite mine below the gate is written "Mine", the same word as the city's own mine.
+    // Only the hell mine makes infernite, so the resource tells the two apart.
+    city_mine:                          { at: 'portal:infernite_mine', res: 'Infernite' },
+    space_gas_moon_outpost_bd:          'space:outpost',
+    tech_space_marines_bd:              'space:space_barracks',
+    tech_fob:                           'space:fob',
+    outer_shipyard_fleet:               'space:shipyard',
+    interstellar_neutron_miner_bd:      { at: 'interstellar:neutron_miner', res: 'Neutronium' },
+    interstellar_elerium_prospector_bd: 'interstellar:elerium_prospector',
+    interstellar_nexus_bd:              'interstellar:nexus',
+    interstellar_g_factory_bd:          'interstellar:g_factory',
+    interstellar_blackhole_name:        'int_blackhole',
+    galaxy_armed_miner_bd:              'galaxy:armed_miner',
+    galaxy_vitreloy_plant_bd:           'galaxy:vitreloy_plant',
+    // The galaxy's fuel bill and what the pirates take are both the fleet's, and the fleet is based
+    // at the gateway starbase.
+    galaxy_fuel_consume:                'galaxy:starbase',
+    galaxy_piracy:                      'galaxy:starbase',
+    tau_red_womlings:                   'tauceti:womling_farm',
+    eden_restaurant_bd:                 'eden:restaurant',
+    portal_fortress_name:               'prtl_fortress',
+    portal_tunneler_bd:                 'portal:tunneler',
+};
+
+// Index ledger source titles by supply zone for regional breakdowns.
+function titleZones(name){
+    supplyRegions();   // tags every action with its s_zone before the walk below
+    const index = {};
+    const note = (title, zone) => {
+        // Prefer the first matching zone when labels are ambiguous.
+        if (title && !index.hasOwnProperty(title)){ index[title] = zone; }
+    };
+    // Register exceptional labels before generic title matching.
+    for (const key in BD_ALIASES){
+        const raw = BD_ALIASES[key];
+        const spec = typeof raw === 'string' ? { at: raw } : raw;
+        if (spec.res && spec.res !== name){ continue; }
+        const at = typeof spec.at === 'object' ? spec.at[name] : spec.at;
+        if (!at){ continue; }
+        const label = spec.vars ? loc(key, spec.vars(name)) : loc(key);
+        if (label !== key){ note(label, supplyZone(at)); }
+    }
+    for (const cat of ['city','space','interstellar','galaxy','portal','tauceti','eden']){
+        const groups = actions[cat];
+        if (!groups){ continue; }
+        const buckets = cat === 'city' ? [groups] : Object.values(groups);
+        for (const bucket of buckets){
+            if (!bucket || typeof bucket !== 'object'){ continue; }
+            for (const c_action of Object.values(bucket)){
+                if (!c_action || typeof c_action !== 'object' || !c_action.s_zone || !c_action.title){ continue; }
+                let title;
+                try { title = typeof c_action.title === 'function' ? c_action.title() : c_action.title; }
+                catch (e){ continue; }
+                note(title, c_action.s_zone);
+            }
+        }
+    }
+    // Attribute ordinary jobs to the home world.
+    for (const job of Object.values(job_data)){
+        if (!job || typeof job.name !== 'function'){ continue; }
+        let title;
+        try { title = job.name(); }
+        catch (e){ continue; }
+        note(title, CAPITAL);
+    }
+    return index;
+}
+
+// Filter resource-ledger entries to the viewed supply pool.
+function regionalBreakdown(name){
+    const at = viewedZone(name);
+    if (!at){ return false; }
+    const index = titleZones(name);
+    // The trailing `+0`/`+1` only exists to let one label appear twice in the same ledger.
+    const zoneOf = label => supplyPool(index[label.replace(/\+.+$/,'')] || CAPITAL);
+    // Ignore ledger entries that produce or consume nothing.
+    const live = v => { const n = parseFloat(v); return !isNaN(n) && n !== 0; };
+
+    const production = {};
+    let group = false;      // the pool the entry above belongs to, for the modifiers hanging off it
+    let made = false;       // whether anything here is a source of its own, rather than a modifier
+    Object.entries(breakdown.p[name] || {}).forEach(function([label, value]){
+        if (label.charAt(0) === 'ᄂ'){
+            if (group === false || group === at){ production[label] = value; }
+        }
+        else if (typeof value === 'string' && value.slice(-1) === '%'){
+            production[label] = value;
+            group = false;
+        }
+        else {
+            group = zoneOf(label);
+            if (group === at){ production[label] = value; made = made || live(value); }
+        }
+    });
+
+    // Consumption carries no modifier lines: every entry is a flat amount taken by one named thing.
+    const consume = {};
+    let spent = false;
+    Object.entries((breakdown.p.consume && breakdown.p.consume[name]) || {}).forEach(function([label, value]){
+        if (zoneOf(label) === at){ consume[label] = value; spent = spent || live(value); }
+    });
+
+    // Hide global production modifiers when the viewed zone has no production.
+    return { production: made ? production : {}, consume, made, local: made || spent };
+}
+
 function breakdownPopover(id,name,type){
+    // Reuse one regional ledger breakdown for popover markup and values.
+    let view = false;
     popover(`${id}`,function(){
+        const regional = type === 'p' ? regionalBreakdown(name) : false;
+        view = {
+            regional,
+            // The global multipliers go with a zone's own production, and only with it: a world that
+            // makes none of the resource is not doing anything to it either.
+            src: regional
+                ? { [name]: regional.production, Global: regional.made ? breakdown.p['Global'] : undefined }
+                : bdSource(type,name),
+            consume: regional ? regional.consume : (breakdown[type].consume && breakdown[type].consume[name])
+        };
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ namespace(res.name) }}</div></div>`);
         if(type === 'p' && name === global.race.species){
             bd = $(`<div class="resBreakdown"><div class="has-text-info">${loc('starvation_resist')}</div></div>`);
@@ -2290,16 +2676,18 @@ function breakdownPopover(id,name,type){
         bd.append(table);
         let prevCol = false;
         
-        if (breakdown[type][name] && !(global.race.species === name && type === 'p')){
+        const src = view.src;
+        if (src[name] && !(global.race.species === name && type === 'p')){
             let col1 = $(`<div></div>`);
             table.append(col1);
-            let types = [name];
-            types.push('Global');
+            // The global multipliers are shown whichever world the list is pointed at: they are
+            // applied to everything the civilisation makes, wherever it makes it.
+            let types = [name,'Global'];
             for (var i = 0; i < types.length; i++){
                 let t = types[i];
-                if (breakdown[type][t]){
-                    Object.keys(breakdown[type][t]).forEach(function (mod){
-                        let raw = breakdown[type][t][mod];
+                if (src[t]){
+                    Object.keys(src[t]).forEach(function (mod){
+                        let raw = src[t][mod];
                         let val = parseFloat(raw.slice(0,-1));
                         if (val != 0 && !isNaN(val)){
                             prevCol = true;
@@ -2312,11 +2700,12 @@ function breakdownPopover(id,name,type){
             }
         }
 
-        if (breakdown[type].consume && breakdown[type].consume[name]){
+        const consumption = view.consume;
+        if (consumption){
             let col2 = $(`<div class="${prevCol ? 'col' : ''}"></div>`);
             let count = 0;
-            Object.keys(breakdown[type].consume[name]).forEach(function (mod){                
-                let val = breakdown[type].consume[name][mod];
+            Object.keys(consumption).forEach(function (mod){
+                let val = consumption[mod];
                 if (val != 0 && !isNaN(val)){
                     count++;
                     let type = val > 0 ? 'success' : 'danger';
@@ -2329,23 +2718,36 @@ function breakdownPopover(id,name,type){
             }
         }
 
-        if (type === 'p' && name !== global.race.species){
-            let dir = global['resource'][name].diff > 0 ? 'success' : 'danger';
-            bd.append(`<div class="modal_bd sum"><span>{{ direction(res.diff) }}</span><span class="has-text-${dir}">{{ counter(res.amount) }}</span></div>`);
+        if (view.regional && !view.regional.local){
+            // A blank note reads as a broken one, so the zone says so in words. It may well still be
+            // holding a stockpile — it simply is not doing anything with it.
+            table.append($(`<div><div class="modal_bd"><span>${bdLabel(loc('supply_zone_inert',[global.resource[name].name]))}</span></div></div>`));
+        }
+        else if (type === 'p' && name !== global.race.species){
+            // Read popover values from the currently viewed supply pool.
+            let dir = zoneFlow(name) > 0 ? 'success' : 'danger';
+            bd.append(`<div class="modal_bd sum"><span>{{ direction(flow()) }}</span><span class="has-text-${dir}">{{ counter(held()) }}</span></div>`);
         }
 
         return bd;
     },{
         in: function(){
+            // Recompute the viewed pool in the popover callback scope.
             vBind({
                 el: `#popper > div`,
                 data: {
-                    'Global': breakdown[type]['Global'],
-                    [name]: breakdown[type][name],
-                    'consume': breakdown[type]['consume'],
+                    'Global': view.src['Global'],
+                    [name]: view.src[name],
+                    'consume': { [name]: view.consume },
                     res: global['resource'][name]
-                }, 
+                },
                 methods: {
+                    held(){
+                        return zoneHeld(name);
+                    },
+                    flow(){
+                        return zoneFlow(name);
+                    },
                     translate(raw){
                         let type = raw[raw.length -1];
                         let val = parseFloat(raw.slice(0,-1));
@@ -2363,17 +2765,17 @@ function breakdownPopover(id,name,type){
                         return val + 'v';
                     },
                     counter(val){
-                        let rate = global['resource'][name].diff;
+                        let rate = zoneFlow(name);
                         let time = 0;
                         if (rate < 0){
                             rate *= -1;
                             time = +(val / rate).toFixed(0);
                         }
                         else {
-                            let gap = global['resource'][name].max - val;
+                            let gap = zoneRoom(name) - val;
                             time = +(gap / rate).toFixed(0);
                         }
-    
+
                         if (time === Infinity || Number.isNaN(time)){
                             return 'Never';
                         }
@@ -2788,6 +3190,273 @@ function initMarket(){
     loadMarket();
 }
 
+// Update only the inbound cards while cargo is travelling. Redrawing the whole tab every second
+// made the zone cards flash; the full render happens only when an arrival changes their state.
+let supplyZonesArrivalTimer = false;
+let supplyZonesInboundIds = [];
+let supplyZonesInboundShips = [];
+
+function refreshInboundSupplyZones(){
+    supplyZonesArrivalTimer = false;
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
+    if (supplyZonesInboundShips.some(ship => !ship.inTransit)){
+        initSupplyZones();
+        return;
+    }
+    supplyZonesInboundIds.forEach(id => vBind({ el: `#${id}` }, 'update'));
+    supplyZonesArrivalTimer = setTimeout(refreshInboundSupplyZones, 1000);
+}
+
+function freightGroups(ships){
+    const seen = new Set(), groups = [];
+    for (const ship of ships){
+        if (seen.has(ship)){ continue; }
+        const fleet = ship.fid ? shipFleet(ship).filter(member => member.class === 'freighter' && ships.includes(member)) : [];
+        const members = fleet.length >= 2 ? fleet : [ship];
+        members.forEach(member => seen.add(member));
+        const flagship = ship.fid ? (global.space.shipyard.ships || []).find(member => member.fid === ship.fid && member.flag) : false;
+        groups.push({
+            ships: members,
+            name: members.length > 1 ? loc('supply_freighter_fleet',[flagship ? flagship.name : members[0].name, members.length]) : ship.name
+        });
+    }
+    return groups;
+}
+
+function freightGroupCargo(ships){
+    const cargo = {};
+    ships.forEach(function(ship){
+        Object.entries(freightCargo(ship)).forEach(function([res, amount]){
+            cargo[res] = (cargo[res] || 0) + (Number(amount) || 0);
+        });
+    });
+    return cargo;
+}
+
+function freightGroupLoad(ships){
+    return ships.reduce((total, ship) => total + freightLoad(ship), 0);
+}
+
+function freightGroupCapacity(ships){
+    return ships.reduce((total, ship) => total + freightCapacity(ship), 0);
+}
+
+function freightGroupWeight(ships){
+    return ships.reduce((total, ship) => total + freightWeight(ship), 0);
+}
+
+// Routes travel at the pace of the slowest full fleet member, including any escorts.
+function freightRouteSpeed(ships){
+    const fleet = shipFleet(ships[0]);
+    const group = fleet.length ? fleet : ships;
+    return Math.round((149597870.7 / 225 / 24 / 3600) * Math.min(...group.map(shipSpeed)));
+}
+
+// Fill the least-loaded holds first. This leaves every freighter's total cargo within one unit
+// whenever their capacities permit it, including after a previously uneven load.
+function loadFreightGroup(ships, res, amount){
+    let remaining = amount;
+    while (remaining > 0){
+        const open = ships.filter(ship => freightLoad(ship) < freightCapacity(ship));
+        if (!open.length){ break; }
+        open.sort((a,b) => freightLoad(a) - freightLoad(b));
+        const low = freightLoad(open[0]);
+        const matching = open.filter(ship => freightLoad(ship) === low);
+        const next = open.find(ship => freightLoad(ship) > low);
+        // Mixed Extra Fuel / Extra Cargo fleets can have different hold ceilings. Raise equal
+        // loads together only as far as the smallest hold in that tied group permits.
+        const rise = Math.min(...matching.map(ship => freightCapacity(ship) - low), next ? freightLoad(next) - low : Infinity);
+        const each = Math.min(rise, Math.floor(remaining / matching.length));
+        if (each > 0){
+            matching.forEach(ship => { const cargo = freightCargo(ship); cargo[res] = (cargo[res] || 0) + each; });
+            remaining -= each * matching.length;
+        }
+        else {
+            matching.slice(0, remaining).forEach(ship => { const cargo = freightCargo(ship); cargo[res] = (cargo[res] || 0) + 1; });
+            remaining = 0;
+        }
+    }
+    return amount - remaining;
+}
+
+function unloadFreightGroup(ships, res, amount){
+    let remaining = amount;
+    while (remaining > 0){
+        const loaded = ships.filter(ship => (freightCargo(ship)[res] || 0) > 0);
+        if (!loaded.length){ break; }
+        const each = Math.max(1, Math.floor(remaining / loaded.length));
+        let moved = 0;
+        loaded.forEach(function(ship){
+            const cargo = freightCargo(ship);
+            const take = Math.min(each, cargo[res] || 0, remaining - moved);
+            if (take <= 0){ return; }
+            cargo[res] -= take;
+            if (cargo[res] <= 0){ delete cargo[res]; }
+            moved += take;
+        });
+        if (!moved){ break; }
+        remaining -= moved;
+    }
+    return amount - remaining;
+}
+
+function freightSolarMapModal(buefy, ship){
+    if (!ship?.location?.position){ return; }
+    buefy.modal.open({ hasModalCard: false, wide: true, customClass: 'evolve-modal', content: '<div id="modalBox" class="modalBox"></div>' });
+    const checkExist = setInterval(function(){
+        if (!$('#modalBox').length){ return; }
+        clearInterval(checkExist);
+        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('solar_system')}</p>`));
+        buildSolarMap($('#modalBox'), false, ship.location.position);
+    }, 50);
+}
+
+function freightRoutePickupModal(buefy, stop, resources, refresh){
+    const modal = buefy.modal.open({ hasModalCard: false, wide: true, customClass: 'evolve-modal', content: '<div id="modalBox" class="modalBox supplyLoadModal"></div>' });
+    const checkExist = setInterval(function(){
+        if (!$('#modalBox').length){ return; }
+        clearInterval(checkExist);
+        const available = resources.filter(res => (regDiff(res)[stop.zone] || 0) > 0);
+        $('#modalBox').append($(`<p class="has-text-warning modalTitle">${loc('supply_freighter_route_pickup_title',[supplyRegionName(stop.zone)])}</p><div id="supplyRoutePickup"><div class="supplyRoutePickerHead"><button class="button is-info" @click="done">${loc('supply_freighter_route_pickup_done')}</button><span class="supplyRouteSelectionSummary" :class="{ 'has-text-caution': !picks.length }">{{ selectedText() }}</span></div><div class="supplyLoadResourceList">${available.map(res => `<button class="button supplyLoadResource supplyRouteResource" :class="{ 'is-info': selected('${res}'), 'supplyRouteResourceSelected': selected('${res}') }" :aria-pressed="selected('${res}')" @click="toggle('${res}')"><span class="supplyRouteResourceName"><span class="supplyRouteResourceMark" aria-hidden="true">{{ selected('${res}') ? '✓' : '+' }}</span>${global.resource[res].name}</span><span class="has-text-caution">{{ available('${res}') }}</span></button>`).join('')}</div></div>`));
+        vBind({ el: '#supplyRoutePickup', data: { picks: Array.isArray(stop.pickups) ? stop.pickups.slice() : [] }, methods: {
+            selected(res){ return this.picks.includes(res); },
+            selectedText(){ return this.picks.length ? this.picks.map(res => global.resource[res].name).join(', ') : loc('supply_freighter_route_no_pickup'); },
+            available(res){ return sizeApproximation(regAmount(res, stop.zone), 0); },
+            toggle(res){ this.picks = this.picks.includes(res) ? this.picks.filter(pick => pick !== res) : this.picks.concat([res]); },
+            done(){ stop.pickups = this.picks.slice(); refresh(); if (modal && modal.close){ modal.close(); } }
+        }});
+    }, 50);
+}
+
+function freightLoadModal(buefy, ships, pool, resources){
+    const modal = buefy.modal.open({
+        hasModalCard: false,
+        wide: true,
+        customClass: 'evolve-modal',
+        content: '<div id="modalBox" class="modalBox supplyLoadModal"></div>'
+    });
+    const checkExist = setInterval(function(){
+        if (!$('#modalBox').length){ return; }
+        clearInterval(checkExist);
+        const available = resources.filter(res => regAmount(res, pool) > 0);
+        $('#modalBox').append($(`<p class="has-text-warning modalTitle">${loc('supply_freighter_load_title',[supplyRegionName(pool)])}</p>`));
+        if (!available.length){
+            $('#modalBox').append($(`<div class="supplyLoadEmpty has-text-caution">${loc('supply_freighter_no_resources')}</div>`));
+            return;
+        }
+        const options = available.map(res => `<button class="button supplyLoadResource" @click="load('${res}')"><span>${global.resource[res].name}</span><span class="has-text-caution">{{ available('${res}') }}</span></button>`).join('');
+        $('#modalBox').append($(`<div id="supplyLoadPicker"><div class="supplyLoadAmount"><label>${loc('supply_freighter_load_amount')}</label><b-input v-model.number="amount" type="number" min="1" step="1"></b-input><button class="button is-small" @click="max">${loc('supply_freighter_max')}</button><span class="supplyLoadCapacity has-text-caution">{{ cargo() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span></div><div class="supplyLoadResourceList">${options}</div></div>`));
+        vBind({ el: '#supplyLoadPicker', data: { amount: 10000 }, methods: {
+            max(){ this.amount = Math.max(0, Math.floor(freightGroupCapacity(ships) - freightGroupLoad(ships))); },
+            cargo(){ return sizeApproximation(freightGroupLoad(ships), 0); },
+            available(res){ return sizeApproximation(regAmount(res, pool), 0); },
+            load(res){
+                const requested = Math.max(0, Math.floor(Number(this.amount) || 0));
+                const free = Math.max(0, Math.floor(freightGroupCapacity(ships) - freightGroupLoad(ships)));
+                const moved = Math.min(requested, free, Math.floor(regAmount(res, pool)));
+                if (moved <= 0){ return; }
+                const loaded = loadFreightGroup(ships, res, moved);
+                if (loaded <= 0){ return; }
+                poolMod(res, pool, -loaded);
+                syncTotal(res);
+                if (modal && modal.close){ modal.close(); }
+                initSupplyZones();
+            }
+        }});
+    }, 50);
+}
+
+export function initSupplyZones(){
+    // Also migrates existing regional saves: the unlock already happened there, so the tech action
+    // will not run again to seed the new starter routes.
+    seedStarterSupplyRoutes();
+    if (supplyZonesArrivalTimer){ clearTimeout(supplyZonesArrivalTimer); supplyZonesArrivalTimer = false; }
+    supplyZonesInboundIds = [];
+    supplyZonesInboundShips = [];
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
+    const host = $('#resSupplyZones');
+    clearElement(host);
+    if (supplyMode() !== 'regional'){
+        host.append($(`<div class="storage-header">${loc('supply_zones_locked')}</div>`));
+        return;
+    }
+    host.append($(`<div class="storage-header supplyZonesTitle"><h2>${loc('tab_supply_zones')}</h2></div>`));
+    const resources = Object.keys(global.resource).filter(res => atomic_mass[res] && global.resource[res].display);
+    supplyPools().forEach(function(pool, index){
+        const members = poolRegions(pool);
+        const docked = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && !ship.inTransit && supplyPool(ship.location.name) === pool);
+        const incoming = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && ship.inTransit && ship.destination && supplyPool(ship.destination.name) === pool);
+        const card = $(`<section id="supplyZone${index}" class="market-item supplyZone"><header class="supplyZoneHead"><div><h3 class="res has-text-warning">${supplyRegionName(pool)}</h3><div class="supplyZoneMeta"><span>${loc('supply_zone_primary',[supplyRegionName(pool)])}</span><span>${loc('supply_zone_linked',[members.map(member => supplyRegionName(member, true)).join(', ')])}</span></div></div><span class="supplyZoneCount">${docked.length + incoming.length}</span></header></section>`);
+        host.append(card);
+        if (!docked.length && !incoming.length){ card.append(`<div class="supplyZoneEmpty has-text-caution">${loc('supply_zone_no_freighters')}</div>`); return; }
+        if (incoming.length){
+            const arrivals = $('<div class="supplyFreighterList supplyInboundList"></div>');
+            card.append(arrivals);
+            freightGroups(incoming).forEach(function(group, groupIndex){
+                const ships = group.ships;
+                const id = `supplyInbound${index}_${groupIndex}`;
+                supplyZonesInboundIds.push(id);
+                supplyZonesInboundShips.push(...ships);
+                arrivals.append($(`<article id="${id}" class="supplyFreighter supplyFreighterIncoming"><header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyInboundStatus has-text-caution">{{ arrival() }}</span></div><div class="supplyFreighterStats"><span>${loc('supply_freighter_load')}: {{ load() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span><span>${loc('supply_freighter_weight')}: {{ weight() }}</span><span v-show="route()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span></div></header><div class="supplyInboundCargo" v-show="contents()">{{ contents() }}</div><div class="supplyFreighterActions"><button class="button is-small" @click="openMap">${loc('outer_shipyard_map')}</button><button class="button is-small" v-show="route()" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div></article>`));
+                vBind({ el: `#${id}`, data: ships[0], methods: {
+                    route(){ return !!ships[0].tradeRoute; },
+                    openMap(){ freightSolarMapModal(this.$buefy, ships[0]); },
+                    stopRoute(){ if (stopFreightRoute(ships[0])){ initSupplyZones(); } },
+                    arrival(){ return loc('supply_freighter_arriving',[shipArrivalTime(ships[0])]); },
+                    load(){ return sizeApproximation(freightGroupLoad(ships), 0); },
+                    weight(){ return sizeApproximation(freightGroupWeight(ships), 0); },
+                    speed(){ return freightRouteSpeed(ships); },
+                    contents(){ return Object.entries(freightGroupCargo(ships)).filter(([,amount]) => amount > 0).map(([res,amount]) => `${global.resource[res].name}: ${sizeApproximation(amount,0)}`).join(', '); }
+                }});
+            });
+        }
+        if (!docked.length){ return; }
+        const freightHost = $('<div class="supplyFreighterList"></div>');
+        card.append(freightHost);
+        freightGroups(docked).forEach(function(group, groupIndex){
+            const ships = group.ships;
+            const id = `supplyFreighter${index}_${groupIndex}`;
+            const destinations = supplyPools().filter(target => target !== pool).map(target => `<button class="button is-small" @click="send('${target}')">${supplyRegionName(target)}</button>`).join('');
+            freightHost.append($(`<article id="${id}" class="supplyFreighter"><header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyFreighterCapacity">{{ load() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span></div><div class="supplyFreighterStats"><span>${loc('supply_freighter_weight')}: {{ weight() }}</span><span v-show="penalty()">{{ penalty() }}</span><span v-show="hasRoute()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span></div></header><div class="supplyFreighterTabs"><button class="button is-small" :class="{ 'is-info': tab === 'cargo' }" @click="tab = 'cargo'">${loc('supply_freighter_cargo')}</button><button class="button is-small" :class="{ 'is-info': tab === 'route' }" @click="tab = 'route'">${loc('supply_freighter_routes')}</button><button class="button is-small supplyFreighterMap" @click="openMap">${loc('outer_shipyard_map')}</button></div><section class="supplyManifest" v-show="tab === 'cargo'"><div class="supplyManifestHead"><span>${loc('supply_freighter_manifest')}</span><button class="button is-small is-info" @click="openLoad">${loc('supply_freighter_load_cargo')}</button></div><div class="supplyCargoRows" v-show="cargo().length"><div class="supplyCargoRow" v-for="item in cargo()"><span>{{ item.name }}</span><span class="has-text-caution">{{ item.amount }}</span><button class="button is-small" @click="unload(item.res)">${loc('supply_freighter_unload_all')}</button></div></div><div class="supplyCargoEmpty" v-show="!cargo().length">${loc('supply_freighter_empty')}</div></section><section class="supplyRoutePanel" v-show="tab === 'route'"><div class="supplyRouteStops"><div class="supplyRouteStop" v-for="(stop,index) in stops"><span class="supplyRouteNumber">{{ index + 1 }}</span><b-select v-model="stop.zone" :disabled="index === 0 || hasRoute()"><option v-for="zone in zones" :value="zone">{{ zoneName(zone) }}</option></b-select><button class="button is-small" :disabled="hasRoute()" @click="pick(index)">{{ pickupText(stop) }}</button><button class="button is-small" v-show="index > 1 && !hasRoute()" @click="remove(index)">×</button></div></div><div class="supplyRouteActions" v-show="!hasRoute()"><button class="button is-small" @click="add">${loc('supply_freighter_route_add_stop')}</button><button class="button is-info" @click="start">${loc('supply_freighter_route_start')}</button></div><div class="supplyRouteActions" v-show="hasRoute()"><button class="button is-small" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div><p class="has-text-danger" v-show="routeError">${loc('supply_freighter_route_invalid')}</p></section><footer class="supplyDispatch"><span>${loc('supply_freighter_send')}:</span><div>${destinations}</div></footer></article>`));
+            const route = ships[0].tradeRoute;
+            const zones = supplyPools();
+            const firstNext = zones.find(zone => zone !== pool) || pool;
+            const stops = route?.stops?.length ? route.stops.map(stop => ({ zone: stop.zone, pickups: Array.isArray(stop.pickups) ? stop.pickups.slice() : [] })) : [{ zone: pool, pickups: [] }, { zone: firstNext, pickups: [] }];
+            vBind({ el: `#${id}`, data: { tab: 'cargo', zones, stops, routeError: false }, methods: {
+                load(){ return sizeApproximation(freightGroupLoad(ships), 0); },
+                weight(){ return sizeApproximation(freightGroupWeight(ships), 0); },
+                penalty(){ const penalty = Math.max(...ships.map(freightSpeedPenalty)); return penalty ? loc('supply_freighter_speed_penalty',[penalty]) : ''; },
+                speed(){ return freightRouteSpeed(ships); },
+                cargo(){ return Object.entries(freightGroupCargo(ships)).filter(([,amount]) => amount > 0).map(([res,amount]) => ({ res, name: global.resource[res].name, amount: sizeApproximation(amount,0) })); },
+                openLoad(){ freightLoadModal(this.$buefy, ships, pool, resources); },
+                openMap(){ freightSolarMapModal(this.$buefy, ships[0]); },
+                hasRoute(){ return !!ships[0].tradeRoute; },
+                zoneName(zone){ return supplyRegionName(zone); },
+                pickupText(stop){ return stop.pickups.length ? stop.pickups.map(res => global.resource[res].name).join(', ') : loc('supply_freighter_route_no_pickup'); },
+                pick(index){ freightRoutePickupModal(this.$buefy, this.stops[index], resources, () => vBind({ el: `#${id}` }, 'update')); },
+                add(){ this.stops.push({ zone: this.zones.find(zone => zone !== pool) || pool, pickups: [] }); },
+                remove(index){ this.stops.splice(index, 1); },
+                start(){ this.routeError = !startFreightRoute(ships[0], this.stops); if (!this.routeError){ initSupplyZones(); } },
+                stopRoute(){ if (stopFreightRoute(ships[0])){ initSupplyZones(); } },
+                unload(res){
+                    const held = freightGroupCargo(ships)[res] || 0;
+                    if (held <= 0){ return; }
+                    const spill = poolMod(res, pool, held);
+                    const moved = held - Math.max(0, spill);
+                    if (moved <= 0){ return; }
+                    unloadFreightGroup(ships, res, moved);
+                    syncTotal(res);
+                    vBind({ el: `#${id}` }, 'update');
+                },
+                send(destination){ if (dispatchFreighter(ships[0], destination)){ initSupplyZones(); } }
+            }});
+        });
+    });
+    if (supplyZonesInboundIds.length){
+        supplyZonesArrivalTimer = setTimeout(refreshInboundSupplyZones, 1000);
+    }
+}
+
 function initStorage(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;
@@ -2795,6 +3464,15 @@ function initStorage(){
     let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2></div>`);
     clearElement($('#resStorage'));
     $('#resStorage').append(store);
+
+    if (supplyMode() !== 'global'){
+        $('#resStorage').append($(`<div class="stackLegend">
+            <span></span><span></span>
+            <span class="stored">${loc('tab_storage')}</span>
+            <span>${global.resource.Crates.name}</span>
+            <span>${global.resource.Containers.name}</span>
+        </div>`));
+    }
     
     if (global.resource['Crates'] && global.resource['Containers']){
         store.append($(`<b-tooltip :label="buildCrateDesc()" position="is-bottom" class="crate" animated multilined><button :aria-label="buildCrateDesc()" v-show="cr.display" class="button" @click="crate">${loc('resource_modal_crate_construct')}</button></b-tooltip>`));

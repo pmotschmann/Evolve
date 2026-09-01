@@ -1,12 +1,5 @@
-// The star catalogue and the solar map that draws it.
-//
-// `starData` is the table of every star, planet, moon and belt the game knows about, and everything
-// here that is not drawing works out where one of those bodies is: orbital shape, the positions the
-// game loop advances, and the coordinates ships navigate by. The rest is the map itself — camera,
-// body and star textures, rings, debris and asteroid fields, and the panel buildSolarMap assembles.
-//
-// truepath.js owns the ships, the fleets and the campaign; it reads positions from here, and this
-// reads a handful of ship and location helpers back from there.
+// Star catalogue and solar-map rendering.
+// game knows about, and everything here that is not drawing works out where one of those bodies is: orbital shape, the positions the game loop advances, and the coordinates ships navigate by.
 import { global, webWorker } from './vars.js';
 import { clearElement } from './functions.js';
 import { races, orbitLength } from './races.js';
@@ -40,9 +33,7 @@ const starConstants = {
     // --- Orbital shape, the kamikaze world and Kepler ---
     // How elliptical the home planet's orbit is under the `elliptical` planet trait.
     ELLIPTICAL_TRAIT_ECC: 0.2,
-    // Two binaries whose components share a barycenter and a period. Their day-zero angles are tied
-    // rather than drawn separately, so the pair stays on opposite sides of the barycenter forever
-    // instead of drifting together and overlapping.
+    // Two binaries whose components share a barycenter and a period.
     OPPOSITE_OF: {
         gliese570c: 'gliese570b',
         epsilonindibb: 'epsilonindiba',
@@ -64,38 +55,24 @@ const starConstants = {
     // Below this scale the map is showing planets as points and planet names give way to star
     // names; at or above it a system's own planets are made out individually.
     planetLabelMinScale: 4,
-    // Below this scale the map is showing entire systems as points, with multiple systems
-    // potentially on screen and system names becoming cluttered
-    // Label sizes stop having constant size, instead decreasing
-    // with zoom as the scale further decreases
+    // Below this scale the map is showing entire systems as points, with multiple systems potentially on screen and system
+    // names becoming cluttered Label sizes stop having constant size, instead decreasing with zoom as the scale further decreases
     systemLabelMinScale: 0.0015,
     // Below this scale the labels' sizes become too small to legibly read; completely stop drawing 
     // them at this point. Instead start displaying star names on hover.
     systemLabelAbsMinScale: 0.0006,
-    // Once a system's planets are legible, stars further than this from the point being looked at are
-    // skipped — about a light year, so anything cut is at least a quarter of a million pixels off screen
-    // at that zoom. Culling them costs nothing visually and saves drawing a hundred systems' worth of
-    // orbits and bodies that could never be seen.
+    // Once a system's planets are legible, stars further than this from the point being looked at are skipped — about a
+    // light year, so anything cut is at least a quarter of a million pixels off screen at that zoom.
     STAR_CULL_AU: 63000,
-    // The player's own limit on how much of the star field is drawn, in light years out from the star
-    // being looked at. Unlike the cull above this applies at every zoom — zoomed all the way out is
-    // exactly where the far half of the catalogue is most in the way — so it is what decides whether a
-    // distant system is on the map at all.
+    // The player's own limit on how much of the star field is drawn, in light years out from the star being looked at.
     STAR_RANGE_MIN: 10,
     STAR_RANGE_MAX: 50,
     STAR_RANGE_STEP: 5,
-    // One step past the maximum is no limit at all — every star in the table, which is how the map
-    // behaved before this setting existed. A sentinel number rather than Infinity because the save is
-    // JSON and JSON.stringify turns Infinity into null, which would read back as "unset".
+    // One step past the maximum is no limit at all — every star in the table, which is how the map behaved before this
+    // setting existed.
     STAR_RANGE_INF: -1,
-    // Which orbits are drawn. Two flags underneath — planetOrbits and moonOrbits, which the drawing code
-    // reads separately — presented as one button with four positions, because two buttons for one
-    // question took two lines of the panel and still could not say "moons but not planets" in one look.
-    //
-    // The order is the useful one: everything, then the planets alone, then the moons alone, then
-    // nothing. The label names the position it is IN, not the one the next press would move to — with
-    // two buttons there was only ever one thing a press could do and naming it was unambiguous, but a
-    // four-way cycle read as an instruction tells you nothing about what you are currently looking at.
+    // Which orbits are drawn. Two flags underneath — planetOrbits and moonOrbits, which the drawing code reads separately —
+    // Orbit visibility states for planets and moons.
     ORBIT_STATES: [
         { planets: true,  moons: true,  key: 'solar_map_orbits_all' },
         { planets: true,  moons: false, key: 'solar_map_orbits_planets' },
@@ -103,55 +80,39 @@ const starConstants = {
         { planets: false, moons: false, key: 'solar_map_orbits_none' },
     ],
     // Which names are drawn, on the same pattern: two flags underneath, three positions on the button.
-    // There is no fourth — star names without planet names is the useful half-measure, planet names
-    // without star names is not, since a planet's name means little without knowing whose it is.
     NAME_STATES: [
         { planets: true,  stars: true,  key: 'solar_map_show_planet_names' },
         { planets: false, stars: true,  key: 'solar_map_hide_planet_names' },
         { planets: false, stars: false, key: 'solar_map_hide_star_names' },
     ],
-    // Rough effective temperatures for the classes the table records — enough to tell a blue-white star
-    // from a red dwarf when working out how bright one looks from a distance. Nothing shows the player a
-    // number derived from these.
+    // Rough effective temperatures for the classes the table records — enough to tell a blue-white star from a red dwarf
+    // when working out how bright one looks from a distance.
     STAR_TEMP: { O: 35000, B: 18000, A: 8500, F: 6600, G: 5700, K: 4600, KIII: 4100,
                         M: 3200, T: 1300, D: 12000 },
     SUN_TEMP: 5772,
-    // Dot radius in screen pixels, faintest to brightest, and the range of apparent brightness those two
-    // ends stand for as a base-10 log. The faint end is around Proxima seen from here, the bright end
-    // around Sirius, which is the span the eye actually has to separate on a real sky.
+    // Dot radius in screen pixels, faintest to brightest, and the range of apparent brightness those two ends stand for as a
+    // base-10 log.
     SKY_MIN_PX: 0.6,
     SKY_MAX_PX: 2.6,
     SKY_LOG_FAINT: -4.5,
     SKY_LOG_BRIGHT: 0,
-    // How much of the frame the visible half of the sky covers. Half the diagonal puts a star at right
-    // angles to the view out at the corner, so the hemisphere fills the viewport and the middle of it —
-    // where the eye is — is close to undistorted.
+    // How much of the frame the visible half of the sky covers.
     SKY_RADIUS_FRAC: 0.5,
     // A moon's name is set beside it rather than above it, where its planet is not, and by a fixed
     // number of screen pixels so the gap holds at any zoom.
     MOON_LABEL_GAP_PX: 6,
     // The hover name is drawn in screen space instead, so it is this readable at any zoom.
     HOVER_LABEL_PX: 16,
-    // Clearance above the cursor. The name goes above rather than below because the arrow hangs down and to
-    // the right of its hotspot, so anything under the pointer ends up behind it. Anchored to the cursor
-    // rather than to the star: the grab radius lets the pointer sit either side of the dot, and measuring
-    // from the dot put the label back under the arrow whenever the pointer was above it.
+    // Clearance above the cursor. The name goes above rather than below because the arrow hangs down and to the right of its
+    // hotspot, so anything under the pointer ends up behind it.
     HOVER_LABEL_GAP_PX: 8,
-    // Trace a body's orbit as a projected polyline. Sampling the same orbitPoint() the body itself is
-    // positioned by guarantees the ring and the dot on it agree at every camera angle — an analytic
-    // ellipse would have to be re-derived for each rotation, and would drift from the body.
+    // Trace a body's orbit as a projected polyline. Sampling the same orbitPoint() the body itself is positioned by
+    // Sample each orbit with `orbitPoint()` so rings match body positions.
     ORBIT_STEPS: 96,
-    // Smallest orbit worth tracing, as a radius in screen pixels. Below this the ring is a smudge on top
-    // of its own star and reads as noise, and at the fully zoomed-out star field there are a hundred
-    // systems' worth of them costing a third of the frame. Measured on the orbit's own radius rather
-    // than its projected extent, so tilting the camera edge-on — which squashes a ring to a line but
-    // leaves it perfectly visible — doesn't make orbits disappear.
+    // Smallest orbit worth tracing, as a radius in screen pixels.
     ORBIT_MIN_PX: 3,
-    // A body closer to its star than this on screen is inside the star's own dot — the star never draws
-    // smaller than a one-pixel radius — so it lands on the same pixel and is not drawn at all. One pixel
-    // rather than a few: the saving that matters is out at the star field, where these separations are
-    // thousandths of a pixel, so there is nothing to buy by cutting into the range where a world is
-    // marginally visible. Deliberately below ORBIT_MIN_PX as well, so a world outlives its orbit ring.
+    // A body closer to its star than this on screen is inside the star's own dot — the star never draws smaller than a
+    // one-pixel radius — so it lands on the same pixel and is not drawn at all.
     SYSTEM_MIN_PX: 1,
     // Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
     TRAIL_MAX_DASHES: 400,
@@ -165,27 +126,12 @@ const starConstants = {
     BEACON_LABEL_PX: 6,
     BEACON_PULSE_MS: 1600,
     BEACON_COLOR: '0, 255, 102',
-    // Bodies are drawn at symbolic sizes, nothing like true scale — 0.1 map units for an M dwarf is some
-    // twenty times the real Sun's radius — so around a star with a genuinely close-in world, like
-    // Gliese 876 d at 0.021 AU, the disc swallows the orbit whole.
-    //
-    // The answer is one shrink factor for the entire system rather than a smaller star: the sizes only
-    // carry meaning relative to each other, and shrinking the star alone left it drawn smaller than its
-    // own planets. The factor is the least that brings the star inside its innermost orbit; systems
-    // whose orbits are already roomy, the home system among them, come back 1 and are untouched.
+    // Bodies are drawn at symbolic sizes, nothing like true scale — 0.1 map units for an M dwarf is some twenty times the
+    // real Sun's radius — so around a star with a genuinely close-in world, like Gliese 876 d at 0.021 AU, the disc swallows the orbit whole.
     STAR_ORBIT_CLEARANCE: 0.9,
-    // Bodies are drawn at true relative size, which puts Earth at a fifth of a pixel on any zoom that
-    // also shows the Sun. Once a body has pulled far enough from its primary to read as a dot of its
-    // own, floor it at a pixel so it stays on the map; while it is still sitting on top of its star,
-    // leave it sub-pixel, or every zoomed-out system becomes a clump of identical specks.
+    // Bodies are drawn at true relative size, which puts Earth at a fifth of a pixel on any zoom that also shows the Sun.
     BODY_SEPARATION_PX: 4,
-    // Bisection steps used to pin down where an orbit passes its primary's depth. Unlike a planet's
-    // rings, whose depth around the ring is a plain sinusoid that can be solved outright, an orbit is
-    // not a clean circle — it is an ellipse with the star at a focus, and the angle it is sampled by is
-    // the mean anomaly rather than a position angle — so the crossing is found numerically instead.
-    // Twelve halvings take an interval of under four degrees to well
-    // under a thousandth of one, which is far finer than a pixel at any zoom and is what stops a seam
-    // opening where the two halves meet.
+    // Bisection steps used to pin down where an orbit passes its primary's depth.
     ORBIT_CROSS_STEPS: 12,
     PLANET_TEX: 128,
     // The Sol bodies get their own color and surface rather than the generic pool.
@@ -259,22 +205,11 @@ const starConstants = {
         hellscape: { color: '7d2b1c', style: 'bio_hellscape' },   // burning crust
         eden:      { color: '4fae72', style: 'bio_eden'      },   // paradise
     },
-    // Styles that describe one specific world rather than a class of them, so they get a single texture
-    // each instead of a pool of random variants. The biome surfaces are appended below, since they are
-    // read off BIOME_LOOK above.
+    // Styles that describe one specific world rather than a class of them, so they get a single texture each instead of a
+    // pool of random variants.
     NAMED_STYLES: ['earth','mars','venus','jupiter','saturn','icegiant','neptune','haze','ice','cratered'],
-    // What each surface is made of. One rasteriser reads them all:
-    //   base    the color to start from
-    //   bands   latitude bands, replacing base — [degrees, r, g, b] with the color interpolated between
-    //   banded  stretches the noise along latitude, so it flows with the bands instead of mottling across
-    //   mottle  [amount, frequency, octaves, r,g,b]   drift toward a color, driven by noise
-    //   land    [threshold, freq, octaves, r,g,b, sharpness]   continents where the noise runs high
-    //   craters [amount, frequency]
-    //   cracks  [amount, frequency, r,g,b]
-    //   poles   [from latitude, strength, r,g,b]
-    //   clouds  [amount, frequency, octaves]
-    //   glow    [amount, frequency, r,g,b]   added after the shading, so it survives the night side
-    //   spot    an oval fixed at a latitude and longitude on the surface
+    // Sphere texture recipe fields used by the surface rasterizer.
+    // replacing base — [degrees, r, g, b] with the color interpolated between banded stretches the noise along latitude, so it flows with the bands instead of mottling across mottle [amount, frequency, octaves, r,g,b] drift toward a color, driven by noise land [threshold, freq, octaves, r,g,b, sharpness] continents where the noise runs high craters [amount, frequency] cracks [amount, frequency, r,g,b] poles [from latitude, strength, r,g,b] clouds [amount, frequency, octaves] glow [amount, frequency, r,g,b] added after the shading, so it survives the night side spot an oval fixed at a latitude and longitude on the surface
     SPHERE_STYLES: {
         jupiter: { bands: [
             [-90,0x8a,0x77,0x66],[-75,0x9d,0x86,0x70],[-62,0xc4,0xa8,0x85],[-50,0xe6,0xd7,0xba],
@@ -343,13 +278,7 @@ const starConstants = {
         bio_eden:     { base: [0x4f,0xae,0x72], land: [0.45, 2.6, 5, 0x2f,0x86,0x54, 6],
                         poles: [76, 0.5, 0xf6,0xfa,0xff], clouds: [0.34, 3.4, 4] },
     },
-    // Axial tilt in degrees and rotation period in hours; a negative period turns the other way. Real
-    // values — Venus really is upside down and retrograde, and Uranus really does lie on its side. The
-    // tilt is taken about the x axis; where the axis points around the sky is not modelled, since at
-    // these sizes only how far it leans reads at all.
-    //
-    // Saturn's 26.7 agrees with the note on its moons above, which put them 27 degrees off the reference
-    // plane for riding its equator.
+    // Axial tilt in degrees and rotation period in hours; a negative period turns the other way.
     SPIN_DATA: {
         spc_hell:   { tilt: 0.03,   hours: 1407.6 },
         spc_venus:  { tilt: 177.36, hours: -5832.5 },
@@ -394,24 +323,21 @@ const starConstants = {
     // The flat texture's radial gradient as a curve: 1.55 at the centre, 1.12 at half way, 1.0 at 0.88,
     // 0.7 at the limb. Read through hexShade's rule, where above 1 lightens toward white rather than multiplying 
     STAR_STOPS: [[0, 1.55], [0.5, 1.12], [0.88, 1.0], [1, 0.7]],
-    // The corona around that disc: 0.34 opaque at the limb, falling straight to 0.1 by a fifth of the
-    // way out and then away as a power curve to nothing at the edge. The straight part needs no
-    // sampling; CORONA_STEPS is how finely the curved part is handed to a gradient.
+    // The corona around that disc: 0.34 opaque at the limb, falling straight to 0.1 by a fifth of the way out and then away
+    // as a power curve to nothing at the edge.
     CORONA_LIMB_ALPHA: 0.34,
     CORONA_KNEE: 0.22,
     CORONA_KNEE_ALPHA: 0.1,
     CORONA_FALL: 1.6,
     CORONA_STEPS: 8,
-    // Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale
-    // canvas, and there are well over a hundred bodies on the map. Each body picks its variant from its
-    // own seed, so it always gets the same face and its neighbours rarely match.
+    // Surfaces are drawn from a small pool rather than one per body: a texture is a megabyte-scale canvas, and there are
+    // well over a hundred bodies on the map.
     PLANET_VARIANTS: 8,
     STAR_TEX: 256,
     // Fraction of the texture's half-width taken up by the star's disc; the rest is corona.
     STAR_CORE: 0.5,
-    // Glyphs engraved around the gate's ring. Constellation and planetary symbols, matching the
-    // astrological signs the game already renders in the top bar — so this set is known to display here.
-    // The U+FE0E on each forces the text form; several of these would otherwise come out as color emoji.
+    // Glyphs engraved around the gate's ring. Constellation and planetary symbols, matching the astrological signs the game
+    // already renders in the top bar — so this set is known to display here.
     GATE_GLYPHS: ['♈︎','♉︎','♊︎','♋︎','♌︎','♍︎','♎︎','♏︎','♐︎','♑︎','♒︎','♓︎','☉︎','☽︎','☿︎','♀︎','♂︎','♃︎','♄︎','♅︎','♆︎'],
     // The value is chosen for Saturn's real 26.7 degrees.
     RING_TILT: 26.7 * Math.PI / 180,
@@ -437,37 +363,16 @@ const starConstants = {
     // Radii are in planet radii and are the real ones. Built once, on first use, so the wiki bundle
     // never pays for it and Low never touches it.
     RING_HI_BANDS: 96,
-    // A rock only pulls itself round if it is big enough for its own gravity to win, and Phobos and
-    // Deimos are nowhere near it. They are drawn as a closed curve whose radius wanders with the angle
-    // instead of a disc: a few low harmonics taken off the body's own seed, so a given moon is the same
-    // shape on every frame and every load, turned with the camera so swinging the view round shows a
-    // different profile rather than a sticker that follows you.
-    //
-    // Two constraints from the WebGL backend shape this, and both are real:
-    //
-    //   - It fills a path as a single triangle fan, which is only correct for a CONVEX polygon. The
-    //     amplitudes below are held under what would put a dent in the outline — a k-th harmonic starts
-    //     to turn the curve concave around a = 1/(k^2 - 1) — so the silhouette stays lumpy but convex.
-    //   - It has no clip(). A body's surface texture is a square image of a round disc, and with nothing
-    //     to clip it to it would spill past a silhouette that is not round. So an irregular body takes
-    //     its shading from a second, offset fill rather than from a texture.
+    // A rock only pulls itself round if it is big enough for its own gravity to win, and Phobos and Deimos are nowhere near
+    // it.
     LUMP_STEPS: 40,
     // Entries in the outline table the rasteriser reads. At 128 across, the widest a body is drawn, the
     // rim spans about 400 pixels, so this is finer than the thing it is cutting.
     LUMP_LUT: 512,
-    // Harmonic, amplitude. A polar curve r = 1 + a*cos(k*theta) stays convex while its curvature,
-    // r^2 + 2r'^2 - r*r'', holds non-negative; at the tightest point that comes out as a <= 1/(k^2 + 1).
-    // What has to be checked is the SUM of a*(k^2 + 1) over all the harmonics, not each one alone: the
-    // phases are taken off a hash and can line up, and when they do it is the total bending that dents
-    // the outline. A high harmonic is expensive — at k=4 a unit of amplitude bends it seventeen times as
-    // hard as at k=2 — so most of the shape here is a long k=2 swell, which reads as the elongated
-    // potato both of these actually are.
+    // Harmonic, amplitude. A polar curve r = 1 + a*cos(k*theta) stays convex while its curvature, r^2 + 2r'^2 - r*r'', holds
+    // non-negative; at the tightest point that comes out as a <= 1/(k^2 + 1).
     LUMP_HARMONICS: [[2, 0.115], [3, 0.022], [4, 0.003]],
-    // The lit side is built from a few nested fills, each smaller, lighter and pushed a little further
-    // toward the sun. A radial gradient would be one fill and a smoother job of it, but the WebGL backend
-    // resolves a gradient per VERTEX, and it fills a path as a fan whose vertices all sit on the rim —
-    // so the middle of the shape would never see the middle of the gradient, and the two renderers would
-    // disagree. Flat fills are the thing both of them draw the same way.
+    // The lit side is built from a few nested fills, each smaller, lighter and pushed a little further toward the sun.
     LUMP_SHADE_STEPS: 5,
     LUMP_LIT_OFFSET: 0.30,
     LUMP_LIT_SHADE: 1.4,
@@ -493,70 +398,41 @@ const starConstants = {
     // Below this the whole field is a couple of pixels, where one mark reads better than twenty
     // sub-pixel ones — the same threshold the surface textures give up at.
     DEBRIS_MIN_PX: 2.5,
-    //   rocks   pieces to ring the orbit with at high detail
-    //   keep    how many of them survive on the low setting — the largest, so the belt thins rather than moves
-    //   width   how far the ring spreads either side of the nominal orbit, as a fraction of its radius
-    //   thick   ...and above and below the orbital plane, likewise
-    //   size    piece radius, as a multiple of the radius the body standing for the belt is drawn at
+    // Asteroid-field settings: count, low-detail count, spread, and rock size.
+    // the belt thins rather than moves width how far the ring spreads either side of the nominal orbit, as a fraction of its radius thick ...and above and below the orbital plane, likewise size piece radius, as a multiple of the radius the body standing for the belt is drawn at
     ASTEROID_FIELDS: {
         spc_belt: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] },
         tau_roid: { rocks: 120, keep: 45, width: 0.17, thick: 0.05, size: [0.16, 0.85] }
     },
     // Every rock in a field carries a rasterised surface on the high setting.
-    //
-    // How many faces there are.
     ROCK_FACES: 6,
-    // The light is bucketed by where it lies on screen — this many steps around, this many across —
-    // rather than by its components, which bounds the count however the field is laid out. Around is
-    // the axis the counter-roll sweeps, so every step of it is another render the atlas has to hold;
-    // eight is 22 degrees of slack in where the terminator falls, which nothing this size shows.
+    // The light is bucketed by where it lies on screen — this many steps around, this many across — rather than by its
+    // components, which bounds the count however the field is laid out.
     ROCK_LIGHT_AZ: 8,
     ROCK_LIGHT_EL: 3,
     // Rubble is never the thing being examined, so it is not worth a full-sized render.
     ROCK_TEX_MAX: 64,
-    // Faces are keyed on a fixed camera step, and keep their size while the camera moves, rather than
-    // following the two things a planet's surface does to go easier on a drag. Both of those change
-    // the key, and a shared face has a whole set behind it: dropping to them on the first frame of a
-    // drag and back on the first frame after would leave every rock a silhouette twice over, for a
-    // saving that is already covered by the frame budget. This is the coarse step, kept throughout.
+    // Faces are keyed on a fixed camera step, and keep their size while the camera moves, rather than following the two
+    // things a planet's surface does to go easier on a drag.
     ROCK_ANGLE_STEP: 6 * Math.PI / 180,
-    // Rock faces get a cache of their own, so a field cannot evict the planets' surfaces and the
-    // planets cannot evict the field. Around ninety faces are live in any one frame, and the roll walks
-    // each rock through every light bucket as it turns, so what has to fit is the whole product — faces
-    // by light by the sizes a field spans — or it would rebuild itself forever (see ROCK_TEX_BUDGET).
-    // At 32 and 64 square that is a few megabytes.
+    // Rock faces get a cache of their own, so a field cannot evict the planets' surfaces and the planets cannot evict the
+    // field.
     ROCK_CACHE_MAX: 512,
-    // New rock faces allowed per frame. A rock whose face is not rendered yet is drawn as a plain
-    // silhouette and another frame is asked for, so arriving at a fresh view fills the faces in over
-    // the following second instead of stalling on the frame that got there.
+    // New rock faces allowed per frame. A rock whose face is not rendered yet is drawn as a plain silhouette and another
+    // frame is asked for, so arriving at a fresh view fills the faces in over the following second instead of stalling on the frame that got there.
     ROCK_TEX_BUDGET: 2,
     // The ring has to be this many pixels in radius before its rocks are worth drawing individually.
     FIELD_MIN_RING_PX: 60,
-    // Asteroids are drawn at the same true relative scale as everything else, which puts them far under a
-    // pixel at any zoom that also fits the ring on screen — so they are floored exactly as visibleRadius()
-    // floors a body, and a belt reads as a ring of specks until you are close enough for the rock to have
-    // a shape. The floor is above a pixel on purpose: below that the arc is smaller than the pixel it
-    // lands in, so antialiasing pays it out as a fraction of its colour and the ring fades out rather
-    // than thinning.
+    // Asteroids are drawn at the same true relative scale as everything else, which puts them far under a pixel at any zoom
+    // Keep asteroids visible at low zoom without exceeding texture limits.
     FIELD_MIN_ROCK_PX: 1.25,
     // Rate the beacons pulse at
     BEACON_FPS: 12,
 
-    // --- Procedural systems ---
-    // Rough main-sequence figures per spectral class. `mass` is in solar masses and sets orbital
-    // periods through Kepler's third law; luminosity is not listed because it comes off each star's
-    // own recorded size and its class temperature, so a big K star and a small one get habitable
-    // zones in different places.
+    // Procedural Systems
     STAR_MASS: { O: 25, B: 8, A: 2.1, F: 1.3, G: 1.0, K: 0.75, KIII: 1.2, M: 0.35, D: 0.6, T: 0.05 },
-    // How many planets a class gets, and where they may sit.
-    //   min/max    inclusive range, drawn flat
-    //   odds       chance the star gets any planets at all, before min/max is rolled
-    //   weights    [chance, count] pairs, used instead of min/max where the spread is not flat
-    //   innerAU    nothing closer in than this, whatever the habitable zone says
-    //   giants     'outer'  gas giants only beyond the snow line, which is the ordinary arrangement
-    //              'lone'   at most one, and only as the outermost world
-    //              'grand'  as 'outer', plus a guaranteed massive giant with a family of moons
-    //              'none'   rocky worlds only
+    // Procedural-system rules: planet counts, odds, inner limits, and giant constraints.
+    // any planets at all, before min/max is rolled weights [chance, count] pairs, used instead of min/max where the spread is not flat innerAU nothing closer in than this, whatever the habitable zone says giants 'outer' gas giants only beyond the snow line, which is the ordinary arrangement 'lone' at most one, and only as the outermost world 'grand' as 'outer', plus a guaranteed massive giant with a family of moons 'none' rocky worlds only
     SYSTEM_RULES: {
         // Red dwarfs: often barren, and a gas giant out at the edge is the exception rather than the rule.
         M:    { min: 0, max: 3, giants: 'lone', giantOdds: 0.2 },
@@ -585,11 +461,8 @@ const starConstants = {
     // Orbits are laid out as a geometric progression — each one this many times the last, jittered —
     // which is roughly how real systems space themselves.
     ORBIT_RATIO: [1.4, 2.1],
-    // A body orbiting a catalogued star rides a stretched, off-centre circle rather than a true
-    // ellipse (see orbitPoint), so how far it reads from its star runs between two fractions of its
-    // recorded distance. Every orbit in a system is that same shape scaled about the star, so two of
-    // them never cross, and the closest a world comes to the star — or to the orbit inside it — is the
-    // recorded gap times the inner fraction. Both fractions are read off the shape itself below.
+    // A body orbiting a catalogued star rides a stretched, off-centre circle rather than a true ellipse (see orbitPoint), so
+    // how far it reads from its star runs between two fractions of its recorded distance.
     SYS_ORBIT_STRETCH: 1.2,
     SYS_ORBIT_SHIFT: 1 / 3,
     // Where the innermost world sits, as a fraction of the habitable zone's inner edge.
@@ -607,43 +480,26 @@ const starConstants = {
     MOONS_GRAND: [3, 5],
     // Chance a rocky world has any moons at all. Gas giants always do.
     MOON_ODDS_ROCKY: 0.35,
-    // Where a planet's moons sit, measured in that planet's own radii rather than in AU — a gas
-    // giant's family belongs much further out in absolute terms than a rocky world's, and a fixed
-    // span in AU put moons inside the larger planets. Io rides at 6 Jupiter radii, Callisto at 26,
-    // and our own Moon at 60, which is what the outer limit is taken from. Laid out as a progression
-    // for the same reason the planets are: drawing each distance independently had them landing on
-    // top of one another in crossing orbits.
+    // Where a planet's moons sit, measured in that planet's own radii rather than in AU — a gas giant's family belongs much
+    // further out in absolute terms than a rocky world's, and a fixed span in AU put moons inside the larger planets.
     MOON_FIRST_RADII: [4, 12],
     MOON_MAX_RADII: 60,
     MOON_GAP: [1.4, 2.2],
-    // A world only holds on to what is well inside its Hill sphere — past about half of it a prograde
-    // moon is pulled off by the star — so this is the real outer limit, and MOON_MAX_RADII only the
-    // cosmetic one. It matters for the worlds a red dwarf keeps: they orbit inside a tenth of an AU,
-    // where the Hill sphere is a few planetary radii across, so such a world keeps one moon or none
-    // rather than the family the roll dealt it. Everything at a sensible distance is unaffected —
-    // Jupiter's limit works out at three hundred radii, five times what it is allowed to use.
+    // A world only holds on to what is well inside its Hill sphere — past about half of it a prograde moon is pulled off by
+    // the star — so this is the real outer limit, and MOON_MAX_RADII only the cosmetic one.
     HILL_FRACTION: 0.4,
-    // The closest in a moon may sit, and the least each orbit may be past the one inside it. Both bite
-    // once a Hill sphere is small enough that the whole family has to be packed into a few radii:
-    // without them the progression collapsed and the moons dealt to such a world shared one orbit.
+    // The closest in a moon may sit, and the least each orbit may be past the one inside it.
     MOON_MIN_RADII: 2.5,
     MOON_GAP_MIN: 1.25,
-    // Moon orbits are drawn exaggerated so they clear their planet's disc (see moonSpread), and that
-    // exaggeration is what has to be kept in bounds: what fits comfortably in reality can still be
-    // *drawn* across the orbit next door or straight through the star. A family is held to this
-    // fraction of the room between its world and whatever is nearest — the star, the neighbouring
-    // orbits, the belt — and a world with no room for one keeps no moons at all.
+    // Moon orbits are drawn exaggerated so they clear their planet's disc (see moonSpread), and that exaggeration is what
+    // has to be kept in bounds: what fits comfortably in reality can still be *drawn* across the orbit next door or straight through the star.
     MOON_ROOM_FRACTION: 0.75,
     // Earth's radius in AU, for turning a recorded size into a real one.
     EARTH_RADIUS_AU: 4.2635e-5,
-    // A planet's axial tilt in degrees. Its moons ride its equator and so share it, and its rings sit
-    // in that same plane — which is why Saturn's rings and its moons agree in the table. Independent
-    // of the orbital inclination below: which way a world leans and how far its orbit is off the
-    // system's plane are two different things.
+    // A planet's axial tilt in degrees. Its moons ride its equator and so share it, and its rings sit in that same plane —
+    // which is why Saturn's rings and its moons agree in the table.
     PLANET_TILT: [0, 35],
-    // How far off the plane of its system a world orbits, in degrees, and how often. Most sit in it;
-    // a few are properly off it; a rare one goes round backwards, which is an inclination past 90
-    // rather than a flag of its own — the same way the table already records Triton at 130.
+    // How far off the plane of its system a world orbits, in degrees, and how often.
     INC_FLAT: [0, 6],
     INC_MODERATE: [10, 30],
     INC_STEEP: [30, 50],
@@ -654,10 +510,8 @@ const starConstants = {
     // Retrograde moons are the less unusual of the two: Neptune has one, and it is the only large
     // moon in the solar system that does.
     MOON_ODDS_RETRO: 0.04,
-    // An inclined orbit belongs to the outer system — something scattered is scattered outward — so
-    // the odds above are scaled by where the orbit sits against the snow line, from a fraction of
-    // them close in to rather more than them far out. Sol reads exactly this way: everything inside
-    // Jupiter sits within a few degrees, while Pluto, Haumea, Makemake and Eris are all well off it.
+    // An inclined orbit belongs to the outer system — something scattered is scattered outward — so the odds above are
+    // scaled by where the orbit sits against the snow line, from a fraction of them close in to rather more than them far out.
     INC_INNER: 0.3,
     INC_OUTER: 1.7,
     // How far a moon may stray from its planet's equatorial plane.
@@ -666,11 +520,7 @@ const starConstants = {
     // captured or knocked askew rather than formed in place.
     RING_OFF_AXIS_ODDS: 0.1,
     RING_OFF_AXIS: [40, 85],
-    // Turning a body's recorded size into a mass, for the moon periods that follow from it. The table
-    // stores 0.191*sqrt(R/Rearth), and a solar mass is 333,000 Earths. Rocky worlds are taken at
-    // Earth's density, so mass goes as the cube of the radius; giants follow the far shallower
-    // relation the real ones do — Jupiter is eleven Earth radii but three hundred Earth masses, not
-    // thirteen hundred.
+    // Turning a body's recorded size into a mass, for the moon periods that follow from it.
     EARTH_SIZE: 0.191,
     EARTH_MASS_SOLAR: 3.0e-6,
     GIANT_RADII: 11.0,
@@ -684,14 +534,9 @@ const starConstants = {
 };
 
 // Read off entries above, so they are filled in once the table exists.
-//
-// The cow is kept well clear of the two systems the campaign actually visits, so it cannot be
-// stumbled over while doing something else.
 starConstants.COW_MIN_SOL = 10 * starConstants.AU_PER_LY;
 starConstants.COW_MIN_TAU = 5 * starConstants.AU_PER_LY;
-// How close and how far a body on a star-centred orbit reads from its star, per AU of recorded
-// distance. Sampled off the shape orbitPoint actually draws rather than written out by hand, so the
-// figure the systems are laid out against cannot drift from the figure they are drawn at.
+// How close and how far a body on a star-centred orbit reads from its star, per AU of recorded distance.
 function sysOrbitExtreme(pick){
     let r = false;
     for (let i = 0; i < 720; i++){
@@ -707,40 +552,8 @@ starConstants.SYS_ORBIT_MAX = sysOrbitExtreme(Math.max);
 // for a pool of random variants to tell apart.
 starConstants.NAMED_STYLES = starConstants.NAMED_STYLES.concat(Object.values(starConstants.BIOME_LOOK).map(b => b.style));
 
-// Stars (entries with a `startype`) are placed by fixed x,y,z coordinates — in AU, measured from the
-// Sun at the origin — rather than by a distance + orbital angle. They are therefore never given a
-// derived orbital angle and never move. `dist` is retained for reference/UI only.
-//
-// Star coordinates are real. Each was built from its galactic longitude and latitude and its
-// parallax, as published by SIMBAD (CDS) — mostly Gaia DR3, with Hipparcos-2 for the bright stars —
-// through the standard galactic Cartesian convention:
-//
-//   x = d cos(b) cos(l)   toward the galactic centre
-//   y = d cos(b) sin(l)   toward the direction of galactic rotation
-//   z = d sin(b)          toward the north galactic pole
-//
-// with d = 206264.806 / parallax_in_arcsec AU. `dist` is that same distance, so it is now the true
-// distance from the Sun for every star, and separations between stars are true as well.
-//
-// Close companions take their PRIMARY's parallax and keep their own l and b. Component parallaxes
-// disagree by far more than a tight pair is wide — Sirius A and B differ by 4.7 mas, some 6800 AU of
-// radial error on a pair about 20 AU apart — so giving each component its own distance would fling
-// binaries apart. Angular separations are sound, so this reproduces the real projected separation at
-// the right distance; the results check out against the published orbits (Alpha Centauri A-B 22 AU,
-// Epsilon Indi A-B 1464 AU, Gliese 570 A-D 1541 AU). Proxima is the exception and keeps its own
-// parallax: it is a genuinely wide companion 14000 AU out, where the difference is real.
-//
-// `hex` is a star's three-character system code, unique across the table and never reused. What a
-// system contains, and where its bodies start out on their orbits, is seeded from this code plus the
-// run's star seed — so a code must never move once it has been issued, and adding or dropping a star
-// leaves every other system untouched. Codes are handed out by `hexassign.js` in the generator
-// tooling, which only ever fills in stars that have none; do not edit one by hand.
-//
-// `inc` is an orbital inclination in degrees, tilting a body's orbit about the line of nodes (the x
-// axis). It keeps the orbit the same size and every point on it the same distance from the primary,
-// so it adds height without disturbing orbital radii. Bodies without one get a small deterministic
-// tilt (see orbitIncline) so the decorative systems have depth too. Values here follow the real
-// solar system, with the reference plane on the home world.
+// Stars (entries with a `startype`) are placed by fixed x,y,z coordinates — in AU, measured from the Sun at the origin —
+// rather than by a distance + orbital angle.
 export const starData = {
     spc_sun: { hex: 'c3b', x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
@@ -2779,27 +2592,12 @@ function cowGlyph(id){
     return id === starConstants.COW_ID && global.race['cow'] ? global.race.cow.e : false;
 }
 
-// --- The star seed ------------------------------------------------------------------------------
-//
-// Where every body sits on its orbit used to be written into the save: one angle per body, eleven
-// hundred of them, some 28 KB spent recording something that is a pure function of the clock. It is
-// derived instead, from the run's star seed and the number of days the run has lasted, so a position
-// is worked out when something asks for it and never stored.
-//
-// `global.starseed` is rolled once per run alongside global.seed (see newGameData in vars.js) and
-// never changes after that, so a run's sky is its own and comes back identical on every load.
+// The Star Seed
 function starSeed(){
     return typeof global['starseed'] === 'number' ? global['starseed'] : 0;
 }
 
-// A 32-bit hash of a key, folded with the run's star seed — FNV-1a mixing with a splitmix32
-// finaliser. Cheap, and it avalanches well enough that keys as close as `sirius_p1` and `sirius_p2`
-// land nowhere near each other.
-//
-// Deliberately NOT `seededRandom` from vars.js: that one advances a counter held in `global`, so
-// what it returns depends on how many times it has already been called. Nothing here can afford
-// that — a body's angle has to come back the same whether it is asked for at load, on the thousandth
-// day, or never — so this stream is stateless and is used for star data and nothing else.
+// A 32-bit hash of a key, folded with the run's star seed — FNV-1a mixing with a splitmix32 finaliser.
 function starHash(key){
     let h = (2166136261 ^ starSeed()) >>> 0;
     for (let i = 0; i < key.length; i++){
@@ -2815,11 +2613,8 @@ export function starRandom(key, min = 0, max = 1){
     return min + (starHash(key) / 4294967296) * (max - min);
 }
 
-// The three-hex-character code a system is keyed by. Stored on the star's own entry rather than
-// worked out from the table, so what a system contains depends on its code and the run seed alone —
-// adding a star to the catalogue, or dropping one, leaves every other system exactly as it was.
-// A star with no code yet falls back to its id, which is unique too and simply gives that one system
-// a different sky than it will have once the code is assigned.
+// The three-hex-character code a system is keyed by. Stored on the star's own entry rather than worked out from the
+// table, so what a system contains depends on its code and the run seed alone — adding a star to the catalogue, or dropping one, leaves every other system exactly as it was.
 function starHex(id){
     let star = starData[id];
     return star && star.hex ? star.hex : id;
@@ -2835,9 +2630,7 @@ function bodySystem(id){
     return 'spc_sun';
 }
 
-// Where a body sits on its orbit on day zero of the run, in degrees. Cached because it never changes
-// for the life of a run and is read on every frame the body is drawn — a hash is cheap but a lookup
-// is cheaper.
+// Where a body sits on its orbit on day zero of the run, in degrees.
 const startAngleCache = {};
 function startAngle(id){
     if (startAngleCache[id] === undefined){
@@ -2865,10 +2658,8 @@ export function advanceOrbits(days){
     starInfo.days = runDays() + days;
 }
 
-// The period an angle is wound at. A kamikaze home world's year shortens as it falls, and winding
-// thousands of days by a period that keeps changing would jump the planet several degrees every time
-// the year did. The run's STARTING year is used instead: the orbit is still drawn shrinking (that is
-// orbitDist's job, and it is the part you can see), while the world keeps sweeping it smoothly.
+// The period an angle is wound at. A kamikaze home world's year shortens as it falls, and winding thousands of days by a
+// period that keeps changing would jump the planet several degrees every time the year did.
 function anglePeriod(id){
     if (id === 'spc_home' && kamikazeRun()){ return kamikazeOrbit() || orbitPeriod(id); }
     return orbitPeriod(id);
@@ -2889,19 +2680,9 @@ export function setOrbits(){
     cowPlanet();
 }
 
-// --- Procedural systems -------------------------------------------------------------------------
-//
-// The stars are real and fixed; what orbits them is not. Every system beyond Sol and Tau Ceti is
-// dealt from its own three-character code and the run's star seed, so each player gets a different
-// galaxy and the same player gets the same one back on every load. Nothing about it is saved.
-//
-// Systems are built the first time something looks at one — the map drawing that star, or the cow
-// picking a hiding place — rather than all at once at load. A system that is never visited is never
-// built, and one that is built is kept for the rest of the session.
+// Procedural Systems
 
 // Bumped whenever a body is added to or removed from starData, a system being built, or other event.
-// The map's index of the table watches this so it can skip the rebuild on the frames
-// where nothing has moved, which is nearly all of them.
 let starDataVersion = 0;
 function starDataChanged(){ starDataVersion++; }
 
@@ -2946,9 +2727,8 @@ function starLuminosity(star){
     return R * R * Math.pow(T / starConstants.SUN_TEMP, 4);
 }
 
-// The conservative habitable zone, in AU — the runaway-greenhouse and maximum-greenhouse limits the
-// rest of the catalogue was built against, so a generated world in the zone sits where a hand-placed
-// one would have.
+// The conservative habitable zone, in AU — the runaway-greenhouse and maximum-greenhouse limits the rest of the
+// catalogue was built against, so a generated world in the zone sits where a hand-placed one would have.
 function habitableZone(star){
     const rt = Math.sqrt(starLuminosity(star));
     return { inner: 0.95 * rt, outer: 1.37 * rt };
@@ -2959,9 +2739,8 @@ function snowLine(star){
     return 2.7 * Math.sqrt(starLuminosity(star));
 }
 
-// How far out this star can hold anything. A companion a few tens of AU away bounds its primary's
-// system: past about a third of the separation an orbit is not stable, which is the rule the
-// hand-built systems were laid out under. Measured against the nearest other star in the table.
+// How far out this star can hold anything. A companion a few tens of AU away bounds its primary's system: past about a
+// third of the separation an orbit is not stable, which is the rule the hand-built systems were laid out under.
 const systemReachCache = {};
 function systemReach(starId){
     if (systemReachCache[starId] === undefined){
@@ -2983,9 +2762,7 @@ function keplerPeriod(au, mass){
     return Math.max(Math.round(365.25 * Math.sqrt((au * au * au) / (mass || 1))), 1);
 }
 
-// A planet's mass in solar masses, worked back out of the radius the table records. This is what
-// sets how fast its moons go round: the first cut of this used a stand-in that came out a thousand
-// times too light, which floored every moon at the one-day minimum and had them all racing.
+// A planet's mass in solar masses, worked back out of the radius the table records.
 function planetMass(size){
     const re = Math.pow(size / starConstants.EARTH_SIZE, 2);        // radii, in Earth radii
     const me = size >= 0.35
@@ -3005,11 +2782,8 @@ function planetRadiusAU(size){
     return starConstants.EARTH_RADIUS_AU * Math.pow(size / starConstants.EARTH_SIZE, 2);
 }
 
-// Inclinations are wrapped into a single turn, so the table never carries a negative angle or one
-// past 360 — adding a tilt to a lean and then flipping it for a retrograde orbit can produce both.
-// Nothing downstream would mind either way, since everything reads the angle through a sine or a
-// cosine, but the stored figure should be one a person can read. Which way round an orbit runs is
-// still cos(inc) < 0, exactly as the hand-written entries record it.
+// Inclinations are wrapped into a single turn, so the table never carries a negative angle or one past 360 — adding a
+// tilt to a lean and then flipping it for a retrograde orbit can produce both.
 function normInc(deg){
     const a = deg % 360;
     return +(a < 0 ? a + 360 : a).toFixed(2);
@@ -3078,10 +2852,8 @@ function dealSystem(starId){
     // enough to reach it; a short one simply does not get its grand giant.
     const wantsGrand = rules.giants === 'grand';
 
-    // Lay the orbits out as a jittered geometric progression from an inner edge set by the star's own
-    // habitable zone, then stop at whatever a companion leaves room for. Dealt in full before a single
-    // world is placed: a planet's moons have to be fitted into the room between it and its neighbours,
-    // and the orbit outside it is not known until the whole ladder has been rolled.
+    // Lay the orbits out as a jittered geometric progression from an inner edge set by the star's own habitable zone, then
+    // stop at whatever a companion leaves room for.
     let au = Math.max(hz.inner * sysRandom(starId, 'edge', ...starConstants.INNER_EDGE), rules.innerAU || 0.02);
     let grandIndex = wantsGrand && count > 0 ? sysInt(starId, 'grand', Math.max(0, count - 3), count - 1) : -1;
     const ladder = [];
@@ -3094,16 +2866,13 @@ function dealSystem(starId){
         au *= sysRandom(starId, `gap${i}`, ...starConstants.ORBIT_RATIO);
     }
 
-    // Where the belt would go, rolled here rather than after the worlds because the outermost of them
-    // fits its moons against it the same way the others fit theirs against the orbit outside. Blue
-    // giants blow their discs away before anything can collect into one, so they never get it.
+    // Where the belt would go, rolled here rather than after the worlds because the outermost of them fits its moons against
+    // it the same way the others fit theirs against the orbit outside.
     const beltAu = star.startype !== 'O' && sysRandom(starId, 'belt') < starConstants.BELT_ODDS
         ? +Math.min(au, reach).toFixed(4) : 0;
 
-    // What the map will shrink this system's bodies down by, so a moon's orbit can be sized against
-    // the discs that will really be drawn rather than their nominal ones. A compact system — anything
-    // a red dwarf holds — is drawn several times down, and moon orbits sized against the unscaled
-    // figures were flung clean out of the system and through the star.
+    // What the map will shrink this system's bodies down by, so a moon's orbit can be sized against the discs that will
+    // really be drawn rather than their nominal ones.
     const drawScale = ladder.length
         ? scaleForClearance(star.size, ladder[0].dist * starConstants.SYS_ORBIT_MIN) : 1;
     const starDrawn = star.size / 10 * drawScale;
@@ -3125,9 +2894,8 @@ function dealSystem(starId){
         const sizeRange = grand ? starConstants.SIZE_GRAND : giant ? starConstants.SIZE_GAS : starConstants.SIZE_ROCKY;
         const size = +sysRandom(starId, `size${i}`, ...sizeRange).toFixed(3);
 
-        // The planet's axial tilt. Its moons ride its equator and its rings sit in the same plane, so
-        // this is what keeps the two agreeing instead of leaving a ringed giant with moons crossing
-        // its rings at right angles.
+        // The planet's axial tilt. Its moons ride its equator and its rings sit in the same plane, so this is what keeps the two
+        // agreeing instead of leaving a ringed giant with moons crossing its rings at right angles.
         const tilt = +sysRandom(starId, `tilt${i}`, ...starConstants.PLANET_TILT).toFixed(2);
 
         // No gas/rocky flag on the body: bodyKind already reads that off the size, which is the
@@ -3146,28 +2914,16 @@ function dealSystem(starId){
         const moonRange = grand ? starConstants.MOONS_GRAND : giant ? starConstants.MOONS_GAS : starConstants.MOONS_ROCKY;
         let moons = sysInt(starId, `moons${i}`, ...moonRange);
         if (!giant && sysRandom(starId, `hasmoons${i}`) >= starConstants.MOON_ODDS_ROCKY){ moons = 0; }
-        // The room the map has to draw a family of moons in: how near this world comes to the star and
-        // to the orbits either side of it, at its closest approach to each. Every orbit in the system
-        // is the one shape scaled about the star, so two of them are nearest where the inner one comes
-        // closest in, and that is what the inner fraction measures. Each of a neighbouring pair gets
-        // half the gap between them, so the two families cannot meet even at conjunction.
+        // The room the map has to draw a family of moons in: how near this world comes to the star and to the orbits either side
+        // of it, at its closest approach to each.
         const inward = i > 0 ? (dist - ladder[i - 1].dist) * starConstants.SYS_ORBIT_MIN / 2 : Infinity;
         const outward = i + 1 < ladder.length ? (ladder[i + 1].dist - dist) * starConstants.SYS_ORBIT_MIN / 2
                       : (beltAu > dist ? (beltAu - dist) * starConstants.SYS_ORBIT_MIN / 2 : Infinity);
         const toStar = dist * starConstants.SYS_ORBIT_MIN - starDrawn;
         const room = Math.min(inward, outward, toStar) * starConstants.MOON_ROOM_FRACTION;
 
-        // Moons run outward from an inner edge, each orbit a jittered multiple of the one inside it,
-        // all of it measured in the planet's own radii. Drawing each distance independently, as this
-        // first did, let a second moon land inside the first and the pair crossed orbits.
-        //
-        // The outer limit is whichever is nearer of the cosmetic MOON_MAX_RADII and the slice of the
-        // Hill sphere a moon is really bound in. The gap is then capped so the outermost still lands
-        // inside that limit rather than being flung out to where it would take a year to come round,
-        // and capped again by the room above: what has to fit there is the *span* from the innermost
-        // ring to the outermost, because the exaggeration that lifts the first moon clear of its
-        // planet's disc lifts the last one by the same factor. Squeezing the progression is how a
-        // world keeps the whole family it was dealt rather than having its outer moons thrown away.
+        // Moons run outward from an inner edge, each orbit a jittered multiple of the one inside it, all of it measured in the
+        // planet's own radii.
         const pr = planetRadiusAU(size);
         const hill = dist * Math.pow(planetMass(size) / (3 * mass), 1 / 3) * starConstants.HILL_FRACTION;
         const outerR = Math.min(starConstants.MOON_MAX_RADII, hill / pr);
@@ -3175,9 +2931,7 @@ function dealSystem(starId){
         let mR = Math.min(sysRandom(starId, `moon0${i}`, ...starConstants.MOON_FIRST_RADII), outerR);
         if (mR < starConstants.MOON_MIN_RADII){ moons = 0; }
         else if (moons > 1){
-            // However many still fit between that first orbit and the outer limit without landing on
-            // top of one another. Without this a Hill sphere a few radii across left every moon the
-            // world was dealt sharing the one orbit.
+            // However many still fit between that first orbit and the outer limit without landing on top of one another.
             moons = Math.min(moons, 1 + Math.floor(Math.log(outerR / mR) / Math.log(starConstants.MOON_GAP_MIN)));
         }
         let gap = 1;   // unused below a second moon, but never left as a number that could travel
@@ -3194,10 +2948,8 @@ function dealSystem(starId){
         // exaggerated family has been measured against the room around it.
         const family = [];
         for (let m = 0; m < moons; m++){
-            // Rounded once, here, and used for everything after: the spread below is what moonSpread
-            // would work out from the stored figure, so it has to be that same figure. Nine places,
-            // not six: a moon of a small rocky world orbits a few hundredths of a millionth of an AU
-            // out, and six left barely two figures of it.
+            // Rounded once, here, and used for everything after: the spread below is what moonSpread would work out from the stored
+            // figure, so it has to be that same figure.
             family.push({
                 dist: +mAu.toFixed(9),
                 size: +sysRandom(starId, `moonsize${i}_${m}`, ...starConstants.SIZE_MOON).toFixed(3),
@@ -3205,14 +2957,8 @@ function dealSystem(starId){
             mAu *= gap;
         }
 
-        // How far the family has to be exaggerated to keep every ring clear of the planet's disc and
-        // of the rings either side of it, and how far out that puts the outermost. The exaggeration is
-        // worked out here rather than left to moonSpread, which finds a planet's moons by walking the
-        // whole table — affordable for Sol's handful of parents, but not once the table holds a few
-        // thousand generated bodies. Squeezing the progression above settles nearly every family; what
-        // still will not fit loses its outer moons one at a time, and a world with room for none keeps
-        // none. A red dwarf's worlds orbit close enough in that an unbounded spread drew their moons
-        // clean across the orbit next door and through the star itself.
+        // How far the family has to be exaggerated to keep every ring clear of the planet's disc and of the rings either side of
+        // it, and how far out that puts the outermost.
         let spreadWanted = 1;
         while (family.length){
             spreadWanted = 1;
@@ -3232,17 +2978,15 @@ function dealSystem(starId){
 
         for (let m = 0; m < family.length; m++){
             const mid = `${id}_m${m + 1}`;
-            // `star` as well as `parent`: orbitPoint takes the parent branch either way, and the star
-            // is what puts the moon in its system's body list so the map draws it at all. `inc` is the
-            // planet's own tilt, give or take, so the family shares a plane the way a real one does.
+            // `star` as well as `parent`: orbitPoint takes the parent branch either way, and the star is what puts the moon in its
+            // system's body list so the map draws it at all.
             starData[mid] = {
                 dist: family[m].dist,
                 orbit: moonPeriod(family[m].dist, size),
                 size: family[m].size,
                 moon: true, parent: id, star: starId,
-                // The planet's equator, give or take — unless this is the rare moon going round the
-                // wrong way, which is the same plane approached from the other side. Triton, in other
-                // words: Neptune leans 28 degrees and its retrograde moon is recorded at 130.
+                // The planet's equator, give or take — unless this is the rare moon going round the wrong way, which is the same plane
+                // approached from the other side.
                 inc: moonIncline(starId, i, m, tilt),
                 name: body.name ? `${body.name} ${ROMAN[m] || (m + 1)}` : '',
             };
@@ -3456,9 +3200,7 @@ export function orbitPeriod(id){
     return orbit;
 }
 
-// --- The kamikaze home world -------------------------------------------------------------------
-//
-// The kamikaze planet trait takes a day off the year every year
+// The Kamikaze Home World
 function kamikazeRun(){
     return global.race['truepath'] && homeTrait('kamikaze') ? true : false;
 }
@@ -3485,12 +3227,6 @@ export function orbitDist(id){
 }
 
 // Solve Kepler's equation, M = E - e·sin(E), for the eccentric anomaly.
-//
-// The angle the game stores and advances at a constant rate (see the position update in main.js) is
-// the mean anomaly — the one that really does tick uniformly with time. Converting it to the
-// eccentric anomaly is what makes a body sweep equal areas in equal times, so it runs fastest at
-// perihelion and slowest at aphelion, as a real planet does. Newton's method settles this in three
-// or four passes at any eccentricity the map carries; the loop is capped so no input can spin it.
 function eccentricAnomaly(M, ecc){
     if (!(ecc > 0)){ return M; }
     // M near pi is where the plain guess converges slowest, so start from pi for the eccentric
@@ -3505,23 +3241,13 @@ function eccentricAnomaly(M, ecc){
 }
 
 var mapScale, mapShift;
-// starData key of the star the pointer is resting on, or false. Only set once zoomed out past
-// the point where the star labels are still legible (see starNamesHidden and the hover label at the end
-// of drawMap).
+// starData key of the star the pointer is resting on, or false.
 var mapHover = false;
 // Where the pointer was when it picked that star, in canvas-local pixels — the same frame mapShift is
 // in. The hover name is placed off this rather than off the star, so it clears the cursor.
 var mapHoverAt = { x: 0, y: 0 };
 
-// --- Solar map camera ---------------------------------------------------------------------------
-// Orthographic projection. `mapYaw` spins the map about the vertical (z) axis; `mapPitch` tips the
-// reference plane toward the viewer, so +z reads as up on screen. At (0,0) the projection is the
-// identity, which is why the map opens on exactly the flat top-down view it has always shown.
-//
-// The projection is linear, and that is what lets each star system keep being drawn in its own
-// translated frame: projecting a star's position and then projecting small offsets around it gives
-// the same answer as projecting absolute coordinates, without feeding hundreds of thousands of AU
-// through the canvas transform and losing precision.
+// Solar Map Camera
 var mapYaw = 0, mapPitch = 0;
 function mapDefaultYaw(target){
     return target === 'spc_sun' ? starConstants.SOL_DEFAULT_YAW : 0;
@@ -3538,9 +3264,7 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 var starLockOn = false;
 // Whether the map's settings panel is showing.
 var mapSettingsOpen = false;
-// Whether the map's star search is showing, and what was last typed into it. Held out here rather
-// than in the panel so a renderer switch, which rebuilds every control, does not close the search or
-// lose the query from under someone mid-word.
+// Whether the map's star search is showing, and what was last typed into it.
 var mapSearchOpen = false;
 var mapSearchQuery = '';
 // Redraw only once per displayed frame 
@@ -3552,23 +3276,11 @@ function requestDraw(){
 }
 // True while the camera is being turned.
 var mapCameraMoving = false;
-// Every body drawn big enough to make out, recorded in screen pixels as drawMap lays it down:
-// { id, x, y, r }. Hit-testing against what was actually painted is exact — the alternative is
-// re-deriving each body's projected size and its distance-based minimum outside the draw, and any
-// drift between the two shows up as a click that misses the thing under the pointer.
+// Every body drawn big enough to make out, recorded in screen pixels as drawMap lays it down: { id, x, y, r }.
 var mapPickable = [];
-// The radius, in AU, each star was last drawn at — recorded for the same reason and skimmed off the
-// same figure. A star is not drawn at its table size: systemScale shrinks a system's bodies to bring
-// the star inside its innermost orbit, and a red dwarf, whose size is ordinary but whose whole system
-// fits inside a tenth of an AU, comes out several times smaller than the table says. starAt cannot
-// work that out from the table, and reaching for the table size gave such a star a grab radius many
-// times its own disc — swallowing the hover and the click of every world close in to it.
+// The radius, in AU, each star was last drawn at — recorded for the same reason and skimmed off the same figure.
 var starDrawnAt = {};
-// Which bodies drawMap actually put a name on this frame, as a set of ids. Recorded where the label
-// is drawn rather than worked out again afterwards, for the same reason mapPickable is: the
-// conditions that decide whether a name appears are spread across zoom, reveal state and the
-// planetNames toggle, and any second copy of them would eventually disagree with the first. The
-// hover label reads this to fill in only what is missing.
+// Which bodies drawMap actually put a name on this frame, as a set of ids.
 var mapLabelled = {};
 
 // Read defensively and snapped to the step: the settings block in vars.js has not necessarily run on
@@ -3616,16 +3328,13 @@ function cycleNames(){
     mapView().planetNames = next.planets;
     mapView().starNames = next.stars;
 }
-// Whether a star is going unnamed on the map — the zoom has shrunk the labels away, or the player has
-// turned them off. Either way the hover label is the only way left to tell one star from another, so
-// it answers to both.
+// Whether a star is going unnamed on the map — the zoom has shrunk the labels away, or the player has turned them off.
 function starLabelsOff(){
     return starNamesHidden() || !namesShown().stars;
 }
 
-// Which loop drives the map. Read defensively, as starRange is: the vars.js block has not
-// necessarily run on an older save, and anything unrecognised means the setting it has always had.
-// main.js reads the same key and is what actually acts on it — this pair only names it for the UI.
+// Which loop drives the map. Read defensively, as starRange is: the vars.js block has not necessarily run on an older
+// save, and anything unrecognised means the setting it has always had.
 function mapRefreshRate(){
     const r = mapView().refresh;
     return r === 'fast' || r === 'slow' ? r : 'normal';
@@ -3650,10 +3359,8 @@ function starRangeLabel(){
 var mapAnchor = { x: 0, y: 0, z: 0 };
 // The table, indexed the ways the draw actually uses it.
 var mapStarIds = [], mapDrawnAsStar = [], mapBodiesOf = {};
-// The table only changes when a system is dealt or the cow moves, which is rare, but the index used
-// to be rebuilt on every frame regardless. With a few thousand generated bodies in the table that is
-// a millisecond of every frame spent walking it to reach the same answer, so the rebuild waits until
-// something has actually changed (see starDataChanged).
+// The table only changes when a system is dealt or the cow moves, which is rare, but the index used to be rebuilt on
+// every frame regardless.
 let indexedVersion = -1;
 function indexBodies(){
     if (indexedVersion === starDataVersion && mapStarIds.length){ return; }
@@ -3679,16 +3386,12 @@ function drawnAsStarIndex(){
     return mapDrawnAsStar;
 }
 // A true distance through space, which needs mapFocus to be at the right depth — see refocus().
-// `range` may be passed in by a caller that is about to test hundreds of stars in a row: it comes
-// from a setting read through the `global` reactive proxy, and re-reading it once per star is a
-// measurable part of a wide-zoom frame.
 function starCulled(pos, range = starRange()){
     if (range !== starConstants.STAR_RANGE_INF && dist3(pos, mapAnchor) > range * starConstants.AU_PER_LY){ return true; }
     return mapScale >= starConstants.planetLabelMinScale && dist3(pos, mapFocus) > starConstants.STAR_CULL_AU;
 }
-// The color the map paints a star of a given class. Shared by the discs drawn in the scene and by
-// the backdrop sky, which has to agree with them — a star should be the same color whichever of the
-// two is showing it.
+// The color the map paints a star of a given class. Shared by the discs drawn in the scene and by the backdrop sky,
+// which has to agree with them — a star should be the same color whichever of the two is showing it.
 function starTint(type){
     switch (type){
         case 'O':    return '5a86ff';   // Blue — the hottest there is
@@ -3705,19 +3408,10 @@ function starTint(type){
     }
 }
 
-// --- the backdrop sky ---------------------------------------------------------------------------
-// Zoomed in on a system, every other star is off screen by a factor of about a thousand: at the zoom
-// where a system's planets are made out, the viewport spans a couple of hundred AU and the nearest
-// neighbour is a quarter of a million away. Drawing them where they really are would put nothing on
-// screen, so instead they are drawn where they would be SEEN from — direction only, on a sphere
-// around the system being looked at, at a fixed size in pixels.
-//
-// The result is the sky as it looks from there: the same stars in the same places, turning with the
-// camera and holding still as you zoom, which is what a sky does.
+// The Backdrop Sky
 
-// How bright a star of this size and class looks from `ly` light years away, relative to the Sun
-// seen from one light year. L goes as R^2 T^4 and brightness falls off as the square of the distance;
-// the table stores 2*sqrt(R), so the radius comes back out of the size.
+// How bright a star of this size and class looks from `ly` light years away, relative to the Sun seen from one light
+// year.
 function skyFlux(star, ly){
     const R = Math.pow((star.size || 1) / 2, 2);
     const T = starConstants.STAR_TEMP[star.startype] || starConstants.SUN_TEMP;
@@ -3773,9 +3467,8 @@ function wrapAngle(a){
 }
 function pX(p){ return p.x * camCY - p.y * camSY; }
 function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z) * camSP; }
-// Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right
-// and screen-down, and the canvas y axis points down, so it runs INTO the screen: larger = further
-// away. Sort descending and draw in that order, so the last thing painted is the nearest.
+// Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right and screen-down,
+// and the canvas y axis points down, so it runs INTO the screen: larger = further away.
 function pD(p){ return (p.x * camSY + p.y * camCY) * camSP + (p.z) * camCP; }
 // A world point expressed relative to a frame origin, ready to project.
 export function rel(p, o){ return { x: p.x - o.x, y: p.y - o.y, z: (p.z) - (o.z) }; }
@@ -3806,9 +3499,7 @@ function orbitMinRadius(id, origin){
 function visibleRadius(r, offsetPx){
     return offsetPx >= starConstants.BODY_SEPARATION_PX ? Math.max(r, 1 / mapScale) : r;
 }
-// The factor a system's bodies are drawn down by, given how close anything orbiting the star comes to
-// it. Split out from systemScale so a system can be laid out against the sizes it will really be
-// drawn at without having to be drawn first.
+// The factor a system's bodies are drawn down by, given how close anything orbiting the star comes to it.
 function scaleForClearance(starSize, clear){
     let want = starSize / 10;
     if (!(clear > 0) || clear === Infinity || want <= clear * starConstants.STAR_ORBIT_CLEARANCE){ return 1; }
@@ -3819,9 +3510,8 @@ function systemScale(starSize, ids, origin){
     if (want <= 1 / mapScale){ return 1; }     // zoomed out: orbits are sub-pixel, nothing to clear
     let clear = Infinity;
     for (let id of ids){
-        // Only what goes round the star itself. A moon is held by its planet, and its ring is centred
-        // on a body that moves, so measuring the star against it made the clearance rise and fall as
-        // the moon came round — and the star visibly swelled and shrank once a run turn.
+        // Only what goes round the star itself. A moon is held by its planet, and its ring is centred on a body that moves, so
+        // Measure clearance against the primary to avoid pulsing stellar radii.
         if (starData[id].parent){ continue; }
         clear = Math.min(clear, orbitMinRadius(id, origin));
     }
@@ -3839,11 +3529,6 @@ function strokeOrbit(ctx, id, origin){
 }
 
 // One side of an orbit: the arc that passes in front of the body it circles, or the arc behind it.
-// Drawing a ring in two halves either side of its primary is what lets it cross over that body
-// instead of always vanishing behind it, the same way a planet's rings are laid down.
-//
-// `primary` is the position of the body being orbited and `origin` the frame to plot in; they differ
-// for a moon, whose ring is centred on its planet but drawn in the Sun's frame.
 function strokeOrbitSide(ctx, id, origin, primary, near){
     let step = 360 / starConstants.ORBIT_STEPS;
     // Sampled once and reused. orbitPoint on a moon resolves its planet's position too, so this is
@@ -3991,14 +3676,7 @@ function bodyKind(planet, id){
     return 'rock';
 }
 
-// --- Camera-aware surfaces ------------------------------------------------------------------------
-//
-// The textures above are flat images stamped onto a disc, which is all a body a few pixels across
-// needs — but it means the surface cannot answer to the camera. Rotate the view and Jupiter's belts
-// stay pinned to the screen, which reads as a sticker rather than a planet.
-//
-// Everything here is gated on mapView().texture === 'high'. On Low the map draws exactly the flat
-// textures it always has, and none of this code runs.
+// Camera-Aware Surfaces
 
 // Noise is evaluated on the 3D normal rather than on (latitude, longitude), so there is no seam down
 // the date line and no crowding at the poles — the two things that give a wrapped 2D texture away.
@@ -4021,10 +3699,8 @@ function sphFbm(x, y, z, oct, s){
     for (let i = 0; i < oct; i++){ a += sphNoise(x*f, y*f, z*f, s+i) * amp; tot += amp; amp *= 0.5; f *= 2.03; }
     return a / tot;
 }
-// Distance to the nearest of a scattered field of points: craters come off f1, fracture lines off the
-// gap between the nearest two. One hash per cell sliced three ways for the offset, and distances kept
-// squared until the end — three hashes and a square root per cell was most of the cost of a cratered
-// world, and there are twenty-seven cells to check per pixel.
+// Distance to the nearest of a scattered field of points: craters come off f1, fracture lines off the gap between the
+// nearest two.
 function sphWorley(x, y, z, s){
     const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
     let f1 = 99, f2 = 99;
@@ -4069,9 +3745,7 @@ function spinOf(id){
 
 const sphereCache = new Map();
 
-// Whether a camera-aware surface should be used for this body right now, and at what size. `minPx`
-// overrides the size a surface starts paying for itself at — rubble is cheaper textured than drawn
-// (see ROCK_DOT_PX) — and `steady` keeps that size while the camera moves (see ROCK_ANGLE_STEP).
+// Whether a camera-aware surface should be used for this body right now, and at what size.
 function sphereSize(kind, r, minPx, steady){
     if (!starConstants.SPHERE_STYLES[kind]){ return 0; }
     if (mapView().texture !== 'high'){ return 0; }
@@ -4088,29 +3762,18 @@ function sphereSize(kind, r, minPx, steady){
     const last = starConstants.SPHERE_SIZES.length - 1;
     return drop && last > 0 ? starConstants.SPHERE_SIZES[last-1] : starConstants.SPHERE_SIZES[last];
 }
-// How finely the camera angle is quantised before it keys the cache. Coarser while turning, so a
-// drag walks through a third as many distinct renders; letting go returns to the fine step, which
-// misses once and settles at full quality.
+// How finely the camera angle is quantised before it keys the cache.
 function sphereAngleStep(){
     return mapCameraMoving ? starConstants.SPHERE_ANGLE_STEP * 3 : starConstants.SPHERE_ANGLE_STEP;
 }
 
-// `lumpy` says the subject is not round, and is passed rather than looked up: this renders what it
-// is told to, and a body's own entry in the table is the caller's business.
-//
-// `opts` is how a shared subject asks for less of itself in the key, so that many callers can land on
-// one render (see rockTexture): `cache`/`max` put it somewhere of its own, `still` renders it at
-// rotation zero, `step` fixes the camera step it is keyed on, `lightAz`/`lightEl` bucket the light
-// coarsely, `roll` says the caller will turn the finished image and lights it to suit, and `budget`
-// caps how many fresh renders a frame may pay for, returning false instead of stalling on the one
-// that overruns.
+// `lumpy` says the subject is not round, and is passed rather than looked up: this renders what it is told to, and a
+// body's own entry in the table is the caller's business.
 function sphereTexture(kind, S, id, sun, lumpy, opts){
     opts = opts || {};
     const cache = opts.cache || sphereCache;
     const spin = spinOf(id);
-    // A still subject is rendered facing one way and left there. Its own turn is what expires the
-    // render — a few degrees of spin and it has to be built again — so a subject that turns by being
-    // rolled on the way down (see `roll`, and ROCK_FACES) takes it out of the key entirely.
+    // A still subject is rendered facing one way and left there.
     const turn = !opts.still && spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
     const step = opts.step || sphereAngleStep();
     const qy = Math.round(mapYaw / step), qp = Math.round(mapPitch / step);
@@ -4122,19 +3785,13 @@ function sphereTexture(kind, S, id, sun, lumpy, opts){
     if (sun){
         Lx = pX(sun); Ly = pY(sun); Lz = pD(sun);
         if (opts.roll){
-            // The caller is going to turn this image by `roll` on the way down, which would carry the
-            // lit side round with it. Turned back by the same angle here, the two cancel and the light
-            // lands where the star actually is. Only the two screen axes move: a turn about the line of
-            // sight leaves how much the light comes toward the camera alone.
+            // The caller is going to turn this image by `roll` on the way down, which would carry the lit side round with it.
             const c = Math.cos(opts.roll), s = Math.sin(opts.roll);
             const rx = Lx*c + Ly*s, ry = -Lx*s + Ly*c;
             Lx = rx; Ly = ry;
         }
         if (opts.lightAz){
-            // Bucketed by where the light lies on the screen — round it, and across it. Quantising the
-            // components instead, as below, gives no bound on how many buckets a caller can produce:
-            // a ring of rocks is lit from a different direction at every point of it and would take a
-            // bucket each, which is the whole of what a shared render is trying to avoid.
+            // Bucketed by where the light lies on the screen — round it, and across it.
             const m0 = Math.hypot(Lx, Ly, Lz) || 1;
             const el = Math.round(Math.asin(Math.max(-1, Math.min(1, Lz/m0))) / (Math.PI/2) * opts.lightEl);
             // Folded back into 0..az-1, or the two halves of the wrap would be two keys for one
@@ -4154,9 +3811,8 @@ function sphereTexture(kind, S, id, sun, lumpy, opts){
     }
     const key = `${kind}:${S}:${qy}:${qp}:${qs}:${seed}:${step.toFixed(4)}:${lk}:${lumpy ? 'L' : 'o'}`;
     if (cache.has(key)){ return cache.get(key); }
-    // Over the frame's allowance. Ask for another frame — nothing else would come back to finish the
-    // job, since the view has stopped changing by the time it matters — and let the caller draw the
-    // cheap version of this one meanwhile.
+    // Over the frame's allowance. Ask for another frame — nothing else would come back to finish the job, since the view has
+    // stopped changing by the time it matters — and let the caller draw the cheap version of this one meanwhile.
     if (opts.budget){
         if (sphereBudget >= opts.budget){ requestDraw(); return false; }
         sphereBudget++;
@@ -4187,9 +3843,8 @@ function sphereTexture(kind, S, id, sun, lumpy, opts){
 
     let lut = false;
     if (lumpy){
-        // Turned by the quantised yaw rather than the live one, so the outline in the render is the
-        // outline the key was written for — the same render is handed back for every yaw in the step.
-        // (spinDeg is 0 for a still subject, which is what holds its outline as well as its face.)
+        // Turned by the quantised yaw rather than the live one, so the outline in the render is the outline the key was written
+        // for — the same render is handed back for every yaw in the step.
         const norm = lumpNorm(seed), roll = yaw + spinDeg * Math.PI / 180;
         lut = new Float32Array(starConstants.LUMP_LUT);
         for (let i = 0; i < starConstants.LUMP_LUT; i++){
@@ -4324,9 +3979,7 @@ function sphereTexture(kind, S, id, sun, lumpy, opts){
     return c;
 }
 
-// --- Rock faces -----------------------------------------------------------------------------------
-//
-// The shared surfaces every field's rocks are drawn from. See ROCK_FACES for why they are shared.
+// Rock Faces
 const rockCache = new Map();
 // Fresh sphere renders already paid for this frame, against whatever budget the caller set. Reset by
 // drawMap at the top of every frame.
@@ -4342,9 +3995,7 @@ function rockFace(field, i){
 function rockFaceId(face){
     return `rock#${face}`;
 }
-// A rock's own identity, which is what it keeps for itself: the rate it turns at. spinOf() takes an
-// unrecognised id's period off the id, so every piece of a field tumbles at a rate of its own instead
-// of the whole field turning as one lump.
+// A rock's own identity, which is what it keeps for itself: the rate it turns at.
 function rockId(field, i){
     return `${field}#${i}`;
 }
@@ -4355,9 +4006,8 @@ function rockRoll(field, i){
     if (!spin.hours){ return 0; }
     return (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE * Math.PI / 180;
 }
-// The rasterised surface for one face, lit so that turning it by `roll` on the way down puts the light
-// back where the star is. False if the frame has already rendered as many new faces as it is allowed
-// and the caller should draw the cheap version instead.
+// The rasterised surface for one face, lit so that turning it by `roll` on the way down puts the light back where the
+// star is.
 function rockTexture(S, face, sun, roll){
     return sphereTexture('belt', S, rockFaceId(face), sun, true, {
         cache: rockCache,
@@ -4381,16 +4031,6 @@ function sphereStarSize(r){
     return starConstants.SPHERE_STAR_SIZES[starConstants.SPHERE_STAR_SIZES.length - 1];
 }
 // A star's disc and corona, kept in their own cache rather than the shared sphere one.
-//
-// This used to be written a pixel at a time — a quarter of a million square roots per texture at the
-// largest size — which cost a sixth of a second the first time a view brought a dozen spectral
-// classes on screen at once, and cost it again every time a systemful of planet textures pushed the
-// star ones out of the shared cache. Both halves of the image are radially symmetric, so the browser
-// can lay them down as two gradients instead: the same curves, sampled rather than integrated, drawn
-// in native code. The disc's own stops are the curve exactly, since both are piecewise linear.
-//
-// The cache is small and its own, because there is only ever one texture per spectral class per
-// size — a couple of dozen in total — so nothing else can evict them and they are built once.
 const starSphereCache = new Map();
 function sphereStarTexture(color, S){
     const key = `star:${color}:${S}`;
@@ -4401,9 +4041,7 @@ function sphereStarTexture(color, S){
     const x = c.getContext('2d');
     const R = S / 2, disc = R * starConstants.STAR_CORE;
 
-    // Corona first, so the disc paints over its inner edge and leaves no hairline. It starts just
-    // inside the limb for that reason, so stop offsets are mapped back through the gradient's own
-    // parameter rather than being used as the falloff's.
+    // Corona first, so the disc paints over its inner edge and leaves no hairline.
     const r0 = disc * 0.97;
     const cor = x.createRadialGradient(R, R, r0, R, R, R);
     const at = t => (disc + t * (R - disc) - r0) / (R - r0);
@@ -4431,9 +4069,8 @@ function sphereStarTexture(color, S){
     return c;
 }
 
-// Color-free overlay for a planet, moon or belt body: surface detail, then the light and shade that
-// turn a flat disc into a lit ball. Lit from the upper left throughout, so the whole map reads as
-// one scene rather than each body having its own sun.
+// Color-free overlay for a planet, moon or belt body: surface detail, then the light and shade that turn a flat disc
+// into a lit ball.
 function texBlobs(x, rnd, S, count, minR, maxR, darkBias, strength){
     for (let i = 0; i < count; i++){
         let bx = rnd() * S, by = rnd() * S;
@@ -4723,9 +4360,8 @@ function starTexture(color){
     x.fillStyle = cor;
     x.fillRect(0, 0, S, S);
 
-    // The disc brightens toward the middle and darkens at the limb, but never washes out to pure
-    // white — zoomed out a star is only a pixel or two across, and that pixel has to stay the color
-    // of its spectral class.
+    // The disc brightens toward the middle and darkens at the limb, but never washes out to pure white — zoomed out a star
+    // is only a pixel or two across, and that pixel has to stay the color of its spectral class.
     let body = x.createRadialGradient(R, R, 0, R, R, disc);
     body.addColorStop(0, hexShade(color, 1.55));
     body.addColorStop(0.5, hexShade(color, 1.12));
@@ -4765,9 +4401,8 @@ function starTexture(color){
 
 const gateGlyphCache = {};
 
-// Nine distinct glyphs drawn from the pool. Seeded off the body, not Math.random: the map redraws on
-// every drag and zoom, and glyphs reshuffling each frame would strobe. Cached so the draw isn't
-// re-picking them every frame either.
+// Nine distinct glyphs drawn from the pool. Seeded off the body, not Math.random: the map redraws on every drag and
+// zoom, and glyphs reshuffling each frame would strobe.
 function gateGlyphs(seed){
     if (gateGlyphCache[seed]){ return gateGlyphCache[seed]; }
     let pool = starConstants.GATE_GLYPHS.slice();
@@ -4824,21 +4459,14 @@ function drawGate(ctx, x, y, r, color, seed){
             ctx.stroke();
         }
 
-        // A glyph in each of the nine segments the notches divide the ring into — offset half a
-        // segment so they sit between the notches rather than on top of them, and turned to stand
-        // upright on the ring. Only once the band is wide enough to hold a readable character.
-        // textAlign/textBaseline/font are restored by the save() above, so the ship-name and label
-        // passes later in drawMap are unaffected.
+        // A glyph in each of the nine segments the notches divide the ring into — offset half a segment so they sit between the
+        // notches rather than on top of them, and turned to stand upright on the ring.
         if (r * mapScale >= 18){
             let glyphs = gateGlyphs(seed);
             ctx.fillStyle = 'rgba(0,0,0,0.72)';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            // Sized and drawn in screen pixels, undoing the map scale for the text only. Chrome
-            // renders nothing at all once the font-size *number* drops below about 0.01px, whatever
-            // the transform scales it up to afterwards — and the gate's radius is a fixed 0.01 map
-            // units at every zoom, so a size expressed in map units would always land under that
-            // floor and silently draw nothing.
+            // Sized and drawn in screen pixels, undoing the map scale for the text only.
             ctx.font = `${lw * mapScale * 0.78}px serif`;
             for (let i = 0; i < 9; i++){
                 let a = ((i + 0.5) / 9) * Math.PI * 2 - Math.PI / 2;
@@ -4939,14 +4567,11 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
     // to show it, otherwise the seven broad bands. 
     const hi = mapView().texture === 'high' && !mapCameraMoving && r * mapScale >= 15;
     const bands = hi ? ringHiBands() : starConstants.RING_BANDS;
-    // How much of the ring's thickness the line of sight passes through. Edge-on it cuts the long way
-    // and the ring reads as solid; face-on it passes straight through and the ring is at its most
-    // transparent.
+    // How much of the ring's thickness the line of sight passes through.
     const open = hi ? Math.max(0.12, ringOpening(ct, st)) : 1;
 
-    // The planet's shadow, as a cylinder cast away from its star: a point on the ring is in it when
-    // it lies on the far side of the planet from the sun AND within a planet's radius of the axis
-    // joining the two.
+    // The planet's shadow, as a cylinder cast away from its star: a point on the ring is in it when it lies on the far side
+    // of the planet from the sun AND within a planet's radius of the axis joining the two.
     const shade = hi && sun ? sun : false;
     // The sun resolved in the ring's own plane: sunP along the ring's x axis, sunQ along the in-plane
     // axis the lean tips. The shadow is centred half a turn round from where the sun lies.
@@ -4974,9 +4599,7 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
         const lit = rgba(litRGB, alpha);
         ctx.lineWidth = Math.max(r * (outer - inner), 0.4 / mapScale);
 
-        // The shadow's edge on this band, as half-widths in ring longitude either side of shadowMid,
-        // darkest core first. A point sits inside the cylinder of radius rho when
-        //     |t - shadowMid| < acos( sqrt(rad^2 - rho^2) / (rad * sunR) )
+        // The shadow's edge on this band, as half-widths in ring longitude either side of shadowMid, darkest core first.
         let edge = false;
         if (shade && sunR > 1e-6){
             edge = [];
@@ -5061,9 +4684,8 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
     }
 }
 
-// Saturn is flagged in the table. Past Sol, roughly a quarter of the gas giants carry rings too, and
-// which ones is decided by hashing the body's own id — stable for a given world, no flag to store for
-// each of the two dozen of them, and it holds if more systems are added later.
+// Saturn is flagged in the table. Past Sol, roughly a quarter of the gas giants carry rings too, and which ones is
+// Choose this effect deterministically from the body id.
 function hasRings(planet, id){
     if (planet.rings){ return true; }
     if (!id || !planet.star || planet.startype || planet.bodystar){ return false; }
@@ -5072,11 +4694,6 @@ function hasRings(planet, id){
 }
 
 // Lean of a ringed world's ring plane, in radians. Saturn takes the tuned value.
-//
-// A generated world carries its own axial tilt, and its rings sit in that plane — the same plane its
-// moons ride, since a ring is equatorial for the same reason a moon system is. Without this the two
-// were drawn from unrelated numbers and a giant ended up with its moons crossing its rings at right
-// angles. A small share of rings are knocked askew anyway: captured rather than formed in place.
 function ringTilt(planet, id){
     if (planet.rings || !id){ return starConstants.RING_TILT; }
     if (planet.tilt !== undefined){
@@ -5090,9 +4707,8 @@ function ringTilt(planet, id){
     return (55 + (texSeed(id + 'tilt') % 1000) / 1000 * 30) * Math.PI / 180;
 }
 
-// A body drawn as a glyph rather than a lit sphere. Text is laid out in pixels, so the map's scale
-// is undone and the glyph placed in screen space, sized from the projected radius — which leaves it
-// tracking zoom exactly as a drawn disc of the same size would.
+// A body drawn as a glyph rather than a lit sphere. Text is laid out in pixels, so the map's scale is undone and the
+// glyph placed in screen space, sized from the projected radius — which leaves it tracking zoom exactly as a drawn disc of the same size would.
 function drawGlyph(ctx, x, y, r, glyph){
     ctx.save();
     ctx.shadowColor = 'transparent';
@@ -5149,9 +4765,8 @@ function lumpNorm(seed){
     }
     return lumpNormCache[seed];
 }
-// Which way the outline is turned. Both the camera swinging round and the body's own rotation change
-// which profile is presented, and both belong here — the surface texture is turned by the same
-// rotation, so a silhouette that ignored it would have the features sliding inside a fixed outline.
+// Which way the outline is turned. Both the camera swinging round and the body's own rotation change which profile is
+// Rotate the surface texture and silhouette together.
 function lumpSpin(id){
     const spin = spinOf(id);
     const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
@@ -5208,11 +4823,7 @@ function drawDebris(ctx, x, y, r, color, opts){
         return;
     }
 
-    // The wreck lies in the orbital plane, so it is built in world coordinates and
-    // projected like any other body.
-    //
-    // The frame it is built in: radial straight out from the star, the orbit normal off the same
-    // inclination the orbit is drawn with, and along-track the two crossed.
+    // The wreck lies in the orbital plane, so it is built in world coordinates and projected like any other body.
     let rx = 1, ry = 0, rz = 0;
     if (opts.sun){
         // sunDirection() points at the star, so the outward radial is its opposite.
@@ -5278,18 +4889,16 @@ function drawRocks(ctx, rocks, color, opts){
     rocks.sort((p,q) => q.r - p.r);
     if (!hi && opts.keepLow){ rocks = rocks.slice(0, opts.keepLow); }
 
-    // Then furthest from the camera first, on the same projected depth and the same descending order
-    // the bodies themselves are painted in, so a piece in front covers one behind it however the view
-    // is turned.
+    // Then furthest from the camera first, on the same projected depth and the same descending order the bodies themselves
+    // are painted in, so a piece in front covers one behind it however the view is turned.
     rocks.sort((p,q) => q.d - p.d);
     for (let rock of rocks){
         // The rock face
         const face = rockFace(opts.id, rock.i);
         const sun = rock.sun || opts.sun;
         const roll = rockRoll(opts.id, rock.i);
-        // sphereSize() is the same gate the round bodies use: it comes back 0 on the low setting, and
-        // on the high one for anything still too small on screen to tell a lit surface from a stamp —
-        // for rubble, everything the dot branch below does not take, and never above ROCK_TEX_MAX.
+        // sphereSize() is the same gate the round bodies use: it comes back 0 on the low setting, and on the high one for
+        // Use simple dots for bodies too small to render with surface detail.
         const sph = Math.min(sphereSize('belt', rock.r, starConstants.ROCK_DOT_PX, true), starConstants.ROCK_TEX_MAX);
         // False when the frame has spent its render budget; the silhouette below stands in until a
         // later frame has built the face (see ROCK_TEX_BUDGET).
@@ -5304,9 +4913,8 @@ function drawRocks(ctx, rocks, color, opts){
             ctx.restore();
         }
         else if (rock.r * mapScale < starConstants.ROCK_DOT_PX){
-            // A couple of pixels across there is no outline to read, and a belt is a great many of
-            // them: one arc rather than a forty-segment silhouette that would rasterise to the
-            // same speck. Lit rather than shaded — see ROCK_DOT_SHADE.
+            // A couple of pixels across there is no outline to read, and a belt is a great many of them: one arc rather than a
+            // forty-segment silhouette that would rasterise to the same speck.
             ctx.fillStyle = hexShade(color, starConstants.ROCK_DOT_SHADE);
             ctx.beginPath();
             ctx.arc(rock.x, rock.y, rock.r, 0, Math.PI * 2, true);
@@ -5322,11 +4930,7 @@ function drawRocks(ctx, rocks, color, opts){
 
 // --- Asteroid fields ------------------------------------------------------------------------------
 
-// Where a field's rocks sit, as offsets from the star they ring. Worked out once and kept: a belt does
-// not move, and orbitPoint() is far too expensive to run a hundred times a frame.
-// The rock profile a belt is drawn with. The two hand-authored belts are tuned by name; a generated
-// one falls back to the same shape, so a procedural belt reads as a ring of rubble rather than the
-// single speck a bare `belt` body would otherwise draw as.
+// Where a field's rocks sit, as offsets from the star they ring.
 function fieldProfile(id){
     const cfg = starConstants.ASTEROID_FIELDS[id];
     if (cfg){ return cfg; }
@@ -5428,9 +5032,8 @@ function drawBody(ctx, x, y, r, color, opts){
                       x - half, y - half, half * 2, half * 2);
         return;
     }
-    // Rings straddle the body, so the far half goes down first and the near half last — that ordering
-    // is what reads as the planet sitting inside them rather than on top. Skipped at the same size the
-    // surface texture is, since a few pixels of ring is just a smudge.
+    // Rings straddle the body, so the far half goes down first and the near half last — that ordering is what reads as the
+    // planet sitting inside them rather than on top.
     let rings = opts.rings && r * mapScale >= 2.5;
     if (rings){ drawRings(ctx, x, y, r, color, false, opts.ringTilt, opts.sun); }
     // For small bodies that are not round.
@@ -5449,9 +5052,8 @@ function drawBody(ctx, x, y, r, color, opts){
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
     ctx.fill();
     if (r * mapScale >= 2.5){
-        // A camera-aware sphere where one is offered and the player has asked for it, otherwise the
-        // flat texture this has always used. Both are drawn the same way — only how the image was
-        // arrived at differs — so neither renderer needs to know which it got.
+        // A camera-aware sphere where one is offered and the player has asked for it, otherwise the flat texture this has always
+        // used.
         const sph = sphereSize(opts.kind, r);
         ctx.drawImage(sph ? sphereTexture(opts.kind, sph, opts.id, opts.sun) : planetTexture(opts.kind, opts.seed),
                       x - r, y - r, r * 2, r * 2);
@@ -5459,18 +5061,8 @@ function drawBody(ctx, x, y, r, color, opts){
     if (rings){ drawRings(ctx, x, y, r, color, true, opts.ringTilt, opts.sun); }
 }
 
-// Record a body the pointer can address, converting from the projected space drawBody works in to
-// the screen pixels a mouse event arrives in.
-//
-// Click-to-centre still only takes bodies from the zoom where a system's planets are told apart
-// individually. Out past that they pile into a few pixels, and a click would centre on whichever
-// happened to be nearest — not something the player could have aimed at. Gating on each body's own
-// drawn size instead would be circular: a distant planet is a couple of pixels across until you are
-// already looking at it, which is what clicking it was meant to do.
-//
-// Naming is recorded at every zoom, because that threshold is also where the labels switch off:
-// below it a visitable world is drawn with no name against it, and pointing at one is the only way
-// left to ask what it is.
+// Record a body the pointer can address, converting from the projected space drawBody works in to the screen pixels a
+// mouse event arrives in.
 function addPickable(id, bx, by, size, sep){
     // Anything drawn as a star also records the radius it was drawn at, for starAt — see starDrawnAt.
     // Every star the map lays down comes through here, so this is the one place that knows.
@@ -5483,22 +5075,13 @@ function addPickable(id, bx, by, size, sep){
         r: size * mapScale,
         // Recorded for naming only — see above.
         nameOnly: mapScale < starConstants.planetLabelMinScale,
-        // A body that has not pulled far enough off whatever it circles to read as a dot of its own
-        // — the same test visibleRadius uses to decide whether to keep it visible at all. Its centre
-        // can still land nearer the pointer than its primary's, so without this the map would name
-        // something drawn inside another body's disc that cannot be picked out by eye.
+        // A body that has not pulled far enough off whatever it circles to read as a dot of its own — the same test
+        // visibleRadius uses to decide whether to keep it visible at all.
         merged: sep !== undefined && sep < starConstants.BODY_SEPARATION_PX
     });
 }
 
-// The map's drawing context, whichever backend is in use. Cached per canvas element: a canvas can
-// only ever hand out one kind of context, so switching renderers replaces the element (see
-// rebuildSolarMap) and this picks the new one up.
-//
-// Everything below this line is renderer-agnostic. drawMap and every helper it calls issue the same
-// Canvas 2D calls either way — the WebGL backend implements that API rather than reimplementing the
-// map — so there is one drawing routine to maintain, not two, and neither renderer can drift from
-// the other.
+// The map's drawing context, whichever backend is in use.
 var mapCtx = false;
 var mapCtxFor = false;
 var mapCtxGL = false;
@@ -5553,18 +5136,14 @@ export function drawMap() {
     // home system on the very next line.
     indexBodies();
     mapAnchor = genXYZcoord(nearestStar(mapFocus));
-    // The sky behind the system, painted before anything in it. Screen space throughout: the world
-    // transform is set aside for the pass, so a star's place on the sky depends on which way the
-    // camera faces and on nothing else — not on the zoom, and not on where the view has been panned.
-    // First of everything drawn, so a ship trail or a planet always sits over it rather than under.
+    // The sky behind the system, painted before anything in it.
     drawSkyStars();
     // The home system hangs off the Sun at the origin, so one test covers its orbits, bodies and
     // labels alike.
     const homeCulled = starCulled(ORIGIN);
 
-    // Positions of the home system's bodies. Only these are read from here — everything orbiting
-    // another star is positioned inside that star's own block below, and only for stars that survive
-    // culling.
+    // Positions of the home system's bodies. Only these are read from here — everything orbiting another star is positioned
+    // inside that star's own block below, and only for stars that survive culling.
     let planetLocation = {};
     if (!homeCulled){
         for (const id in starData){
@@ -5573,9 +5152,7 @@ export function drawMap() {
         }
     }
 
-    // Orbits, gathered by the body each one circles rather than drawn here. Half of every ring
-    // passes in front of its primary and half behind, so each is split and laid down either side of
-    // that body in the pass below — a planet's orbit around the Sun, a moon's around its planet.
+    // Orbits, gathered by the body each one circles rather than drawn here.
     let orbitsBy = {};
     for (let [id, planet] of Object.entries(starData)) {
         if (homeCulled){ break; }
@@ -5591,12 +5168,7 @@ export function drawMap() {
         orbitsBy[primary].push(id);
     }
 
-    // Ships under way, collapsed into what actually gets drawn. A fleet flies as one unit on identical
-    // trip data (see sendShipTo), so every member would otherwise stack a dot, a trail and a name on the
-    // exact same pixel; it draws once instead, labelled with its size. Ships not in a fleet, and a fleet
-    // that is down to a single ship, keep their own dot and name.
-    // Left empty when ships are hidden: the trail, dot and name passes all iterate it, so one test here
-    // takes every ship marker off the map at once.
+    // Ships under way, collapsed into what actually gets drawn.
     let shipMarks = [];
     if (mapView().ships) {
         let fleets = {};
@@ -5608,11 +5180,12 @@ export function drawMap() {
                 let key = `${ship.fid}`;
                 if (fleets[key]){
                     fleets[key].count++;
+                    if (ship.class === 'freighter'){ fleets[key].cargo = true; }
                     // The flagship is the one worth labelling the group with.
                     if (ship.flag){ fleets[key].ship = ship; }
                     continue;
                 }
-                fleets[key] = { ship, count: 1 };
+                fleets[key] = { ship, count: 1, cargo: ship.class === 'freighter' };
                 shipMarks.push(fleets[key]);
             }
             else {
@@ -5622,15 +5195,12 @@ export function drawMap() {
         // Infested hulls inbound from Earth. They never fleet up, and they are drawn in red so a raid
         // reads as a threat at a glance rather than as one more ship of yours.
         if (global.race['zfleet'] && global.race.zfleet.s){
-            // Raiders that lifted as one sortie carry its id and fly identical trips, so they are
-            // collapsed the same way a fleet of yours is rather than stacking dot, trail and name on the
-            // one pixel. Anything that flew alone has no id and keeps its own mark.
+            // Raiders that lifted as one sortie carry its id and fly identical trips, so they are collapsed the same way a fleet of
+            // yours is rather than stacking dot, trail and name on the one pixel.
             let raids = {};
             for (let ship of global.race.zfleet.s){
                 if (!ship.inTransit){ continue; }
-                // Nothing of yours can see it, so nothing of yours plots it. Tested per hull rather
-                // than per sortie, so a raid crossing the edge of a sensor bubble shows the part
-                // that is actually in contact instead of all of it or none of it.
+                // Nothing of yours can see it, so nothing of yours plots it.
                 if (!foeDetected(ship)){ continue; }
                 if (!ship.zf){
                     shipMarks.push({ ship, count: 1, foe: true });
@@ -5647,9 +5217,8 @@ export function drawMap() {
         }
     }
 
-    // Ship trail. The width is set here rather than inherited: the canvas is scaled by mapScale, so
-    // the default of one unit is a bar mapScale pixels across, and this pass used to be relying on
-    // whatever the orbits happened to leave behind.
+    // Ship trail. The width is set here rather than inherited: the canvas is scaled by mapScale, so the default of one unit
+    // is a bar mapScale pixels across, and this pass used to be relying on whatever the orbits happened to leave behind.
     ctx.lineWidth = 1 / mapScale;
     for (let { ship, foe } of shipMarks) {
         ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
@@ -5749,9 +5318,7 @@ export function drawMap() {
         return color;
     }
 
-    // Planets and moons, drawn back to front so a body in front of another covers it once the map is
-    // tilted. The moon nudges stay in screen space, as they always were — they exist to stop a moon
-    // sitting exactly on its planet, and that job is the same whatever angle the map is turned to.
+    // Planets and moons, drawn back to front so a body in front of another covers it once the map is tilted.
     {
         // Home-system bodies that actually orbit the Sun, for sizing the system against them. Its
         // orbits are roomy enough that this comes back 1 and nothing here changes.
@@ -5789,9 +5356,8 @@ export function drawMap() {
         }
         bodies.sort((a,b) => b.d - a.d);   // furthest first, so nearer bodies paint over them
 
-        // Every far half goes down before any body does. A body on the far side of its orbit is
-        // further out than its primary and so is drawn before it — laying that half down just ahead
-        // of the primary would put the ring line over the very world riding on it.
+        // Every far half goes down before any body does. A body on the far side of its orbit is further out than its primary and
+        // so is drawn before it — laying that half down just ahead of the primary would put the ring line over the very world riding on it.
         for (let primary of Object.keys(orbitsBy)){
             if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && ['spc_home'].includes(primary)){ continue; }
             strokeOrbitGroup(ctx, orbitsBy[primary], ORIGIN, planetLocation[primary], false);
@@ -5873,7 +5439,7 @@ export function drawMap() {
         ctx.scale(1 / mapScale, 1 / mapScale);
         // Offset in screen pixels too, so the name sits by the dot at every zoom instead of
         // drifting further out the further you zoom in.
-        let label = mark.count > 1 ? loc('outer_shipyard_fleet_map',[mark.count]) : ship.name;
+        let label = mark.count > 1 ? loc(mark.cargo ? 'outer_shipyard_cargo_fleet_map' : 'outer_shipyard_fleet_map',[mark.count]) : ship.name;
         ctx.fillText(label, pX(here) * mapScale + starConstants.SHIP_LABEL_PX, pY(here) * mapScale - starConstants.SHIP_LABEL_PX);
         ctx.restore();
     }
@@ -5896,9 +5462,8 @@ export function drawMap() {
     ctx.fillStyle = "#ffa500";
     ctx.font = `25px serif`;
     ctx.textAlign = 'center';   // labels are centered horizontally above the item they label
-    // Planet labels clutter once zoomed out past labelMinScale, so they are hidden below it; star
-    // labels are kept (stars stay visible at any zoom).
-    // Planet names
+    // Planet labels clutter once zoomed out past labelMinScale, so they are hidden below it; star labels are kept (stars
+    // stay visible at any zoom).
 
     // If we're zoomed out too much then there's no point in drawing names - none will be legible anyway
     if (!starNamesHidden()) {
@@ -5922,9 +5487,8 @@ export function drawMap() {
                 let lx = pX(planetLocation[id]), ly = pY(planetLocation[id]);
                 mapLabelled[id] = true;   // so the hover label knows not to repeat this one
                 if (planet.moon) {
-                    // Sit clear of the moon by a screen-constant gap rather than the old fixed map
-                    // offset, which drifted further from the body the further you zoomed in and, at
-                    // the zoom where a moon separates from its planet, put the name off-screen.
+                    // Sit clear of the moon by a screen-constant gap rather than the old fixed map offset, which drifted further from the
+                    // body the further you zoomed in and, at the zoom where a moon separates from its planet, put the name off-screen.
                     ctx.fillText(nameText, lx * mapScale + starConstants.MOON_LABEL_GAP_PX, ly * mapScale);
                 } else {
                     ctx.fillText(nameText, lx * mapScale, (ly - (0.2 * planet.size)) * mapScale);
@@ -5946,9 +5510,7 @@ export function drawMap() {
     }
 
     
-// --- Star systems ---
-    // Every star beyond the Sun is drawn in a frame translated to the star, so its huge coordinates
-    // (hundreds of thousands of AU from the origin) keep canvas precision.
+// Star Systems
     let starOrder = [];
     const cullRange = starRange();   // read once for the whole catalogue, not once per star
     for (const starId of mapStarIds){
@@ -5971,18 +5533,13 @@ export function drawMap() {
         ctx.translate(pX(sc), pY(sc));
         ctx.shadowColor = 'transparent';
 
-        // Orbits of bodies around this star. Traced through orbitPoint in the star's own frame, so
-        // the eccentricity, off-centre focus and inclination all come from the one place that
-        // positions the bodies themselves.
+        // Orbits of bodies around this star. Traced through orbitPoint in the star's own frame, so the eccentricity, off-centre
+        // focus and inclination all come from the one place that positions the bodies themselves.
         const bodies = mapBodiesOf[starId] || [];
-        // How far a body reads from whatever it circles, which for a moon is the exaggerated radius
-        // its orbit is actually drawn at rather than the true distance to its planet — the same
-        // figure orbitRadius hands the drawing code, so a moon appears exactly when its ring does.
+        // How far a body reads from whatever it circles, which for a moon is the exaggerated radius its orbit is actually drawn
+        // Use the drawn orbit radius so moon rings and bodies appear at the same scale.
         const spread = (id, planet) => planet.parent ? orbitRadius(id) : planet.dist;
-        // Split by what each ring is centred on, exactly as the home system does it. A moon's ring
-        // goes round its planet, not round the star, so which half of it passes in front has to be
-        // judged against that planet — sharing one group with the planet orbits put the near half of
-        // every moon ring behind the world it belongs to.
+        // Split by what each ring is centred on, exactly as the home system does it.
         let starOrbits = [], moonOrbits = {}, moonPrimary = {};
         for (const id of bodies){
             const planet = starData[id];
@@ -6029,9 +5586,8 @@ export function drawMap() {
                 pr: Math.max(star.size / 10 * scale, 1 / mapScale) });
         }
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
-        // Every far half goes down before any body does, the same order the home system uses: a body
-        // on the far side of its orbit is drawn before its primary, so laying that half down later
-        // would run the line over the world riding on it.
+        // Every far half goes down before any body does, the same order the home system uses: a body on the far side of its
+        // orbit is drawn before its primary, so laying that half down later would run the line over the world riding on it.
         if (starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, false); }
         for (const parent of Object.keys(moonOrbits)){
             strokeOrbitGroup(ctx, moonOrbits[parent], sc, moonPrimary[parent], false);
@@ -6069,9 +5625,8 @@ export function drawMap() {
             // like "Sirius A" / "Sirius B") when zoomed in. Opposite zoom ranges, so at most one shows.
             {
                 let starText = mapScale < starConstants.planetLabelMinScale ? star.label : star.zlabel;
-                // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label
-                // stays close to the star at any zoom. Offset by the radius it was really drawn at,
-                // scale included — the table size left a shrunk star's name a long way clear of it.
+                // Sit just above the drawn dot (its radius + a small screen-constant gap) so the label stays close to the star at any
+                // zoom.
                 if (starText && showStarNames){ ctx.fillText(starText, 0, -(Math.max(star.size / 10 * scale * mapScale, 1) + 2)); }
             }
             // Labels for bodies that are themselves stars (e.g. a binary orbiting an invisible barycenter):
@@ -6135,9 +5690,8 @@ function beaconAnimate(){
             beaconTimer = false;
             return;
         }
-        // On Fast the map runs a timer of its own at more than twice this rate, so painting here as
-        // well would put a second frame over the top of every one of its own for nothing. Read off
-        // the setting rather than that timer.
+        // On Fast the map runs a timer of its own at more than twice this rate, so painting here as well would put a second
+        // frame over the top of every one of its own for nothing.
         if (mapRefreshRate() === 'fast' && !webWorker.offline){ return; }
         drawMap();
     }, Math.round(1000 / starConstants.BEACON_FPS));
@@ -6160,7 +5714,7 @@ function rebuildSolarMap(){
     buildSolarMap(mapHost, keep);
 }
 
-export function buildSolarMap(parentNode, keep) {
+export function buildSolarMap(parentNode, keep, openAt) {
     // A rebuild replaces the previous map wholesale rather than stacking a second one under it.
     parentNode.find('.solarMapHost').remove();
     let currentNode = $(`<div class="solarMapHost" style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
@@ -6195,9 +5749,8 @@ export function buildSolarMap(parentNode, keep) {
             z: depth * camCP - py * camSP
         };
     }
-    // Re-read the focus after a pan. Sideways it simply follows the viewport centre, but the depth
-    // along the view axis is unconstrained under an orthographic camera, so it is taken from the
-    // star nearest the new centre.
+    // Re-read the focus after a pan. Sideways it simply follows the viewport centre, but the depth along the view axis is
+    // unconstrained under an orthographic camera, so it is taken from the star nearest the new centre.
     function refocus(){
         let px = (canvasOffset.x - mapShift.x) / mapScale;
         let py = (canvasOffset.y - mapShift.y) / mapScale;
@@ -6301,12 +5854,7 @@ export function buildSolarMap(parentNode, keep) {
         }
     }
 
-    // --- Touch input -------------------------------------------------------------------------
-    // Gated on the player's own touch-device setting rather than sniffed, the same as everywhere else
-    // in the game. The four things the mouse can do are mapped onto the gestures a phone already
-    // uses: one finger drags the map as the left button does and a tap selects what is under it, two
-    // fingers pinch to zoom and slide to orbit the camera — the two-finger pair standing in for the
-    // wheel and the right-drag.
+    // Touch Input
     function touchMap(){ return global.settings['touch'] ? true : false; }
     // Below this a pinch is finger jitter rather than an attempt to zoom; without it a two-finger
     // slide zooms slightly the whole way.
@@ -6326,14 +5874,8 @@ export function buildSolarMap(parentNode, keep) {
 
     currentNode.append(
       $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh;${global.settings['touch'] ? ' touch-action: none;' : ''}"></canvas>`)
-        // A left press that ends without the pointer really moving is a click, not a pan: if it
-        // landed on a body, centre the view on it. The slop allows for the shake of an ordinary
-        // click, which would otherwise pan a pixel and count as a drag.
-        //
-        // Stars are tried first and with their own generous grab radius, so a click meant for a star
-        // that happens to be crowded by its own planets still gets the star. Failing that, any body
-        // drawn large enough to see is a target — which means once you are zoomed in on a system you
-        // can hop from world to world without dragging.
+        // A left press that ends without the pointer really moving is a click, not a pan: if it landed on a body, centre the
+        // view on it.
         .on("mouseup", (e) => {
             if (drag === 'pan' && press && !press.moved){
                 let hit = starAt(e) || bodyAt(e);
@@ -6484,9 +6026,8 @@ export function buildSolarMap(parentNode, keep) {
                 drawMap();
             }
             else if (touching === 'camera' && t.length === 2){
-                // The two are independent components of the same two-finger move, so both are read
-                // every frame: the gap between the fingers zooms, and where the pair as a whole has
-                // travelled orbits, exactly as dragging with the right button does.
+                // The two are independent components of the same two-finger move, so both are read every frame: the gap between the
+                // fingers zooms, and where the pair as a whole has travelled orbits, exactly as dragging with the right button does.
                 let gap = touchGap(t);
                 let mid = touchMid(t);
                 if (gesture.gap > 0 && Math.abs(gap - gesture.gap) > PINCH_SLOP_PX){
@@ -6585,9 +6126,7 @@ export function buildSolarMap(parentNode, keep) {
         for (const id of drawnAsStarIndex()){
             const body = starData[id];
             if (body.hidden){ continue; }
-            // zlabel names the component ("Sirius A"), label the system ("Sirius"). Worth matching on
-            // both — a player looking for Sirius B will type "Sirius" — while the more specific one
-            // is what gets shown.
+            // zlabel names the component ("Sirius A"), label the system ("Sirius").
             const name = body.zlabel || body.label;
             if (!name){ continue; }
             out.push({ id, name, alt: body.label && body.label !== name ? body.label : '' });
@@ -6603,9 +6142,8 @@ export function buildSolarMap(parentNode, keep) {
             let at = s.name.toLowerCase().indexOf(q);
             if (at < 0 && s.alt){ at = s.alt.toLowerCase().indexOf(q); }
             if (at < 0){ continue; }
-            // Distance is measured from the coordinates rather than read off `dist`: for a component
-            // that orbits a barycenter `dist` is the radius of that little orbit, not how far away
-            // the thing is, and reporting 0.4 ly for Gliese 570 B would be nonsense.
+            // Distance is measured from the coordinates rather than read off `dist`: for a component that orbits a barycenter `dist`
+            // is the radius of that little orbit, not how far away the thing is, and reporting 0.4 ly for Gliese 570 B would be nonsense.
             const pos = genXYZcoord(s.id);
             hits.push({ id: s.id, name: s.name, pre: at === 0 ? 0 : 1,
                         ly: Math.hypot(pos.x, pos.y, pos.z) / starConstants.AU_PER_LY });
@@ -6624,11 +6162,7 @@ export function buildSolarMap(parentNode, keep) {
     searchPanel.append(searchInput, searchList);
     searchInput.val(mapSearchQuery);
 
-    // Moving the highlight only restyles the rows that are already there. It must not rebuild them:
-    // hovering a row is what selects it, and a rebuild would destroy the row under the pointer. A
-    // click is only delivered to an element that received both the press and the release, so with the
-    // row replaced in between — which any stir of the mouse mid-click is enough to cause — the browser
-    // has nothing to fire at and clicking a result does nothing at all.
+    // Moving the highlight only restyles the rows that are already there.
     function highlightSearch(){
         searchRows.forEach(function(row, i){
             row.css('background', i === searchSel ? SEARCH_SEL_BG : 'transparent');
@@ -6691,9 +6225,8 @@ export function buildSolarMap(parentNode, keep) {
         renderSearch();
     });
     searchInput.on('keydown', function(e){
-        // Anything acted on here is stopped from travelling on. The game's own key handling already
-        // stands aside while an input has focus, but the modal around the map does not, and Escape
-        // reaching it would shut the whole map instead of the search.
+        // Anything acted on here is stopped from travelling on. The game's own key handling already stands aside while an input
+        // has focus, but the modal around the map does not, and Escape reaching it would shut the whole map instead of the search.
         if (e.key === 'Escape'){
             setSearchOpen(false);
             e.stopPropagation();
@@ -6712,14 +6245,11 @@ export function buildSolarMap(parentNode, keep) {
             e.preventDefault();
         }
     });
-    // Keep the pointer to itself. The camera's own handlers hang off the canvas element rather than
-    // this container, so they are not what this is for — it is the modal wrapped around the map, and
-    // anything else upstream that might read a click in its background as "close".
+    // Keep the pointer to itself. The camera's own handlers hang off the canvas element rather than this container, so they
+    // Stop clicks from reaching the modal backdrop.
     searchPanel.on('mousedown mouseup click wheel touchstart', function(e){ e.stopPropagation(); });
     searchPanel.appendTo(currentNode);
-    // Left open from last time — a renderer switch, or simply how the map was closed. Fill the list
-    // back in, but do not grab focus: the player is opening a map, not necessarily returning to a
-    // half-typed search.
+    // Left open from last time — a renderer switch, or simply how the map was closed.
     if (mapSearchOpen){
         searchHits = searchMatches(mapSearchQuery);
         renderSearch();
@@ -6777,9 +6307,8 @@ export function buildSolarMap(parentNode, keep) {
         })
         .appendTo(mapSettings);
 
-    // Surface detail. High draws the bodies that offer one as a lit sphere whose banding and
-    // features follow the camera, instead of stamping a flat image on the disc. It costs a per-pixel
-    // render whenever the view moves, which is why it is not the default.
+    // Surface detail. High draws the bodies that offer one as a lit sphere whose banding and features follow the camera,
+    // instead of stamping a flat image on the disc.
     $(`<input type="button" value="${mapTextureLabel()}" style="height: 30px;">`)
         .on("click", function(){
             mapView().texture = mapTextureDetail() === 'high' ? 'low' : 'high';
@@ -6833,13 +6362,11 @@ export function buildSolarMap(parentNode, keep) {
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
     canvasOffset.x = bounds.width / 2;
     canvasOffset.y = bounds.height / 2;
-    // The map open location depends on game state.
-    // Locked on as well as centred, so the first zoom pulls in on that star instead of drifting off
-    // toward wherever the pointer happened to be resting.
+    // The map open location depends on game state. Locked on as well as centred, so the first zoom pulls in on that star
+    // instead of drifting off toward wherever the pointer happened to be resting.
     if (keep){
-        // A renderer switch is not a fresh open: the camera, including the rotation an ordinary open
-        // deliberately levels, is put back exactly as it was so the two can be compared frame for
-        // frame.
+        // A renderer switch is not a fresh open: the camera, including the rotation an ordinary open deliberately levels, is put
+        // back exactly as it was so the two can be compared frame for frame.
         mapScale = keep.scale;
         mapShift.x = keep.shift.x;
         mapShift.y = keep.shift.y;
@@ -6850,13 +6377,12 @@ export function buildSolarMap(parentNode, keep) {
         camUpdate();
     }
     else {
-        let openOn = global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun';
-        // Face the default way for whatever it is opening on, before centring — recenterOn projects
-        // through the camera, so the camera has to be pointing the right way first.
+        const openOn = openAt ? nearestStar(openAt) : (global.tech['resettle'] && global.tech.resettle < 9 ? 'tauceti' : 'spc_sun');
+        // Orient the map to the local star before centering on the ship.
         mapYaw = mapDefaultYaw(openOn);
         camUpdate();
-        recenterOn(genXYZcoord(openOn));
-        starLockOn = openOn;
+        recenterOn(openAt || genXYZcoord(openOn));
+        starLockOn = openAt ? false : openOn;
     }
 
     drawMap();

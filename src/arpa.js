@@ -1,16 +1,18 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
-import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, 
+         calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, 
+         removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
          geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
-         geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneBreakUnlocked, geneSlotCount, geneSlotExtra, geneSlotLabel, geneSuited,
-         geneSlotBase, geneSlotMatched, geneSlotAnswers, genePairSlot, geneRankStart,
-         geneEffectiveBase, geneWeak, geneVars, geneEmergentList, geneEmergentRank} from './races.js';
+         geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneBreakUnlocked, geneSlotExtra, geneSlotLabel, geneSuited,
+         geneSlotBase, geneSlotMatched, geneSlotAnswers, geneRankStart, geneEffectiveBase, geneVars, geneEmergentList, geneEmergentRank} from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
+import { supplyMode } from './supply.js';
 import { loc } from './locale.js';
 
 export function arpa(type) {
@@ -118,6 +120,9 @@ export const arpaProjects = {
         grant: 'tp_depot',
         path: ['truepath'],
         effect(){
+            if (supplyMode() === 'regional'){
+                return loc('arpa_projects_depot_effect_supply',[5,50,2]);
+            }
             return loc(global.tech['isolation'] ? 'arpa_projects_depot_effect_iso' : 'arpa_projects_depot_effect',[5,50]);
         },
         cost: {

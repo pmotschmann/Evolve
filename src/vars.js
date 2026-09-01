@@ -34,7 +34,9 @@ export var global = {
 export var tmp_vars = {};
 export var breakdown = {
     c: {},
-    p: {}
+    p: {},
+    // Store resource storage breakdowns by supply zone.
+    creg: {}
 };
 export var power_generated = {};
 export var p_on = {};
@@ -1734,6 +1736,12 @@ if (!global.settings['showStorage']){
     }
 }
 
+// Supply Zones unlock alongside the regional supply split. Existing Shadow-5 saves receive the tab
+// on load rather than needing to re-research the already completed analysis.
+if (!global.settings['showSupplyZones'] && global.tech['shadow'] >= 5){
+    global.settings['showSupplyZones'] = true;
+}
+
 // Whether the orbit-decay compensation is in effect.
 export function decayPerks(){
     return global.race['orbit_decayed'] && !global.tech['isolation'] ? true : false;
@@ -1955,6 +1963,14 @@ if (!global.settings.hasOwnProperty('mtorder')){
 if (!global.settings.hasOwnProperty('resBar')){
     global.settings['resBar'] = {};
 }
+// Which world's stores the resource list is showing; 'all' for the civilisation entire, which is the
+// only answer there is until the supply lines come apart.
+if (!global.settings.hasOwnProperty('resRegion')){
+    global.settings['resRegion'] = 'all';
+}
+// Which Storage-tab section was open used to be saved here. It is held in memory for the sitting
+// now, so a save that still carries the field is carrying nothing anyone reads.
+delete global.settings['resStackOpen'];
 // What the solar map draws. Kept here rather than in the map module so the choices survive a reload
 // along with everything else the player has set, instead of only until the page is closed.
 if (!global.settings.hasOwnProperty('mapView')){
@@ -2802,7 +2818,7 @@ function setRegionStates(reset){
     let regions = {
         base: [
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
-            'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
+            'showResearch','showCivic','showMil','showResources','showMarket','showStorage','showSupplyZones',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
             'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic','showWish'
         ],

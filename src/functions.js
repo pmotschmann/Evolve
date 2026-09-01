@@ -12,6 +12,7 @@ import { govEffect } from './civics.js';
 import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
+import { partitioned, supplyMode, supplyPool, poolMod, regAmount, syncTotal, ensureLedger, regDelta, CAPITAL } from './supply.js';
 import { shipCosts, TPShipDesc } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
 import { big_bang } from './resets.js';
@@ -774,10 +775,14 @@ export function resetResBuffer(){
     });
 }
 
-export function modRes(res,val,notrack){
+// Apply a resource change globally or to a regional supply pool.
+export function modRes(res,val,notrack,region){
     if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
         return false;
+    }
+    if (partitioned(res)){
+        return modRegRes(res,val,notrack,region);
     }
     let count = global.resource[res].amount + val;
     let success = true;
@@ -802,6 +807,80 @@ export function modRes(res,val,notrack){
         }
     }
     return success;
+}
+
+// Apply a resource change to one supply pool and update aggregate totals.
+function modRegRes(res,val,notrack,region){
+    // Reject invalid values before they can corrupt the regional ledger.
+    if (Number.isNaN(val)){ return true; }
+    ensureLedger(res);
+    // Unattributed regional resource changes default to the home-world pool.
+    const pool = supplyPool(region || CAPITAL);
+    // Apply this change only to the selected supply pool.
+    let success = true;
+    if (val < 0 && regAmount(res, pool) + val < 0){ success = false; }
+    poolMod(res, pool, val);
+    syncTotal(res);
+    if (!notrack){
+        global.resource[res].delta += val;
+        // Tallied against the zone as well, so a world can be shown its own rate rather than only
+        // the civilisation's.
+        const delta = regDelta(res);
+        delta[pool] = (delta[pool] || 0) + val;
+        if (val < 0){
+            tmp_vars.resource[res].temp_max = Math.max(0, tmp_vars.resource[res].temp_max + val);
+        }
+    }
+    return success;
+}
+
+// Accumulate resource changes by zone before applying them.
+export function zoneTally(){
+    const by = {};
+    let shortages = [];
+    return {
+        add(zone, amount){
+            if (amount){ by[zone] = (by[zone] || 0) + amount; }
+            return this;
+        },
+        // A multiplier on the whole of it — the global rate, hunger, and the like.
+        scale(f){
+            for (const z in by){ by[z] *= f; }
+            return this;
+        },
+        total(){
+            let t = 0;
+            for (const z in by){ t += by[z]; }
+            return t;
+        },
+        zones(){ return by; },
+        // Supply pools that could not cover this tally's demand. A connected group is one pool, so
+        // food made anywhere in it is available to all of its members before it is called short.
+        shortagePools(){ return shortages; },
+        // False if any zone could not meet what was asked of it, matching what modRes returns.
+        apply(res, mult, notrack){
+            const m = mult === undefined ? 1 : mult;
+            shortages = [];
+            if (supplyMode() === 'global'){
+                return modRes(res, this.total() * m, notrack);
+            }
+            // Apply one combined balance per shared pool. Applying each member in object-key order
+            // can report a shortage before a later linked member's production has arrived.
+            const pooled = {};
+            for (const z in by){
+                const pool = supplyPool(z);
+                pooled[pool] = (pooled[pool] || 0) + by[z] * m;
+            }
+            let ok = true;
+            for (const pool in pooled){
+                if (!modRes(res, pooled[pool], notrack, pool)){
+                    ok = false;
+                    shortages.push(pool);
+                }
+            }
+            return ok;
+        },
+    };
 }
 
 export function genCivName(alt){
