@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
@@ -1995,6 +1995,30 @@ function fastLoop(){
                     });
                 }
             }
+            // Once the stores are cut apart the open market goes and the smugglers take over. Their
+            // routes run one way — into a named world, bought and never sold.
+            if (supplyMode() !== 'global'){
+                const bm = global.city.market['bm'] || {};
+                for (const pool in bm){
+                    for (const res in bm[pool]){
+                        const routes = bm[pool][res];
+                        if (!(routes > 0) || !global.resource[res] || !global.resource[res].display){ continue; }
+                        const price = blackMarketPrice(res, pool) * routes;
+                        const volume = blackMarketVolume(res) * routes;
+                        if (volume <= 0){ continue; }
+                        // Paid out of the civilisation's money, which is not split between worlds.
+                        if (global.resource.Money.amount < price * time_multiplier){ continue; }
+                        used_trade += routes;
+                        modRes('Money', -(price * time_multiplier));
+                        modRes(res, volume * time_multiplier, false, pool);
+                        breakdown.p.consume.Money[loc('trade')] -= price;
+                        if (breakdown.p.consume[res]){
+                            breakdown.p.consume[res][`${loc('trade')}+${pool}`] = volume;
+                        }
+                    }
+                }
+            }
+            else {
             Object.keys(global.resource).forEach(function (res){
                 let routes = global.resource[res].trade;
                 if (routes > 0){
@@ -2005,46 +2029,8 @@ function fastLoop(){
 
                     if (routes > 0){
                         price *= routes;
-                        let rate = tradeRatio[res];
-                        if (dealVal){
-                            rate *= 1 + (dealVal / 100);
-                        }
-                        if (global.race['persuasive']){
-                            rate *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
-                        }
-                        if (global.race['merchant']){
-                            rate *= 1 + (traits.merchant.vars()[1] / 100);
-                        }
-                        if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.c){
-                            let trade = 70 * (traits.ocular_power.vars()[1] / 100);
-                            rate *= 1 + (trade / 100);
-                        }
-                        let fathom = fathomCheck('goblin');
-                        if (fathom > 0){
-                            rate *= 1 + (traits.merchant.vars(1)[1] / 100 * fathom);
-                        }
-                        if (astroSign === 'capricorn'){
-                            rate *= 1 + (astroVal('capricorn')[0] / 100);
-                        }
-                        if (global.race['devious']){
-                            rate *= 1 - (traits.devious.vars()[0] / 100);
-                        }
-                        if (global.genes['trader']){
-                            let mastery = calc_mastery();
-                            rate *= 1 + (mastery / 100);
-                            if (global.genes.trader >= 2){
-                                let coiled = global.prestige.Supercoiled.count;
-                                rate *= 1 + (coiled / (coiled + 500));
-                            }
-                        }
-                        if (global.stats.achieve.hasOwnProperty('trade')){
-                            let rank = global.stats.achieve.trade.l * 2;
-                            if (rank > 10){ rank = 10; }
-                            rate *= 1 + (rank / 100);
-                        }
-                        if (global.race['truepath'] && !rivalCollapsed()){
-                            rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
-                        }
+                        // The same bargaining chain the black market uses.
+                        let rate = tradeRatio[res] * tradeVolumeBonus();
                         modRes(res,routes * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
@@ -2074,6 +2060,7 @@ function fastLoop(){
                     steelCheck();
                 }
             });
+            }
             global.city.market.trade = used_trade;
         }
         if (breakdown.p.consume.Money[loc('trade')] === 0){

@@ -7163,51 +7163,98 @@ div.bigbang {
 // The route a freighter is flying, read rather than edited. The stops run left to right and wrap on
 // a narrow screen, with an arrow drawn between them and the one the fleet is dealing with picked out.
 .supplyRouteSummary {
-    margin: .5rem 0 .25rem;
+    margin: .7rem 0 .35rem;
+    padding: .65rem .75rem .75rem;
+    border: rgba(128,128,128,.42) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.08);
     text-align: left;
 }
 .supplyRouteSummaryHead {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: .5rem;
+    font-size: .78rem;
     font-weight: 700;
-    margin-bottom: .35rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.supplyRouteGovernor {
+    padding: .16rem .4rem;
+    border-radius: 99rem;
+    background: rgba(255,193,7,.16);
+    color: var(--caution-color, #d99a00);
+    font-size: .72rem;
+    letter-spacing: 0;
+    text-transform: none;
 }
 .supplyRouteSummaryStops {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: .25rem .5rem;
-    margin: 0;
+    align-items: stretch;
+    gap: .45rem .85rem;
+    margin: .6rem 0 0;
     padding: 0;
     list-style: none;
-
-    li {
-        display: inline-flex;
-        align-items: baseline;
-        gap: .3rem;
-        padding: .1rem .45rem;
-        border: rgba(128,128,128,.45) solid .0625rem;
-        border-radius: .25rem;
-    }
-    // An arrow trails every stop but the last, so the loop reads in order.
-    li:not(:last-child)::after {
-        content: '›';
-        margin-right: -.35rem;
-        margin-left: .1rem;
-        opacity: .7;
-    }
-    li.is-here {
-        border-color: currentColor;
-        font-weight: 700;
-    }
+}
+.supplyRouteSummaryStops li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    min-width: 0;
+    padding: .38rem .5rem;
+    border: rgba(128,128,128,.5) solid .0625rem;
+    border-radius: .35rem;
+    background: rgba(0,0,0,.1);
+}
+.supplyRouteSummaryStops li:not(:last-child)::after {
+    position: absolute;
+    right: -.72rem;
+    color: rgba(128,128,128,.9);
+    content: '→';
+    font-weight: 700;
+}
+.supplyRouteSummaryStops li.is-here {
+    border-color: currentColor;
+    background: rgba(35,174,109,.12);
+    box-shadow: inset .2rem 0 0 currentColor;
+}
+.supplyRouteSummaryNumber {
+    display: grid;
+    place-items: center;
+    flex: 0 0 1.35rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: rgba(128,128,128,.25);
+    font-size: .75rem;
+    font-weight: 700;
+}
+.supplyRouteSummaryDetails {
+    display: grid;
+    gap: .1rem;
+    min-width: 0;
+}
+.supplyRouteSummaryZone {
+    overflow: hidden;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .supplyRouteSummaryPickup {
-    font-size: .85em;
-    opacity: .85;
+    color: var(--caution-color, #d99a00);
+    font-size: .78em;
 }
-.supplyRouteSummaryPickup::before { content: '('; }
-.supplyRouteSummaryPickup::after { content: ')'; }
+.supplyRouteSummaryCurrent {
+    padding: .12rem .3rem;
+    border-radius: .2rem;
+    background: rgba(35,174,109,.2);
+    font-size: .69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
 @media only screen and (max-width: 600px) {
     .supplyRouteStop { grid-template-columns: 1.5rem minmax(0, 1fr); }
     .supplyRouteStop .select { grid-column: 2; }
@@ -7525,4 +7572,93 @@ div.bigbang {
     .supplyLoadResourceList {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+}
+
+// Black Market zone picker and resource offers.
+.bmZone {
+    display: grid;
+    grid-template-columns: auto minmax(8rem, 1fr) auto;
+    align-items: center;
+    gap: .45rem .65rem;
+    margin: .65rem 1rem .85rem;
+    padding: .65rem .75rem;
+    border: rgba(128,128,128,.42) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.08);
+    font-weight: 700;
+
+    .viewing { min-width: 0; text-align: center; }
+    .bmNote {
+        grid-column: 1 / span 3;
+        padding-top: .4rem;
+        border-top: rgba(128,128,128,.28) solid .0625rem;
+        font-weight: 400;
+        font-size: .85em;
+        opacity: .8;
+    }
+}
+.blackMarketBoard {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .7rem;
+    margin: 0 1rem .75rem;
+}
+.bmRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        'resource price'
+        'volume volume'
+        'routes routes';
+    gap: .4rem .65rem;
+    align-items: center;
+    margin: 0;
+    padding: .7rem .75rem;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.07);
+
+    .res {
+        grid-area: resource;
+        width: auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .bmPrice {
+        grid-area: price;
+        font-size: 1.05em;
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    .bmVolume {
+        grid-area: volume;
+        padding: .25rem .4rem;
+        border-radius: .22rem;
+        background: rgba(128,128,128,.12);
+        font-size: .82em;
+        opacity: .9;
+    }
+    .trade {
+        display: flex;
+        grid-area: routes;
+        align-items: center;
+        min-width: 0;
+        margin: .05rem 0 0;
+        padding-top: .45rem;
+        border-top: rgba(128,128,128,.25) solid .0625rem;
+
+        .current {
+            font-size: 1.05em;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .zero { margin-left: auto; }
+    }
+}
+@media only screen and (max-width: 700px) {
+    .bmZone,
+    .blackMarketBoard { margin-left: 0; margin-right: 0; }
+    .blackMarketBoard { grid-template-columns: minmax(0, 1fr); }
 }

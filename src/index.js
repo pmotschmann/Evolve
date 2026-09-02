@@ -1,5 +1,6 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker, writeSave } from './vars.js';
 import { loc, locales } from './locale.js';
+import { supplyMode } from './supply.js';
 import { setupStats, alevel } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon, updateMobileMsg, mobileMsgLines, MOBILE_MSG_MAX } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
@@ -661,7 +662,7 @@ export function loadTab(tab){
                     tagEvent('page_view',{ page_title: `Evolve - Resources` });
                 }
                 $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @update:model-value="swapTab(s.marketTabs)">
-                    <b-tab-item id="market" :visible="s.showMarket" :label="label('tab_market')"></b-tab-item>
+                    <b-tab-item id="market" :visible="s.showMarket" :label="label(marketLabel())"></b-tab-item>
                     <b-tab-item id="resStorage" :visible="s.showStorage" :label="label('tab_storage')"></b-tab-item>
                     <b-tab-item id="resEjector" :visible="s.showEjector" :label="label('tab_ejector')"></b-tab-item>
                     <b-tab-item id="resCargo" :visible="s.showCargo" :label="label('tab_cargo')"></b-tab-item>
@@ -674,6 +675,11 @@ export function loadTab(tab){
                         s: global.settings
                     },
                     methods: {
+                        // Once the supply lines are cut the open market is gone and what trades in its
+                        // place is smugglers, so the tab is named for what it has become.
+                        marketLabel(){
+                            return supplyMode() === 'global' ? 'tab_market' : 'tab_black_market';
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.

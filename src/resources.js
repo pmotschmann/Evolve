@@ -9,6 +9,7 @@ import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
 import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
+import { astrologySign, astroVal } from './seasons.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
 import { planetName } from './space.js';
@@ -56,6 +57,45 @@ export const resource_values = {
     Cipher: 0,
     Demonic_Essence: 0,
     Blessed_Essence: 0
+};
+
+export const black_market_values = {
+    Food: {p: 500, v: 20},
+    Lumber: {p: 500, v: 20},
+    Chrysotile: {p: 500, v: 10},
+    Stone: {p: 500, v: 20},
+    Crystal: {p: 600, v: 4},
+    Furs: {p: 800, v: 10},
+    Copper: {p: 5000, v: 10},
+    Iron: {p: 4000, v: 10},
+    Aluminium: {p: 5000, v: 10},
+    Cement: {p: 1500, v: 10},
+    Coal: {p: 2000, v: 10},
+    Oil: {p: 7500, v: 5},
+    Uranium: {p: 8500, v: 1.2},
+    Steel: {p: 6000, v: 5},
+    Titanium: {p: 9500, v: 2.5},
+    Alloy: {p: 6500, v: 2},
+    Polymer: {p: 5500, v: 2},
+    Iridium: {p: 4200, v: 1},
+    Helium_3: {p: 850, v: 1},
+    Elerium: {p: 21500, v: 0.2},
+    Water: {p: 200, v: 20},
+    Neutronium: {p: 15000, v: 0.5},
+    Adamantite: {p: 22500, v: 0.5},
+    Nano_Tube: {p: 7500, v: 10},
+    Graphene: {p: 8000, v: 1},
+    Stanene: {p: 8000, v: 1},
+    Bolognium: {p: 35000, v: 1.2},
+    Orichalcum: {p: 38000, v: 0.5},
+    Unobtainium: {p: 88000, v: 0.25},
+    Plywood: {p: 10000, v: 1},
+    Brick: {p: 10000, v: 1},
+    Wrought_Iron: {p: 10000, v: 1},
+    Sheet_Metal: {p: 10000, v: 1},
+    Mythril: {p: 15000, v: 1},
+    Quantium: {p: 25000, v: 1},
+    Aerographene: {p: 25000, v: 1},
 };
 
 export const tradeRatio = {
@@ -652,6 +692,10 @@ export function drawResourceTab(tab){
             return;
         }
         initResourceTabs('market');
+        if (supplyMode() !== 'global'){
+            loadBlackMarket();
+            return;
+        }
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
                 let color = tmp_vars.resource[name].color;
@@ -1573,6 +1617,188 @@ function importRouteEnabled(route){
     return true;
 }
 
+// --- The black market ----------------------------------------------------------------------------
+// Routes deliver resources to individual supply zones.
+
+// Available resources that are known to the civilization.
+export function blackMarketable(){
+    return Object.keys(black_market_values).filter(res => global.resource[res] && global.resource[res].display);
+}
+
+// Price multiplier based on this zone's shortage and storage level.
+export function blackMarketRate(res, pool){
+    const held = regAmount(res, pool);
+    const cap = regMax(res, pool);
+    const perDay = (regDiff(res)[pool] || 0) * 5;
+    let mult = 1;
+    if (perDay < 0){
+        // Shortages raise prices as reserves run down.
+        const days = held / -perDay;
+        mult *= 1 + Math.min(1.5, Math.max(0, (30 - days) / 30) * 1.5);
+    }
+    if (cap > 0){
+        // Full stores reduce demand.
+        mult *= 1 - Math.min(0.4, Math.max(0, (held / cap) - 0.5) * 0.8);
+    }
+    return +Math.max(0.6, Math.min(2.5, mult)).toFixed(3);
+}
+
+export function blackMarketPrice(res, pool){
+    const entry = black_market_values[res];
+    if (!entry){ return 0; }
+    let price = entry.p * blackMarketRate(res, pool);
+    // The pressures that move the open market move this one too.
+    if (global.race['inflation']){ price *= 1 + (global.race.inflation / 300); }
+    return +price.toFixed(1);
+}
+
+// How much more a route carries than the bare rate, from everything the civilisation brings to a
+// bargain: a merchant's tongue, a governor's dealmaking, the right stars. Shared by both markets so
+// the two cannot come to disagree about what a trader is worth.
+export function tradeVolumeBonus(){
+    let rate = 1;
+    const dealVal = govActive('dealmaker',0);
+    if (dealVal){ rate *= 1 + (dealVal / 100); }
+    if (global.race['persuasive']){
+        rate *= 1 + (geneVars('persuasive')[0] * global.race['persuasive'] / 100);
+    }
+    if (global.race['merchant']){
+        rate *= 1 + (traits.merchant.vars()[1] / 100);
+    }
+    if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.c){
+        rate *= 1 + ((70 * (traits.ocular_power.vars()[1] / 100)) / 100);
+    }
+    const fathom = fathomCheck('goblin');
+    if (fathom > 0){
+        rate *= 1 + (traits.merchant.vars(1)[1] / 100 * fathom);
+    }
+    if (astrologySign() === 'capricorn'){
+        rate *= 1 + (astroVal('capricorn')[0] / 100);
+    }
+    if (global.race['devious']){
+        rate *= 1 - (traits.devious.vars()[0] / 100);
+    }
+    if (global.genes['trader']){
+        rate *= 1 + (calc_mastery() / 100);
+        if (global.genes.trader >= 2){
+            const coiled = global.prestige.Supercoiled.count;
+            rate *= 1 + (coiled / (coiled + 500));
+        }
+    }
+    if (global.stats.achieve.hasOwnProperty('trade')){
+        rate *= 1 + (Math.min(10, global.stats.achieve.trade.l * 2) / 100);
+    }
+    if (global.race['truepath'] && !rivalCollapsed()){
+        rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
+    }
+    return rate;
+}
+
+// What one route brings in. The smugglers are traders like any other, so a silver tongue buys as much
+// from them as it does on the open market.
+export function blackMarketVolume(res){
+    return black_market_values[res] ? black_market_values[res].v * tradeVolumeBonus() : 0;
+}
+
+// Route assignments are tracked separately for each supply zone.
+export function bmLedger(){
+    if (!global.city.market['bm']){ global.city.market['bm'] = {}; }
+    return global.city.market.bm;
+}
+
+export function bmRoutes(res, pool){
+    const bm = bmLedger();
+    return bm[pool] && bm[pool][res] ? bm[pool][res] : 0;
+}
+
+export function bmUsed(){
+    const bm = bmLedger();
+    let n = 0;
+    for (const pool in bm){ for (const res in bm[pool]){ n += bm[pool][res]; } }
+    return n;
+}
+
+export function bmAdjust(res, pool, delta){
+    const bm = bmLedger();
+    if (!bm[pool]){ bm[pool] = {}; }
+    const now = bm[pool][res] || 0;
+    let next = now + delta;
+    if (next > now){
+        // Respect the shared route limit.
+        next = now + Math.min(delta, Math.max(0, global.city.market.mtrade - bmUsed()));
+    }
+    if (next <= 0){ delete bm[pool][res]; }
+    else { bm[pool][res] = next; }
+    global.city.market.trade = bmUsed();
+    return bm[pool][res] || 0;
+}
+
+// Build the zone selector and available resource offers.
+export function loadBlackMarket(){
+    clearElement($('#market'));
+    const host = $('#market');
+    const zones = supplyPools();
+    if (!zones.length){ return; }
+    if (!global.city.market['bmZone'] || !zones.includes(global.city.market.bmZone)){
+        global.city.market.bmZone = zones[0];
+    }
+
+    host.append($(`<div id="bmZone" class="bmZone">
+        <span role="button" aria-label="${loc('supply_switch_prev')}" class="sub has-text-danger" @click="cycle(-1)"><span>&laquo;</span></span>
+        <span class="viewing has-text-warning">{{ zoneName() }}</span>
+        <span role="button" aria-label="${loc('supply_switch_next')}" class="add has-text-success" @click="cycle(1)"><span>&raquo;</span></span>
+        <span class="bmNote">${loc('resource_black_market_note')}</span>
+    </div>`));
+    vBind({
+        el: '#bmZone',
+        data: global.city.market,
+        methods: {
+            zoneName(){ return supplyRegionName(global.city.market.bmZone); },
+            cycle(step){
+                const at = zones.indexOf(global.city.market.bmZone);
+                global.city.market.bmZone = zones[(at + step + zones.length) % zones.length];
+                drawResourceTab('market');
+            }
+        }
+    });
+    host.append($('<div id="blackMarketBoard" class="blackMarketBoard"></div>'));
+    const board = $('#blackMarketBoard');
+
+    blackMarketable().forEach(function(res){
+        const id = `bm-${res}`;
+        board.append($(`<div id="${id}" class="market-item bmRow">
+            <h3 class="res has-text-${tmp_vars.resource[res] ? tmp_vars.resource[res].color : 'info'}">{{ name() }}</h3>
+            <span class="bmPrice">\${{ price() }}</span>
+            <span class="bmVolume">{{ volume() }}</span>
+            <span class="trade">
+                <span role="button" aria-label="fewer ${global.resource[res].name} routes" class="sub has-text-danger" @click="less()"><span>-</span></span>
+                <span class="current">{{ routes() }}</span>
+                <span role="button" aria-label="more ${global.resource[res].name} routes" class="add has-text-success" @click="more()"><span>+</span></span>
+                <span role="button" class="zero has-text-advanced" @click="none()">${loc('cancel_routes')}</span>
+            </span>
+        </div>`));
+        vBind({
+            el: `#${id}`,
+            data: global.city.market,
+            methods: {
+                name(){ return global.resource[res].name.replace('_',' '); },
+                price(){ return sizeApproximation(blackMarketPrice(res, global.city.market.bmZone), 1); },
+                volume(){ return loc('resource_black_market_volume',[+(blackMarketVolume(res)).toFixed(2)]); },
+                routes(){ return bmRoutes(res, global.city.market.bmZone); },
+                more(){ bmAdjust(res, global.city.market.bmZone, keyMultiplier()); },
+                less(){ bmAdjust(res, global.city.market.bmZone, -keyMultiplier()); },
+                none(){ bmAdjust(res, global.city.market.bmZone, -bmRoutes(res, global.city.market.bmZone)); }
+            }
+        });
+    });
+
+    tradeSummery();
+    // Remove open-market rows mounted after the Black Market board.
+    const ownPanel = () => $('#market').children('.market-item').not('.bmRow').not('#tradeTotal').remove();
+    ownPanel();
+    setTimeout(ownPanel, 0);
+}
+
 export function marketItem(mount,market_item,name,color,full){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
@@ -1836,6 +2062,7 @@ function initGalaxyTrade(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }
+    $('#galaxyTrade').remove();
     $('#market').append($(`<div id="galaxyTrade"><div v-show="t.xeno && t.xeno >= 5" class="gTrade market-header galaxyTrade"><h2 class="is-sr-only">${loc('galaxy_trade')}</h2></div></div>`));
     galacticTrade();
 }
@@ -2905,12 +3132,21 @@ function loadRouteCounter(){
     let no_market = global.race['no_trade'] ? ' nt' : '';
     var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><div id="tradeTotalPopover"><span class="tradeTotal${no_market}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span v-html="tdeCnt(trade)"></span> / {{ mtrade }}</span></div></div>`);
     market_item.append($(`<span role="button" class="zero has-text-advanced" @click="zero()">${loc('cancel_all_routes')}</span>`));
+    $('#tradeTotal').remove();
     $('#market').append(market_item);
     vBind({
         el: '#tradeTotal',
         data: global.city.market,
         methods: {
             zero(){
+                // The smugglers' routes are booked per region
+                if (supplyMode() !== 'global'){
+                    const bm = global.city.market['bm'] || {};
+                    for (const pool in bm){ delete bm[pool]; }
+                    global.city.market.trade = 0;
+                    drawResourceTab('market');
+                    return;
+                }
                 Object.keys(global.resource).forEach(function(res){
                     if (global.resource[res]['trade']){
                         global.city.market.trade -= Math.abs(global.resource[res].trade);
@@ -3263,8 +3499,12 @@ function initMarket(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }
-    let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2></div>`);
     clearElement($('#market'));
+    if (supplyMode() !== 'global'){
+        loadBlackMarket();
+        return;
+    }
+    let market = $(`<div id="market-qty" class="market-header"><h2 class="is-sr-only">${loc('resource_market')}</h2></div>`);
     $('#market').append(market);
     loadMarket();
 }
@@ -3309,6 +3549,7 @@ function routeSummary(ship){
     return route.stops.map(function(stop, i){
         const pickups = (stop.pickups || []).filter(res => global.resource[res]);
         return {
+            number: i + 1,
             zone: supplyRegionName(stop.zone),
             pickups: pickups.map(res => global.resource[res].name).join(', '),
             here: i === route.index
@@ -3329,11 +3570,12 @@ function routeManaged(ship){
 
 // Render route stops for docked and inbound freighter cards.
 const routeSummaryMarkup = `<div class="supplyRouteSummary" v-show="hasRoute()">
-    <div class="supplyRouteSummaryHead"><span>${loc('supply_freighter_route_current')}</span><span class="has-text-caution" v-show="managed()">{{ managed() }}</span></div>
+    <div class="supplyRouteSummaryHead"><span>${loc('supply_freighter_route_current')}</span><span class="supplyRouteGovernor" v-show="managed()">{{ managed() }}</span></div>
     <ol class="supplyRouteSummaryStops">
-        <li v-for="stop in summary()" :class="{ 'is-here': stop.here }">
-            <span class="supplyRouteSummaryZone">{{ stop.zone }}</span>
-            <span class="supplyRouteSummaryPickup" v-show="stop.pickups">{{ stop.pickups }}</span>
+        <li v-for="stop in summary()" :class="{ 'is-here': stop.here }" :aria-label="stop.here ? '${loc('supply_freighter_route_here')}' : '${loc('supply_freighter_route_stop', [''])}' + stop.number">
+            <span class="supplyRouteSummaryNumber">{{ stop.number }}</span>
+            <span class="supplyRouteSummaryDetails"><span class="supplyRouteSummaryZone">{{ stop.zone }}</span><span class="supplyRouteSummaryPickup" v-show="stop.pickups">${loc('supply_freighter_route_pickup', ['{{ stop.pickups }}'])}</span></span>
+            <span class="supplyRouteSummaryCurrent" v-show="stop.here">${loc('supply_freighter_route_here')}</span>
         </li>
     </ol>
 </div>`;
@@ -3627,6 +3869,7 @@ function initStorage(){
 }
 
 function loadMarket(){
+    if (supplyMode() !== 'global'){ return; }
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }

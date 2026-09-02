@@ -215,7 +215,7 @@ const outerTruth = {
             },
             s_type: 'titan',
             support(){ return -1; },
-            support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: supplyMode() === 'global' ? 500 : 50 }]; },
+            support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: supplyMode() === 'global' ? 500 : 250 }]; },
             powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
