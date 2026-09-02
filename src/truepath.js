@@ -8271,10 +8271,18 @@ function tradeTrip(group, from, to){
 }
 
 // Return fleet travel time for one route leg, or Infinity if unreachable.
+const legCache = { at: 0, map: new Map() };
 export function tradeLegDays(group, from, to){
     if (from === to){ return 0; }
+    const now = Date.now();
+    if (now - legCache.at > 2000){ legCache.at = now; legCache.map.clear(); }
+    const pace = fleetPace(group);
+    const key = `${from}|${to}|${pace ? shipSpeed(pace) : 0}`;
+    if (legCache.map.has(key)){ return legCache.map.get(key); }
     const trip = tradeTrip(group, from, to);
-    return trip ? trip.totalTime : Infinity;
+    const days = trip ? trip.totalTime : Infinity;
+    legCache.map.set(key, days);
+    return days;
 }
 
 // Validate that a proposed route is flyable with available fuel.
@@ -8285,7 +8293,14 @@ export function tradeRouteViable(group, stops){
 // What a world can expect a freighter to bring it, and roughly when.
 const freightRouteLoops = 6;
 
+const arrivalCache = { at: 0, map: new Map() };
 export function freightArrivals(res, pool, loadable){
+    const cacheKey = loadable ? false : `${res}|${pool}`;
+    if (cacheKey){
+        const now = Date.now();
+        if (now - arrivalCache.at > 250){ arrivalCache.at = now; arrivalCache.map.clear(); }
+        if (arrivalCache.map.has(cacheKey)){ return arrivalCache.map.get(cacheKey); }
+    }
     const take = loadable || ((r, zone, capacity) => Math.min(capacity, Math.max(0, regAmount(r, zone))));
     const arrivals = [];
     const ships = (global.space.shipyard && global.space.shipyard.ships) || [];
@@ -8327,6 +8342,7 @@ export function freightArrivals(res, pool, loadable){
         }
     }
     arrivals.sort((a,b) => a.at - b.at);
+    if (cacheKey){ arrivalCache.map.set(cacheKey, arrivals); }
     return arrivals;
 }
 

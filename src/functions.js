@@ -1089,6 +1089,18 @@ export function poolStock(res, pool){
     return { have: regAmount(res, pool), max: regMax(res, pool), diff: regDiff(res)[pool] || 0 };
 }
 
+export function poolHeld(res, pool){
+    const r = global.resource[res];
+    if (!r){ return 0; }
+    return pool && partitioned(res) ? regAmount(res, pool) : r.amount;
+}
+
+export function poolCap(res, pool){
+    const r = global.resource[res];
+    if (!r){ return 0; }
+    return pool && partitioned(res) ? regMax(res, pool) : r.max;
+}
+
 // The pool a building pays from, or false for anything with no place of its own.
 export function actionPool(c_action){
     if (supplyMode() === 'global' || !c_action || !c_action.id){ return false; }

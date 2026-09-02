@@ -184,11 +184,17 @@ function groupOf(region){
 
 // The pool a region draws from: the group it belongs to, named for the first region in it, or the
 // region itself when it stands alone.
+let poolOfCache = false;
 export function supplyPool(region){
     if (!region){ return CAPITAL; }
     if (supplyMode() === 'global'){ return CAPITAL; }
-    const group = groupOf(region);
-    return group ? group.r[0] : region;
+    if (!poolOfCache){
+        poolOfCache = {};
+        for (const group of links()){
+            for (const member of group.r){ poolOfCache[member] = group.r[0]; }
+        }
+    }
+    return poolOfCache[region] || region;
 }
 
 // Every active region drawing on a pool.
@@ -230,6 +236,7 @@ export function activeSupplyRegions(){
 let poolCache = false;
 export function refreshPools(){
     poolCache = false;
+    poolOfCache = false;
 }
 // Refresh resource UI after supply-pool membership changes.
 function poolsChanged(){

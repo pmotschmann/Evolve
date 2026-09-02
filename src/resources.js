@@ -2576,7 +2576,28 @@ const BD_ALIASES = {
 };
 
 // Index ledger source titles by supply zone for regional breakdowns.
-function titleZones(name){
+// An alias that speaks for one resource only, looked up per entry rather than baked into the shared
+// index — the index has to mean the same thing for every resource or it cannot be cached at all.
+function scopedAlias(label, name){
+    for (const key in BD_ALIASES){
+        const spec = BD_ALIASES[key];
+        if (typeof spec !== 'object' || spec.res !== name){ continue; }
+        const at = typeof spec.at === 'object' ? spec.at[name] : spec.at;
+        if (!at){ continue; }
+        const text = spec.vars ? loc(key, spec.vars(name)) : loc(key);
+        if (text === label){ return at; }
+    }
+    return false;
+}
+
+const titleCache = { at: 0, index: false };
+function titleZones(){
+    // Rebuilt at most once a second rather than on every hover. The titles do move — they are
+    // translated, swapped out for the seasonal events, and several name a planet rolled per run — but
+    // none of that happens between two hovers, and walking the whole action tree for each one is what
+    // made the resource popovers slow to open.
+    const now = Date.now();
+    if (titleCache.index && now - titleCache.at < 1000){ return titleCache.index; }
     supplyRegions();   // tags every action with its s_zone before the walk below
     const index = {};
     const note = (title, zone) => {
@@ -2587,11 +2608,16 @@ function titleZones(name){
     for (const key in BD_ALIASES){
         const raw = BD_ALIASES[key];
         const spec = typeof raw === 'string' ? { at: raw } : raw;
-        if (spec.res && spec.res !== name){ continue; }
-        const at = typeof spec.at === 'object' ? spec.at[name] : spec.at;
-        if (!at){ continue; }
-        const label = spec.vars ? loc(key, spec.vars(name)) : loc(key);
-        if (label !== key){ note(label, supplyZone(at)); }
+        if (spec.res){ continue; }   // one resource only: scopedAlias answers for those
+        // An alias covering several buildings reads differently for each — the four Makemake mines are
+        // "<resource> Mine" — so every variant is noted and the index stays the same for everyone.
+        const each = typeof spec.at === 'object' ? Object.keys(spec.at) : [false];
+        for (const res of each){
+            const at = res ? spec.at[res] : spec.at;
+            if (!at){ continue; }
+            const label = spec.vars ? loc(key, spec.vars(res || undefined)) : loc(key);
+            if (label !== key){ note(label, supplyZone(at)); }
+        }
     }
     for (const cat of ['city','space','interstellar','galaxy','portal','tauceti','eden']){
         const groups = actions[cat];
@@ -2616,6 +2642,8 @@ function titleZones(name){
         catch (e){ continue; }
         note(title, job.zone ? supplyZone(job.zone) : CAPITAL);
     }
+    titleCache.at = now;
+    titleCache.index = index;
     return index;
 }
 
@@ -2650,12 +2678,15 @@ function bdTag(label){
 function regionalBreakdown(name){
     const at = viewedZone(name);
     if (!at){ return false; }
-    const index = titleZones(name);
+    const index = titleZones();
     const zoneOf = label => {
         // Use ids or zone keys to attribute repeated ledger labels.
         const tag = bdTag(label);
         if (tag){ return supplyPool(supplyZone(tag.replace('-', ':'))); }
-        return supplyPool(index[label.replace(/\+.+$/,'')] || CAPITAL);
+        const plain = label.replace(/\+.+$/,'');
+        const scoped = scopedAlias(plain, name);
+        if (scoped){ return supplyPool(supplyZone(scoped)); }
+        return supplyPool(index[plain] || CAPITAL);
     };
     // Ignore ledger entries that produce or consume nothing.
     const live = v => { const n = parseFloat(v); return !isNaN(n) && n !== 0; };
