@@ -7,7 +7,7 @@ import { actions } from './actions.js';
 import { planetName } from './space.js';
 import { unlockFeat } from './achieve.js';
 import { createGLContext, webglSupported } from './glmap.js';
-import { foeDetected, resolveBody, shipRefStar, syndicate, tempCoord, tempOffset, tempParent, venusBlockade } from './truepath.js';
+import { foeDetected, moveShips, moveTempCoordinates, resolveBody, shipPointAhead, shipRefStar, syndicate, tempCoord, tempOffset, tempParent, venusBlockade } from './truepath.js';
 import { loc } from './locale.js';
 
 // Every fixed figure the star table and the solar map are tuned by, gathered in one place. Values
@@ -20,6 +20,18 @@ const starConstants = {
     // Jupiter's size in this table, so it reads as a gas giant next to whatever else the system has.
     COW_SIZE: 0.634,
     AU_PER_LY: 63241.077,
+
+    // --- Map rendering ---
+    // Target animation-frame render rate.
+    MAP_FPS: 30,
+    // Frame-interval tolerance to avoid skipping an otherwise eligible refresh.
+    MAP_FRAME_LEAD_MS: 4,
+    // Maximum render lead beyond the last simulation step.
+    MAP_AHEAD_MAX: 2,
+    // Maximum render catch-up speed multiplier.
+    MAP_CATCHUP: 3,
+    // Re-sync rendering after a larger simulation gap.
+    MAP_RESYNC_DAYS: 1,
     // Orbit: outside whatever the star already has, and never closer in than a gas giant belongs.
     COW_ORBIT_CLEAR: 1.8,
     COW_ORBIT_MIN: 2.5,
@@ -2641,6 +2653,10 @@ function startAngle(id){
     return startAngleCache[id];
 }
 
+// Per-frame render offset from the last simulated map day.
+var renderAhead = 0;
+var drawAhead = 0;
+
 // Days the run has lasted, stored at map resolution.
 export const starInfo = { days: 0, sys: {} };
 let orbitsSynced = false;
@@ -2670,7 +2686,7 @@ function anglePeriod(id){
 export function orbitAngle(id, ahead = 0){
     let period = anglePeriod(id);
     if (!(period > 0)){ return 0; }
-    let deg = startAngle(id) + 360 * (runDays() + ahead) / period;
+    let deg = startAngle(id) + 360 * (runDays() + drawAhead + ahead) / period;
     return ((deg % 360) + 360) % 360;
 }
 
@@ -3129,7 +3145,17 @@ export function randomCoord(target, minAU, maxAU, spreadAU){
     };
 }
 
+// Per-frame body-position cache used while drawing the map.
+var posMemo = false;
 export function genXYZcoord(planet){
+    if (!posMemo || typeof planet !== 'string'){ return solveXYZcoord(planet); }
+    let at = posMemo[planet];
+    if (!at){ at = posMemo[planet] = solveXYZcoord(planet); }
+    // Return a copy so callers cannot mutate the frame cache.
+    return { x: at.x, y: at.y, z: at.z };
+}
+
+function solveXYZcoord(planet){
     // Stars first, and by identity rather than by working anything out.
     const fixed = starData[planet];
     if (fixed && fixed.startype){ return { x: fixed.x, y: fixed.y, z: fixed.z }; }
@@ -3138,7 +3164,7 @@ export function genXYZcoord(planet){
     if (temp){
         let parent = tempParent(temp);
         if (!parent){ return { x: temp.x, y: temp.y, z: temp.z }; }
-        let base = genXYZcoord(parent), off = tempOffset(temp, 0);
+        let base = genXYZcoord(parent), off = tempOffset(temp, drawAhead);
         return { x: base.x + off.x, y: base.y + off.y, z: base.z + off.z };
     }
     // spc_survey is whichever moon the survey turned up, so it orbits as that body does.
@@ -3359,6 +3385,8 @@ function starRangeLabel(){
 var mapAnchor = { x: 0, y: 0, z: 0 };
 // The table, indexed the ways the draw actually uses it.
 var mapStarIds = [], mapDrawnAsStar = [], mapBodiesOf = {};
+// Cached ids for bodies drawn in the Sun's reference frame.
+var mapHomeIds = [], mapHomeOrbitIds = [];
 // The table only changes when a system is dealt or the cow moves, which is rare, but the index used to be rebuilt on
 // every frame regardless.
 let indexedVersion = -1;
@@ -3368,12 +3396,19 @@ function indexBodies(){
     mapStarIds = [];
     mapDrawnAsStar = [];
     mapBodiesOf = {};
+    mapHomeIds = [];
+    mapHomeOrbitIds = [];
     // for-in over the plain object, rather than Object.entries, so nothing is allocated to walk it.
     for (const id in starData){
         const b = starData[id];
         if (b.startype){ mapStarIds.push(id); }
         if (b.startype || b.bodystar){ mapDrawnAsStar.push(id); }
         if (b.star){ (mapBodiesOf[b.star] || (mapBodiesOf[b.star] = [])).push(id); }
+        else {
+            mapHomeIds.push(id);
+            // Only Sun-orbiting bodies define the home-system bounds.
+            if (!b.startype && !b.moon){ mapHomeOrbitIds.push(id); }
+        }
     }
 }
 // The index is built by drawMap, which always runs before any pointer or camera event can fire.
@@ -3774,7 +3809,7 @@ function sphereTexture(kind, S, id, sun, lumpy, opts){
     const cache = opts.cache || sphereCache;
     const spin = spinOf(id);
     // A still subject is rendered facing one way and left there.
-    const turn = !opts.still && spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
+    const turn = !opts.still && spin.hours ? ((mapDays + drawAhead) * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
     const step = opts.step || sphereAngleStep();
     const qy = Math.round(mapYaw / step), qp = Math.round(mapPitch / step);
     const qs = Math.round((((turn % 360) + 360) % 360) / starConstants.SPHERE_SPIN_STEP);
@@ -4004,7 +4039,7 @@ function rockId(field, i){
 function rockRoll(field, i){
     const spin = spinOf(rockId(field, i));
     if (!spin.hours){ return 0; }
-    return (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE * Math.PI / 180;
+    return ((mapDays + drawAhead) * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE * Math.PI / 180;
 }
 // The rasterised surface for one face, lit so that turning it by `roll` on the way down puts the light back where the
 // star is.
@@ -4769,7 +4804,7 @@ function lumpNorm(seed){
 // Rotate the surface texture and silhouette together.
 function lumpSpin(id){
     const spin = spinOf(id);
-    const turn = spin.hours ? (mapDays * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
+    const turn = spin.hours ? ((mapDays + drawAhead) * 24 / spin.hours) * 360 * starConstants.SPIN_SCALE : 0;
     return mapYaw + turn * Math.PI / 180;
 }
 // Lay the outline down as a path. `spin` turns it, which is what makes it read as a solid object
@@ -5102,7 +5137,108 @@ function mapContext(canvas){
     return mapCtx;
 }
 
+// --- Map simulation and rendering ----------------------------------------------------------------
+// Simulation advances on game loops; render loops only draw its current state.
+
+// Return whether a loop owns the current map refresh rate.
+export function mapPaintsOn(loop){
+    if (webWorker.offline){ return loop === 'longLoop'; }
+    if (!document.getElementById('mapCanvas')){ return false; }
+    const rate = mapRefreshRate();
+    return loop === (rate === 'fast' ? 'frame' : rate === 'slow' ? 'midLoop' : 'fastLoop');
+}
+
+// Wall-clock time of the last simulation step.
+var mapSimAt = 0;
+// Rendered map day and its previous wall-clock update.
+var mapDrawnDays = 0;
+var mapDrawnAt = 0;
+// Last animation-frame render time.
+var mapLastFrame = 0;
+// Pending animation-frame request, or false when inactive.
+var mapFrameReq = false;
+
+// Advance map movement and orbital time for one simulation step.
+export function advanceSolarMap(ticks){
+    if (!global.race['truepath']){ return; }
+    // Match offline day scaling used by longLoop.
+    let days = ticks / webWorker.longRatio;
+    if (webWorker.offline){ days *= webWorker.offlineScale; }
+
+    advanceOrbits(days);
+    moveTempCoordinates(days);
+    moveShips(days);
+    // Advance surface rotation.
+    advanceMapDays(days);
+
+    const now = Date.now();
+    // Keep render interpolation aligned with simulation time; re-anchor after long gaps.
+    mapSimAt += ticks * webWorker.mt;
+    if (mapSimAt > now || now - mapSimAt > starConstants.MAP_AHEAD_MAX * webWorker.mt){ mapSimAt = now; }
+}
+
+// Unsimulated wall-clock time, capped for render interpolation.
+export function mapAhead(){
+    if (!mapSimAt || !webWorker.s || webWorker.offline){ return 0; }
+    const ahead = (Date.now() - mapSimAt) / webWorker.mt;
+    return ahead > 0 ? Math.min(ahead, starConstants.MAP_AHEAD_MAX) : 0;
+}
+
+// Render the current map state without advancing simulation.
+export function paintSolarMap(){
+    if (!global.race['truepath']){ return; }
+    if (!document.getElementById('mapCanvas')){ return; }
+    const now = Date.now();
+    const target = starInfo.days + mapAhead() / webWorker.longRatio;
+    const elapsed = mapDrawnAt ? Math.min(now - mapDrawnAt, 1000) : 0;
+    mapDrawnAt = now;
+    const gap = target - mapDrawnDays;
+    if (!mapDrawnDays || Math.abs(gap) > starConstants.MAP_RESYNC_DAYS){
+        mapDrawnDays = target;
+    }
+    else if (gap > 0){
+        // Do not render ahead of the current simulation target.
+        mapDrawnDays = Math.min(target, mapDrawnDays + elapsed * starConstants.MAP_CATCHUP / (webWorker.mt * webWorker.longRatio));
+    }
+    // Hold the rendered clock until the simulation catches up.
+    renderAhead = mapDrawnDays - starInfo.days;
+    drawMap();
+}
+
+// Start or stop animation-frame map rendering for the active refresh setting.
+export function syncMapFrames(){
+    const want = mapPaintsOn('frame');
+    if (want === (mapFrameReq !== false)){ return; }
+    if (!want){
+        cancelAnimationFrame(mapFrameReq);
+        mapFrameReq = false;
+        mapLastFrame = 0;
+        return;
+    }
+    mapLastFrame = 0;
+    const frame = function(){
+        // Stop when the map closes or frame rendering is no longer selected.
+        if (!mapPaintsOn('frame')){ mapFrameReq = false; mapLastFrame = 0; return; }
+        mapFrameReq = requestAnimationFrame(frame);
+        const now = Date.now();
+        // Limit rendering to the configured map frame rate.
+        if (now - mapLastFrame < 1000 / starConstants.MAP_FPS - starConstants.MAP_FRAME_LEAD_MS){ return; }
+        mapLastFrame = now;
+        paintSolarMap();
+    };
+    mapFrameReq = requestAnimationFrame(frame);
+}
+
 export function drawMap() {
+    // Cache body positions for this draw only.
+    posMemo = Object.create(null);
+    // Use one render offset for every body in this frame.
+    drawAhead = isFinite(renderAhead) ? renderAhead : 0;
+    try { drawMapFrame(); }
+    finally { posMemo = false; drawAhead = 0; }
+}
+
+function drawMapFrame() {
     let canvas = document.getElementById("mapCanvas");
     if (!canvas){ return; }
     let ctx = mapContext(canvas);
@@ -5146,17 +5282,17 @@ export function drawMap() {
     // inside that star's own block below, and only for stars that survive culling.
     let planetLocation = {};
     if (!homeCulled){
-        for (const id in starData){
-            if (starData[id].star){ continue; }
+        for (const id of mapHomeIds){
             planetLocation[id] = genXYZcoord(id);
         }
     }
 
     // Orbits, gathered by the body each one circles rather than drawn here.
     let orbitsBy = {};
-    for (let [id, planet] of Object.entries(starData)) {
+    // Other star systems are drawn in their own reference frames.
+    for (const id of mapHomeIds) {
         if (homeCulled){ break; }
-        if (planet.star){ continue; }   // Tau Ceti orbits are drawn separately in a star-local frame
+        const planet = starData[id];
         if (planet.startype){ continue; }
         if (planet.parent ? !mapView().moonOrbits : !mapView().planetOrbits){ continue; }
         // Uses the parent-relative distance for a moon, so its ring only appears once you are zoomed
@@ -5229,7 +5365,7 @@ export function drawMap() {
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
-        let here = rel(ship.location.position, ref);
+        let here = rel(shipPointAhead(ship, drawAhead), ref);
 
         let span = 0;
         let prev = here;
@@ -5322,16 +5458,14 @@ export function drawMap() {
     {
         // Home-system bodies that actually orbit the Sun, for sizing the system against them. Its
         // orbits are roomy enough that this comes back 1 and nothing here changes.
-        let homeOrbits = Object.entries(starData)
-            .filter(([id, planet]) => !planet.star && !planet.startype && !planet.moon)
-            .map(([id]) => id);
-        let homeScale = homeCulled ? 1 : systemScale(starData.spc_sun.size, homeOrbits, ORIGIN);
+        let homeScale = homeCulled ? 1 : systemScale(starData.spc_sun.size, mapHomeOrbitIds, ORIGIN);
         let bodies = [];
-        for (let [id, planet] of Object.entries(starData)) {
+        for (const id of mapHomeIds) {
             if (homeCulled){ break; }
+            const planet = starData[id];
             // Stars other than the Sun (which sits at the origin) are drawn in their own translated
-            // frame below, along with Tau-Ceti-style orbiting bodies (planet.star).
-            if (planet.star || (planet.startype && id !== 'spc_sun')){ continue; }
+            // frame below; neither belongs in this index.
+            if (planet.startype && id !== 'spc_sun'){ continue; }
             if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && id === 'spc_moon'){ continue; }
             if (actions.space[id] && actions.space[id].info.showDest && !actions.space[id].info.showDest().r){ continue; }
             let p = planetLocation[id];
@@ -5410,7 +5544,7 @@ export function drawMap() {
         ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
         ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
         let ref = shipRefStar(ship);
-        let here = rel(ship.location.position, ref);
+        let here = rel(shipPointAhead(ship, drawAhead), ref);
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.beginPath();
@@ -5433,7 +5567,7 @@ export function drawMap() {
         ctx.fillStyle = mark.foe ? "#ff5555" : "#009aff";
         let ship = mark.ship;
         let ref = shipRefStar(ship);
-        let here = rel(ship.location.position, ref);
+        let here = rel(shipPointAhead(ship, drawAhead), ref);
         ctx.save();
         ctx.translate(pX(ref), pY(ref));
         ctx.scale(1 / mapScale, 1 / mapScale);
@@ -5474,10 +5608,11 @@ export function drawMap() {
             ctx.scale(1 / mapScale, 1 / mapScale);
         else
             ctx.scale(1 / starConstants.systemLabelMinScale, 1 / starConstants.systemLabelMinScale);
-        for (let [id, planet] of Object.entries(starData)) {
+        for (const id of mapHomeIds) {
             if (homeCulled){ break; }
             if (!mapView().planetNames){ break; }
-            if (planet.star || planet.startype){ continue; }   // all star labels handled separately (below)
+            const planet = starData[id];
+            if (planet.startype){ continue; }   // all star labels handled separately (below)
             if (mapScale < starConstants.planetLabelMinScale){ continue; }   // zoomed out: planet names give way to star labels
             if (actions.space[id] && (actions.space[id].info.showDest ? actions.space[id].info.showDest().l : global.settings.space[id.substring(4)]) ){
                 // bodyName() rather than the action's own name, so the wreck of the home world is
@@ -6075,36 +6210,38 @@ export function buildSolarMap(parentNode, keep, openAt) {
             }
             return false;
         }),
-      $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; top: 32px; right: 2px;">`)
+      $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; bottom: 34px; right: 2px;">`)
         .on("click", () => {
             mapScale /= 0.8;
             mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
             mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
             drawMap();
         }),
-      $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; top: 64px; right: 2px;">`)
+      $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; bottom: 2px; right: 2px;">`)
         .on("click", () => {
             mapScale *= 0.8;
             mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
             mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
             drawMap();
         }),
-      $(`<input type="button" value="${loc('space_sun_info_name')}" style="position: absolute; height: 30px; top: 2px; left: 2px;">`)
+    );
+
+    // Keep system shortcuts together so translated labels do not need fixed offsets.
+    const systemNav = $('<div class="mapSystemNav" style="position: absolute; top: 2px; left: 2px; display: flex; gap: 4px;"></div>').appendTo(currentNode);
+    $(`<input type="button" value="${loc('space_sun_info_name')}" style="height: 30px;">`)
         .on("click", () => {
             mapScale = 20.0;
-            // This is the "back to the default view of Sol" control — it already restores the
-            // opening zoom, so it restores the opening bearing with it.
             mapYaw = mapDefaultYaw('spc_sun');
             starLockOn = 'spc_sun';
             camUpdate();
             recenterOn(genXYZcoord('spc_sun'));
             drawMap();
         })
-    );
+        .appendTo(systemNav);
 
-    // Center on the Tau Ceti star: only available (and only useful) once the system is unlocked.
+    // Center on Tau Ceti once its system is unlocked.
     if (global.tech['tau_home'] && global.tech.tau_home >= 2){
-        $(`<input type="button" value="${loc('tab_tauceti')}" style="position: absolute; height: 30px; top: 34px; left: 2px;">`)
+        $(`<input type="button" value="${loc('tab_tauceti')}" style="height: 30px;">`)
             .on("click", () => {
                 mapScale = 20.0;
                 mapYaw = mapDefaultYaw('tauceti');
@@ -6113,7 +6250,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
                 recenterOn(genXYZcoord('tauceti'));
                 drawMap();
             })
-            .appendTo(currentNode);
+            .appendTo(systemNav);
     }
 
     // --- Find a star ------------------------------------------------------------------------------

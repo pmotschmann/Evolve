@@ -12,8 +12,8 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, moveShips, moveTempCoordinates, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
-import { genXYZcoord, drawMap, randomCoord, advanceMapDays, advanceOrbits } from './stars.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
+import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -830,11 +830,7 @@ if (global.race['orbit_decay'] && !global.race['orbit_decayed']){
 challengeIcon();
 drawPet();
 
-// A couple of header elements relocate into the footer on the mobile layout: the player pet (beside
-// the author name) and the pause button (centered between the pet and the version). Each is a single
-// node whose Vue @click / reactive bindings and jQuery hooks travel with it, so we move the actual
-// node into a footer slot on mobile and restore it to its authored spot on desktop. The authored
-// parent + next-sibling are captured once up front so the restore lands the node exactly where it was.
+// Move existing header controls into mobile footer slots without rebuilding their bindings.
 const mobileFootBits = [
     { node: document.getElementById('playerPet'), slot: 'petFootSlot' },
     { node: document.getElementById('pauseBtn'), slot: 'pauseFootSlot' }
@@ -848,15 +844,13 @@ function placeMobileBits(mobile){
             if (slot && b.node.parentElement !== slot){ slot.appendChild(b.node); }
         }
         else if (b.home && b.node.parentElement !== b.home){
-            // Restore to the captured position; if the recorded next-sibling has since moved, append.
+            // Restore the original position when it is still available.
             if (b.next && b.next.parentElement === b.home){ b.home.insertBefore(b.node, b.next); }
             else { b.home.appendChild(b.node); }
         }
     });
 }
-// Media queries measure rem against the initial 16px font, so 48rem here matches the CSS breakpoint
-// exactly (unaffected by the mobile html font-size override). placeMobileBits is idempotent (a no-op
-// when a node is already in the right spot), so it is safe on load, on breakpoint change, and resize.
+// Keep the JavaScript breakpoint aligned with the mobile stylesheet.
 const mobileBitsBreakpoint = window.matchMedia('(max-width: 48rem)');
 placeMobileBits(mobileBitsBreakpoint.matches);
 mobileBitsBreakpoint.addEventListener('change', function(e){ placeMobileBits(e.matches); });
@@ -928,62 +922,6 @@ else {
 set_qlevel(calcQuantumLevel(true));
 
 $('#lbl_city').html('Village');
-
-// Which clock advances the solar map.
-// Offline uses longLoop. midLoop is used while map is closed,
-// When map is open depends on user setting.
-function mapDriver(){
-    if (webWorker.offline){ return 'longLoop'; }
-    if (!document.getElementById('mapCanvas')){ return 'midLoop'; }
-    const view = global.settings && global.settings.mapView;
-    const r = view && view.refresh;
-    return r === 'fast' ? 'timer' : r === 'slow' ? 'midLoop' : 'fastLoop';
-}
-
-//  the map's clock, for Fast setting
-const MAP_FPS = 30;
-// A frame's worth of game time, in fast loops.
-function mapFrameTicks(){ return (1000 / MAP_FPS) / webWorker.mt; }
-// Past this the timer is plainly not running, and the fast loop settles the debt itself rather than letting it grow.
-const MAP_ARREARS_MAX = 3;
-// Game time the map is owed, in fast loops.
-var mapArrears = 0;
-var mapTimer = false;
-function syncMapTimer(){
-    const want = mapDriver() === 'timer';
-    if (want === (mapTimer !== false)){ return; }
-    if (!want){
-        clearInterval(mapTimer);
-        mapTimer = false;
-        return;
-    }
-    mapTimer = setInterval(function(){
-        if (mapDriver() !== 'timer'){ syncMapTimer(); return; }
-        const step = Math.min(mapArrears, mapFrameTicks());
-        if (step <= 0){ return; }
-        mapArrears -= step;
-        updateSolarMap(step);
-    }, Math.round(1000 / MAP_FPS));
-}
-
-// One step of the solar map's simulation
-function updateSolarMap(ticks){
-    if (!global.race['truepath']){ return; }
-    // Offline steps are whole game days each, the same scaling longLoop applies to its own day count.
-    let days = ticks / webWorker.longRatio;
-    if (webWorker.offline){ days *= webWorker.offlineScale; }
-
-    // Move planet orbits
-    advanceOrbits(days);
-    moveTempCoordinates(days);
-    moveShips(days);
-    // Axial rotation for the high-detail surfaces.
-    advanceMapDays(days);
-
-    if (document.getElementById('mapCanvas')) {
-        drawMap();
-    }
-}
 
 // How much game time one pass of each loop stands for.
 function dayStep(){ return webWorker.offline ? webWorker.offlineScale : 1; }
@@ -1061,8 +999,8 @@ function processOfflineTime(){
 }
 
 function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
-    // Settle whatever the map's timer has not spent
-    if (mapArrears > 0){ updateSolarMap(mapArrears); mapArrears = 0; }
+    // Settle whatever the frames were drawing past the last step, before the clock changes scale.
+    advanceSolarMap(mapAhead());
     webWorker.offline = true;
     webWorker.offlineScale = daysPerStep;
     // Drop Vue reactivity for the whole simulation so the thousands of state mutations don't each
@@ -1230,8 +1168,12 @@ function elHeight(el){
     return el.offsetHeight ? el.offsetHeight - trim : 0;
 }
 
+// Cache inline heights to avoid redundant layout writes.
+const heightSet = new WeakMap();
 function setElHeight(el,value){
     if (!el){ return; }
+    if (heightSet.get(el) === value){ return; }
+    heightSet.set(el,value);
     if (typeof value !== 'number'){ el.style.height = value; return; }
     const cs = window.getComputedStyle(el);
     let px = value;
@@ -8961,20 +8903,11 @@ function fastLoop(){
         }
     }
 
-    // The solar map. On Normal the fast loop is the map's clock; on Fast it only funds the timer,
-    // which spends what it is given a frame at a time.
-    const mapClock = mapDriver();
-    if (mapClock === 'timer'){ mapArrears += 1; }
-    // Anything the timer has not spent is settled here — because it has stopped being the map's
-    // clock, or because it is not firing. Either way the game time is paid rather than dropped.
-    if (mapArrears > 0 && (mapClock !== 'timer' || mapArrears >= MAP_ARREARS_MAX)){
-        updateSolarMap(mapArrears);
-        mapArrears = 0;
-    }
-    if (mapClock === 'fastLoop'){ updateSolarMap(1); }
-    // Start or stop the timer as the map opens, closes, or the setting moves. Four times a second is
-    // soon enough that the change is not visible.
-    syncMapTimer();
+    // Advance the map simulation on live fast ticks; offline catch-up uses longLoop.
+    if (!webWorker.offline){ advanceSolarMap(1); }
+    if (mapPaintsOn('fastLoop')){ paintSolarMap(); }
+    // Match frame rendering to the current map state and refresh setting.
+    syncMapFrames();
 
     firstRun = false;
 }
@@ -12320,8 +12253,8 @@ function midLoop(){
         buildGene(blockGeneBuffer);
     }
 
-    // The solar map on Slow, and whenever the map is closed — nothing is watching it either way.
-    if (mapDriver() === 'midLoop'){ updateSolarMap(webWorker.midRatio); }
+    // Render the map at the slow refresh rate.
+    if (mapPaintsOn('midLoop')){ paintSolarMap(); }
 
     // Everything past this point is presentation: No need to run during catch up.
     if (webWorker.offline){ return; }
@@ -12362,11 +12295,10 @@ function midLoop(){
     const buildQueueEl = document.getElementById('buildQueue');
 
     if (isMobileLayout) {
-        // On mobile the CSS controls heights; clear any previously-set inline heights
-        // so they don't fight the responsive stylesheet.
-        if (resourcesEl){ resourcesEl.style.height = ''; }
-        if (msgQueueEl){ msgQueueEl.style.height = ''; }
-        if (buildQueueEl){ buildQueueEl.style.height = ''; }
+        // Let the mobile stylesheet control panel heights.
+        setElHeight(resourcesEl,'');
+        setElHeight(msgQueueEl,'');
+        setElHeight(buildQueueEl,'');
     } else {
         let msgHeight = elHeight(msgQueueEl);
         let buildHeight = elHeight(buildQueueEl);
@@ -12442,11 +12374,11 @@ function midLoop(){
 
     const mechList = document.getElementById('mechList');
     if (mechList){
-        mechList.style.height = `calc(100vh - 11.5rem - ${elHeight(document.getElementById('mechAssembly'))}px)`;
+        setElHeight(mechList,`calc(100vh - 11.5rem - ${elHeight(document.getElementById('mechAssembly'))}px)`);
     }
     const shipList = document.getElementById('shipList');
     if (shipList){
-        shipList.style.height = `calc(100vh - 11.5rem - ${elHeight(document.getElementById('shipPlans'))}px)`;
+        setElHeight(shipList,`calc(100vh - 11.5rem - ${elHeight(document.getElementById('shipPlans'))}px)`);
     }
 }
 
@@ -13851,10 +13783,15 @@ function longLoop(){
         }
     }
 
-    // The solar map during offline catch-up, which is the only thing this loop drives it for.
-    if (mapDriver() === 'longLoop'){ updateSolarMap(webWorker.longRatio); }
+    // Advance and render the map during offline catch-up.
+    if (webWorker.offline){
+        advanceSolarMap(webWorker.longRatio);
+        paintSolarMap();
+    }
 
     if (global.settings.pause && webWorker.s){
+        // Settle rendered map progress before stopping the game loop.
+        advanceSolarMap(mapAhead());
         gameLoop('stop');
     }
 }
@@ -14022,21 +13959,22 @@ function steelCheck(){
     }
 }
 
+// Stripe visible rows after collecting them to avoid layout churn.
 function resourceAlt(){
     ['#resources .resource','.tab-item > .market-item','#galaxyTrade > .market-item'].forEach(function(id){
+        const rows = document.querySelectorAll(id);
+        const shown = [];
+        for (let i=0; i<rows.length; i++){
+            const el = rows[i];
+            if (el.offsetWidth || el.offsetHeight || el.getClientRects().length){ shown.push(el); }
+        }
         let alt = false;
-        $(`${id}:visible`).each(function(){
-            if (alt){
-                $(this).addClass('alt');
-                $(this).removeClass('prime');
-                alt = false;
-            }
-            else {
-                $(this).removeClass('alt');
-                $(this).addClass('prime');
-                alt = true;
-            }
-        });
+        for (let i=0; i<shown.length; i++){
+            // Avoid rewriting unchanged stripe classes.
+            shown[i].classList.toggle('alt', alt);
+            shown[i].classList.toggle('prime', !alt);
+            alt = !alt;
+        }
     });
 }
 

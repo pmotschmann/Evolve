@@ -6414,6 +6414,21 @@ function placeShip(ship){
     ship.location.position.z = destination.z * (1 - dist) + origin.z * dist;
 }
 
+// Return a ship's interpolated position without advancing its route.
+export function shipPointAhead(ship, days){
+    if (!ship.inTransit || !ship.path.length){ return genXYZcoord(ship.location.name); }
+    const total = ship.path[0].totalTime;
+    let dist = total > 0 ? (ship.timeToNextStep - days) / total : 0;
+    if (!(dist >= 0)){ dist = 0; }
+    else if (dist > 1){ dist = 1; }
+    const origin = ship.origin.position, destination = ship.path[0].destination.position;
+    return {
+        x: destination.x * (1 - dist) + origin.x * dist,
+        y: destination.y * (1 - dist) + origin.y * dist,
+        z: destination.z * (1 - dist) + origin.z * dist
+    };
+}
+
 function burnShipFuel(ship, leg, days){
     // Enemy fleets keep their existing scripted movement and are not part of the player's logistics.
     if (ship.enemy){ return days; }
@@ -8260,7 +8275,17 @@ function tradeFreighters(group){ return group.filter(ship => ship.class === 'fre
 function tradeRoute(ship){ return ship && ship.tradeRoute && Array.isArray(ship.tradeRoute.stops) && ship.tradeRoute.stops.length > 1 ? ship.tradeRoute : false; }
 function setTradeRoute(group, route){ group.forEach(ship => { ship.tradeRoute = deepClone(route); }); }
 function clearTradeRoute(group){ group.forEach(ship => { delete ship.tradeRoute; }); }
-function tradeLeader(group){ return group.slice().sort((a,b) => global.space.shipyard.ships.indexOf(a) - global.space.shipyard.ships.indexOf(b))[0]; }
+// Use the earliest shipyard entry as a stable fleet route leader.
+function tradeLeader(group){
+    if (group.length <= 1){ return group[0]; }
+    const ships = global.space.shipyard.ships;
+    let best = group[0], bestAt = ships.indexOf(best);
+    for (let i=1; i<group.length; i++){
+        const at = ships.indexOf(group[i]);
+        if (at < bestAt){ best = group[i]; bestAt = at; }
+    }
+    return best;
+}
 
 function tradeTrip(group, from, to){
     const pace = deepClone(fleetPace(group));
@@ -8336,7 +8361,7 @@ export function freightArrivals(res, pool, loadable){
                 hold = take(res, stop.zone, capacity);
             }
             const next = (at + 1) % stops.length;
-            // A day docked at each stop, then the flight on to the next.
+            // Each stop includes one docked day before the next leg.
             when += 1 + tradeLegDays(group, stop.zone, stops[next].zone);
             at = next;
         }
@@ -8346,11 +8371,10 @@ export function freightArrivals(res, pool, loadable){
     return arrivals;
 }
 
-// A route is safe only when each hull can make every sequence of legs, replenishing its reserve at
-// any eligible automatic-refuelling stop. This checks a whole loop, including the return to stop 1.
+// Verify every ship can complete one full route loop with available refuelling.
 function validateTradeRoute(group, stops){
     for (const ship of group){
-        // A route begins by servicing the current stop, including its automatic refuelling.
+        // Apply automatic refuelling at the first stop before departure.
         let reserve = canAutoRefuelAt(ship, stops[0].zone) ? shipFuelTank(ship) : shipFuelAmount(ship);
         for (let i=0; i<stops.length; i++){
             const from = stops[i].zone, to = stops[(i + 1) % stops.length].zone;
@@ -8420,7 +8444,7 @@ function tradeLoad(group, pool, pickups){
         if (stillAvailable.length === selected.length && free < selected.length){ break; }
         selected = stillAvailable;
     }
-    // Each transfer has already changed its pool; fold the displayed resource totals once per selected resource.
+    // Refresh totals after all selected cargo transfers.
     [...new Set(Array.isArray(pickups) ? pickups : [pickups])].filter(res => res && global.resource[res]).forEach(syncTotal);
 }
 function serviceTradeStop(group, route){
@@ -8458,20 +8482,32 @@ export function stopFreightRoute(ship){
     return true;
 }
 function advanceTradeRoutes(step){
-    const seen = new Set();
-    (global.space.shipyard?.ships || []).forEach(function(ship){
+    const ships = global.space.shipyard?.ships || [];
+    // Advance dock timers before grouping routes that are ready to depart.
+    let due = false;
+    const launching = new Set();
+    for (const ship of ships){
         const route = tradeRoute(ship);
-        if (!route || seen.has(ship)){ return; }
+        if (!route || ship.inTransit){ continue; }
+        if (route.wait > 0){
+            route.wait = Math.max(0, route.wait - step);
+            if (route.wait === 0){ launching.add(ship); }
+        }
+        // Treat missing or expired wait times as ready to depart.
+        if (!(route.wait > 0)){ due = true; }
+    }
+    if (!due){ return; }
+
+    const seen = new Set();
+    ships.forEach(function(ship){
+        const route = tradeRoute(ship);
+        if (!route || seen.has(ship) || route.wait > 0){ return; }
         const group = tradeFleet(ship);
         group.forEach(member => seen.add(member));
         const leader = tradeLeader(group);
         if (ship !== leader || group.some(member => member.inTransit)){ return; }
-        if (route.wait > 0){
-            route.wait = Math.max(0, route.wait - step);
-            if (route.wait === 0){ launchTradeLeg(group, route); }
-            else { setTradeRoute(group, route); }
-            return;
-        }
+        // Service the stop, then launch the next route leg.
+        if (launching.has(leader)){ launchTradeLeg(group, route); return; }
         // Arrival: transfer first, then remain docked for one complete game day.
         serviceTradeStop(group, route);
         route.wait = 1;
@@ -10874,8 +10910,10 @@ export function calcAIDrift(wiki){
 }
 
 function solarModal(){
-    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('solar_system')}</p>`));
-    buildSolarMap($(`#modalBox`));
+    const box = $('#modalBox');
+    box.closest('.animation-content').addClass('solarMapModal');
+    box.append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('solar_system')}</p>`));
+    buildSolarMap(box);
 }
 
 // Populate the ship dispatch modal with a button for each valid destination.
