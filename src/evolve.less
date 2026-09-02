@@ -4897,6 +4897,68 @@ span.inline {
             }
         }
     }
+
+    // Ship refit modal layout.
+    .shipRefit {
+        padding: .5rem;
+
+        .refitSlot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: .35rem;
+            padding: .15rem 0;
+
+            .refitLabel {
+                min-width: 7rem;
+                text-align: right;
+                margin-right: .25rem;
+            }
+
+            .button {
+                margin: 0;
+            }
+
+            .refitFixed {
+                font-size: .85rem;
+            }
+
+            // Original part shown after a slot changes.
+            .refitWas {
+                font-size: .75rem;
+            }
+
+            // Selected replacement part.
+            .refitOn {
+                font-weight: bold;
+                box-shadow: inset 0 0 0 .125rem currentColor;
+            }
+        }
+
+        .refitStats {
+            margin-top: .5rem;
+        }
+
+        .refitCost {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .25rem;
+            padding: .35rem 0;
+        }
+
+        .refitWarn {
+            text-align: center;
+            font-size: .85rem;
+        }
+
+        .refitAct {
+            display: flex;
+            justify-content: center;
+            padding: .35rem 0;
+        }
+    }
 }
 
 // The flagship marker and the fleet it names, shown against a ship's name in the fleet list.

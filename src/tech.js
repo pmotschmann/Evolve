@@ -13638,6 +13638,31 @@ const techs = {
             defineFleetCommand();
         }
     },
+    fleet_refit: {
+        id: 'tech-fleet_refit',
+        title(){ return loc('tech_fleet_refit'); },
+        desc(){ return loc('tech_fleet_refit'); },
+        category: 'space_militarization',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
+        path: ['truepath'],
+        reqs: { syard_fleet: 1 },
+        grant: ['syard_fleet',2],
+        cost: {
+            Knowledge(){ return global.tech['shadow'] ? 20500000 : 21500000; }
+        },
+        effect: loc('tech_fleet_refit_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            // Refresh the shipyard to expose newly unlocked refit actions.
+            drawShipYard();
+        }
+    },
     alien_outpost: {
         id: 'tech-alien_outpost',
         title(){ return loc('tech_alien_outpost'); },

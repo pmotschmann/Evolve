@@ -7219,19 +7219,9 @@ export function drawShipYard(){
         let options = $(`<div class="shipBayOptions"></div>`);
         plans.append(options);
 
-        let shipConfig = {
-            class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','freighter','explorer'],
-            power: ['solar','diesel','fission','fusion','elerium','antimatter'],
-            weapon: shipWeapons,
-            armor : ['steel','alloy','neutronium','aerographene'],
-            engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
-            sensor: ['visual','radar','lidar','quantum'],
-            special: shipSpecials,
-        };
-
-        Object.keys(shipConfig).forEach(function(k){
+        Object.keys(shipParts).forEach(function(k){
             let values = ``;
-            shipConfig[k].forEach(function(v,idx){
+            shipParts[k].forEach(function(v,idx){
                 values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
@@ -7320,36 +7310,17 @@ export function drawShipYard(){
                     vBind({el: `#shipPlans`},'update');
                 },
                 slotOpen(k){
-                    if (global.space.shipyard.blueprint.class === 'freighter' && k === 'weapon'){ return false; }
-                    return k === 'special' ? (global.space.shipyard.blueprint.class === 'freighter' || global.tech['syard_special'] ? true : false) : true;
+                    return shipSlotOpen(k,global.space.shipyard.blueprint.class);
                 },
                 avail(k,i,v){
-                    if (explorerRetired() && (v === 'emdrive' || v === 'explorer')){
-                        return false;
+                    // Class availability is handled by the shipyard.
+                    if (k === 'class'){
+                        if (explorerRetired() && v === 'explorer'){ return false; }
+                        if (v === 'freighter'){ return global.tech['shadow'] >= 5; }
+                        if (global.tech['tauceti'] && v === 'explorer'){ return true; }
+                        return global.tech['syard_class'] > i ? true : false;
                     }
-                    if (v === 'freighter'){ return global.tech['shadow'] >= 5; }
-                    if (k === 'special'){
-                        const isFreighter = global.space.shipyard.blueprint.class === 'freighter';
-                        if (isFreighter){ return ['extra_fuel','extra_cargo','extra_thruster'].includes(v); }
-                        // A mount the current hull has no room for is not offered at all.
-                        if (!shipSpecialAllowed(v,global.space.shipyard.blueprint.class)){ return false; }
-                        return global.tech['syard_special'] ? true : false;
-                    }
-                    if ((k === 'class' || k === 'engine') && global.tech['tauceti'] && (v === 'emdrive' || v === 'explorer')){
-                        return true;
-                    }
-                    else if (global.space.shipyard.blueprint.class === 'explorer'){
-                        if (k === 'weapon'){
-                            return i === 1 ? true : false;
-                        }
-                        else if (k === 'engine'){
-                            return i === 6 ? true : false;
-                        }
-                        else if (k === 'sensor'){
-                            return i === 4 ? true : false;
-                        }
-                    }
-                    return global.tech[`syard_${k}`] > i ? true : false;
+                    return shipPartAvailable(k,i,v,global.space.shipyard.blueprint.class);
                 },
                 crewText(){
                     return shipCrewSize(global.space.shipyard.blueprint);
@@ -7428,7 +7399,7 @@ export function drawShipYard(){
             }
         });
 
-        Object.keys(shipConfig).forEach(function(type){
+        Object.keys(shipParts).forEach(function(type){
             for (let i=0; i<$(`#shipPlans .${type}`).length; i++){
                 popover(`shipPlans${type}${i}`, function(obj){
                     let val = $(obj.this).attr(`data-val`);
@@ -7919,6 +7890,46 @@ export function shipSpecialAllowed(special,shipClass){
     if (special === 'massdriver'){ return massDriverHulls.includes(shipClass); }
     if (freighterSpecials.includes(special)){ return shipClass === 'freighter'; }
     return special === 'none';
+}
+
+// --- Hull slots ---------------------------------------------------------------------------------
+// Ship parts in shipyard unlock order; refits use the same definitions.
+const shipParts = {
+    class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','freighter','explorer'],
+    power: ['solar','diesel','fission','fusion','elerium','antimatter'],
+    weapon: shipWeapons,
+    armor : ['steel','alloy','neutronium','aerographene'],
+    engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
+    sensor: ['visual','radar','lidar','quantum'],
+    special: shipSpecials,
+};
+
+// Refit-capable parts; class changes require a different hull.
+const refitParts = ['power','weapon','armor','engine','sensor','special'];
+
+// Return whether a part is currently available for this hull class.
+function shipPartAvailable(part, idx, value, shipClass){
+    if (explorerRetired() && value === 'emdrive'){ return false; }
+    if (part === 'special'){
+        if (shipClass === 'freighter'){ return freighterSpecials.includes(value); }
+        // Do not offer specials unsupported by this hull.
+        if (!shipSpecialAllowed(value,shipClass)){ return false; }
+        return global.tech['syard_special'] ? true : false;
+    }
+    if (part === 'engine' && global.tech['tauceti'] && value === 'emdrive'){ return true; }
+    if (shipClass === 'explorer'){
+        if (part === 'weapon'){ return idx === 1; }
+        if (part === 'engine'){ return idx === 6; }
+        if (part === 'sensor'){ return idx === 4; }
+    }
+    return global.tech[`syard_${part}`] > idx ? true : false;
+}
+
+// Return whether this hull exposes the requested refit slot.
+function shipSlotOpen(part, shipClass){
+    if (part === 'weapon'){ return shipClass !== 'freighter'; }
+    if (part === 'special'){ return shipClass === 'freighter' || global.tech['syard_special'] ? true : false; }
+    return true;
 }
 
 // What special a ship has equipped.
@@ -8728,6 +8739,93 @@ export function shipCosts(bp){
     return costs;
 }
 
+// --- Refitting ----------------------------------------------------------------------------------
+// Return whether a docked ship can be refitted at this shipyard.
+export function refitAllowed(ship){
+    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 2){ return false; }
+    if (!ship || ship.inTransit || !ship.location){ return false; }
+    return activeRepairYards().includes(ship.location.name);
+}
+
+// Build a blueprint-shaped design from a ship and optional refit plan.
+function refitDesign(ship, plan){
+    let design = { class: ship.class, name: ship.name };
+    refitParts.forEach(function(part){
+        design[part] = plan && plan[part] !== undefined ? plan[part] : ship[part];
+    });
+    return design;
+}
+
+// Minimum Money charge for labor when a refit adds no material cost.
+const refitLabor = 0.25;
+
+// Charge only added material costs, with a minimum Money labor fee.
+export function refitCosts(ship, plan){
+    let now = shipCosts(refitDesign(ship,false));
+    let want = shipCosts(refitDesign(ship,plan));
+    let costs = {};
+    Object.keys(want).forEach(function(res){
+        let diff = (want[res] || 0) - (now[res] || 0);
+        if (diff > 0){ costs[res] = Math.ceil(diff); }
+    });
+    // Unchanged plans have no refit cost.
+    if (refitChanged(ship, plan)){
+        let money = (want.Money || 0) - (now.Money || 0);
+        costs['Money'] = money > 0 ? Math.ceil(money) : Math.ceil((want.Money || 0) * refitLabor);
+    }
+    return costs;
+}
+
+// Return whether a plan changes any refittable part.
+function refitChanged(ship, plan){
+    return refitParts.some(function(part){
+        return plan[part] !== undefined && plan[part] !== ship[part];
+    });
+}
+
+// Return the locale key blocking a changed part, or false when valid.
+function refitBlocked(ship, plan){
+    let design = refitDesign(ship, plan);
+    for (let i=0; i<refitParts.length; i++){
+        let part = refitParts[i];
+        if (design[part] === ship[part]){ continue; }
+        if (!shipSlotOpen(part,ship.class)){ return 'outer_shipyard_refit_part'; }
+        let idx = shipParts[part].indexOf(design[part]);
+        if (idx < 0 || !shipPartAvailable(part,idx,design[part],ship.class)){ return 'outer_shipyard_refit_part'; }
+    }
+    if (shipPower(design) < 0){ return 'outer_shipyard_refit_power'; }
+    // Extra Cargo cannot be removed while its capacity is in use.
+    if (ship.class === 'freighter' && freightLoad(ship) > freightCapacity(design)){ return 'outer_shipyard_refit_cargo'; }
+    return false;
+}
+
+// Return whether changing power source requires emptying the fuel tank.
+function refitDrains(ship, plan){
+    let now = shipFuelUse(refitDesign(ship,false)).res;
+    let want = shipFuelUse(refitDesign(ship,plan)).res;
+    return now !== want && !!now;
+}
+
+// Apply a valid refit while preserving ship identity and assignments.
+function applyRefit(ship, plan){
+    if (!ship || !refitAllowed(ship) || !refitChanged(ship,plan) || refitBlocked(ship,plan)){ return false; }
+    let raw = refitCosts(ship, plan);
+    let costs = {};
+    Object.keys(raw).forEach(function(res){
+        costs[res] = function(){ return raw[res]; };
+    });
+    if (!payCosts(false, costs)){ return false; }
+    let burned = shipFuelUse(ship).res;
+    refitParts.forEach(function(part){
+        if (plan[part] !== undefined){ ship[part] = plan[part]; }
+    });
+    // Changing fuel type empties the incompatible tank.
+    if (shipFuelUse(ship).res !== burned){ ship.fuel = 0; }
+    // Clamp retained fuel to the new tank capacity.
+    ensureShipFuel(ship);
+    return true;
+}
+
 export function clearShipDrag(){
     let el = $('#shipList')[0];
     if (el){
@@ -9132,7 +9230,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -9192,6 +9290,24 @@ function drawShipRow(list,i,ship,regionNames){
                         drawShips();
                         updateCosts();
                     }
+                },
+                // Show refit only for eligible docked ships in detailed rows.
+                refitShow(id){
+                    return refitAllowed(global.space.shipyard.ships[id]);
+                },
+                refitAction(id){
+                    if (!this.refitShow(id)){ return; }
+                    let modal = this.$buefy.modal.open({
+                        hasModalCard: false,
+                        content: '<div id="modalBox" class="modalBox"></div>'
+                    });
+
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0) {
+                            clearInterval(checkExist);
+                            shipRefitModal(id, modal);
+                        }
+                    }, 50);
                 },
                 // Whether the yard's copy controls are switched on, which is what puts the copy
                 // links on every row rather than leaving them there permanently.
@@ -11082,6 +11198,133 @@ export function battleLogModal(){
 
 // Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command points to
 // spare for it.
+// Render the ship refit modal and recalculate costs for each plan change.
+function shipRefitModal(id, modal){
+    let ship = global.space.shipyard.ships[id];
+    if (!ship){ return; }
+
+    // Start with the ship's current equipment.
+    let plan = {};
+    refitParts.forEach(function(part){ plan[part] = ship[part]; });
+
+    let box = $('#modalBox');
+    box.append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('outer_shipyard_refit_title',[ship.name])}</p>`));
+    // Hull class is displayed but cannot be changed by refitting.
+    box.append(`<div class="shipDispatchStats"><span><span class="has-text-warning">${loc('outer_shipyard_refit_hull')}</span> <span class="pad">${loc(`outer_shipyard_class_${ship.class}`)}</span></span></div>`);
+
+    let bay = $(`<div class="shipRefit"></div>`);
+    box.append(bay);
+
+    let paint = function(){
+        clearElement(bay);
+        let design = refitDesign(ship, plan);
+
+        refitParts.forEach(function(part){
+            if (!shipSlotOpen(part,ship.class)){ return; }
+            // Show the original part when the plan changes this slot.
+            let fitted = part === 'special' ? shipSpecial(design) : design[part];
+            let held = part === 'special' ? shipSpecial(ship) : ship[part];
+            let was = held === fitted ? `` : ` <span class="refitWas has-text-info">${loc('outer_shipyard_refit_was',[loc(`outer_shipyard_${part}_${held}`)])}</span>`;
+            let row = $(`<div class="refitSlot"><span class="refitLabel has-text-warning">${loc(`outer_shipyard_${part}`)}</span>${was}</div>`);
+            let offered = 0;
+            shipParts[part].forEach(function(v,idx){
+                if (!shipPartAvailable(part,idx,v,ship.class)){ return; }
+                offered++;
+                // Mark the selected part visually and for assistive technology.
+                let on = fitted === v;
+                $(`<button class="button is-small ${on ? `is-success refitOn` : `is-info`}" aria-pressed="${on}">${on ? `&#10003; ` : ``}${loc(`outer_shipyard_${part}_${v}`)}</button>`)
+                    .on('click', function(){ plan[part] = v; paint(); })
+                    .appendTo(row);
+            });
+            // Show fixed slots that have no available alternatives.
+            if (offered === 0){
+                row.append(`<span class="refitFixed has-text-caution">${loc(`outer_shipyard_${part}_${fitted}`)} <span class="has-text-info">(${loc('outer_shipyard_refit_fixed')})</span></span>`);
+            }
+            bay.append(row);
+        });
+
+        // Compare both designs with the same fleet, cargo, and dock effects.
+        let rate = function(source){
+            let hull = refitDesign(ship, source);
+            hull.fid = ship.fid;
+            hull.flag = ship.flag;
+            hull.cargo = ship.cargo;
+            return hull;
+        };
+        let bare = rate(false), next = rate(plan);
+
+        // Display current and planned performance values.
+        let stats = $(`<div class="shipDispatchStats refitStats"></div>`);
+        let shift = function(label, before, after){
+            let value = String(before) === String(after) ? `${after}` : `${before} <span class="has-text-caution">&rarr;</span> ${after}`;
+            stats.append(`<span><span class="has-text-warning">${label}</span> <span class="pad">${value}</span></span>`);
+        };
+        let powerText = function(bp){
+            let watts = shipPower(bp);
+            return watts < 0 ? `<span class="has-text-danger">${watts}kW</span>` : `${watts}kW`;
+        };
+        let speedText = function(bp){
+            return Math.round((149597870.7/225/24/3600) * shipSpeed(bp)) + 'km/s';
+        };
+        let fuelText = function(bp){
+            let fuel = shipFuelUse(bp);
+            return fuel.res ? `-${fuel.burn} ${global.resource[fuel.res].name}` : loc('outer_shipyard_fuel_solar');
+        };
+        shift(loc('power'), powerText(bare), powerText(next));
+        if (ship.class !== 'freighter'){
+            shift(loc('firepower'), shipAttackPower(bare), shipAttackPower(next));
+        }
+        shift(loc('outer_shipyard_sensors'), loc('outer_shipyard_sensor_range',[sensorRange(bare)]), loc('outer_shipyard_sensor_range',[sensorRange(next)]));
+        shift(loc('speed'), speedText(bare), speedText(next));
+        shift(loc('outer_shipyard_fuel'), fuelText(bare), fuelText(next));
+        bay.append(stats);
+
+        // Render refit costs using standard resource affordability styling.
+        let costs = refitCosts(ship, plan);
+        let bill = $(`<div class="costList refitCost"></div>`);
+        let res_list = Object.keys(costs).sort(function(a,b){
+            return a === 'Money' ? -1 : b === 'Money' ? 1 : 0;
+        });
+        if (res_list.length === 0){
+            bill.append(`<span class="has-text-success">${loc('outer_shipyard_refit_free')}</span>`);
+        }
+        res_list.forEach(function(res,idx){
+            if (idx > 0){ bill.append(`<span> | </span>`); }
+            let color = global.resource[res].amount >= costs[res] ? `has-text-success` : `has-text-danger`;
+            bill.append(`<span class="res-${res} ${color}" data-${res}="${costs[res]}" data-ok="has-text-success">${global.resource[res].name} ${sizeApproximation(costs[res])}</span>`);
+        });
+        bay.append(bill);
+
+        if (refitDrains(ship, plan)){
+            bay.append(`<div class="refitWarn has-text-caution">${loc('outer_shipyard_refit_drain')}</div>`);
+        }
+
+        let act = $(`<div class="refitAct"></div>`);
+        let blocked = refitBlocked(ship, plan);
+        if (blocked){
+            act.append(`<span class="has-text-danger">${loc(blocked)}</span>`);
+        }
+        else if (!refitChanged(ship, plan)){
+            act.append(`<span class="has-text-caution">${loc('outer_shipyard_refit_none')}</span>`);
+        }
+        else {
+            $(`<button class="button is-info refitGo">${loc('outer_shipyard_refit')}</button>`)
+                .on('click', function(){
+                    if (applyRefit(ship, plan)){
+                        messageQueue(loc('outer_shipyard_refit_msg',[ship.name]),'info',false,['progress']);
+                        if (modal && modal.close){ modal.close(); }
+                        drawShips();
+                        updateCosts();
+                    }
+                })
+                .appendTo(act);
+        }
+        bay.append(act);
+    };
+
+    paint();
+}
+
 function fleetJoinModal(id, modal){
     let ship = global.space.shipyard.ships[id];
     if (!ship){ return; }

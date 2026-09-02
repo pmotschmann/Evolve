@@ -2190,6 +2190,9 @@ const extraInformation = {
     fleet_command: [
         loc(`wiki_tech_fleet_command`)
     ],
+    fleet_refit: [
+        loc(`wiki_tech_fleet_refit`)
+    ],
     reconstruction: [
         loc(`wiki_tech_reconstruction`)
     ],
