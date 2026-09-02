@@ -7,6 +7,7 @@ import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
+import { supplyZone } from './supply.js';
 import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
 import { actions, getStructNumActive, templeCount } from './actions.js';
@@ -490,6 +491,8 @@ export const job_data = {
         desc(){
             return loc('job_space_miner_desc');
         },
+        // Record each job’s supply zone; untagged jobs work at home.
+        zone: 'spc_belt',
         stress(){ return 5; },
         color(){ return 'advanced'; }
     },
@@ -498,6 +501,7 @@ export const job_data = {
         desc(){
             return loc('job_hell_surveyor_desc');
         },
+        zone: 'portal:sensor_drone',
         stress(){ return 1; },
         color(){ return 'advanced'; }
     },
@@ -548,6 +552,7 @@ export const job_data = {
             }
             return desc;
         },
+        zone: 'eden_elysium',
         stress(){ return 3; },
         color(){ return 'advanced'; }
     },
@@ -556,6 +561,7 @@ export const job_data = {
         desc(){
             return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
         },
+        zone: 'tauceti:mining_pit',
         stress(){ return 4.5; },
         color(){ return 'advanced'; }
     },
@@ -913,6 +919,50 @@ export function teamsterCap(){
 export function craftsmanMax(){
     let bonus = geneFlat('guildmaster');
     return global.civic.craftsman.max + (bonus > 0 ? jobScale(bonus) : 0);
+}
+
+// Return active crafting capacity grouped by supply zone.
+export function craftsmanCapacityByZone(){
+    const by = {};
+    const add = (struct, seats) => {
+        if (!(seats > 0)){ return; }
+        const at = supplyZone(struct);
+        by[at] = (by[at] || 0) + seats;
+    };
+    if (global.city['foundry']){
+        add('city:foundry', jobScale(global.city.foundry.count));
+    }
+    if (support_on['fabrication']){
+        add('space:fabrication', jobScale(support_on['fabrication']));
+    }
+    if (global.tech['isolation'] && support_on['tau_factory']){
+        add('tauceti:tau_factory', jobScale(support_on['tau_factory'] * 5));
+    }
+    // Surface works reached by the descender: nobody is at the bench while the tether is stopped.
+    if (actions.space.spc_venus.descender.operating() && support_on['workshop']){
+        add('space:workshop', jobScale(support_on['workshop'] * actions.space.spc_venus.workshop.crafters()));
+    }
+    if (p_on['womling_station']){
+        add('tauceti:womling_station', jobScale(p_on['womling_station'] * 1));
+    }
+    if (p_on['stellar_forge']){
+        add('interstellar:stellar_forge', jobScale(p_on['stellar_forge'] * 2));
+    }
+    if (p_on['demon_forge']){
+        add('portal:demon_forge', jobScale(p_on['demon_forge'] * actions.portal.prtl_wasteland.demon_forge.crafters()));
+    }
+    if (global.tech['elysium'] && global.tech.elysium >= 18 && p_on['sacred_smelter']){
+        add('eden:sacred_smelter', jobScale(p_on['sacred_smelter'] * 3));
+    }
+    return by;
+}
+
+// Every bench there is, wherever it stands.
+export function craftsmanCapacity(){
+    const by = craftsmanCapacityByZone();
+    let seats = 0;
+    for (const zone in by){ seats += by[zone]; }
+    return seats;
 }
 
 export function craftsmanCap(res){

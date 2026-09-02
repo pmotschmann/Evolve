@@ -36,7 +36,9 @@ export var breakdown = {
     c: {},
     p: {},
     // Store resource storage breakdowns by supply zone.
-    creg: {}
+    creg: {},
+    // Store zone-level production and consumption for pooled industry entries.
+    preg: {}
 };
 export var power_generated = {};
 export var p_on = {};
@@ -1657,7 +1659,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 39;
+global['beta'] = 40;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

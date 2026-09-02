@@ -12,6 +12,7 @@ import { jobScale } from './jobs.js';
 import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
 import { shipCosts, checkPathRequirements, titanReclaimed } from './truepath.js';
+import { runAutoRoutes } from './autoroute.js';
 import { checkEdenRequirements } from './edenic.js';
 
 export const gmen = {
@@ -669,6 +670,25 @@ export function drawnGovernOffice(){
         res_bal.append($(`<div class="chk"><b-checkbox v-model="c.replicate.res.cap">${loc(`gov_task_replicate_cap`)}</b-checkbox></div>`));
     }
 
+    { // Freighter Routing
+        if (!global.race.governor.config.hasOwnProperty('freight')){
+            global.race.governor.config['freight'] = {};
+        }
+        if (!global.race.governor.config.freight.hasOwnProperty('horizon')){
+            global.race.governor.config.freight['horizon'] = freightHorizonDefault;
+        }
+        if (!global.race.governor.config.freight.hasOwnProperty('balance')){
+            global.race.governor.config.freight['balance'] = true;
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('freight')"><div class="hRow"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_freight`)}</div><div class="chk"><b-checkbox v-model="c.freight.balance">${loc(`gov_task_freight_balance`)}</b-checkbox></div></div></div>`);
+        options.append(contain);
+        let freight = $(`<div class="storage"></div>`);
+        contain.append(freight);
+
+        freight.append($(`<b-field>${loc(`gov_task_freight_horizon`)}<b-numberinput min="1" :max="Number.MAX_SAFE_INTEGER" v-model="c.freight.horizon" :controls="false"></b-numberinput></b-field>`));
+    }
+
     { // Rebuild Ruins
         if (!global.race.governor.config.hasOwnProperty('repair')){
             global.race.governor.config['repair'] = {};
@@ -862,6 +882,12 @@ function appointGovernor(){
             elm: `#candidates .${gov.bg} .bg`,
         });
     });
+}
+
+// Return whether a governor task slot is running this task.
+export function govTaskActive(task){
+    if (!global.genes['governor'] || !global.tech['governor'] || !global.race['governor'] || !global.race.governor['tasks']){ return false; }
+    return Object.values(global.race.governor.tasks).includes(task);
 }
 
 export function govActive(trait,val){
@@ -1075,6 +1101,17 @@ function chargeCopy(c_action,offset,budget,force){
 export const repairWaitCap = 900;           // 15 minutes
 export const repairWaitCapFavoured = 3600;  // 60 minutes for a type the governor is biased toward
 export const repairThreatDefault = 50000; // Default setting for rebuilding structures in danger
+export const freightHorizonDefault = 400; // Days ahead a shortage has to bite before a freighter is sent
+
+// Treat missing governor settings as inactive.
+export function freightConfig(){
+    let cfg = global.race.governor['config'] && global.race.governor.config['freight']
+        ? global.race.governor.config.freight : false;
+    return {
+        horizon: cfg && typeof cfg.horizon === 'number' && cfg.horizon > 0 ? cfg.horizon : freightHorizonDefault,
+        balance: cfg && cfg.hasOwnProperty('balance') ? !!cfg.balance : true
+    };
+}
 
 function repairThreat(target){
     return global.race['zhorde'] && global.race.zhorde[target.region] ? global.race.zhorde[target.region] : 0;
@@ -1145,6 +1182,20 @@ export const gov_tasks = {
                 else if (global.city.morale.current < global.city.morale.cap && global.civic.taxes.tax_rate > global.race.governor.config.tax.min){
                     govCivics('adj_tax','sub');
                 }
+            }
+        }
+    },
+    freight: { // Freighter Routing
+        name: loc(`gov_task_freight`),
+        req(){
+            // Enable freight management only in regional supply mode.
+            return supplyMode() !== 'global' && global.space && global.space['shipyard']
+                && Array.isArray(global.space.shipyard.ships)
+                && global.space.shipyard.ships.some(ship => ship.class === 'freighter') ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                runAutoRoutes(freightConfig());
             }
         }
     },

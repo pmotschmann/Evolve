@@ -215,7 +215,7 @@ const outerTruth = {
             },
             s_type: 'titan',
             support(){ return -1; },
-            support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: 500 }]; },
+            support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: supplyMode() === 'global' ? 500 : 50 }]; },
             powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
@@ -2420,9 +2420,8 @@ function surveyFound(){
     return global.tech['survey'] && global.tech.survey >= 2 && surveyBody() ? true : false;
 }
 
-// spc_survey has no entry of its own in the position table — it stands in for a real moon, and which
-// one is not known until the roll. Anything resolving a position or a star system goes through here so
-// the region behaves as the body it actually is.
+// spc_survey has no entry of its own in the position table — it stands in for a real moon, and which one is not
+// known until the roll.
 export function resolveBody(locationName){
     if (locationName === 'spc_survey'){
         let moon = surveyBody();
@@ -4684,9 +4683,7 @@ const tauCetiModules = {
                 return false;
             },
             struct(){
-                // Carries its own graphene fuel allocation. It used to borrow the Titan factory's, which
-                // only worked while isolation kept Titan out of reach; the jump gate brings Titan back and
-                // both plants now run at the same time.
+                // Carries its own graphene fuel allocation.
                 return {
                     d: { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 },
                     p: ['refueling_station','tauceti']
@@ -5696,9 +5693,7 @@ export function zAssaultMethods(){
     };
 }
 
-// The warning that hangs under Venus while the horde holds its orbit. Every structure there has its
-// condition() go false for the duration, so without this the region renders as a bare heading with
-// nothing under it and no reason given.
+// The warning that hangs under Venus while the horde holds its orbit.
 export function blockadeBanner(region){
     if (region !== 'spc_venus'){ return ``; }
     return `<div class="zassault has-text-danger" v-show="blockaded()"><span class="zpulse">{{ blockadeText() }}</span></div>`;
@@ -5775,9 +5770,7 @@ function zTitanWatch(){
     renderSpace();
 }
 
-// --- Infested fleet -----------------------------------------------------------------------------
-// Where the infested can reach. spc_red and spc_hell are open from the start; the rest unlock as the
-// player pushes outward and the horde follows.
+// Infested Fleet
 function zFleetTargets(){
     let targets = ['spc_red','spc_hell'];
     if (global.tech['luna'] && global.tech.luna >= 3){ targets.push('spc_moon'); }
@@ -6006,9 +5999,7 @@ function zUplinkWatch(fleet){
     }
 }
 
-// Ships in one sortie. Ordinarily a lone raider, or a pair once the horde has managed a strike on
-// another star. The assault never sends fewer than two, and what it leaves behind afterwards still
-// flies in company more often than it used to.
+// Ships in one sortie.
 const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
 const zAftermathSizes = [[0.50,1],[0.40,2],[0.10,3]];
 function zFleetSize(fleet){
@@ -6125,17 +6116,14 @@ function zGroundFireCount(){
     return targets;
 }
 
-// Share of a hit each armour lets through. The ratio matches the 8 / 6 / 4 the wear-and-tear roll in
-// the main loop already uses, so neutronium plating turns aside half of what steel does wherever the
-// damage is coming from.
+// Share of a hit each armour lets through.
 const shipArmorSoak = { steel: 1, alloy: 0.75, neutronium: 0.5, aerographene: 0.75 };
 export function shipArmorFactor(ship){
     return ship && shipArmorSoak.hasOwnProperty(ship.armor) ? shipArmorSoak[ship.armor] : 1;
 }
 
-// Aerographene stops as much as alloy while weighing next to nothing, so it is the one plating that
-// makes a hull faster instead of slower. Applied to mass rather than to the finished speed so it
-// stacks with the class weights and the relay boost the same way every other mass term does.
+// Aerographene stops as much as alloy while weighing next to nothing, so it is the one plating that makes a hull
+// faster instead of slower.
 const AEROGRAPHENE_SPEED = 1.1;
 // Exported so the tech that unlocks the plating advertises the same number the ships actually fly at.
 export function aerographeneSpeedBonus(){
@@ -6207,9 +6195,7 @@ function zGroundFire(fleet){
     }
 }
 
-// --- Space combat -------------------------------------------------------------------------------
-// The horde's hulls are running a blockade, not looking for a battle: wherever they meet your ships
-// both sides trade a single volley and the survivors carry on.
+// Space Combat
 
 const zCombatSpeedWeight = 2;      // how hard a target's speed works against a firing solution
 const zCombatDamageDivisor = 50;  // firepower per point of hull damage
@@ -6627,12 +6613,7 @@ export function finalBeacons(){
     return hulls.length;
 }
 
-// One raider hull of a given class, fitted out and sitting over Earth. Not yet under way: a sortie
-// wants its whole group built before any of it is shot at.
-//
-// An ordinary raid is thrown together from whatever the wrecks gave up, so each fitting is rolled. A
-// scripted force fitted `best` instead takes the top of every list — zFleetParts is ordered worst to
-// best, so this stays right if the lists are ever retuned or extended.
+// One raider hull of a given class, fitted out and sitting over Earth.
 function zFleetHull(cls,best){
     let ship = {
         class: cls,
@@ -6648,12 +6629,7 @@ function zFleetHull(cls,best){
 }
 
 
-// Lift a group of hulls together for one target. Whatever you have parked over Earth gets a single
-// shot at the sortie as it climbs out, however many hulls are in it, and only what survives that flies.
-// Returns the number that got away.
-//
-// `opts.best` fits every hull with the top of each parts list; `opts.mark` sets a flag on each one
-// before it is engaged, so a scripted force is identifiable even if it is shot down on the way out.
+// Lift a group of hulls together for one target.
 function zFleetSortie(fleet,classes,target,ramp,opts){
     opts = opts || {};
     let ships = classes.map(cls => zFleetHull(cls,opts.best));
@@ -6664,17 +6640,12 @@ function zFleetSortie(fleet,classes,target,ramp,opts){
     let flying = zCullDowned(ships);
     if (flying.length === 0){ return 0; }
 
-    // One trip for the whole sortie, planned on its slowest hull exactly as sendShipTo does for a fleet
-    // of yours. Planned per ship instead, hulls drawing different engines would arrive days apart and
-    // fly as a group in name only.
+    // One trip for the whole sortie, planned on its slowest hull exactly as sendShipTo does for a fleet of yours.
     let trip = planShipTrip(fleetPace(flying),target);
     if (!trip)
         return;
 
-    // Stamp the sortie on anything that lifted in company. Two raiders on the same leg would otherwise
-    // be indistinguishable from two that merely happen to read the same remaining transit — and once a
-    // launch matches a hull already under way they tick down together and stay matched for good. A lone
-    // raider gets no stamp and keeps its own name and mark.
+    // Stamp the sortie on anything that lifted in company.
     if (flying.length > 1){
         fleet.n = (fleet.n || 0) + 1;
         flying.forEach(function(ship){ ship.zf = fleet.n; });
@@ -6700,9 +6671,7 @@ function zFleetSortie(fleet,classes,target,ramp,opts){
     return flying.length;
 }
 
-// The ordinary raid: a target and a hull drawn from whatever is cleared to fly. Once the horde has
-// managed a strike on another star it starts sending some of them out in company instead — the pair
-// flies as one sortie against one target, but each hull is rolled on its own.
+// The ordinary raid: a target and a hull drawn from whatever is cleared to fly.
 function zFleetLaunch(fleet,ramp){
     let targets = zFleetTargets();
     if (targets.length === 0){ return; }
@@ -6726,11 +6695,8 @@ function zFleetLaunch(fleet,ramp){
     zFleetSortie(fleet,classes,target,ramp);
 }
 
-// The strike on the colony at Tau Ceti: a hundred days after Titan comes under threat the horde puts
-// together something heavier than a raid and sends it across. Scripted rather than rolled — the target
-// is not on its ordinary list and the cruiser is not a class it builds for itself, and neither becomes
-// generally available for having been used here. Armed lazily rather than in zTitanWatch so a save that
-// was already past that point still gets its clock started.
+// The strike on the colony at Tau Ceti: a hundred days after Titan comes under threat the horde puts together
+// something heavier than a raid and sends it across.
 function zTauStrike(fleet){
     if (!titanReclaimed()){ return; }
     if (typeof fleet.tz !== 'number'){
@@ -6748,10 +6714,7 @@ function zTauStrike(fleet){
     }
 }
 
-// --- The blockade over Venus -------------------------------------------------------------------
-// The one infested force that is not a delivery. Every other sortie is a hull carrying infected to a
-// surface; this one is sent to keep you off one, and it holds station in orbit until it is destroyed.
-// Nothing can be built on Venus while it is up there.
+// The Blockade Over Venus
 const zVenusBlockadeHulls = ['dreadnought','cruiser','cruiser','destroyer','destroyer','frigate','frigate'];
 const zVenusBlockadeTarget = 'spc_venus';
 // Hull a blockade ship recovers on a day nobody engages it. Leaving it alone lets it patch up, so a
@@ -6826,9 +6789,8 @@ function zBlockadeDay(fleet){
     }
 }
 
-// One day of fighting in a single infested region: the fleet in orbit kills what it can, then whatever
-// horde is left goes looking for something to tear down. A horde nobody has found yet skips the fight
-// entirely and goes straight to the razing that gives it away.
+// One day of fighting in a single infested region: the fleet in orbit kills what it can, then whatever horde is
+// left goes looking for something to tear down.
 function infestationCombat(region){
     if (infestationFound(region)){
         let crew = 0;
@@ -6921,16 +6883,14 @@ function razeStructures(region,razings){
         zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
     });
 
-    // A razed factory takes lines out of the shared pool, so bank what it was making here rather than
-    // leaving it to the next production tick. A factory rebuilt before that tick runs would find
-    // nothing held and start its line over on alloy, quietly losing the job it had been doing.
+    // A razed factory takes lines out of the shared pool, so bank what it was making here rather than leaving it to
+    // the next production tick.
     if (Object.keys(losses).some(s => factoryData.factoryStructs.includes(s))){
         factoryData.trimFactoryLines(factoryData.factoryCapacity());
     }
 
-    // A hidden horde that just leveled something has announced itself: report the ambush once, then
-    // redraw so its numbers appear. From tomorrow on it is fought like any other. Redrawing after the
-    // losses are applied keeps the rebuilt panel from showing counts that are already stale.
+    // A hidden horde that just leveled something has announced itself: report the ambush once, then redraw so its
+    // numbers appear.
     if (ambush){
         if (!global.race['zfound']){ global.race['zfound'] = {}; }
         global.race.zfound[region] = true;
@@ -6959,11 +6919,7 @@ function structTitle(cat,region,struct){
 // Ceti hull rather than a size tier, so a class-targeted salvage never returns one.
 const shipClassSizes = ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'];
 
-// The wrecks a salvage would choose between. Asked for nothing in particular, the whole pool. Asked for
-// a class, that exact class if any survive and, failing that, each smaller class in turn down to
-// corvette — so the salvage is never a bigger hull than was requested, but the request is not wasted
-// just because the biggest wrecks are gone. Exported so a button can work out what it is offering
-// without taking it, and so both share one definition of what qualifies.
+// The wrecks a salvage would choose between.
 export function salvageCandidates(maxClass){
     let pool = global.race.inactive?.ships;
     if (!pool || pool.length === 0){ return []; }
@@ -7005,10 +6961,8 @@ function newDerelict(){
     return ship;
 }
 
-// Reserved wrecks, keyed by whoever reserved them — one shared store rather than a variable per
-// building, so any number of things can hold a hull aside. Being kept here instead of in the inactive
-// pool is what makes a pin safe: salvageCandidates only ever sees the pool, so an ordinary salvage
-// cannot carry off a hull that a button has already promised by name.
+// Reserved wrecks, keyed by whoever reserved them — one shared store rather than a variable per building, so any
+// number of things can hold a hull aside.
 export function salvagePins(){
     if (!global.race['salvagePins']){ global.race['salvagePins'] = {}; }
     return global.race.salvagePins;
@@ -7019,10 +6973,8 @@ export function salvagePin(key){
     return salvagePins()[key] || false;
 }
 
-// Reserve the wreck that the `key` salvage will advertise and hand over, lifting it out of the pool so
-// nothing else can take it. Re-pinning an existing key keeps the hull already reserved. When nothing at
-// or below `maxClass` is adrift a fresh corvette is built, so a button that gates progress always has
-// an answer.
+// Reserve the wreck that the `key` salvage will advertise and hand over, lifting it out of the pool so nothing
+// else can take it.
 export function pinSalvage(key,maxClass){
     let pins = salvagePins();
     if (pins[key]){ return pins[key]; }
@@ -7043,9 +6995,7 @@ export function pinSalvage(key,maxClass){
     return ship;
 }
 
-// Take one derelict. With a pin key, the hull reserved under it is released and handed over — the only
-// way a reserved wreck ever leaves the store. Otherwise the pick is made from the unreserved pool.
-// Returns false when nothing suitable is left.
+// Take one derelict.
 function pickDerelict(maxClass,pin){
     if (pin){
         let pins = salvagePins();
@@ -7065,22 +7015,15 @@ function pickDerelict(maxClass,pin){
     return pool.splice(pool.indexOf(ship),1)[0];
 }
 
-// `maxClass` is either one class applied to every hull recovered, or a list naming a class per hull —
-// which is how a single find can ask for, say, a corvette and a frigate and still report as one haul.
-// A list sets how many are recovered and `qty` is ignored. Each entry still downgrades on its own if
-// its class is not among the wrecks.
-//
-// `pin` names a reserved wreck (see pinSalvage) to hand over rather than picking from the pool. It is
-// the only way a reserved hull is ever salvaged — without it the pick cannot see reserved wrecks at all.
+// `maxClass` is either one class applied to every hull recovered, or a list naming a class per hull — which is how
+// a single find can ask for, say, a corvette and a frigate and still report as one haul.
 export function salvageShip(qty, locationName, sLocation, eventStyle, maxClass, pin){
     let wants = Array.isArray(maxClass) ? maxClass : new Array(Math.max(qty,0)).fill(maxClass || false);
     if (wants.length > 0){
         let salvaged = 0;
         for (let i=0; i<wants.length; i++){
-            // A pin only ever names one hull, so it applies to the first recovery; anything further
-            // falls through to the ordinary class search.
-            // Each request stands on its own: with a mixed list, finding no corvette says nothing about
-            // whether a frigate is out there, so a miss skips rather than abandoning the whole haul.
+            // A pin only ever names one hull, so it applies to the first recovery; anything further falls through to the
+            // ordinary class search.
             let ship = pickDerelict(wants[i], i === 0 ? pin : false);
             if (!ship){ continue; }
             TPShipInitTransit(ship, sLocation);
@@ -7345,6 +7288,11 @@ export function drawShipYard(){
                         if (global.tech.syard_sensor >= 4){ global.space.shipyard.blueprint.sensor = 'quantum'; }
                         if (global.tech.syard_power >= 4){ global.space.shipyard.blueprint.power = 'elerium'; }
                     }
+                    else if (b === 'class' && v !== 'freighter' && global.space.shipyard.blueprint.class === 'freighter'){
+                        // A freighter is forced to carry no weapon, so leaving the plan on 'none' after switching to a hull that can shoot
+                        // means quietly designing an unarmed warship.
+                        global.space.shipyard.blueprint.weapon = 'railgun';
+                    }
                     else if (b === 'class' && v !== 'explorer' && global.space.shipyard.blueprint.class === 'explorer'){
                         global.space.shipyard.blueprint.engine = 'ion';
                     }
@@ -7367,7 +7315,7 @@ export function drawShipYard(){
                     if (v === 'freighter'){ return global.tech['shadow'] >= 5; }
                     if (k === 'special'){
                         const isFreighter = global.space.shipyard.blueprint.class === 'freighter';
-                        if (isFreighter){ return ['extra_fuel','extra_cargo'].includes(v); }
+                        if (isFreighter){ return ['extra_fuel','extra_cargo','extra_thruster'].includes(v); }
                         // A mount the current hull has no room for is not offered at all.
                         if (!shipSpecialAllowed(v,global.space.shipyard.blueprint.class)){ return false; }
                         return global.tech['syard_special'] ? true : false;
@@ -7533,9 +7481,7 @@ export function TPShipDesc(parent,obj){
     return desc;
 }
 
-// Initialize ship variables related to transit. Used either when creating a new ship 
-// to place it at `locationName`, or when landing an existing ship at `locationName`
-// to cleanup after previous trip.
+// Initialize ship variables related to transit.
 function TPShipInitTransit(ship, locationName) {
     // Whether ship is currently in transit
     ship.inTransit = false;
@@ -7606,13 +7552,15 @@ export function grantSupplyFreighters(regions){
         const ship = {
             class: 'freighter', power: 'diesel', armor: 'alloy', engine: 'vacuum', sensor: 'radar',
             weapon: 'none', special: 'extra_fuel', name: getRandomShipName(), cargo: {}, supplyGrant: region,
-            damage: 0, fueled: false, fuel: 0
+            damage: 0, fueled: true, fuel: 0
         };
         let suffix = 1, base = ship.name;
         while (global.space.shipyard.ships.some(existing => existing.name === ship.name)){
             ship.name = `${base} ${++suffix}`;
         }
         TPShipInitTransit(ship, dock);
+        // Handed over ready to fly, like anything else off the slipway.
+        ship.fuel = shipFuelTank(ship);
         ship.supplyDockFixed = true;
         global.space.shipyard.ships.push(ship);
         granted++;
@@ -7704,8 +7652,10 @@ function buildTPShip(ship, queue){
     TPShipInitTransit(ship, locationName);
 
     ship.damage = 0;
-    ship.fueled = false;
-    ship.fuel = 0;
+    // A hull leaves the yard fuelled. Fuelling it is part of building it, and a ship delivered dry
+    // cannot move at all unless the yard happens to sit on a world that makes its fuel.
+    ship.fuel = shipFuelTank(ship);
+    ship.fueled = true;
 
     if (ship.name.length === 0){
         ship.name = getRandomShipName();
@@ -7945,8 +7895,8 @@ function explorerRetired(){
 }
 
 // --- The special slot ---------------------------------------------------------------------------
-const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo'];
-const freighterSpecials = ['extra_fuel','extra_cargo'];
+const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster'];
+const freighterSpecials = ['extra_fuel','extra_cargo','extra_thruster'];
 
 // Ships allowed to carry mass drivers
 const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
@@ -7962,7 +7912,7 @@ export function shipSpecial(ship){
 }
 
 // Power a special mount draws
-const shipSpecialPower = { none: 0, massdriver: 325, extra_fuel: 0, extra_cargo: 0 };
+const shipSpecialPower = { none: 0, massdriver: 325, extra_fuel: 0, extra_cargo: 0, extra_thruster: 0 };
 
 // --- Orbital bombardment ------------------------------------------------------------------------
 const shipBombardRating = { cruiser: 500, battlecruiser: 900, dreadnought: 2000 };
@@ -8054,7 +8004,9 @@ export function freightWeight(ship){
     return Object.entries(freightCargo(ship)).reduce((total, [res, amount]) => total + (atomic_mass[res] || 0) * (Number(amount) || 0), 0);
 }
 export function freightSpeedPenalty(ship){
-    return ship && ship.class === 'freighter' ? Math.floor(freightWeight(ship) / 500000) : 0;
+    if (!ship || ship.class !== 'freighter'){ return 0; }
+    const penalty = Math.floor(freightWeight(ship) / 500000);
+    return shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty;
 }
 
 // Remaining whole days to a ship's final destination, including any later jump-gate legs.
@@ -8122,7 +8074,7 @@ export function shipSpeed(ship){
         case 'emdrive': speed = 37500 / mass * boost; break;
         case 'electrokinetic': speed = (global.tech.syard_engine >= 6 ? 140 : 56) / mass * boost; break;
     }
-    return ship.class === 'freighter' ? speed * Math.max(0.01, 1 - freightSpeedPenalty(ship) / 100) : speed;
+    return ship.class === 'freighter' ? speed * Math.max(0.25, 1 - freightSpeedPenalty(ship) / 100) : speed;
 }
 
 export function shipFuelUse(ship){
@@ -8254,9 +8206,11 @@ function fillShipTank(ship){
 }
 
 // Called by the main tick for docked ships. Only natural producers refill automatically.
+// Return refuelling use and its source zone for ledger accounting.
 export function autoRefuelShip(ship){
-    if (!ship || ship.inTransit || !locationProducesFuel(ship)){ return 0; }
-    return fillShipTank(ship);
+    if (!ship || ship.inTransit || !locationProducesFuel(ship)){ return false; }
+    const taken = fillShipTank(ship);
+    return taken > 0 ? { res: shipFuelUse(ship).res, at: ship.location.name, taken } : false;
 }
 
 export function canManuallyRefuel(ship){
@@ -8314,6 +8268,66 @@ function tradeTrip(group, from, to){
     pace.location = { name: from, position: genXYZcoord(from) };
     pace.origin = { name: '', position: genXYZcoord(from) };
     return planShipTrip(pace, to);
+}
+
+// Return fleet travel time for one route leg, or Infinity if unreachable.
+export function tradeLegDays(group, from, to){
+    if (from === to){ return 0; }
+    const trip = tradeTrip(group, from, to);
+    return trip ? trip.totalTime : Infinity;
+}
+
+// Validate that a proposed route is flyable with available fuel.
+export function tradeRouteViable(group, stops){
+    return stops.length > 1 && validateTradeRoute(group, stops);
+}
+
+// What a world can expect a freighter to bring it, and roughly when.
+const freightRouteLoops = 6;
+
+export function freightArrivals(res, pool, loadable){
+    const take = loadable || ((r, zone, capacity) => Math.min(capacity, Math.max(0, regAmount(r, zone))));
+    const arrivals = [];
+    const ships = (global.space.shipyard && global.space.shipyard.ships) || [];
+    const seen = new Set();
+    for (const ship of ships){
+        if (seen.has(ship) || ship.class !== 'freighter'){ continue; }
+        const group = tradeFleet(ship).filter(member => member.class === 'freighter');
+        group.forEach(member => seen.add(member));
+        if (!group.length){ continue; }
+        const lead = tradeLeader(group);
+        const route = tradeRoute(lead);
+        let hold = group.reduce((total, member) => total + (freightCargo(member)[res] || 0), 0);
+
+        if (!route){
+            if (hold > 0 && lead.inTransit && lead.destination && supplyPool(lead.destination.name) === pool){
+                arrivals.push({ at: shipArrivalTime(lead), amount: hold });
+            }
+            continue;
+        }
+
+        const stops = route.stops;
+        if (!stops.some(stop => supplyPool(stop.zone) === pool)){ continue; }
+        const capacity = group.reduce((total, member) => total + freightCapacity(member), 0);
+        let when = lead.inTransit ? shipArrivalTime(lead) : 0;
+        let at = route.index;
+        for (let step = 0; step <= stops.length * freightRouteLoops; step++){
+            const stop = stops[at];
+            if (supplyPool(stop.zone) === pool){
+                if (hold > 0){ arrivals.push({ at: when, amount: hold }); }
+                hold = 0;
+            }
+            if ((stop.pickups || []).includes(res)){
+                hold = take(res, stop.zone, capacity);
+            }
+            const next = (at + 1) % stops.length;
+            // A day docked at each stop, then the flight on to the next.
+            when += 1 + tradeLegDays(group, stop.zone, stops[next].zone);
+            at = next;
+        }
+    }
+    arrivals.sort((a,b) => a.at - b.at);
+    return arrivals;
 }
 
 // A route is safe only when each hull can make every sequence of legs, replenishing its reserve at
@@ -8686,10 +8700,7 @@ function dragShipList(){
     }
 }
 
-// --- Ship list view options ---------------------------------------------------------------------
-// Filtering and grouping only earn their keep once the resettlement arc puts the fleet across two star
-// systems and dozens of locations. Before that every ship is within a few rows of every other and the
-// controls would be clutter.
+// Ship List View Options
 export function shipyardViewUnlocked(){
     return global.tech['resettle'] || global.tech['shadow'] ? true : false;
 }
@@ -8708,19 +8719,12 @@ export function shipyardView(){
     return v;
 }
 
-// The view as it should actually be applied. Locked, it is the plain ungrouped list however the options
-// were last left — so a reset that takes the tech away cannot leave the list filtered with no way back.
-// Folded fleets pass through either way: they are not one of the options the resettlement arc unlocks,
-// they belong to the fleets themselves, and a row's readout reads the same store to decide whether it
-// is speaking for one ship or for a whole fleet.
+// The view as it should actually be applied.
 function activeShipyardView(){
     return shipyardViewUnlocked() ? shipyardView() : { sys: 'all', group: false, fold: {}, ffold: shipyardView().ffold };
 }
 
-// The ships a row's readout describes. Normally the one it belongs to — but a folded flagship is
-// standing in for its whole fleet, whose ships have no rows of their own, so its figures become the
-// fleet's. Combined the way a fleet actually behaves rather than by summing everything blindly: it
-// aims with its best dish, keeps pace with its slowest hull, and is grounded by its worst.
+// The ships a row's readout describes.
 function rowGroup(ship){
     if (!ship){ return []; }
     if (global.tech['syard_fleet'] && ship.flag && ship.fid && shipyardView().ffold[ship.fid]){
@@ -8752,9 +8756,7 @@ function groupFuelText(group){
     }).join(`, `);
 }
 
-// Systems the fleet can be spread across: home, plus wherever the jump gate network reaches. Driven off
-// jumpGates so extending the network extends the filter with it, and stable enough to build the
-// dropdown from once when the tab is assembled.
+// Systems the fleet can be spread across: home, plus wherever the jump gate network reaches.
 function shipyardSystems(){
     let seen = { sun: true };
     Object.keys(jumpGates).forEach(function(gate){ seen[jumpGates[gate].system] = true; });
@@ -8820,10 +8822,8 @@ const shipyardRanks = {
     }
 };
 
-// A ship at a yard that can currently take it in comes first, whatever the location table says: those
-// are the ones being worked on, and they are what you came to the list to look at. Passed the yard list
-// rather than reading it per comparison, since a sort asks this O(n log n) times. Within the group the
-// existing tie-breakers still apply, so a docked ship sits above one still crossing to the same yard.
+// A ship at a yard that can currently take it in comes first, whatever the location table says: those are the ones
+// being worked on, and they are what you came to the list to look at.
 function shipyardShipCompare(a,b,yards){
     yards = yards || activeRepairYards();
     return (
@@ -8837,14 +8837,8 @@ function shipyardShipCompare(a,b,yards){
     );
 }
 
-// Draw a fleet as the one thing it is: each flagship keeps whatever place the ordering gave it, and the
-// ships under its command are lifted out of wherever they landed and set down directly behind it. Both
-// orderings feed through here — Auto Sort can rank an escort above its own flagship, and by hand the
-// two can end up anywhere at all.
-//
-// The array is rearranged rather than just the drawn rows. Hand-ordering moves a ship by its position
-// in the list and only means anything while the list and the array agree, so reordering the rows alone
-// would have cost the player the ability to drag.
+// Draw a fleet as the one thing it is: each flagship keeps whatever place the ordering gave it, and the ships
+// under its command are lifted out of wherever they landed and set down directly behind it.
 function clusterFleets(ships){
     if (!global.tech['syard_fleet']){ return ships; }
 
@@ -8887,9 +8881,7 @@ function queueSpace(){
     return global.queue.max - used;
 }
 
-// Put one ship design on the build queue. Returns false when there is no room left, so a caller
-// queueing a whole fleet can stop rather than silently dropping hulls. Does not call buildQueue():
-// the caller does that once, after the last hull goes on.
+// Put one ship design on the build queue.
 function queueTPShip(design){
     if (queueSpace() <= 0){ return false; }
     let blueprint = deepClone(design);
@@ -9015,17 +9007,14 @@ function drawShips(){
         entries.forEach(function(e){ drawShipRow(list,e.i,e.ship,regionNames); });
     }
 
-    // Hand-ordering moves a ship by its position in the list, which only means anything while the list
-    // and the array agree. Filtered, grouped, or with a fleet folded away they do not, so dragging is
-    // off until the view is plain and everything is on screen.
+    // Hand-ordering moves a ship by its position in the list, which only means anything while the list and the array
+    // agree.
     if (view.sys === 'all' && !view.group && !collapsed){
         dragShipList();
     }
 }
 
-// The collapsed summary for one location: what is there, without the detail. Bound to the yard so the
-// figures track the ships themselves — a hull taking damage or a raid arriving updates the header even
-// while the group is shut.
+// The collapsed summary for one location: what is there, without the detail.
 function drawShipGroup(list,g,locationName,regionNames,repairYards){
     let yard = repairYards.includes(locationName)
         ? `<span class="dispatchYard" title="${loc('outer_shipyard_repair_yard')}" aria-label="${loc('outer_shipyard_repair_yard')}">🛠️</span>`
@@ -9045,11 +9034,7 @@ function drawShipGroup(list,g,locationName,regionNames,repairYards){
         return global.space.shipyard.ships.filter(function(s){ return (s.inTransit ? s.destination.name : s.location.name) === locationName; });
     };
 
-    // Bound to the view options behind a wrapper key rather than to the yard itself. Vue merges data
-    // onto the same instance as methods and data wins, so binding the yard would have let its own
-    // `count` (the number of yard structures) shadow the summary's count() and take the render down
-    // with it. The figures come from methods reading the reactive global, so they track the ships
-    // regardless of what is bound here.
+    // Bound to the view options behind a wrapper key rather than to the yard itself.
     vBind({
         el: `#shipGrp${g}`,
         data: { v: shipyardView() },
@@ -9161,9 +9146,8 @@ function drawShipRow(list,i,ship,regionNames){
                 copyMode(){
                     return global.space.shipyard['copy'] ? true : false;
                 },
-                // Copy a built ship's design back into the yard so a sister ship can be ordered
-                // without setting every dropdown again. The name is deliberately left alone: it
-                // identifies the ship, and the yard rolls a fresh one for each hull it lays down.
+                // Copy a built ship's design back into the yard so a sister ship can be ordered without setting every dropdown
+                // again.
                 loadDesign(id){
                     let s = global.space.shipyard.ships[id];
                     if (!s){ return; }
@@ -9192,9 +9176,7 @@ function drawShipRow(list,i,ship,regionNames){
                     let s = global.space.shipyard.ships[id];
                     return global.space.shipyard['copy'] && global.tech['syard_fleet'] && s && s.flag && s.fid ? true : false;
                 },
-                // Queue a sister ship for every hull in the fleet, flagship included. Stops at the
-                // end of the queue rather than dropping the rest on the floor, and the copies are
-                // ordinary unattached ships -- they are not enrolled in the fleet for you.
+                // Queue a sister ship for every hull in the fleet, flagship included.
                 copyFleet(id){
                     let s = global.space.shipyard.ships[id];
                     if (!s || !s.fid){ return; }
@@ -9214,9 +9196,7 @@ function drawShipRow(list,i,ship,regionNames){
                     let s = global.space.shipyard.ships[id];
                     return s && !s.inTransit && shipyardLocations.includes(s.location.name) ? true : false;
                 },
-                // Which fleet a ship belongs to, shown against its name. A flagship reads as the
-                // command points it has spent of its rating; anything under one is named for the ship
-                // it answers to, which is what tells two fleets in the same orbit apart.
+                // Which fleet a ship belongs to, shown against its name.
                 fleetTag(id){
                     let s = global.space.shipyard.ships[id];
                     if (s && s.class === 'freighter' && !s.fid){ return `<span class="has-text-info">📦 ${loc('outer_shipyard_class_freighter')}</span>`; }
@@ -9257,9 +9237,8 @@ function drawShipRow(list,i,ship,regionNames){
                     else { ffold[s.fid] = true; }
                     drawShips();
                 },
-                // The link only appears when there is something it could actually do: leave a fleet,
-                // stand one down, or put this ship into one. A lone ship with nothing to lead and
-                // nothing to join gets no link at all.
+                // The link only appears when there is something it could actually do: leave a fleet, stand one down, or put this
+                // ship into one.
                 fleetShow(id){
                     let s = global.space.shipyard.ships[id];
                     if (!global.tech['syard_fleet'] || !s || s.inTransit){ return false; }
@@ -9492,20 +9471,13 @@ function initializeShipTrip(ship, locationName, trip){
     // Liftoff
     ship.inTransit = true;
 }
-// How far along its orbit a body has moved after `days`, in degrees. Angles are derived from the run
-// seed and the day count (see orbitAngle in stars.js), so looking ahead is just asking for the angle
-// at a later day — nothing has to be advanced to find out where a body will be.
+// How far along its orbit a body has moved after `days`, in degrees.
 function orbitDegrees(id, days){
     return orbitAngle(id, days);
 }
 
-// Where a body will actually be `days` from now — a plain projection along the orbits it already
-// travels, for use where the arrival time is known rather than being solved for.
-//
-// A moon gets both of its motions: its planet carried around the star, and itself carried around the
-// planet. The planet's is much the larger of the two — a moon out at Saturn is swept far further by
-// its primary than it ever travels on its own — but its own circuit is quick enough to put it on the
-// far side of its planet during a long approach, so neither can be dropped.
+// Where a body will actually be `days` from now — a plain projection along the orbits it already travels, for use
+// where the arrival time is known rather than being solved for.
 function bodyPointAt(locationName, days){
     // A temp point riding a body projects as that body does, carrying its own circuit round with it.
     // One with no parent is a fixed point in space, and stars do not orbit anything.
@@ -9529,15 +9501,11 @@ function bodyPointAt(locationName, days){
     return orbitPoint(locationName, orbitDegrees(locationName, days));
 }
 
-// Passes used to settle a moon intercept, and how close in days counts as settled. Each pass re-aims
-// at where the moon will be given the current flight-time estimate; two or three close it at any
-// speed the game produces, and the cap stops a pathologically slow ship spinning here.
+// Passes used to settle a moon intercept, and how close in days counts as settled.
 const MOON_INTERCEPT_STEPS = 8;
 const MOON_INTERCEPT_TOL = 1e-4;
 
-// Where to aim a ship so it meets `planet` rather than where it used to be. `elapsed` is time the
-// ship has already committed to before this leg starts — the run to a wormhole and the jump through
-// it — which the target keeps moving during.
+// Where to aim a ship so it meets `planet` rather than where it used to be.
 function calcLandingPoint(startingPosition, planet, speed, elapsed) {
     elapsed = elapsed || 0;
     // A temp point riding a body has to be led like any other orbiting thing, so it goes through the
@@ -9549,14 +9517,8 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
         if (!starData[planet]) { return genXYZcoord(planet); }
         if (starData[planet].startype) { return genXYZcoord(planet); }
     }
-    // A moon is solved for directly rather than through the crossing arithmetic below, which
-    // measures a body's orbital radius against the ship's distance from the system centre — for a
-    // moon that would pit a 0.01 AU circle against a crossing several AU wide and never land on
-    // anything sensible.
-    //
-    // Where the moon is depends on when the ship arrives, and when the ship arrives depends on where
-    // the moon is, so the two are settled together: start from the flight time to where it stands
-    // now, then re-aim until the answer stops moving.
+    // A moon is solved for directly rather than through the crossing arithmetic below, which measures a body's orbital
+    // radius against the ship's distance from the system centre — for a moon that would pit a 0.01 AU circle against a
     if (leadTemp || starData[planet].parent) {
         if (!(speed > 0)){ return genXYZcoord(planet); }
         let t = dist3(startingPosition, genXYZcoord(planet)) / speed;
@@ -9569,13 +9531,9 @@ function calcLandingPoint(startingPosition, planet, speed, elapsed) {
         return bodyPointAt(planet, elapsed + t);
     }
     // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
-    // Mirror genXYZcoord so the orbit center and eccentricity match the body's actual
-    // rendered position; otherwise a ship already in Tau Ceti has its landing point
-    // computed back near the home sun, producing a bogus multi-star transit distance.
     let star = starData[planet].star ? genXYZcoord(starData[planet].star) : { x: 0, y: 0, z: 0 };
-    // The band the orbit sweeps out, as radii from the ellipse's own centre: the semi-minor axis at
-    // its narrowest and the semi-major at its widest. A body around another star still rides the
-    // stretched circle that branch of orbitPoint draws, so its bounds are taken the same way.
+    // The band the orbit sweeps out, as radii from the ellipse's own centre: the semi-minor axis at its narrowest and
+    // the semi-major at its widest.
     let semiMajor, semiMinor, center_x;
     if (starData[planet].star){
         semiMajor = starData[planet].dist * 1.2;
@@ -9877,14 +9835,7 @@ export function shipRefStar(ship){
     return genXYZcoord(dO <= dD ? originStar : destStar);
 }
 
-// ---- Wormhole / jump gate network ----------------------------------------------------------
-// Extensible registry of jump gates and the directed wormhole links between them. A gate is a
-// physical location (a starData key) belonging to a star system. When a ship crosses
-// between two systems it is routed through a linked pair of active gates — an entry gate in its
-// own system and an exit gate in the destination's — and covers the inter-gate leg at
-// wormholeSpeedMult times its normal speed. To extend the network, add gates here and links
-// below; a link is one-way, so list both directions for a two-way wormhole or a single direction
-// for a one-way gate. New/not-yet-built gates can gate their availability via active().
+// - Wormhole / Jump Gate Network
 const wormholeSpeedMult = 125000;
 const jumpGates = {
     spc_sun_gate: {
@@ -9904,25 +9855,14 @@ const jumpLinks = [
     { from: 'tau_home_gate', to: 'spc_sun_gate' }
 ];
 
-// Which star system a location belongs to. Tau Ceti bodies carry star:'tauceti'; everything else
-// (including the Tau Ceti star region itself) resolves explicitly, defaulting to the Sun system.
-// --- Temporary coordinates ------------------------------------------------------------------
-// global.race.tempCoordinates holds ad-hoc points a ship can be sent to — detected signals and the
-// like — keyed by an id, each { n: display name, a: active, s: starData key of the star it
-// sits at, x, y, z }. They are fixed points rather than table entries, so they neither orbit nor appear in
-// starData, and every place that resolves a location has to know about them.
+// Which star system a location belongs to.
 export function tempCoord(locationName){
     let temps = global.race['tempCoordinates'];
     return temps && typeof locationName === 'string' && temps.hasOwnProperty(locationName) ? temps[locationName] : false;
 }
 
-// A temp point comes in three shapes, and `b` is what tells them apart:
-//   no `b`                  a fixed point in deep space — a signal heard once, and it stays put
-//   `b` alone               pinned to that body, exactly where it is, moving as it moves
-//   `b` + `r` + `o` + `p`   adrift around that body: radius `r` AU, period `o` days, angle `p` degrees
-// `zo` is the height above the parent's plane, held apart from `r` so the circle stays a circle.
-// x/y/z remain on every entry as the last-known position, which is what anything that has not learned
-// about orbits falls back to.
+// A temp point comes in three shapes, and `b` is what tells them apart: no `b`                  a fixed point in
+// deep space — a signal heard once, and it stays put `b` alone               pinned to that body, exactly where it
 
 // The parent body a point rides, or false. A parent that is itself a temp point is refused, since
 // resolving it would recurse.
@@ -9962,9 +9902,8 @@ export function driftingPoint(fields, parent, pos){
     return setTempOrbit(Object.assign({ a: true, s: parent, x: pos.x, y: pos.y, z: pos.z }, fields), parent, pos);
 }
 
-// Once a day: carry every orbiting point round, and adopt any derelict signal still held as a fixed
-// point from before they drifted. Their stored x/y/z is where they were last seen, which is exactly
-// the position to start the orbit from, so nothing jumps.
+// Once a day: carry every orbiting point round, and adopt any derelict signal still held as a fixed point from
+// before they drifted.
 export function moveTempCoordinates(days = 0.2){
     if (!global.race['tempCoordinates']){ return; }
     Object.keys(global.race.tempCoordinates).forEach(function(key){
@@ -10016,9 +9955,8 @@ function locSystemName(locationName){
     return star && star.label ? star.label : '';
 }
 
-// Find an active wormhole route (series of gate locations if any) connecting 
-// fromLoc's system to toLoc's system, or null when cannot find a path.
-// Uses A* to find optimal route when more gates are involved.
+// Find an active wormhole route (series of gate locations if any) connecting fromLoc's system to toLoc's system,
+// or null when cannot find a path.
 function findWormholeRoute(fromLoc, toLoc){
     let fromSys = locSystem(fromLoc);
     let toSys = locSystem(toLoc);
@@ -10142,10 +10080,7 @@ function findWormholeRoute(fromLoc, toLoc){
     return route;
 }
 
-// Plan a ship's trip to `locationName`. Returns the total transit time (days, computed up front),
-// origin/destination coordinates, and a path of waypoints: 
-// [entry gate -> exit gate].. -> final destination. 
-// When not using any jump gates the returned path contains only the final destination.
+// Plan a ship's trip to `locationName`.
 function planShipTrip(ship, locationName){
     if (!ship.inTransit && ship.location.name === locationName) {
         return false;
@@ -10419,15 +10354,11 @@ export function jumpGateRestart(){
     global.space.jump_gate.count = 100;
     global.space.jump_gate.razed = 0;
 
-    // Reserve the derelict the spc_sun "Salvage" building offers, so the choice (and the name on the
-    // button) stays fixed until it is salvaged. That salvage targets a corvette and the button is what
-    // grants the next resettle step, so pinSalvage builds one if none are adrift.
+    // Reserve the derelict the spc_sun "Salvage" building offers, so the choice (and the name on the button) stays
+    // fixed until it is salvaged.
     pinSalvage('spc_sun','corvette');
 
-    //global.settings.showSpace = true;
-    //global.settings.civTabs = 1;
-    //global.settings.spaceTabs = 1;
-    //renderSpace();
+    // global.settings.showSpace = true; global.settings.civTabs = 1; global.settings.spaceTabs = 1; renderSpace();
 }
 
 export function loneSurvivor(){
@@ -10990,9 +10921,7 @@ function shipDispatchModal(id, modal){
 
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${isFleet ? loc('outer_shipyard_dispatch_fleet',[group.length]) : loc('outer_shipyard_dispatch',[ship.name])}</p>`));
 
-    // Stats — mirrors the fleet row readout so the player can weigh what is being sent. For a fleet
-    // the numbers that combine are summed, and the ones that gate the group are its worst: the
-    // slowest engine sets the pace and the most battered hull is what will fail first.
+    // Stats — mirrors the fleet row readout so the player can weigh what is being sent.
     let slowest = fleetPace(group);
     let fuel = shipFuelUse(slowest);
     let fuelText = fuel.res ? `${fuel.burn} ${global.resource[fuel.res].name}/s` : `N/A`;
@@ -11097,9 +11026,8 @@ export function battleLogModal(){
     });
 }
 
-// Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command
-// points to spare for it. Every option says what it costs and what the fleet has left, so the choice
-// is made on the numbers rather than by trial and error.
+// Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command points to
+// spare for it.
 function fleetJoinModal(id, modal){
     let ship = global.space.shipyard.ships[id];
     if (!ship){ return; }
@@ -11145,12 +11073,7 @@ function fleetJoinModal(id, modal){
     }
 }
 
-// --- Fleets ---------------------------------------------------------------------------------
-// A fleet is a flagship and the ships that answer to it. Both carry the same `fid`, and the flagship
-// alone carries `flag`, so a fleet survives the ship list being re-sorted and any number of fleets can
-// share one orbit without running together. Ships under way are matched on their transit too — a ship
-// inbound to a place has its location set to that destination the moment it leaves, and it should not
-// be swept up by a fleet already sitting there. Requires the fleet_command tech (syard_fleet).
+// Fleets
 const fleetHulls = {
     corvette:      { cmd: 1,  cost: 1,  buff: 0,    soak: 0,   speed: 0.1 },
     frigate:       { cmd: 2,  cost: 2,  buff: 0,    soak: 0,   speed: 0.1 },
@@ -11210,9 +11133,8 @@ export function shipFleet(ship){
     return allShips().filter(s => s.fid === ship.fid && sameStation(s,ship));
 }
 
-// Whether two ships are in the same place and in the same state of motion — both sitting at the same
-// location, or both crossing to the same one and due at the same time. A fleet under way is only
-// together in the sense that its ships share a leg, so membership has to be judged on both.
+// Whether two ships are in the same place and in the same state of motion — both sitting at the same location, or
+// both crossing to the same one and due at the same time.
 function sameStation(a,b){
     if (!a || !b || a.inTransit !== b.inTransit){ return false; }
     return a.inTransit
@@ -11357,9 +11279,7 @@ export function shipCanLaunch(ship){
     return ship ? shipSpaceworthy(ship) || !atShipyard(ship) : false;
 }
 
-// --- Fleet Tactical Command ---------------------------------------------------------------------
-// Standing orders that run without the player: pull a badly damaged ship out of the line and send it
-// home, then put it back where it was once the yard is done with it.
+// Fleet Tactical Command
 
 // Range each percentage option accepts. One definition drives the input's own limits, the clamp behind
 // it and the range shown in its label, so they cannot disagree.
@@ -11392,9 +11312,7 @@ export function fleetCmdUnlocked(){
     return global.tech['syard_fleet'] ? true : false;
 }
 
-// The station a ship runs to: of those currently active, whichever it can reach soonest from where it
-// is. Judged on travel time rather than raw distance, so an open wormhole route counts for what it
-// actually saves a failing hull. False when there is nowhere active to run to.
+// The station a ship runs to: of those currently active, whichever it can reach soonest from where it is.
 function repairYard(ship){
     let best = false;
     let bestDays = false;
@@ -11424,9 +11342,7 @@ function orderShipTo(ship,locationName){
     return true;
 }
 
-// The same, for a whole fleet. Every ship takes the identical trip computed for the slowest, exactly as
-// a dispatch by hand does, so the group stays together the whole way and arrives on the same tick
-// rather than trickling in one hull at a time.
+// The same, for a whole fleet.
 function orderFleetTo(group,locationName){
     if (!group || group.length === 0){ return false; }
     let lead = group[0];
@@ -11482,11 +11398,7 @@ export function fleetCmdDay(){
         // Only a flagship that still leads something needs to speak for a group.
         let fleet = ship.flag && shipFlagship(ship) ? shipFleet(ship) : [ship];
 
-        // Disengage: a hull that has fallen past the line breaks off and runs for a repair yard. An
-        // escort goes alone, the rest of the fleet carrying on without it, and remembers the fleet so
-        // it can fall back in once it is patched up. A flagship cannot go alone — the fleet is only a
-        // fleet while it is there to lead it — so the whole formation withdraws with it and stays
-        // together at the yard.
+        // Disengage: a hull that has fallen past the line breaks off and runs for a repair yard.
         if (!ship.inTransit && !atShipyard(ship) && hull < cfg.flee){
             let yard = repairYard(ship);
             if (yard && yard !== ship.location.name){
@@ -11533,9 +11445,7 @@ export function fleetCmdDay(){
             }
         }
 
-        // Return on repair: patched up and still holding a posting to go back to. A fleet goes back
-        // together, so it waits until every one of its ships is fit to fly and leaves on the flagship's
-        // order — an escort sitting in the yard with its fleet holds its place until then.
+        // Return on repair: patched up and still holding a posting to go back to.
         if (ship['ret'] && !ship.inTransit && atShipyard(ship)){
             if (!cfg.ret){ return; }
             if (ship.fid && !ship.flag){ return; }

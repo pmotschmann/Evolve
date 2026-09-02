@@ -1016,6 +1016,48 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`zwar`,loc('wiki_mechanics_zwar'));
     }
 
+    { // Supply Zones
+        let supply = infoBoxBuilder(mainContent,{ name: 'supply', template: 'mechanics', label: loc('wiki_mechanics_supply'), paragraphs: 3, break: [2,3], h_level: 2,
+            para_data: {
+                1: [loc('tech_syndicate_threat_analysis')]
+            },
+            data_link: {
+                1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis']
+            }
+        });
+
+        { // What each world can hold
+            infoBoxBuilder(supply,{ name: 'supply_store', template: 'mechanics', label: loc('wiki_mechanics_supply_store'), paragraphs: 3, break: [2,3], h_level: 2,
+                para_data: {
+                    1: [global.resource.Crates.name,global.resource.Containers.name],
+                    3: [loc('tab_resources')]
+                }
+            });
+        }
+
+        { // Paying for things out of one world's store
+            infoBoxBuilder(supply,{ name: 'supply_build', template: 'mechanics', label: loc('wiki_mechanics_supply_build'), paragraphs: 3, break: [2,3], h_level: 2,
+                para_data: {
+                    2: [loc('city_factory'),loc('city_smelter'),loc('job_craftsman')]
+                }
+            });
+        }
+
+        { // Carrying goods between worlds
+            infoBoxBuilder(supply,{ name: 'supply_freight', template: 'mechanics', label: loc('wiki_mechanics_supply_freight'), paragraphs: 4, break: [2,3,4], h_level: 2,
+                para_data: {
+                    1: [loc('tab_supply_zones')],
+                    4: [loc('gov_task_freight')]
+                },
+                data_link: {
+                    4: ['wiki.html#governor-gameplay-freight']
+                }
+            });
+        }
+
+        sideMenu('add',`mechanics-gameplay`,`supply`,loc('wiki_mechanics_supply'));
+    }
+
     { // Seeded Randomness
         let seed = infoBoxBuilder(mainContent,{ name: 'seed', template: 'mechanics', label: loc('wiki_mechanics_seed'), paragraphs: 14, break: [3,5,6,7,8,9,10,11,12,13,14], h_level: 2,
             para_data: {

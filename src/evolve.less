@@ -1302,9 +1302,8 @@ Misc ---------> Main template
             background-color: @bars-background;
         }
 
-        // The race/name header sits directly above the scrolling resource list, which is tucked up
-        // under it by a negative top margin. Give the header an opaque, page-colored background so the
-        // resource rows scrolling behind it are hidden instead of bleeding through as overlapping text.
+        // The race/name header sits directly above the scrolling resource list, which is tucked up under it by a negative
+        // top margin.
         #race {
             background-color: @html-background;
         }
@@ -2902,16 +2901,7 @@ a {
             padding: 0 0 0 1rem;
         }
 
-        // Directional slide when switching tabs (main tabs and every nested sub-tab group). Buefy
-        // computes the transition name from the direction of travel — `slide-next` when moving to
-        // a tab further right, `slide-prev` when moving left — so the slide direction follows the
-        // click. The incoming tab stays in normal flow (so it defines the container height) and
-        // slides in via `transform`; the outgoing tab is absolutely positioned so the two overlap
-        // and slide across each other. We re-declare everything here because the bundled Buefy 0.9
-        // CSS uses Vue 2 transition class names (`-enter`), while the game runs Buefy 3 on Vue 3,
-        // which emits `-enter-from`/`-leave-from` — so the original slide only half-applied.
-        // Gated by the b-tabs :animated setting: with animations off Buefy emits no transition
-        // wrapper and none of these classes ever appear.
+        // Directional slide when switching tabs (main tabs and every nested sub-tab group).
         .slide-next-enter-active,
         .slide-prev-enter-active,
         .slide-next-leave-active,
@@ -2949,10 +2939,8 @@ a {
             pointer-events: none;
         }
 
-        // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab
-        // parked at ±100% can't spawn a horizontal scrollbar. Scoped to the active transition via
-        // :has() (and a direct-child match, so a sub-tab slide doesn't clip its parent) — the rest
-        // of the time overflow stays visible, so dropdown/tooltip menus aren't clipped.
+        // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab parked at ±100% can't
+        // spawn a horizontal scrollbar.
         .tab-content:has(> .slide-next-leave-active),
         .tab-content:has(> .slide-prev-leave-active) {
             overflow: hidden;
@@ -3000,10 +2988,7 @@ a {
                 }
             }
 
-            // Damaged structures get a cracked-glass overlay and red tint so the button reads as
-            // broken. Severity is set via :class="damaged()" -> "damaged mild" or "damaged severe".
-            // Base (.damaged) = mild: fewer cracks and a muted red halfway to the normal button
-            // color. .severe (damaged count exceeds built count) = full red with denser cracks.
+            // Damaged structures get a cracked-glass overlay and red tint so the button reads as broken.
             a.button.damaged {
                 position: relative;
                 overflow: hidden;
@@ -5089,9 +5074,7 @@ span.inline {
     }
 }
 
-// Player-pet coat colors. Kept at the top level (not scoped to .topBar) so the icon keeps its color
-// wherever the single #playerPet node lives — the header on desktop, the footer on mobile. Without
-// this the svg falls back to its default black fill once it moves out of the top bar.
+// Player-pet coat colors.
 .pet {
     .black {
         fill: #000000;
@@ -6413,9 +6396,7 @@ div.bigbang {
     top: 1rem;
 }
 
-// Mobile layout
-// At narrow widths: stack columns, show one panel at a time via #mobileNav.
-// .mobile-panel-game and .mobile-panel-queue on #main control which panel is visible
+// Mobile layout At narrow widths: stack columns, show one panel at a time via #mobileNav.
 #mobileNav {
     display: none; // Hidden on desktop
 }
@@ -6749,10 +6730,7 @@ div.bigbang {
         }
     }
 
-    // --- Main tab bar as icon tabs ---
-    // Render the main tabs (Civilization / Civics / Research / …) as a compact icon over a tiny
-    // label, each flexing to an equal share of the width, so the whole set fits on screen without
-    // horizontal scrolling. The nested sub-tab bars keep their scrollable text labels.
+    // Main Tab Bar As Icon Tabs
     #mainTabs > nav.tabs {
         > ul {
             width: 100%;
@@ -7181,6 +7159,55 @@ div.bigbang {
     gap: .5rem;
     flex-wrap: wrap;
 }
+
+// The route a freighter is flying, read rather than edited. The stops run left to right and wrap on
+// a narrow screen, with an arrow drawn between them and the one the fleet is dealing with picked out.
+.supplyRouteSummary {
+    margin: .5rem 0 .25rem;
+    text-align: left;
+}
+.supplyRouteSummaryHead {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    font-weight: 700;
+    margin-bottom: .35rem;
+}
+.supplyRouteSummaryStops {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: inline-flex;
+        align-items: baseline;
+        gap: .3rem;
+        padding: .1rem .45rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
+        border-radius: .25rem;
+    }
+    // An arrow trails every stop but the last, so the loop reads in order.
+    li:not(:last-child)::after {
+        content: '›';
+        margin-right: -.35rem;
+        margin-left: .1rem;
+        opacity: .7;
+    }
+    li.is-here {
+        border-color: currentColor;
+        font-weight: 700;
+    }
+}
+.supplyRouteSummaryPickup {
+    font-size: .85em;
+    opacity: .85;
+}
+.supplyRouteSummaryPickup::before { content: '('; }
+.supplyRouteSummaryPickup::after { content: ')'; }
 @media only screen and (max-width: 600px) {
     .supplyRouteStop { grid-template-columns: 1.5rem minmax(0, 1fr); }
     .supplyRouteStop .select { grid-column: 2; }
