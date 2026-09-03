@@ -12,7 +12,7 @@ import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
-import { supplyMode } from './supply.js';
+import { supplyMode, partitioned, drawPools } from './supply.js';
 import { loc } from './locale.js';
 
 export function arpa(type) {
@@ -1755,7 +1755,10 @@ function payArpaCosts(costs){
     costs = arpaAdjustCosts(costs);
     if (checkArpaCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            global['resource'][res].amount -= costs[res]() / 100;
+            const cost = costs[res]() / 100;
+            // Global projects draw regional resources through the shared-pool policy.
+            if (partitioned(res)){ drawPools(res, cost); }
+            else { global['resource'][res].amount -= cost; }
         });
         return true;
     }

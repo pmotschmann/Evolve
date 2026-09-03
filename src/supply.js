@@ -23,6 +23,9 @@ export function partitioned(res){
 // The homeworld is part of "spc_home"
 export const CAPITAL = 'spc_home';
 
+// Sentinel for civilization-wide costs that draw from every supply pool.
+export const ANYWHERE = '*';
+
 // Categories that carry regions, and the one that does not.
 const REGION_CATS = ['space','interstellar','galaxy','portal','tauceti','eden'];
 
@@ -95,6 +98,8 @@ export function supplyOf(c_action, cat){
         buildIndex();   // a hand-written supply() is honoured, but the tagging still has to have run
         return c_action.supply();
     }
+    // Research costs draw from the civilization-wide pool.
+    if (c_action && typeof c_action.id === 'string' && c_action.id.startsWith('tech-')){ return ANYWHERE; }
     buildIndex();
     if (c_action && c_action.id){
         const parts = c_action.id.split('-');
@@ -348,8 +353,9 @@ export function regLedger(res){
     return global.resource[res].reg;
 }
 
-// What one pool is holding.
+// Return a pool amount, or the global total for ANYWHERE.
 export function regAmount(res, pool){
+    if (pool === ANYWHERE){ return global.resource[res] ? global.resource[res].amount : 0; }
     const reg = regLedger(res);
     return reg.hasOwnProperty(pool) ? reg[pool] : 0;
 }
@@ -375,6 +381,8 @@ export function capsKnown(res){
 
 export function regMax(res, pool){
     if (uncapped(res)){ return -1; }
+    // Global capacity is the sum of all pool capacities.
+    if (pool === ANYWHERE){ return global.resource[res] ? global.resource[res].max : -1; }
     // Treat uninitialized regional capacity as uncapped.
     if (!capsKnown(res)){ return -1; }
     const caps = regMaxLedger(res);
@@ -753,11 +761,53 @@ export function clampPools(res){
     syncTotal(res);
 }
 
+// Draw a global cost from producing pools first, then largest reserves.
+export function drawPools(res, amount){
+    if (!(amount > 0) || !global.resource[res]){ return 0; }
+    const reg = regLedger(res);
+    const rates = regDiff(res);
+    let left = amount;
+
+    // Include only producing pools with available resources.
+    let output = 0;
+    const making = [];
+    for (const pool in reg){
+        if (rates[pool] > 0 && reg[pool] > 0){ making.push(pool); output += rates[pool]; }
+    }
+    if (output > 0){
+        // Calculate producer shares from the original remaining cost.
+        const owed = left;
+        for (const pool of making){
+            // Do not draw more than a pool holds.
+            const take = Math.min(reg[pool], owed * (rates[pool] / output));
+            if (take > 0){ reg[pool] -= take; left -= take; }
+        }
+    }
+
+    if (left > 0){
+        const order = Object.keys(reg).filter(pool => reg[pool] > 0).sort((a,b) => reg[b] - reg[a]);
+        for (const pool of order){
+            if (left <= 0){ break; }
+            const take = Math.min(reg[pool], left);
+            reg[pool] -= take;
+            left -= take;
+        }
+    }
+
+    syncTotal(res);
+    return amount - left;
+}
+
 // --- Moving resources ----------------------------------------------------------------------------
 
 // Add to (or take from) one pool, capped by what that pool can hold. Returns however much would not
 // fit, so a caller can decide what becomes of the remainder.
 export function poolMod(res, pool, val){
+    // Global debits draw from all pools; global credits go to the capital.
+    if (pool === ANYWHERE){
+        if (val < 0){ return -(val + drawPools(res, -val)); }
+        pool = supplyPool(CAPITAL);
+    }
     const reg = regLedger(res);
     const have = reg.hasOwnProperty(pool) ? reg[pool] : 0;
     const cap = regMax(res, pool);

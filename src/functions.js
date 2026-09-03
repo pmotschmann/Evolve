@@ -12,7 +12,7 @@ import { govEffect } from './civics.js';
 import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
-import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL } from './supply.js';
+import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
 import { shipCosts, TPShipDesc, freightArrivals } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
 import { big_bang } from './resets.js';
@@ -1085,7 +1085,8 @@ export function harmonyEffect(){
 export function poolStock(res, pool){
     const r = global.resource[res];
     if (!r){ return { have: 0, max: 0, diff: 0 }; }
-    if (!pool || !partitioned(res)){ return { have: r.amount, max: r.max, diff: r.diff }; }
+    // Global costs use the combined resource totals.
+    if (!pool || pool === ANYWHERE || !partitioned(res)){ return { have: r.amount, max: r.max, diff: r.diff }; }
     return { have: regAmount(res, pool), max: regMax(res, pool), diff: regDiff(res)[pool] || 0 };
 }
 

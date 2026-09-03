@@ -957,6 +957,31 @@ export function craftsmanCapacityByZone(){
     return by;
 }
 
+// Return dedicated craft benches by supply zone; other crafts use all workshops.
+export function craftBenchByZone(res){
+    const by = {};
+    const add = (struct, seats) => {
+        if (!(seats > 0)){ return; }
+        const at = supplyZone(struct);
+        by[at] = (by[at] || 0) + seats;
+    };
+    // Mirror craftsmanCap's eligible buildings.
+    if (res === 'Quantium'){
+        if (global.tech['isolation']){
+            if (global.tech['resettle'] && global.tech.resettle >= 12 && global.space.hasOwnProperty('zero_g_lab')){
+                add('space:zero_g_lab', jobScale(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
+            }
+            if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
+                add('tauceti:infectious_disease_lab', jobScale(getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab)));
+            }
+        }
+        else if (global.space.hasOwnProperty('zero_g_lab')){
+            add('space:zero_g_lab', jobScale(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
+        }
+    }
+    return by;
+}
+
 // Every bench there is, wherever it stands.
 export function craftsmanCapacity(){
     const by = craftsmanCapacityByZone();

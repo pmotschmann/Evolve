@@ -21,6 +21,42 @@ const starConstants = {
     COW_SIZE: 0.634,
     AU_PER_LY: 63241.077,
 
+    // --- Ringworld rendering ---
+    // Radius and band width relative to the host star.
+    RINGWORLD_RADIUS: 1.5,
+    RINGWORLD_WIDTH: 0.08,
+    // Band depth relative to its width.
+    RINGWORLD_THICK: 0.15,
+    // Base tilt and precession swing, in radians.
+    RINGWORLD_TILT: 0.6,
+    RINGWORLD_TILT_SWING: 0.30,
+    // Precession period in game days.
+    RINGWORLD_PRECESS: 75,
+    // Visibility thresholds for coarse and detailed rendering.
+    RINGWORLD_MIN_PX: 3,
+    RINGWORLD_DETAIL_PX: 22,
+    // Panels per half-ring at each detail level.
+    RINGWORLD_STEPS: 24,
+    RINGWORLD_STEPS_HI: 40,
+    // Rim-wall position and floor recess.
+    RINGWORLD_WALL_AT: 0.72,
+    RINGWORLD_FLOOR_DROP: 0.45,
+    // Rotation period in game days.
+    RINGWORLD_SPIN: 12,
+    // Repeating surface, seam, and support counts.
+    RINGWORLD_PATCHES: 20,
+    RINGWORLD_SEAMS: 36,
+    RINGWORLD_RIBS: 24,
+    // Inner surface, shell, rim, and seam colors.
+    RINGWORLD_LIT: 'ffe3b0',
+    RINGWORLD_SEA: '1d3f6b',
+    RINGWORLD_LAND: '3f6b46',
+    RINGWORLD_ARID: 'b8a173',
+    RINGWORLD_SHELL: '6f7b8a',
+    RINGWORLD_EDGE: '9aa7b6',
+    RINGWORLD_RIM: 'cfd9e6',
+    RINGWORLD_SEAM: '2a3038',
+
     // --- Map rendering ---
     // Target animation-frame render rate.
     MAP_FPS: 30,
@@ -4719,6 +4755,192 @@ function drawRings(ctx, x, y, r, color, near, tilt, sun){
     }
 }
 
+// Return whether Tau Ceti's Ringworld is complete.
+function ringworldBuilt(starId){
+    return starId === 'tauceti' && global.tauceti && global.tauceti['ringworld']
+        && global.tauceti.ringworld.count >= 1000 ? true : false;
+}
+
+// Render the Ringworld as depth-sorted near and far bands.
+// Its tilt follows the shared map clock.
+function ringworldTilt(){
+    const turn = (runDays() + drawAhead) / starConstants.RINGWORLD_PRECESS;
+    return starConstants.RINGWORLD_TILT
+         + starConstants.RINGWORLD_TILT_SWING * Math.sin(turn * Math.PI * 2);
+}
+
+function drawRingworld(ctx, x, y, r, near){
+    const rad = r * starConstants.RINGWORLD_RADIUS;
+    const across = rad * mapScale;
+    if (across < starConstants.RINGWORLD_MIN_PX){ return; }
+
+    const lean = ringworldTilt();
+    const ct = Math.cos(lean), st = Math.sin(lean);
+    // Ring axis normal.
+    const ax = 0, ay = -st, az = ct;
+    const half = Math.max(rad * starConstants.RINGWORLD_WIDTH, 0.6 / mapScale) / 2;
+    const deep = Math.max(half * 2 * starConstants.RINGWORLD_THICK, 0.5 / mapScale) / 2;
+
+    // Select the requested near or far half.
+    const A = camSY * camSP;
+    const B = ct * camCY * camSP + st * camCP;
+    const cross = Math.atan2(-A, B);
+    const mid = cross + Math.PI / 2;
+    const nearFirst = (A * Math.cos(mid) + B * Math.sin(mid)) < 0;
+    const start = (nearFirst === near) ? cross : cross + Math.PI;
+
+    const hi = mapTextureDetail() === 'high' && !mapCameraMoving && across >= starConstants.RINGWORLD_DETAIL_PX;
+    const steps = hi ? starConstants.RINGWORLD_STEPS_HI : starConstants.RINGWORLD_STEPS;
+
+    // View vector in map depth coordinates.
+    const vx = camSY * camSP, vy = camCY * camSP, vz = camCP;
+    // Rim facing the camera.
+    const along = ax * vx + ay * vy + az * vz;
+    const rimK = along < 0 ? 1 : -1;
+    const rimFace = Math.abs(along);
+
+    // Surface rotation offset.
+    const turn = Math.PI * 2;
+    const spin = ((runDays() + drawAhead) / starConstants.RINGWORLD_SPIN) * turn;
+    // Map a longitude to a repeating surface division.
+    const divide = (t, count) => Math.floor(((((t - spin) % turn) + turn) % turn) / turn * count);
+    // Return a division boundary inside this panel.
+    const cutIn = (t0, t1, count) => {
+        const step = turn / count;
+        const t = spin + Math.ceil((t0 - spin) / step) * step;
+        return (t > t0 + 1e-12 && t < t1 - 1e-12) ? t : false;
+    };
+
+    // Project a point on the band.
+    const ring = (t) => ({ x: Math.cos(t), y: Math.sin(t) * ct, z: Math.sin(t) * st });
+    const at = (t, k, j) => {
+        const n = ring(t);
+        const R = rad + j * deep;
+        const px = R * n.x + k * half * ax;
+        const py = R * n.y + k * half * ay;
+        const pz = R * n.z + k * half * az;
+        return [x + (px * camCY - py * camSY), y + (px * camSY + py * camCY) * camCP - pz * camSP];
+    };
+    const quad = (a, b, c, d) => {
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.lineTo(c[0], c[1]);
+        ctx.lineTo(d[0], d[1]);
+        ctx.closePath();
+        ctx.fill();
+    };
+    const mix = (a, b, f) => [0,1,2].map(i => a[i] + (b[i] - a[i]) * f);
+
+    // Use recessed floor strips only at high detail.
+    const wallAt = starConstants.RINGWORLD_WALL_AT;
+    const strips = hi
+        ? [[-1, -wallAt, true], [-wallAt, wallAt, false], [wallAt, 1, true]]
+        : [[-1, 1, true]];
+
+    ctx.save();
+    ctx.setLineDash([]);
+    ctx.shadowColor = 'transparent';
+
+    for (let i = 0; i < steps; i++){
+        const t0 = start + (i / steps) * Math.PI;
+        const t1 = start + ((i + 1) / steps) * Math.PI;
+        const n = ring(start + ((i + 0.5) / steps) * Math.PI);
+        // The inner face is visible when the outer face points away.
+        const facing = n.x * vx + n.y * vy + n.z * vz;
+        const lit = facing > 0;
+        const square = Math.abs(facing);
+        // Draw the visible face at its depth offset.
+        const side = lit ? -1 : 1;
+
+        for (const [k0, k1, isWall] of strips){
+            // Recess the inner floor between rim walls.
+            const j = lit && !isWall ? side * (1 - starConstants.RINGWORLD_FLOOR_DROP) : side;
+            if (lit){
+                const daylight = shadeRGB(starConstants.RINGWORLD_LIT, 0.55 + 0.6 * square);
+                if (isWall){
+                    // Bright rim wall material.
+                    ctx.fillStyle = rgba(mix(daylight, shadeRGB(starConstants.RINGWORLD_RIM, 0.8 + 0.4 * square), 0.55), 1);
+                    quad(at(t0, k0, j), at(t0, k1, j), at(t1, k1, j), at(t1, k0, j));
+                }
+                else {
+                    // Split panels at surface-patch boundaries.
+                    const cut = cutIn(t0, t1, starConstants.RINGWORLD_PATCHES);
+                    const spans = cut ? [[t0, cut], [cut, t1]] : [[t0, t1]];
+                    for (const [a, b] of spans){
+                        const roll = texSeed(`ringworld${divide((a + b) / 2, starConstants.RINGWORLD_PATCHES)}`) % 100;
+                        const ground = roll < 55 ? starConstants.RINGWORLD_SEA
+                                     : roll < 85 ? starConstants.RINGWORLD_LAND
+                                                 : starConstants.RINGWORLD_ARID;
+                        ctx.fillStyle = rgba(mix(daylight, shadeRGB(ground, 0.85 + 0.5 * square), 0.62), 1);
+                        quad(at(a, k0, j), at(a, k1, j), at(b, k1, j), at(b, k0, j));
+                    }
+                }
+            }
+            else {
+                // Shade the unlit outer shell.
+                ctx.fillStyle = rgba(isWall
+                    ? shadeRGB(starConstants.RINGWORLD_SHELL, 0.95 - 0.3 * square)
+                    : shadeRGB(starConstants.RINGWORLD_SHELL, 0.75 - 0.35 * square), 1);
+                quad(at(t0, k0, j), at(t0, k1, j), at(t1, k1, j), at(t1, k0, j));
+            }
+        }
+
+        // Draw the near cut edge.
+        ctx.fillStyle = hexShadeRGBA(starConstants.RINGWORLD_EDGE, 0.45 + 0.5 * rimFace, 1);
+        quad(at(t0, rimK, -1), at(t0, rimK, 1), at(t1, rimK, 1), at(t1, rimK, -1));
+    }
+
+    if (hi){
+        // Highlight the outer rim.
+        ctx.lineWidth = Math.max(deep / 2, 0.25 / mapScale);
+        ctx.strokeStyle = hexShadeRGBA(starConstants.RINGWORLD_RIM, 1, 0.5);
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++){
+            const p = at(start + (i / steps) * Math.PI, rimK, 1);
+            if (i === 0){ ctx.moveTo(p[0], p[1]); } else { ctx.lineTo(p[0], p[1]); }
+        }
+        ctx.stroke();
+        // Draw underside support ribs.
+        ctx.lineWidth = Math.max(half / 2, 0.3 / mapScale);
+        ctx.strokeStyle = hexShadeRGBA(starConstants.RINGWORLD_SEAM, 1, 0.45);
+        for (let s = 0; s < starConstants.RINGWORLD_RIBS; s++){
+            const u = (((spin + s * (turn / starConstants.RINGWORLD_RIBS) - start) % turn) + turn) % turn;
+            if (u >= Math.PI){ continue; }
+            const t = start + u;
+            const n = ring(t);
+            // Ribs appear only on the visible outer face.
+            if ((n.x * vx + n.y * vy + n.z * vz) > 0){ continue; }
+            const a = at(t, -1, 1), b = at(t, 1, 1);
+            ctx.beginPath();
+            ctx.moveTo(a[0], a[1]);
+            ctx.lineTo(b[0], b[1]);
+            ctx.stroke();
+        }
+
+        // Draw structural seams across the band.
+        ctx.lineWidth = Math.max(half / 6, 0.25 / mapScale);
+        ctx.strokeStyle = hexShadeRGBA(starConstants.RINGWORLD_SEAM, 1, 0.5);
+        for (let s = 0; s < starConstants.RINGWORLD_SEAMS; s++){
+            const seam = spin + s * (turn / starConstants.RINGWORLD_SEAMS);
+            // Draw each seam in only one half.
+            const u = (((seam - start) % turn) + turn) % turn;
+            if (u >= Math.PI){ continue; }
+            const t = start + u;
+            const n = ring(t);
+            const lit = (n.x * vx + n.y * vy + n.z * vz) > 0;
+            const j = lit ? -(1 - starConstants.RINGWORLD_FLOOR_DROP) : 1;
+            const a = at(t, -wallAt, j), b = at(t, wallAt, j);
+            ctx.beginPath();
+            ctx.moveTo(a[0], a[1]);
+            ctx.lineTo(b[0], b[1]);
+            ctx.stroke();
+        }
+    }
+
+    ctx.restore();
+}
+
 // Saturn is flagged in the table. Past Sol, roughly a quarter of the gas giants carry rings too, and which ones is
 // Choose this effect deterministically from the body id.
 function hasRings(planet, id){
@@ -5054,6 +5276,8 @@ function drawBody(ctx, x, y, r, color, opts){
     }
     ctx.fillStyle = "#" + color;
     if (opts.star){
+        // Draw the far half before the star and the near half after it.
+        if (opts.ringworld){ drawRingworld(ctx, x, y, r, false); }
         // The flat disc goes down first even though the texture's own disc is opaque. Zoomed out a
         // star is a pixel or two across.
         ctx.beginPath();
@@ -5065,6 +5289,7 @@ function drawBody(ctx, x, y, r, color, opts){
         const sst = sphereStarSize(r);
         ctx.drawImage(sst ? sphereStarTexture(color, sst) : starTexture(color),
                       x - half, y - half, half * 2, half * 2);
+        if (opts.ringworld){ drawRingworld(ctx, x, y, r, true); }
         return;
     }
     // Rings straddle the body, so the far half goes down first and the near half last — that ordering is what reads as the
@@ -5734,7 +5959,7 @@ function drawMapFrame() {
         }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
-            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: bodyLumpy(m.planet, m.id) });
+            drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: bodyLumpy(m.planet, m.id), ringworld: m.isStar && ringworldBuilt(m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // The near half of each moon ring, drawn first so it doesn't disappear behind it.
             if (moonOrbits[m.id]){ strokeOrbitGroup(ctx, moonOrbits[m.id], sc, moonPrimary[m.id], true); }

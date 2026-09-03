@@ -1797,7 +1797,7 @@ const spaceProjects = {
                 return loc('space_sun_gate_info_desc');
             },
             showDest(){
-                return global.tech['resettle'] && global.tech.resettle >= 4 ? {r: true, l: true} : {r: false, l: false};
+                return global.tech['shadow'] || global.tech['resettle'] && global.tech.resettle >= 4 ? {r: true, l: true} : {r: false, l: false};
             },
             syndicate(){ return false; },
             nav(){ return global.tech['resettle'] && global.tech.resettle >= 3 || global.tech['shadow'] && global.tech.shadow >= 4 ? true : false; }

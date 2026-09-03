@@ -17,7 +17,7 @@ import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
-import { partitioned, supplyOf, supplyPool, poolMod, regAmount, regMax, syncTotal } from './supply.js';
+import { partitioned, supplyOf, supplyPool, poolMod, regAmount, regMax, syncTotal, drawPools, ANYWHERE } from './supply.js';
 
 export const actions = {
     evolution: {
@@ -7783,9 +7783,14 @@ export function payCosts(c_action, costs){
                 let cost = costs[res]();
                 if (partitioned(res)){
                     // Taken out of the pool that was just tested, and the total folded back down
-                    // from the ledger so `.amount` stays the sum of the parts.
-                    poolMod(res, pool, -cost);
-                    syncTotal(res);
+                    // Global costs draw from regional pools, preferring active producers.
+                    if (pool === ANYWHERE){
+                        drawPools(res, cost);
+                    }
+                    else {
+                        poolMod(res, pool, -cost);
+                        syncTotal(res);
+                    }
                 }
                 else {
                     global.resource[res].amount -= cost;

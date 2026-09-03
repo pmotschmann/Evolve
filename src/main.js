@@ -5,14 +5,14 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
-import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone } from './jobs.js';
+import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap , craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer, rivalCollapsed, collapseRival } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -1200,7 +1200,7 @@ function fastLoop(){
     const date = new Date();
     const astroSign = astrologySign();
     breakdown.p['Global'] = {};
-    var global_multiplier = 1;
+    var global_multiplier = 1000;
     let applyPlasmid = false;
     let pBonus = plasmidBonus('raw');
     if (global.prestige.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
@@ -8611,6 +8611,8 @@ function fastLoop(){
             let crafting_usage = {};
             // Use regional workshop shares for crafting output and costs.
             const crafterAt = industryShares(craftsmanCapacityByZone());
+            // Track dedicated-bench usage separately in the resource breakdown.
+            let benchUse = [];
 
             craftingRatio('','',true); //Recalculation
             Object.keys(crafting_costs).forEach(function (craft){
@@ -8623,6 +8625,9 @@ function fastLoop(){
                     num += jobScale(global.race.servants.sjobs[craft]);
                 }
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
+                // Quantium uses dedicated benches; other crafts use general workshops.
+                const bench = craftBenchByZone(craft);
+                const at = Object.keys(bench).length ? industryShares(bench) : crafterAt;
 
                 let speed = global.genes['crafty'] ? 2 : 1;
                 let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
@@ -8638,8 +8643,11 @@ function fastLoop(){
 
                 for (let i=0; i<crafting_costs[craft].length; i++){
                     let rate = volume * crafting_costs[craft][i].a * craft_costs * speed / 140;
-                    applyShare(crafting_costs[craft][i].r, -rate, crafterAt, time_multiplier);
-                    if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
+                    applyShare(crafting_costs[craft][i].r, -rate, at, time_multiplier);
+                    if (at !== crafterAt){
+                        benchUse.push({ res: crafting_costs[craft][i].r, rate: rate, at: at });
+                    }
+                    else if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
                         crafting_usage[crafting_costs[craft][i].r] = rate;
                     }
                     else {
@@ -8651,14 +8659,19 @@ function fastLoop(){
                     volume = highPopAdjust(volume);
                 }
 
-                bdShare(craft, job_data.craftsman.name(), volume * speed / 140, crafterAt);
+                bdShare(craft, job_data.craftsman.name(), volume * speed / 140, at);
 
-                applyShare(craft, craft_ratio * volume * speed / 140 * production('psychic_boost',craft), crafterAt, time_multiplier);
+                applyShare(craft, craft_ratio * volume * speed / 140 * production('psychic_boost',craft), at, time_multiplier);
             });
 
             Object.keys(crafting_usage).forEach(function (used){
                 if (crafting_usage[used] > 0){
                     bdShareUse(used, job_data.craftsman.name(), -(crafting_usage[used]), crafterAt);
+                }
+            });
+            benchUse.forEach(function(used){
+                if (used.rate > 0){
+                    bdShareUse(used.res, job_data.craftsman.name(), -(used.rate), used.at, true);
                 }
             });
         }
@@ -12015,6 +12028,8 @@ function midLoop(){
                     type: 'tp-ship',
                     bp: struct.type,
                     doNotAdjustCost: true,
+                    // Shipyard queue costs are paid from the active shipyard zone.
+                    supply(){ return shipyardZone(); },
                 };
             }
             else if (struct.action === 'hell-mech'){

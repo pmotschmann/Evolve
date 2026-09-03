@@ -2824,7 +2824,7 @@ const tauCetiModules = {
             desc(){
                 return loc('tau_home',[races[global.race.species].home]);
             },
-            nav(){ return global.tech['resettle'] ? true : false; },
+            nav(){ return global.tech['resettle'] || global.tech['shadow'] && global.tech.shadow >= 4 ? true : false; },
             support: 'orbital_station',
             extra(region){
                 if (global.tech['tau_home'] && global.tech.tau_home >= 2 && !tauEnabled()){
@@ -3911,7 +3911,7 @@ const tauCetiModules = {
             desc(){
                 return loc('tau_red',[planetName().red]);
             },
-            nav(){ return global.tech['resettle'] ? true : false; },
+            nav(){ return global.tech['resettle'] || global.tech['shadow'] && global.tech.shadow >= 4 ? true : false; },
             support: 'orbital_platform',
             extra(region){
                 if (global.tech['tau_red'] && global.tech.tau_red >= 5){
@@ -4612,7 +4612,7 @@ const tauCetiModules = {
             desc(){
                 return loc('tau_gas_desc');
             },
-            nav(){ return global.tech['resettle'] ? true : false; }
+            nav(){ return global.tech['resettle'] || global.tech['shadow'] && global.tech.shadow >= 4 ? true : false; }
         },
         gas_contest: {
             id: 'tauceti-gas_contest',
@@ -7365,7 +7365,7 @@ export function drawShipYard(){
                         Object.keys(raw).forEach(function(res){
                             costs[res] = function(){ return raw[res]; }
                         });
-                        if (!(global.settings.qKey && keyMap.q) && payCosts(false, costs)){
+                        if (!(global.settings.qKey && keyMap.q) && payCosts(shipyardPayer(), costs)){
                             let ship = deepClone(global.space.shipyard.blueprint);
                             buildTPShip(ship,false);
                         }
@@ -7418,7 +7418,8 @@ export function drawShipYard(){
 }
 
 export function buildTPShipQueue(action){
-    if (payCosts(false, action.cost)){
+    // Charge queued ships to the active shipyard zone.
+    if (payCosts(action, action.cost)){
         buildTPShip(deepClone(action.bp), true);
         return true;
     }
@@ -7633,8 +7634,18 @@ export function seedStarterSupplyRoutes(){
     return Number(earthReady) + Number(marsReady) + Number(titanReady) + Number(outerReady);
 }
 
+// Return the supply zone of the active shipyard.
+export function shipyardZone(){
+    return global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
+}
+
+// Provide a supply-aware payer for direct ship construction.
+export function shipyardPayer(){
+    return { id: 'tp-ship', supply(){ return shipyardZone(); } };
+}
+
 function buildTPShip(ship, queue){
-    let locationName = global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
+    let locationName = shipyardZone();
     TPShipInitTransit(ship, locationName);
 
     ship.damage = 0;
@@ -8814,7 +8825,8 @@ function applyRefit(ship, plan){
     Object.keys(raw).forEach(function(res){
         costs[res] = function(){ return raw[res]; };
     });
-    if (!payCosts(false, costs)){ return false; }
+    // Charge refits to the ship's docked yard.
+    if (!payCosts({ id: 'tp-refit', supply(){ return ship.location.name; } }, costs)){ return false; }
     let burned = shipFuelUse(ship).res;
     refitParts.forEach(function(part){
         if (plan[part] !== undefined){ ship[part] = plan[part]; }
@@ -10009,12 +10021,12 @@ const jumpGates = {
     spc_sun_gate: {
         system: 'sun',
         location: 'spc_sun_gate',
-        active(){ return global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
+        active(){ return global.tech['shadow'] || global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
     },
     tau_home_gate: {
         system: 'tauceti',
         location: 'tau_home',
-        active(){ return global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
+        active(){ return global.tech['shadow'] || global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
     }
 };
 // Directed wormhole links. Two entries = a two-way wormhole; a single entry = a one-way gate.
@@ -11136,7 +11148,7 @@ function shipDispatchModal(id, modal){
     else {
         // Once the jump gates are running a ship can cross between systems, so the list spans more
         // than one star and each destination says which it belongs to.
-        let showSystem = global.tech['resettle'] && global.tech.resettle >= 3;
+        let showSystem = global.tech['resettle'] && global.tech.resettle >= 3 || global.tech['shadow'] && global.tech.shadow >= 4;
         // Somewhere a battered hull can actually be put back together is worth picking out of the list.
         let yards = activeRepairYards();
         dests.forEach(function(d){
