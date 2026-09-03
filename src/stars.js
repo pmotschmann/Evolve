@@ -387,6 +387,39 @@ const starConstants = {
     // Glyphs engraved around the gate's ring. Constellation and planetary symbols, matching the astrological signs the game
     // already renders in the top bar — so this set is known to display here.
     GATE_GLYPHS: ['♈︎','♉︎','♊︎','♋︎','♌︎','♍︎','♎︎','♏︎','♐︎','♑︎','♒︎','♓︎','☉︎','☽︎','☿︎','♀︎','♂︎','♃︎','♄︎','♅︎','♆︎'],
+    // Gate cross-section entries: band fraction, depth, radial normal, and axial normal.
+    GATE_PROFILE: [
+        [0,    -0.55, -1,    0   ],
+        [0,     0.55, -0.6,  0.8 ],
+        [0.16,  1,     0,    1   ],
+        [0.62,  1,     0.7,  0.7 ],
+        [0.66,  0.55,  0,    1   ],
+        [0.74,  0.55, -0.7,  0.7 ],
+        [0.78,  1,     0,    1   ],
+        [0.86,  1,     0.6,  0.8 ],
+        [1,     0.58,  1,    0   ],
+        [1,    -0.58,  0.6, -0.8 ],
+        [0.86, -1,     0,   -1   ],
+        [0.78, -1,    -0.7, -0.7 ],
+        [0.74, -0.55,  0,   -1   ],
+        [0.66, -0.55,  0.7, -0.7 ],
+        [0.62, -1,     0,   -1   ],
+        [0.16, -1,    -0.6, -0.8 ]
+    ],
+    // Simplified cross-section for low-detail and small gates.
+    GATE_PROFILE_LOW: [
+        [0,    -0.6, -1,    0  ],
+        [0,     0.6, -0.6,  0.8],
+        [0.18,  1,    0,    1  ],
+        [0.82,  1,    0.6,  0.8],
+        [1,     0.6,  1,    0  ],
+        [1,    -0.6,  0.6, -0.8],
+        [0.82, -1,    0,   -1  ],
+        [0.18, -1,   -0.6, -0.8]
+    ],
+    // Camera-space key light and view half-vector for gate facets.
+    GATE_LIGHT: [-0.4202, -0.6804, -0.6004],
+    GATE_HALF: [-0.2349, -0.3803, -0.8945],
     // The value is chosen for Saturn's real 26.7 degrees.
     RING_TILT: 26.7 * Math.PI / 180,
     // Points per half ring.
@@ -4492,67 +4525,173 @@ function tauJumpGate(){
         && actions.tauceti?.tau_home?.jump_gate?.condition?.() ? true : false;
 }
 
-// The sun gate is a stargate, not a world, so it is drawn as an open ring with space showing through the middle.
-function drawGate(ctx, x, y, r, color, seed){
-    let lw = r * 0.42;              // ring thickness
-    let mid = r - lw / 2;           // centreline the stroke is laid along
+// Return radial and orbital-normal axes for an upright gate.
+function gateFrame(radial, incline){
+    const length = Math.hypot(radial.x, radial.y, radial.z) || 1;
+    const inc = incline * Math.PI / 180;
+    return {
+        u: { x: radial.x / length, y: radial.y / length, z: radial.z / length },
+        v: { x: 0, y: -Math.sin(inc), z: Math.cos(inc) }
+    };
+}
+
+// Shade a gate facet from its camera-space normal.
+function gateMetal(nx, ny, nz){
+    const len = Math.hypot(nx, ny, nz) || 1;
+    nx /= len; ny /= len; nz /= len;
+    const L = starConstants.GATE_LIGHT, H = starConstants.GATE_HALF;
+    const d = nx * L[0] + ny * L[1] + nz * L[2];
+    const h = nx * H[0] + ny * H[1] + nz * H[2];
+    // Use a broad specular highlight on low-poly facets.
+    const spec = h > 0 ? Math.pow(h, 10) : 0;
+    // Preserve form on unlit facets.
+    const lum = Math.min(1.05, 0.19 + 0.42 * (d > 0 ? d * d : 0) + 0.26 * spec + (d < 0 ? -d * 0.14 : 0));
+    return `rgb(${Math.min(255, Math.round(24 + 176 * lum + 22 * spec))},${Math.min(255, Math.round(30 + 186 * lum + 26 * spec))},${Math.min(255, Math.round(38 + 196 * lum + 34 * spec))})`;
+}
+
+// Draw a 3D metallic gate in its local frame.
+function drawGate(ctx, x, y, r, color, seed, frame){
+    const high = mapTextureDetail() === 'high' && !mapCameraMoving;
+    const px = r * mapScale;                       // how big it lands on screen
+    const u = frame.u, v = frame.v;
+    // Project the gate basis into screen and depth coordinates.
+    const n = { x: u.y*v.z - u.z*v.y, y: u.z*v.x - u.x*v.z, z: u.x*v.y - u.y*v.x };
+    const cu = { x: pX(u), y: pY(u), z: pD(u) };
+    const cv = { x: pX(v), y: pY(v), z: pD(v) };
+    const cn = { x: pX(n), y: pY(n), z: pD(n) };
+    // Glyphs use the face nearest the camera.
+    const sf = cn.z > 0 ? -1 : 1;
+    // Keep proportions constant across detail levels.
+    const band = r * 0.32;                         // width of the hoop
+    const ri = r - band, t = band * 0.40;          // bore radius, and half the hoop's thickness
+
+    if (px < 4){
+        // Use a simple ellipse below four screen pixels.
+        const mid = ri + band / 2;
+        ctx.save();
+        ctx.strokeStyle = '#8e99a3';
+        ctx.lineWidth = Math.max(band, 1.1 / mapScale);
+        ctx.beginPath();
+        for (let i = 0; i <= 12; i++){
+            const a = i * Math.PI * 2 / 12, ca = Math.cos(a) * mid, sa = Math.sin(a) * mid;
+            const sx = x + cu.x * ca + cv.x * sa, sy = y + cu.y * ca + cv.y * sa;
+            if (i){ ctx.lineTo(sx, sy); } else { ctx.moveTo(sx, sy); }
+        }
+        ctx.stroke();
+        ctx.restore();
+        return;
+    }
+
+    const prof = high && px >= 14 ? starConstants.GATE_PROFILE : starConstants.GATE_PROFILE_LOW;
+    const steps = high ? Math.max(12, Math.min(48, Math.round(px * 0.45)))
+                       : Math.max(10, Math.min(20, Math.round(px * 0.3)));
+    let faces = [];
+    // Add a projected facet; sort overrides its mean depth.
+    const facet = (corners, a, nr, nt, nk, fill, sort) => {
+        const ca = Math.cos(a), sa = Math.sin(a);
+        const rx = cu.x*ca + cv.x*sa, ry = cu.y*ca + cv.y*sa, rz = cu.z*ca + cv.z*sa;
+        const tx = cv.x*ca - cu.x*sa, ty = cv.y*ca - cu.y*sa, tz = cv.z*ca - cu.z*sa;
+        const nz = rz*nr + tz*nt + cn.z*nk;
+        if (nz > 0){ return; }                     // turned away from the camera
+        let pts = [], d = 0;
+        for (const c of corners){
+            const rad = ri + band * c[1];
+            const cc = Math.cos(c[0]) * rad, ss = Math.sin(c[0]) * rad, hh = t * c[2];
+            pts.push(x + cu.x*cc + cv.x*ss + cn.x*hh, y + cu.y*cc + cv.y*ss + cn.y*hh);
+            d += cu.z*cc + cv.z*ss + cn.z*hh;
+        }
+        faces.push({ d: sort === undefined ? d / corners.length : sort, pts: pts,
+                     fill: fill || gateMetal(rx*nr + tx*nt + cn.x*nk, ry*nr + ty*nt + cn.y*nk, nz) });
+    };
+
+    // The hoop itself.
+    for (let i = 0; i < steps; i++){
+        const a0 = i * Math.PI * 2 / steps, a1 = (i + 1) * Math.PI * 2 / steps, am = (a0 + a1) / 2;
+        for (let j = 0; j < prof.length; j++){
+            const s = prof[j], e = prof[(j + 1) % prof.length];
+            facet([[a0, s[0], s[1]], [a1, s[0], s[1]], [a1, e[0], e[1]], [a0, e[0], e[1]]], am, s[2], 0, s[3]);
+        }
+    }
+
+    // Add nine clamp blocks to both gate faces.
+    if (px >= 6){
+        const raise = 1.58;                        // how far the plate stands off the face
+        const grip = -0.55;                        // how far down the outer wall the clamp reaches
+        const wi = 0.05, wo = 0.13;                // angular half-widths at the bore end and the rim end
+        const p0 = 0.30, p1 = 1.10;                // across the band, from past the glyphs to over the rim
+        const lamp = hexShade(color, 1.4);
+        // Keep each clamp's facets adjacent in painter order.
+        const nudge = r * 1e-4;
+        for (let side = 1; side >= -1; side -= 2){
+            // Build both face variants from the same local geometry.
+            const foot = side, top = side * raise, hold = side * grip;
+            for (let i = 0; i < 9; i++){
+                const a = i * Math.PI * 2 / 9 - Math.PI / 2;
+                const i0 = a - wi, i1 = a + wi, o0 = a - wo, o1 = a + wo;
+                const at = cu.z*Math.cos(a) + cv.z*Math.sin(a);
+                const block = at * (ri + band * 0.7) + cn.z * top * t;
+                facet([[i0,p0,foot],[i1,p0,foot],[i1,p0,top],[i0,p0,top]], a, -0.9, 0, 0.44*side, false, block);           // its inner end
+                facet([[o0,p1,top],[o1,p1,top],[o1,p1,hold],[o0,p1,hold]], a, 0.99, 0, 0.14*side, false, block - nudge);   // the grip over the rim
+                if (high){
+                    facet([[i0,p0,foot],[o0,p1,hold],[o0,p1,top],[i0,p0,top]], a, 0.12, -0.99, 0.08*side, false, block - nudge);
+                    facet([[i1,p0,foot],[o1,p1,hold],[o1,p1,top],[i1,p0,top]], a, 0.12, 0.99, 0.08*side, false, block - nudge);
+                }
+                facet([[i0,p0,top],[i1,p0,top],[o1,p1,top],[o0,p1,top]], a, 0, 0, side, false, block - nudge * 2);         // the plate
+                // Add a colored inset to each clamp.
+                const lit = side * (raise + 0.03);
+                facet([[a-wi*0.62,p0+0.20,lit],[a+wi*0.62,p0+0.20,lit],
+                       [a+wo*0.52,p0+0.56,lit],[a-wo*0.52,p0+0.56,lit]], a, 0, 0, side, lamp, block - nudge * 3);
+            }
+        }
+    }
 
     ctx.save();
-    // Halo, so a gate is picked out at a glance from the rocks sharing its orbit.
-    ctx.strokeStyle = hexRGBA(color, 0.25);
-    ctx.lineWidth = lw * 2.4;
-    ctx.beginPath();
-    ctx.arc(x, y, mid, 0, Math.PI * 2, true);
-    ctx.stroke();
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 0.7 / mapScale;
+    // Paint far facets before near facets.
+    faces.sort((p, q) => q.d - p.d);
+    for (const f of faces){
+        ctx.fillStyle = f.fill;
+        ctx.strokeStyle = f.fill;                  // covers the seams between neighbouring facets
+        ctx.beginPath();
+        ctx.moveTo(f.pts[0], f.pts[1]);
+        for (let i = 2; i < f.pts.length; i += 2){ ctx.lineTo(f.pts[i], f.pts[i+1]); }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    }
 
-    // The ring, lit across the diagonal like every other body on the map.
-    let sheen = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
-    sheen.addColorStop(0, hexShade(color, 1.5));
-    sheen.addColorStop(0.5, hexShade(color, 1));
-    sheen.addColorStop(1, hexShade(color, 0.55));
-    ctx.strokeStyle = sheen;
-    ctx.lineWidth = lw;
-    ctx.beginPath();
-    ctx.arc(x, y, mid, 0, Math.PI * 2, true);
-    ctx.stroke();
-
-    // Nine chevrons around the ring, as on the gate itself — only legible, and only worth the
-    // strokes, once the gate is more than a few pixels across.
-    if (r * mapScale >= 6){
-        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
-        ctx.lineWidth = Math.max(lw * 0.22, 0.4 / mapScale);
+    // Draw glyphs on the camera-facing face when legible.
+    if (px >= 15 && Math.abs(cn.z) > 0.22){
+        const glyphs = gateGlyphs(seed);
+        const mid = ri + band * 0.37, size = band * 0.44;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         for (let i = 0; i < 9; i++){
-            let a = (i / 9) * Math.PI * 2 - Math.PI / 2;
-            let ca = Math.cos(a), sa = Math.sin(a);
-            ctx.beginPath();
-            ctx.moveTo(x + ca * (mid - lw / 2), y + sa * (mid - lw / 2));
-            ctx.lineTo(x + ca * (mid + lw / 2), y + sa * (mid + lw / 2));
-            ctx.stroke();
-        }
-
-        // A glyph in each of the nine segments the notches divide the ring into — offset half a segment so they sit between the
-        // notches rather than on top of them, and turned to stand upright on the ring.
-        if (r * mapScale >= 18){
-            let glyphs = gateGlyphs(seed);
-            ctx.fillStyle = 'rgba(0,0,0,0.72)';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            // Sized and drawn in screen pixels, undoing the map scale for the text only.
-            ctx.font = `${lw * mapScale * 0.78}px serif`;
-            for (let i = 0; i < 9; i++){
-                let a = ((i + 0.5) / 9) * Math.PI * 2 - Math.PI / 2;
-                ctx.save();
-                ctx.translate(x + Math.cos(a) * mid, y + Math.sin(a) * mid);
-                ctx.rotate(a + Math.PI / 2);
-                ctx.scale(1 / mapScale, 1 / mapScale);
-                ctx.fillText(glyphs[i], 0, 0);
-                ctx.restore();
+            const a = ((i + 0.5) / 9) * Math.PI * 2 - Math.PI / 2;
+            const ca = Math.cos(a), sa = Math.sin(a), rad = ca * mid, tan = sa * mid, hh = sf * t * 1.002;
+            const ox = x + cu.x*rad + cv.x*tan + cn.x*hh, oy = y + cu.y*rad + cv.y*tan + cn.y*hh;
+            // Project glyph axes from the visible gate face.
+            const tx = (cv.x*ca - cu.x*sa) * sf, ty = (cv.y*ca - cu.y*sa) * sf;
+            const rx = cu.x*ca + cv.x*sa, ry = cu.y*ca + cv.y*sa;
+            // Skip degenerate edge-on glyph planes.
+            if (!Number.isFinite(tx + ty + rx + ry) || Math.abs(tx*ry - ty*rx) < 1e-7){ continue; }
+            ctx.save();
+            // Project the glyph plane in screen pixels.
+            ctx.transform(tx / mapScale, ty / mapScale, rx / mapScale, ry / mapScale, ox, oy);
+            ctx.font = `${size * mapScale}px serif`;
+            if (high){
+                // Offset a light lip beneath the engraved glyph.
+                ctx.fillStyle = 'rgba(214,226,236,0.5)';
+                ctx.fillText(glyphs[i], size * mapScale * 0.05, size * mapScale * 0.06);
             }
+            ctx.fillStyle = 'rgba(12,18,24,0.86)';
+            ctx.fillText(glyphs[i], 0, 0);
+            ctx.restore();
         }
     }
     ctx.restore();
 }
-
 let ringHiTable = false;
 // Opacity of the ring at a given radius. Not a step function: the real rings shade into one another
 // almost everywhere, and only the two gaps in the A ring have hard edges.
@@ -5271,7 +5410,7 @@ function drawBody(ctx, x, y, r, color, opts){
         return;
     }
     if (opts.gate){
-        drawGate(ctx, x, y, r, color, opts.seed);
+        drawGate(ctx, x, y, r, color, opts.seed, opts.gateFrame);
         return;
     }
     ctx.fillStyle = "#" + color;
@@ -5729,7 +5868,7 @@ function drawMapFrame() {
         }
         for (let b of bodies){
             if ((global.race['orbit_decayed'] || global.race['tidal_decay']) && ['spc_moon'].includes(b.id)){ continue; }
-            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id), lumpy: bodyLumpy(b.planet, b.id), debris: homeDebris(b.id) });
+            drawBody(ctx, b.bx, b.by, b.size, setColor(b.id), { id: b.id, sun: sunDirection(planetLocation[b.id]), star: !!b.planet.startype, gate: !!b.planet.gate, gateFrame: b.planet.gate ? gateFrame(planetLocation[b.id], orbitIncline(b.id)) : false, kind: bodyKind(b.planet, b.id), seed: texSeed(b.id), rings: hasRings(b.planet, b.id), ringTilt: ringTilt(b.planet, b.id), glyph: cowGlyph(b.id), lumpy: bodyLumpy(b.planet, b.id), debris: homeDebris(b.id) });
 
             if (orbitsBy[b.id] && !((global.race['orbit_decayed'] || global.race['tidal_decay']) && b.id === 'spc_home')){
                 strokeOrbitGroup(ctx, orbitsBy[b.id], ORIGIN, planetLocation[b.id], true);
@@ -5945,6 +6084,22 @@ function drawMapFrame() {
             members.push({ id: starId, planet: star, q: { x: 0, y: 0, z: 0 }, isStar: true,
                 pr: Math.max(star.size / 10 * scale, 1 / mapScale) });
         }
+        const home = members.find(m => m.id === 'tau_home');
+        if (home && tauJumpGate()){
+            const phase = (runDays() + drawAhead) / 12 * Math.PI * 2;
+            const inc = orbitIncline('tau_home');
+            // Place the Tau Ceti gate on a radial orbit around tau_home.
+            const radial = { x: Math.cos(phase), y: Math.sin(phase) * Math.cos(inc * Math.PI / 180), z: Math.sin(phase) * Math.sin(inc * Math.PI / 180) };
+            const frame = gateFrame(radial, inc);
+            const hoop = home.pr * 0.4;
+            // Clear tau_home, including the clamp overhang.
+            const distance = home.pr + hoop * 1.5;
+            members.push({ id: 'tau_home_gate', q: {
+                x: home.q.x + radial.x * distance,
+                y: home.q.y + radial.y * distance,
+                z: home.q.z + radial.z * distance
+            }, pr: hoop, gate: true, gateFrame: frame });
+        }
         members.sort((a,b) => pD(b.q) - pD(a.q));   // furthest first
         // Every far half goes down before any body does, the same order the home system uses: a body on the far side of its
         // orbit is drawn before its primary, so laying that half down later would run the line over the world riding on it.
@@ -5959,16 +6114,16 @@ function drawMapFrame() {
         }
         for (let m of members){
             let px = pX(m.q), py = pY(m.q);
+            if (m.gate){
+                drawBody(ctx, px, py, m.pr, '31a557', { gate: true, gateFrame: m.gateFrame, seed: texSeed(m.id) });
+                continue;
+            }
             drawBody(ctx, px, py, m.pr, setColor(m.id), { id: m.id, sun: sunDirection(m.q), star: m.isStar || !!m.planet.bodystar, kind: bodyKind(m.planet, m.id), seed: texSeed(m.id), rings: hasRings(m.planet, m.id), ringTilt: ringTilt(m.planet, m.id), glyph: cowGlyph(m.id), lumpy: bodyLumpy(m.planet, m.id), ringworld: m.isStar && ringworldBuilt(m.id) });
             if (m.isStar && starOrbits.length){ strokeOrbitGroup(ctx, starOrbits, sc, sc, true); }
             // The near half of each moon ring, drawn first so it doesn't disappear behind it.
             if (moonOrbits[m.id]){ strokeOrbitGroup(ctx, moonOrbits[m.id], sc, moonPrimary[m.id], true); }
             // Drawn in the star's own translated frame, so shift back to map coordinates to record it.
             addPickable(m.id, pX(sc) + px, pY(sc) + py, m.pr, m.sep);
-            // Tau Ceti's jump gate rides alongside the home planet like a moon.
-            if (m.id === 'tau_home' && tauJumpGate()){
-                drawBody(ctx, px + m.pr * 0.9, py + m.pr * 0.9, m.pr * 0.35, '31a557', { gate: true, seed: texSeed('tau_home_jump_gate') });
-            }
         }
 
         // Names

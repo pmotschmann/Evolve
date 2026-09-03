@@ -353,6 +353,18 @@ class GLContext {
 
     setTransform(a,b,c,d,e,f){ this.m = [a,b,c,d,e,f]; }
 
+    // Match CanvasRenderingContext2D's post-multiplied affine transform.
+    transform(a, b, c, d, e, f){
+        let m = this.m;
+        let a0 = m[0], b0 = m[1], c0 = m[2], d0 = m[3];
+        m[0] = a0 * a + c0 * b;
+        m[1] = b0 * a + d0 * b;
+        m[2] = a0 * c + c0 * d;
+        m[3] = b0 * c + d0 * d;
+        m[4] += a0 * e + c0 * f;
+        m[5] += b0 * e + d0 * f;
+    }
+
     translate(x, y){
         let m = this.m;
         m[4] += m[0] * x + m[2] * y;
