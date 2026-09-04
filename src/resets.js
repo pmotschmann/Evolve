@@ -1545,6 +1545,7 @@ function resetCommon(args){
     clearStates();
     global.new = true;
     global.seed = Math.rand(0,10000);
+    global.starseed = Math.rand(0,10000);
 }
 
 function trackWomling(){

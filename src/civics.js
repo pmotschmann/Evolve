@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery } from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars} from './races.js';
-import { defineGovernor, govActive } from './governor.js';
+import { defineGovernor, govActive, removeTask } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
 import { jobScale } from './jobs.js';
@@ -208,8 +208,55 @@ export function commisionGarrison(){
     }
 }
 
+// If the Truepath rival is still around
+export function rivalCollapsed(){
+    return global.tech['shadow'] && global.tech.shadow >= 3 ? true : false;
+}
+
+// Whether the rival nation is standing and can be interacted with.
+export function rivalActive(){
+    return global.tech['rival'] && !rivalCollapsed() ? true : false;
+}
+
+// Espionage needs someone left to spy on. It ends with isolation, with unification on the standard
+// path, and -- once the rival's government collapses -- with the shadow war on True Path.
+export function spyActive(){
+    if (global.race['cataclysm'] || global.tech['isolation']){ return false; }
+    if (!global.tech['world_control']){ return true; }
+    return global.race['truepath'] && !rivalCollapsed() ? true : false;
+}
+
+// The rival's government collapses: the nation leaves the board and espionage goes with it, the
+// same shutdown unification performs on the standard path (see uniteEffect in tech.js).
+export function collapseRival(){
+    global.tech['shadow'] = 3;
+    delete global.race['gov3_collapse'];
+
+    let rival = global.civic.foreign.gov3;
+    rival.spy = 0;
+    rival.esp = 0;
+    rival.trn = 0;
+    rival.sab = 0;
+    rival.act = 'none';
+
+    if (!spyActive()){
+        Object.keys(global.civic.foreign).forEach(function(gov){
+            global.civic.foreign[gov].trn = 0;
+            global.civic.foreign[gov].sab = 0;
+            global.civic.foreign[gov].act = 'none';
+        });
+        removeTask('spy');
+        removeTask('spyop');
+        removeTask('combo_spy');
+    }
+    defineGovernor();
+
+    messageQueue(loc('civics_rival_collapse',[govTitle(3)]),'info',false,['progress','combat']);
+    drawTech();
+}
+
 export function govRelationFactor(id){
-    if (global.race['truepath'] && !global.tech['resettle']){
+    if (global.race['truepath'] && !global.tech['resettle'] && !rivalCollapsed()){
         if (global.civic.foreign[`gov${id}`].hstl < 10){
             return 1 + (10 - global.civic.foreign[`gov${id}`].hstl) / 40;
         }
@@ -568,7 +615,7 @@ function drawGovModal(){
 }
 
 export function foreignGov(){
-    if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath']) && !global.tech['isolation']){
+    if ($('#foreign').length === 0 && spyActive()){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
         $('#r_govern0').append(foreign);
@@ -742,7 +789,7 @@ export function foreignGov(){
                     return espDesc();
                 },
                 vis(){
-                    return global.civic.garrison.display && (!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] && !global.tech['isolation'] ? true : false;
+                    return global.civic.garrison.display && spyActive() ? true : false;
                 },
                 gvis(g){
                     if (global.tech['isolation']){ return false; }
@@ -750,7 +797,7 @@ export function foreignGov(){
                         return global.tech['world_control'] ? false : true;
                     }
                     else if (g === 3){
-                        return global.tech['rival'] ? true : false;
+                        return rivalActive();
                     }
                     return false;
                 }
@@ -1366,7 +1413,7 @@ export function buildGarrison(garrison,full){
                 return global.civic.garrison.display;
             },
             rvis(){
-                return global.tech['rival'] && !global.tech['isolation'] ? true : false;
+                return rivalActive() && !global.tech['isolation'] ? true : false;
             },
             tactics(val){
                 switch(val){

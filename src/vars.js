@@ -36,7 +36,11 @@ export var global = {
 export var tmp_vars = {};
 export var breakdown = {
     c: {},
-    p: {}
+    p: {},
+    // Store resource storage breakdowns by supply zone.
+    creg: {},
+    // Store zone-level production and consumption for pooled industry entries.
+    preg: {}
 };
 export var power_generated = {};
 export var p_on = {};
@@ -142,8 +146,19 @@ if (!global['version']){
     global['version'] = '0.2.0';
 }
 
+// Assign a hellseed to old save files
 if (!global.hasOwnProperty('hellseed') || typeof global['hellseed'] !== 'number' || isNaN(global['hellseed'])){
     global['hellseed'] = (global.hasOwnProperty('warseed') ? global['warseed'] : global['seed']) + 2;
+}
+
+// Assign a starseed to old save files
+if (!global.hasOwnProperty('starseed') || typeof global['starseed'] !== 'number' || isNaN(global['starseed'])){
+    global['starseed'] = (global.hasOwnProperty('hellseed') ? global['hellseed'] : global['seed']) + 3;
+}
+
+// position data is no longer stored, delete it from old save files
+if (global['space'] && global.space['position']){
+    delete global.space['position'];
 }
 
 if (convertVersion(global['version']) < 2060){
@@ -1652,7 +1667,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 35;
+global['beta'] = 41;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1730,6 +1745,12 @@ if (!global.settings['showStorage']){
     else {
         global.settings['showStorage'] = false;
     }
+}
+
+// Supply Zones unlock alongside the regional supply split. Existing Shadow-5 saves receive the tab
+// on load rather than needing to re-research the already completed analysis.
+if (!global.settings['showSupplyZones'] && global.tech['shadow'] >= 5){
+    global.settings['showSupplyZones'] = true;
 }
 
 // Whether the orbit-decay compensation is in effect.
@@ -1953,6 +1974,14 @@ if (!global.settings.hasOwnProperty('mtorder')){
 if (!global.settings.hasOwnProperty('resBar')){
     global.settings['resBar'] = {};
 }
+// Which world's stores the resource list is showing; 'all' for the civilisation entire, which is the
+// only answer there is until the supply lines come apart.
+if (!global.settings.hasOwnProperty('resRegion')){
+    global.settings['resRegion'] = 'all';
+}
+// Which Storage-tab section was open used to be saved here. It is held in memory for the sitting
+// now, so a save that still carries the field is carrying nothing anyone reads.
+delete global.settings['resStackOpen'];
 // What the solar map draws. Kept here rather than in the map module so the choices survive a reload
 // along with everything else the player has set, instead of only until the page is closed.
 if (!global.settings.hasOwnProperty('mapView')){
@@ -1960,17 +1989,23 @@ if (!global.settings.hasOwnProperty('mapView')){
 }
 // `webgl` picks the backend that paints it: on by default, since both renderers draw the same scene
 // from the same code and the hardware-accelerated one is the better default wherever it is available.
-['planetOrbits','moonOrbits','ships','planetNames','webgl'].forEach(function(k){
+['planetOrbits','moonOrbits','ships','planetNames','webgl','skyStars','starNames'].forEach(function(k){
     if (!global.settings.mapView.hasOwnProperty(k)){
         global.settings.mapView[k] = true;
     }
 });
-// How far out from the star being looked at the map draws anything, in light years. A number rather
-// than a toggle, so it sits outside the loop above. -1 is the map module's "no limit" sentinel and
-// the default: the whole star field is drawn, and the setting is there to thin it out when you want
-// to see one neighbourhood rather than all of them. The map module clamps and steps the rest.
+// How far out from the star being looked at the map draws anything, in light years. -1 is unlimited.
 if (!global.settings.mapView.hasOwnProperty('starRange')){
     global.settings.mapView['starRange'] = -1;
+}
+// Which game loop drives the solar map: 'fast', 'normal' or 'slow'.
+if (!global.settings.mapView.hasOwnProperty('refresh')){
+    global.settings.mapView['refresh'] = 'fast';
+}
+// Surface detail: 'low' is the flat stamped textures the map has always used, 'high' draws the
+// bodies that offer one as a lit sphere that answers to the camera.
+if (!global.settings.mapView.hasOwnProperty('texture')){
+    global.settings.mapView['texture'] = 'high';
 }
 
 export function setupStats(){
@@ -2521,6 +2556,7 @@ function newGameData(){
     global['seed'] = Math.rand(0,10000);
     global['warseed'] = Math.rand(0,10000);
     global['hellseed'] = Math.rand(0,10000);
+    global['starseed'] = Math.rand(0,10000);
     global['new'] = true;
 }
 
@@ -2775,6 +2811,7 @@ window.soft_reset = function reset(source){
     global.seed = Math.rand(0,10000);
     global.warseed = Math.rand(0,10000);
     global.hellseed = Math.rand(0,10000);
+    global.starseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
     writeSave();
@@ -2798,7 +2835,7 @@ function setRegionStates(reset){
     let regions = {
         base: [
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
-            'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
+            'showResearch','showCivic','showMil','showResources','showMarket','showStorage','showSupplyZones',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
             'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic',
             'showWish','showUnderground','showSurface','showPerkUnderground'

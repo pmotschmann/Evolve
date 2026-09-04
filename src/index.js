@@ -1,5 +1,6 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker, writeSave } from './vars.js';
 import { loc, locales } from './locale.js';
+import { supplyMode } from './supply.js';
 import { setupStats, alevel } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon, updateMobileMsg, mobileMsgLines, MOBILE_MSG_MAX } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
@@ -21,6 +22,24 @@ import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js'
 // index.js importing main.js (which would pull the whole game bootstrap into the wiki bundle).
 let offlineHandler = null;
 export function registerOfflineHandler(fn){ offlineHandler = fn; }
+
+// Keep Buefy modal close buttons positioned within their modal card.
+let modalCloseObserver = null;
+function placeModalCloseButtons(){
+    document.querySelectorAll('.modal').forEach(function(modal){
+        const close = modal.querySelector('.modal-close');
+        const content = modal.querySelector('.animation-content');
+        if (close && content && !content.contains(close)){
+            content.append(close);
+        }
+    });
+}
+function watchModalCloseButtons(){
+    placeModalCloseButtons();
+    if (modalCloseObserver){ return; }
+    modalCloseObserver = new MutationObserver(placeModalCloseButtons);
+    modalCloseObserver.observe(document.body, { childList: true, subtree: true });
+}
 
 export function mainVue(){
     vBind({
@@ -664,11 +683,12 @@ export function loadTab(tab){
                     tagEvent('page_view',{ page_title: `Evolve - Resources` });
                 }
                 $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @update:model-value="swapTab(s.marketTabs)">
-                    <b-tab-item id="market" :visible="s.showMarket" :label="label('tab_market')"></b-tab-item>
+                    <b-tab-item id="market" :visible="s.showMarket" :label="label(marketLabel())"></b-tab-item>
                     <b-tab-item id="resStorage" :visible="s.showStorage" :label="label('tab_storage')"></b-tab-item>
                     <b-tab-item id="resEjector" :visible="s.showEjector" :label="label('tab_ejector')"></b-tab-item>
                     <b-tab-item id="resCargo" :visible="s.showCargo" :label="label('tab_cargo')"></b-tab-item>
                     <b-tab-item id="resAlchemy" :visible="s.showAlchemy" :label="label('tab_alchemy')"></b-tab-item>
+                    <b-tab-item id="resSupplyZones" :visible="s.showSupplyZones" :label="label('tab_supply_zones')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabResource`,
@@ -676,10 +696,15 @@ export function loadTab(tab){
                         s: global.settings
                     },
                     methods: {
+                        // Once the supply lines are cut the open market is gone and what trades in its
+                        // place is smugglers, so the tab is named for what it has become.
+                        marketLabel(){
+                            return supplyMode() === 'global' ? 'tab_market' : 'tab_black_market';
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`];
+                                let panels = [`#market`,`#resStorage`,`#resEjector`,`#resCargo`,`#resAlchemy`,`#resSupplyZones`];
                                 clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
@@ -705,6 +730,11 @@ export function loadTab(tab){
                                     case 4:
                                         {
                                             drawResourceTab('alchemy');
+                                        }
+                                        break;
+                                    case 5:
+                                        {
+                                            drawResourceTab('supply_zones');
                                         }
                                         break;
                                 }
@@ -836,6 +866,7 @@ export function index(){
     // timer can't fire after the rebuild and empty a panel that was just redrawn.
     flushTabPanelClears();
     clearElement($('body'));
+    watchModalCloseButtons();
 
     $('html').addClass(global.settings.font);
 

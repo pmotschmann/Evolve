@@ -1,8 +1,5 @@
-// WebGL backend for the solar map.
-//
-// This is an implementation of the Canvas 2D map that is drawn using WebGL using the same
-// drawMap and its helpers that the Canvas implementation uses, drawn through WebGL instead of the browser's 2D
-// rasteriser — so one drawMap serves both renderers and there is no second drawing routine to keep in sync.
+// WebGL backend for the solar map. This is an implementation of the Canvas 2D map that is drawn using WebGL using the
+// WebGL solar-map backend using the shared `drawMap` helpers.
 
 const VERT_SRC = `
 attribute vec2 a_pos;
@@ -40,16 +37,12 @@ uniform sampler2D u_tex;
 void main(){
     vec4 c = v_color;
     if (v_mode > 2.5){
-        // Disc: v_uv is the offset from the centre normalised by the radius, v_aux the radius in
-        // device pixels. Coverage falls off over the outermost pixel, which is what the 2D
-        // rasteriser's antialiasing amounts to, and a sub-pixel body fades instead of popping.
+        // Disc: v_uv is the offset from the centre normalised by the radius, v_aux the radius in device pixels.
         float d = length(v_uv) * v_aux;
         c.a *= clamp(v_aux - d + 0.5, 0.0, 1.0);
     }
     else if (v_mode > 1.5){
-        // Stroke: v_uv.x is the signed distance from the centreline in device pixels, v_aux the
-        // half width. A line thinner than a pixel comes out faint rather than vanishing, the same
-        // way a hairline does in 2D.
+        // Stroke: v_uv.x is the signed distance from the centreline in device pixels, v_aux the half width.
         c.a *= clamp(v_aux - abs(v_uv.x) + 0.5, 0.0, 1.0);
     }
     else if (v_mode > 0.5){
@@ -72,15 +65,12 @@ const BATCH_VERTS = 49152;
 // Width of the antialiased edge, in device pixels.
 const FEATHER = 1.0;
 
-// A dash pattern finer than this on screen is drawn as a solid line at the pattern's duty cycle
-// instead. Below a pixel a dash and its gap both land inside the same pixel, so the rasteriser is
-// already averaging them into exactly that — and the belt orbits use a 0.01-unit pattern, which
-// zoomed out would otherwise mean tens of thousands of quads for a line that reads as solid.
+// A dash pattern finer than this on screen is drawn as a solid line at the pattern's duty cycle instead.
 const DASH_MIN_PX = 1.5;
 
-// Rendered labels held in the texture cache. Map labels are drawn from a small, stable set (planet,
-// star and ship names, gate glyphs), so this is far more than a frame needs and the cache settles.
-const TEXT_CACHE_MAX = 512;
+// Rendered labels held in the texture cache.
+const TEXT_CACHE_MAX = 2048;
+const TEXT_CACHE_BYTES = 24 * 1024 * 1024;
 
 // --- small helpers ------------------------------------------------------------------------------
 
@@ -114,9 +104,7 @@ function parseColor(css){
     return out;
 }
 
-// A gradient, as returned by createLinearGradient/createRadialGradient. Colours are resolved per
-// vertex at paint time from the vertex's position in user space, which is the space canvas defines
-// a gradient in — so the gate's sheen runs across the ring exactly as it does in 2D.
+// A gradient, as returned by createLinearGradient/createRadialGradient.
 class Gradient {
     constructor(type, coords){
         this.type = type;
@@ -139,8 +127,6 @@ class Gradient {
         }
         else {
             // Radial, treated as the distance from the inner circle's centre between the two radii.
-            // The map only uses radial gradients on its offscreen texture canvases, which are real
-            // 2D contexts; this is here so a gradient assigned to fillStyle can't come out blank.
             let [x0,y0,r0,,,r1] = this.c;
             let d = Math.hypot(x - x0, y - y0);
             t = r1 !== r0 ? (d - r0) / (r1 - r0) : 0;
@@ -182,9 +168,7 @@ function scaleFont(font, k){
     return font.replace(/(\d*\.?\d+)px/, (m, n) => `${parseFloat(n) * k}px`);
 }
 
-// Rasterisation scale for a label, quantised so that a label does not get a fresh texture for every
-// pixel of zoom. In practice the map draws its text with a net transform of 1 (it undoes the map
-// scale first), so this lands on 1 and every label is rasterised once.
+// Rasterisation scale for a label, quantised so that a label does not get a fresh texture for every pixel of zoom.
 function quantScale(s){
     if (!(s > 0)){ return 1; }
     let q = Math.pow(2, Math.round(Math.log2(s)));
@@ -201,20 +185,12 @@ class GLContext {
 
         this.prog = this._program(VERT_SRC, FRAG_SRC);
         gl.useProgram(this.prog);
-        this.loc = {
-            pos: gl.getAttribLocation(this.prog, 'a_pos'),
-            uv: gl.getAttribLocation(this.prog, 'a_uv'),
-            color: gl.getAttribLocation(this.prog, 'a_color'),
-            mode: gl.getAttribLocation(this.prog, 'a_mode'),
-            aux: gl.getAttribLocation(this.prog, 'a_aux'),
-            res: gl.getUniformLocation(this.prog, 'u_res'),
-            tex: gl.getUniformLocation(this.prog, 'u_tex')
-        };
-        gl.uniform1i(this.loc.tex, 0);
+        this._locations();
 
         this.buf = gl.createBuffer();
         this.data = new Float32Array(BATCH_VERTS * FLOATS_PER_VERT);
         this.count = 0;
+        this._bindAttribs();
 
         // Bound whenever a batch has no image in it, so the sampler always has something valid.
         this.blank = this._blankTexture();
@@ -222,8 +198,11 @@ class GLContext {
         // Textures for the map's cached body/star canvases. Weak, so a texture cannot outlive the
         // canvas it came from.
         this.imgTex = new WeakMap();
-        // Rasterised labels, in insertion order so the oldest can be dropped first.
+        // Rasterised labels, in least-recently-used order so the coldest can be dropped first.
         this.textCache = new Map();
+        // What those labels cost in texture memory, kept in step with the map on every insert and
+        // evict so the budget never has to walk the cache to find out.
+        this.textBytes = 0;
 
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.CULL_FACE);
@@ -281,14 +260,52 @@ class GLContext {
         return t;
     }
 
+    // Where the shader's inputs live. Re-read whenever the program is (re)linked.
+    _locations(){
+        let gl = this.gl;
+        this.loc = {
+            pos: gl.getAttribLocation(this.prog, 'a_pos'),
+            uv: gl.getAttribLocation(this.prog, 'a_uv'),
+            color: gl.getAttribLocation(this.prog, 'a_color'),
+            mode: gl.getAttribLocation(this.prog, 'a_mode'),
+            aux: gl.getAttribLocation(this.prog, 'a_aux'),
+            res: gl.getUniformLocation(this.prog, 'u_res'),
+            tex: gl.getUniformLocation(this.prog, 'u_tex')
+        };
+        gl.uniform1i(this.loc.tex, 0);
+    }
+
+    // The vertex layout, set once rather than per flush.
+    _bindAttribs(){
+        let gl = this.gl, l = this.loc, stride = FLOATS_PER_VERT * 4;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
+        gl.enableVertexAttribArray(l.pos);
+        gl.vertexAttribPointer(l.pos, 2, gl.FLOAT, false, stride, 0);
+        gl.enableVertexAttribArray(l.uv);
+        gl.vertexAttribPointer(l.uv, 2, gl.FLOAT, false, stride, 8);
+        gl.enableVertexAttribArray(l.color);
+        gl.vertexAttribPointer(l.color, 4, gl.FLOAT, false, stride, 16);
+        gl.enableVertexAttribArray(l.mode);
+        gl.vertexAttribPointer(l.mode, 1, gl.FLOAT, false, stride, 32);
+        gl.enableVertexAttribArray(l.aux);
+        gl.vertexAttribPointer(l.aux, 1, gl.FLOAT, false, stride, 36);
+        // Nothing in this context ever selects another texture unit, so this is set here too and the
+        // per-flush bindTexture below lands on unit 0 every time.
+        gl.activeTexture(gl.TEXTURE0);
+    }
+
     _rebuild(){
         this.prog = this._program(VERT_SRC, FRAG_SRC);
         this.gl.useProgram(this.prog);
+        this._locations();
         this.buf = this.gl.createBuffer();
+        // New buffer, so the attribute pointers have to be aimed at it again.
+        this._bindAttribs();
         this.blank = this._blankTexture();
         this.batchTex = this.blank;
         this.imgTex = new WeakMap();
         this.textCache = new Map();
+        this.textBytes = 0;
         this.count = 0;
     }
 
@@ -335,6 +352,18 @@ class GLContext {
     }
 
     setTransform(a,b,c,d,e,f){ this.m = [a,b,c,d,e,f]; }
+
+    // Match CanvasRenderingContext2D's post-multiplied affine transform.
+    transform(a, b, c, d, e, f){
+        let m = this.m;
+        let a0 = m[0], b0 = m[1], c0 = m[2], d0 = m[3];
+        m[0] = a0 * a + c0 * b;
+        m[1] = b0 * a + d0 * b;
+        m[2] = a0 * c + c0 * d;
+        m[3] = b0 * c + d0 * d;
+        m[4] += a0 * e + c0 * f;
+        m[5] += b0 * e + d0 * f;
+    }
 
     translate(x, y){
         let m = this.m;
@@ -400,10 +429,8 @@ class GLContext {
         if (this.sub){ this.sub.closed = true; }
     }
 
-    // Arcs are tessellated at a step chosen from their on-screen size, so a small one costs little
-    // and a large one stays round. A whole circle drawn on its own also records its centre and
-    // radius, which lets fill() lay it down as an analytically antialiased disc — which is what
-    // almost every body on the map is.
+    // Arcs are tessellated at a step chosen from their on-screen size, so a small one costs little and a large one stays
+    // round.
     arc(x, y, r, start, end, anticlockwise){
         let full = Math.abs((end - start) - (anticlockwise ? -Math.PI * 2 : Math.PI * 2)) < 1e-9
                 || Math.abs(end - start) >= Math.PI * 2 - 1e-9;
@@ -558,9 +585,7 @@ class GLContext {
         return out;
     }
 
-    // Stroke a polyline as a triangle strip with mitred joins. A strip rather than a quad per
-    // segment because the map strokes translucent ring bands, and overlapping quads would blend
-    // twice at every joint and bead the line.
+    // Stroke a polyline as a triangle strip with mitred joins.
     _polyline(pts, closed, style, alphaMul){
         let n = pts.length / 2;
         if (n < 2){ return; }
@@ -572,9 +597,7 @@ class GLContext {
         let col = style instanceof Gradient ? false : parseColor(style);
         if (col && alphaMul !== 1){ col = [col[0], col[1], col[2], col[3] * alphaMul]; }
 
-        // Offset direction at each vertex: the segment normal at an end, the mitre between the two
-        // segments at a joint. A mitre longer than the limit falls back to the segment normal,
-        // which bevels the corner rather than letting a near-reversal shoot off to infinity.
+        // Offset direction at each vertex: the segment normal at an end, the mitre between the two segments at a joint.
         const MITRE_LIMIT = 6;
         let count = closed ? n + 1 : n;
         let vx = new Float64Array(count * 2);
@@ -647,9 +670,7 @@ class GLContext {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        // Body textures are 128 and 256 square and get drawn at anything from a couple of pixels to
-        // most of the screen. Without mipmaps the zoomed-out case samples a handful of texels out of
-        // 65536 and boils; the 2D renderer's own downsampling is what this matches.
+        // Body textures are 128 and 256 square and get drawn at anything from a couple of pixels to most of the screen.
         let pot = (src.width & (src.width - 1)) === 0 && (src.height & (src.height - 1)) === 0;
         if (pot){
             gl.generateMipmap(gl.TEXTURE_2D);
@@ -688,10 +709,8 @@ class GLContext {
         return x.measureText(text);
     }
 
-    // Labels are rasterised by the browser's own 2D text engine — glyph shapes, hinting, colour
-    // emoji and the drop shadow included — into a cached texture, then drawn as a quad. The colour
-    // is baked in and the quad drawn white, so an emoji keeps its own colours instead of being
-    // tinted by fillStyle, exactly as it is in 2D.
+    // Labels are rasterised by the browser's own 2D text engine — glyph shapes, hinting, colour emoji and the drop shadow
+    // included — into a cached texture, then drawn as a quad.
     fillText(text, x, y){
         if (text === undefined || text === null || text === ''){ return; }
         text = String(text);
@@ -703,25 +722,31 @@ class GLContext {
         let key = `${text}|${this.font}|${fill}|${this.textAlign}|${this.textBaseline}|${q}|`
                 + (hasShadow ? `${this.shadowColor}:${this.shadowOffsetX}:${this.shadowOffsetY}:${this.shadowBlur}` : '');
         let entry = this.textCache.get(key);
-        if (!entry){
+        if (entry){
+            // A Map iterates in insertion order, so re-inserting a hit moves it to the back and makes
+            // the eviction below least-recently-USED.
+            this.textCache.delete(key);
+            this.textCache.set(key, entry);
+        }
+        else {
             entry = this._rasterText(text, fill, q, hasShadow);
             if (!entry){ return; }
             this.textCache.set(key, entry);
-            if (this.textCache.size > TEXT_CACHE_MAX){
+            this.textBytes += entry.w * entry.h * 4;
+            while (this.textCache.size > 1 &&
+                   (this.textCache.size > TEXT_CACHE_MAX || this.textBytes > TEXT_CACHE_BYTES)){
                 let oldest = this.textCache.keys().next().value;
                 let dead = this.textCache.get(oldest);
                 this.textCache.delete(oldest);
-                if (dead && dead.tex){ this.gl.deleteTexture(dead.tex); }
-                if (this.batchTex === (dead && dead.tex)){ this.batchTex = false; }
+                if (dead){
+                    this.textBytes -= dead.w * dead.h * 4;
+                    if (dead.tex){ this.gl.deleteTexture(dead.tex); }
+                    if (this.batchTex === dead.tex){ this.batchTex = false; }
+                }
             }
         }
         // The bitmap holds q device pixels per user unit, so its extent in user units is size/q.
         let ux = x + entry.ox / q, uy = y + entry.oy / q;
-        // A bitmap sampled at a fractional offset comes out soft. Every label the map draws sits
-        // under a plain translate-and-scale, and there the quad is placed in device space and
-        // snapped to the pixel grid — with the usual net scale of 1 the texture then maps one to one
-        // and the glyphs land on exactly the pixels the 2D renderer would have used. A rotated
-        // transform (the gate's engraved glyphs) has no grid to snap to and goes through as normal.
         if (Math.abs(this.m[1]) < 1e-9 && Math.abs(this.m[2]) < 1e-9 && this.m[0] > 0 && this.m[3] > 0){
             let k = s / q;
             this._quadDev(entry.tex, Math.round(this._tx(ux, uy)), Math.round(this._ty(ux, uy)),
@@ -745,9 +770,8 @@ class GLContext {
         }
     }
 
-    // Draw one label into an offscreen canvas and upload it. Returns the texture together with the
-    // bitmap's placement relative to the text anchor, so fillText can put the quad exactly where
-    // the 2D renderer would have put the glyphs.
+    // Draw one label into an offscreen canvas and upload it. Returns the texture together with the bitmap's placement
+    // relative to the text anchor, so fillText can put the quad exactly where the 2D renderer would have put the glyphs.
     _rasterText(text, fill, q, hasShadow){
         let x = scratchCtx();
         let font = scaleFont(this.font, q);
@@ -755,9 +779,7 @@ class GLContext {
         x.textAlign = this.textAlign;
         x.textBaseline = this.textBaseline;
         let m = x.measureText(text);
-        // The ink box relative to the anchor, which already accounts for align and baseline. Older
-        // engines without the actualBoundingBox metrics fall back to the advance width and the font
-        // size, which is generous but never clips.
+        // The ink box relative to the anchor, which already accounts for align and baseline.
         let size = parseFloat(font) || 10;
         let left, right, top, bottom;
         if (m.actualBoundingBoxLeft !== undefined && m.actualBoundingBoxAscent !== undefined){
@@ -852,21 +874,10 @@ class GLContext {
     flush(){
         if (this.count === 0 || this.lost){ this.count = 0; return; }
         let gl = this.gl;
+        // The layout is already set (see _bindAttribs); only the contents, the texture and the draw change from one flush to the
+        // next.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buf);
         gl.bufferData(gl.ARRAY_BUFFER, this.data.subarray(0, this.count * FLOATS_PER_VERT), gl.STREAM_DRAW);
-        let stride = FLOATS_PER_VERT * 4;
-        let l = this.loc;
-        gl.enableVertexAttribArray(l.pos);
-        gl.vertexAttribPointer(l.pos, 2, gl.FLOAT, false, stride, 0);
-        gl.enableVertexAttribArray(l.uv);
-        gl.vertexAttribPointer(l.uv, 2, gl.FLOAT, false, stride, 8);
-        gl.enableVertexAttribArray(l.color);
-        gl.vertexAttribPointer(l.color, 4, gl.FLOAT, false, stride, 16);
-        gl.enableVertexAttribArray(l.mode);
-        gl.vertexAttribPointer(l.mode, 1, gl.FLOAT, false, stride, 32);
-        gl.enableVertexAttribArray(l.aux);
-        gl.vertexAttribPointer(l.aux, 1, gl.FLOAT, false, stride, 36);
-        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.batchTex || this.blank);
         gl.drawArrays(gl.TRIANGLES, 0, this.count);
         this.count = 0;
@@ -897,10 +908,7 @@ class GLContext {
         this.flush();
     }
 
-    // Give the context back rather than waiting for the canvas to be collected. Closing and
-    // reopening the map builds a new canvas each time, and a browser only keeps a handful of live
-    // WebGL contexts before it starts dropping the oldest — releasing ours as it is replaced keeps
-    // the map well clear of that limit however many times it is opened.
+    // Give the context back rather than waiting for the canvas to be collected.
     destroy(){
         this.canvas.removeEventListener('webglcontextlost', this.onLost);
         this.canvas.removeEventListener('webglcontextrestored', this.onRestored);
@@ -908,15 +916,14 @@ class GLContext {
             if (entry && entry.tex){ this.gl.deleteTexture(entry.tex); }
         }
         this.textCache.clear();
+        this.textBytes = 0;
         this.lost = true;
         let ext = this.gl.getExtension('WEBGL_lose_context');
         if (ext){ ext.loseContext(); }
     }
 }
 
-// Whether this browser can give the map a WebGL context at all. Probed on a throwaway canvas, so
-// asking does not consume the map's own canvas — an element that has handed out one kind of context
-// can never hand out another.
+// Whether this browser can give the map a WebGL context at all.
 let glProbe = null;
 export function webglSupported(){
     if (glProbe !== null){ return glProbe; }

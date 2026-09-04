@@ -5,7 +5,7 @@ import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { flib, drawPet } from './functions.js';
 import { tradeRatio } from './resources.js';
-import { checkControlling, soldierDeath } from './civics.js';
+import { checkControlling, soldierDeath, rivalActive } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { jobScale } from './jobs.js';
@@ -279,7 +279,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && rivalActive() && global.civic.foreign.gov3.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov3`,true);
@@ -1002,7 +1002,7 @@ export const events = {
                 let pet = global.race['catnip'] && global.race['catnip'] >= 1 ? 'cat' : (global.race['anise'] && global.race['anise'] >= 1 ? 'dog' : (Math.rand(0,2) === 0 ? 'cat' : 'dog'));
                 global.race['pet'] = {
                     type: pet,
-                    name: pet === 'cat' ? Math.rand(0,12) : Math.rand(0,10),
+                    name: pet === 'cat' ? Math.rand(0,13) : Math.rand(0,10),
                     event: 0,
                     pet: 0
                 };

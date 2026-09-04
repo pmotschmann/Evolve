@@ -1063,7 +1063,7 @@ Misc ---------> Main template
             }
 
             .divide-line {
-                border-top: @secondary-border solid .0625rem;
+                border-top: rgba(128,128,128,.45) solid .0625rem;
             }
         }
 
@@ -1224,7 +1224,7 @@ Misc ---------> Main template
 
         // .basic-button
         .basic-button {
-            border: @primary-border solid .0625rem;
+            border: rgba(128,128,128,.45) solid .0625rem;
         }
 
         .basic-button:hover {
@@ -1276,7 +1276,7 @@ Misc ---------> Main template
         // Trade
         .add,
         .sub {
-            border: @primary-border solid .0625rem;
+            border: rgba(128,128,128,.45) solid .0625rem;
             transition: all 200ms ease;
         }
 
@@ -1287,11 +1287,11 @@ Misc ---------> Main template
         }
 
         .current {
-            border-top: @primary-border solid .0625rem;
-            border-bottom: @primary-border solid .0625rem;
+            border-top: rgba(128,128,128,.45) solid .0625rem;
+            border-bottom: rgba(128,128,128,.45) solid .0625rem;
         }
         .current.infoOnly {
-            border: @primary-border solid .0625rem;
+            border: rgba(128,128,128,.45) solid .0625rem;
         }
 
         // UI Bars
@@ -1302,9 +1302,8 @@ Misc ---------> Main template
             background-color: @bars-background;
         }
 
-        // The race/name header sits directly above the scrolling resource list, which is tucked up
-        // under it by a negative top margin. Give the header an opaque, page-colored background so the
-        // resource rows scrolling behind it are hidden instead of bleeding through as overlapping text.
+        // The race/name header sits directly above the scrolling resource list, which is tucked up under it by a negative
+        // top margin.
         #race {
             background-color: @html-background;
         }
@@ -1601,7 +1600,7 @@ Misc ---------> Main template
         }
 
         .gridHeader {
-            border-top: @secondary-border solid .0625rem;
+            border-top: rgba(128,128,128,.45) solid .0625rem;
             margin: .25rem 0 .25rem 1rem;
             padding-top: .25rem;
         }
@@ -1636,7 +1635,7 @@ Misc ---------> Main template
         // .market-item
         .market-item {
             .order {
-                border: @primary-border solid .0625rem;
+                border: rgba(128,128,128,.45) solid .0625rem;
                 transition: all 200ms ease;
             }
 
@@ -1704,19 +1703,19 @@ Misc ---------> Main template
             background: @modalBox-background;
 
             p {
-                border-bottom: @secondary-border solid .0625rem;
+                border-bottom: rgba(128,128,128,.45) solid .0625rem;
             }
 
             .market-item {
-                border-top: @secondary-border solid .0625rem;
+                border-top: rgba(128,128,128,.45) solid .0625rem;
             }
 
             .divide {
-                border-top: @secondary-border solid .0625rem;
+                border-top: rgba(128,128,128,.45) solid .0625rem;
             }
 
             .smelting {
-                border-top: @secondary-border solid .0625rem;
+                border-top: rgba(128,128,128,.45) solid .0625rem;
             }
         }
 
@@ -1724,7 +1723,7 @@ Misc ---------> Main template
             background: none;
 
             .header {
-                border-bottom: @secondary-border solid .0625rem;
+                border-bottom: rgba(128,128,128,.45) solid .0625rem;
             }
 
             .avail {
@@ -2195,15 +2194,15 @@ html.gruvboxDark {
 
     .add,
     .sub {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .current {
-        border-top: @secondary-border solid .0625rem;
-        border-bottom: @secondary-border solid .0625rem;
+        border-top: rgba(128,128,128,.45) solid .0625rem;
+        border-bottom: rgba(128,128,128,.45) solid .0625rem;
     }
     .current.infoOnly {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .popper {
@@ -2239,15 +2238,15 @@ html.gruvboxDarkRG {
 
     .add,
     .sub {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .current {
-        border-top: @secondary-border solid .0625rem;
-        border-bottom: @secondary-border solid .0625rem;
+        border-top: rgba(128,128,128,.45) solid .0625rem;
+        border-bottom: rgba(128,128,128,.45) solid .0625rem;
     }
     .current.infoOnly {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .popper {
@@ -2326,15 +2325,15 @@ html.dracula {
 
     .add,
     .sub {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .current {
-        border-top: @secondary-border solid .0625rem;
-        border-bottom: @secondary-border solid .0625rem;
+        border-top: rgba(128,128,128,.45) solid .0625rem;
+        border-bottom: rgba(128,128,128,.45) solid .0625rem;
     }
     .current.infoOnly {
-        border: @secondary-border solid .0625rem;
+        border: rgba(128,128,128,.45) solid .0625rem;
     }
 
     .popper {
@@ -2370,6 +2369,8 @@ textarea {
 }
 
 body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     line-height: initial;
     touch-action: manipulation;
 }
@@ -2902,16 +2903,7 @@ a {
             padding: 0 0 0 1rem;
         }
 
-        // Directional slide when switching tabs (main tabs and every nested sub-tab group). Buefy
-        // computes the transition name from the direction of travel — `slide-next` when moving to
-        // a tab further right, `slide-prev` when moving left — so the slide direction follows the
-        // click. The incoming tab stays in normal flow (so it defines the container height) and
-        // slides in via `transform`; the outgoing tab is absolutely positioned so the two overlap
-        // and slide across each other. We re-declare everything here because the bundled Buefy 0.9
-        // CSS uses Vue 2 transition class names (`-enter`), while the game runs Buefy 3 on Vue 3,
-        // which emits `-enter-from`/`-leave-from` — so the original slide only half-applied.
-        // Gated by the b-tabs :animated setting: with animations off Buefy emits no transition
-        // wrapper and none of these classes ever appear.
+        // Directional slide when switching tabs (main tabs and every nested sub-tab group).
         .slide-next-enter-active,
         .slide-prev-enter-active,
         .slide-next-leave-active,
@@ -2949,10 +2941,8 @@ a {
             pointer-events: none;
         }
 
-        // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab
-        // parked at ±100% can't spawn a horizontal scrollbar. Scoped to the active transition via
-        // :has() (and a direct-child match, so a sub-tab slide doesn't clip its parent) — the rest
-        // of the time overflow stays visible, so dropdown/tooltip menus aren't clipped.
+        // Clip the off-screen tabs only while a slide is in flight, so the incoming/outgoing tab parked at ±100% can't
+        // spawn a horizontal scrollbar.
         .tab-content:has(> .slide-next-leave-active),
         .tab-content:has(> .slide-prev-leave-active) {
             overflow: hidden;
@@ -3000,10 +2990,7 @@ a {
                 }
             }
 
-            // Damaged structures get a cracked-glass overlay and red tint so the button reads as
-            // broken. Severity is set via :class="damaged()" -> "damaged mild" or "damaged severe".
-            // Base (.damaged) = mild: fewer cracks and a muted red halfway to the normal button
-            // color. .severe (damaged count exceeds built count) = full red with denser cracks.
+            // Damaged structures get a cracked-glass overlay and red tint so the button reads as broken.
             a.button.damaged {
                 position: relative;
                 overflow: hidden;
@@ -4313,6 +4300,140 @@ a {
     margin-bottom: .25rem;
 }
 
+// Regional resource rows share a grid with their zone totals.
+@stack-grid: 1.5rem 8.5rem 10rem 7rem 7rem;
+
+// Only the split rows. An unsplit one keeps the flex layout the tab has always used, and none of
+// these rules may reach it.
+#resStorage .market-item.stacked {
+    display: block;
+    margin-left: 1rem;
+}
+
+.stackLegend,
+.stackHead,
+.stackZone {
+    display: grid;
+    grid-template-columns: @stack-grid;
+    align-items: center;
+    column-gap: .5rem;
+    > h3:not(:first-child) {
+        margin-top: 0;
+    }
+    
+}
+
+.stackLegend {
+    margin: .5rem 0 .25rem 1rem;
+    font-size: .8rem;
+    opacity: .65;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+
+    > span { text-align: center; }
+    .stored { text-align: right; }
+}
+
+.stackHead {
+    cursor: pointer;
+
+    .res {
+        cursor: pointer;
+        width: auto;
+        margin: 0;
+        display: block;
+    }
+
+    .expander {
+        cursor: pointer;
+        font-size: .7rem;
+        text-align: center;
+        user-select: none;
+        // A caret is a small thing to hit; the padding is the click target, not the glyph.
+        padding: .2rem 0;
+    }
+
+    .stackTotal {
+        text-align: center;
+        font-weight: 600;
+    }
+}
+
+// A rule down the left edge ties the worlds to the resource they belong to, so an open section reads
+// as one block rather than as loose rows drifting between the resources either side of it.
+.stackZones {
+    margin: 0 0 .5rem 1.5rem;
+    padding-left: .5rem;
+    // A mid grey rather than a themed colour: this rule sits outside the per-theme blocks, and the
+    // game ships light themes as well as dark ones, so it has to read on either.
+    border-left: 1px solid rgba(128, 128, 128, 0.35);
+}
+
+.stackZone {
+    font-size: .9rem;
+    // The grid is shared with the head, which sits half a column to the left of this block — so the
+    // first two columns are folded into one here to keep the rest aligned with it.
+    grid-template-columns: 8.5rem 10rem 7rem 7rem;
+
+    // The worlds read as a list beneath their resource, so their names are quieter than it and sit
+    // indented rather than competing with it for the left edge.
+    .zoneName {
+        opacity: .8;
+        padding-left: .75rem;
+    }
+}
+
+// Shared by the head's totals and each zone's own figure, so the two align to the same right edge.
+.stackHead .stored,
+.stackZone .stored {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.stackZone .adjust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .sub, .add {
+        cursor: pointer;
+        padding: 0 .4rem;
+        line-height: 1rem;
+    }
+
+    .current {
+        min-width: 2.25rem;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.regionMode {
+    margin-left: 1rem;
+    font-style: italic;
+}
+
+// The world-picker at the head of the resource list. Laid out like the resource rows beneath it so
+// it reads as part of the list rather than as something bolted above it.
+.resRegionSwitch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.4rem;
+    margin-bottom: .15rem;
+
+    .viewing {
+        flex: 1;
+        text-align: center;
+        font-style: italic;
+    }
+
+    .sub, .add {
+        cursor: pointer;
+        padding: 0 .35rem;
+    }
+}
+
 .market-item {
     margin: .125rem 0 0 1rem;
     display: flex;
@@ -4431,6 +4552,25 @@ a {
     .modal-content {
         box-shadow: 0px 0px 1rem black;
         border-radius: 1rem;
+    }
+
+    // Buefy places this control with position: fixed by default, which pins it to the viewport.
+    // Keep it in the modal's centered content instead, at the card's own upper-right corner.
+    .animation-content {
+        position: relative;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: .5rem;
+        right: .5rem;
+    }
+
+    // Keep the Star Map close control below its upper-right search button.
+    .animation-content.solarMapModal .modal-close {
+        top: 2.5rem;
+        right: .5rem;
+        left: auto;
     }
 
     .genus_selection {
@@ -4759,6 +4899,68 @@ span.inline {
             }
         }
     }
+
+    // Ship refit modal layout.
+    .shipRefit {
+        padding: .5rem;
+
+        .refitSlot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: .35rem;
+            padding: .15rem 0;
+
+            .refitLabel {
+                min-width: 7rem;
+                text-align: right;
+                margin-right: .25rem;
+            }
+
+            .button {
+                margin: 0;
+            }
+
+            .refitFixed {
+                font-size: .85rem;
+            }
+
+            // Original part shown after a slot changes.
+            .refitWas {
+                font-size: .75rem;
+            }
+
+            // Selected replacement part.
+            .refitOn {
+                font-weight: bold;
+                box-shadow: inset 0 0 0 .125rem currentColor;
+            }
+        }
+
+        .refitStats {
+            margin-top: .5rem;
+        }
+
+        .refitCost {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .25rem;
+            padding: .35rem 0;
+        }
+
+        .refitWarn {
+            text-align: center;
+            font-size: .85rem;
+        }
+
+        .refitAct {
+            display: flex;
+            justify-content: center;
+            padding: .35rem 0;
+        }
+    }
 }
 
 // The flagship marker and the fleet it names, shown against a ship's name in the fleet list.
@@ -4943,9 +5145,7 @@ span.inline {
     }
 }
 
-// Player-pet coat colors. Kept at the top level (not scoped to .topBar) so the icon keeps its color
-// wherever the single #playerPet node lives — the header on desktop, the footer on mobile. Without
-// this the svg falls back to its default black fill once it moves out of the top bar.
+// Player-pet coat colors.
 .pet {
     .black {
         fill: #000000;
@@ -6353,9 +6553,7 @@ div.bigbang {
     top: 1rem;
 }
 
-// Mobile layout
-// At narrow widths: stack columns, show one panel at a time via #mobileNav.
-// .mobile-panel-game and .mobile-panel-queue on #main control which panel is visible
+// Mobile layout At narrow widths: stack columns, show one panel at a time via #mobileNav.
 #mobileNav {
     display: none; // Hidden on desktop
 }
@@ -6689,10 +6887,7 @@ div.bigbang {
         }
     }
 
-    // --- Main tab bar as icon tabs ---
-    // Render the main tabs (Civilization / Civics / Research / …) as a compact icon over a tiny
-    // label, each flexing to an equal share of the width, so the whole set fits on screen without
-    // horizontal scrolling. The nested sub-tab bars keep their scrollable text labels.
+    // Main Tab Bar As Icon Tabs
     #mainTabs > nav.tabs {
         > ul {
             width: 100%;
@@ -7087,4 +7282,540 @@ div.bigbang {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
+}
+
+// Supply-zone logistics cards.
+#resSupplyZones {
+    max-width: 62rem;
+    margin: 0 auto;
+
+    .supplyZonesTitle {
+        margin: .25rem 1rem .75rem;
+    }
+}
+
+.supplyRouteStops {
+    display: grid;
+    gap: .5rem;
+    margin: .75rem 0;
+}
+.supplyRouteStop {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(10rem, 1fr) minmax(10rem, 1fr) auto;
+    gap: .5rem;
+    align-items: center;
+    text-align: left;
+}
+.supplyRouteNumber {
+    text-align: center;
+    font-weight: 700;
+}
+.supplyRouteActions {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+// The route a freighter is flying, read rather than edited. The stops run left to right and wrap on
+// a narrow screen, with an arrow drawn between them and the one the fleet is dealing with picked out.
+.supplyRouteSummary {
+    margin: .7rem 0 .35rem;
+    padding: .65rem .75rem .75rem;
+    border: rgba(128,128,128,.42) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.08);
+    text-align: left;
+}
+.supplyRouteSummaryHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.supplyRouteGovernor {
+    padding: .16rem .4rem;
+    border-radius: 99rem;
+    background: rgba(255,193,7,.16);
+    color: var(--caution-color, #d99a00);
+    font-size: .72rem;
+    letter-spacing: 0;
+    text-transform: none;
+}
+.supplyRouteSummaryStops {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: .45rem .85rem;
+    margin: .6rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.supplyRouteSummaryStops li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    min-width: 0;
+    padding: .38rem .5rem;
+    border: rgba(128,128,128,.5) solid .0625rem;
+    border-radius: .35rem;
+    background: rgba(0,0,0,.1);
+}
+.supplyRouteSummaryStops li:not(:last-child)::after {
+    position: absolute;
+    right: -.72rem;
+    color: rgba(128,128,128,.9);
+    content: '→';
+    font-weight: 700;
+}
+.supplyRouteSummaryStops li.is-here {
+    border-color: currentColor;
+    background: rgba(35,174,109,.12);
+    box-shadow: inset .2rem 0 0 currentColor;
+}
+.supplyRouteSummaryNumber {
+    display: grid;
+    place-items: center;
+    flex: 0 0 1.35rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: rgba(128,128,128,.25);
+    font-size: .75rem;
+    font-weight: 700;
+}
+.supplyRouteSummaryDetails {
+    display: grid;
+    gap: .1rem;
+    min-width: 0;
+}
+.supplyRouteSummaryZone {
+    overflow: hidden;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.supplyRouteSummaryPickup {
+    color: var(--caution-color, #d99a00);
+    font-size: .78em;
+}
+.supplyRouteSummaryCurrent {
+    padding: .12rem .3rem;
+    border-radius: .2rem;
+    background: rgba(35,174,109,.2);
+    font-size: .69rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+@media only screen and (max-width: 600px) {
+    .supplyRouteStop { grid-template-columns: 1.5rem minmax(0, 1fr); }
+    .supplyRouteStop .select { grid-column: 2; }
+}
+
+.supplyZone {
+    display: block;
+    margin: 0 1rem .75rem;
+    padding: .8rem 1rem 1rem;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: .35rem;
+}
+
+.supplyZoneHead,
+.supplyFreighterHead,
+.supplyManifestHead,
+.supplyDispatch,
+.supplyCargoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+.supplyZoneHead {
+    padding-bottom: .65rem;
+    border-bottom: rgba(128,128,128,.45) solid .0625rem;
+
+    .res {
+        width: auto;
+        margin: 0;
+        font-size: 1.05rem;
+    }
+}
+
+.supplyZoneMeta,
+.supplyFreighterStats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .2rem .8rem;
+    margin-top: .2rem;
+    font-size: .78rem;
+    opacity: .72;
+}
+
+.supplyZoneCount {
+    min-width: 1.8rem;
+    padding: .15rem .4rem;
+    text-align: center;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: 1rem;
+    font-size: .78rem;
+    opacity: .75;
+}
+
+.supplyZoneEmpty,
+.supplyCargoEmpty {
+    padding: .75rem 0 .1rem;
+    font-size: .85rem;
+    opacity: .75;
+}
+
+.supplyFreighterList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: .75rem;
+    padding-top: .75rem;
+}
+
+.supplyFreighter {
+    min-width: 0;
+    padding: .7rem;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: .25rem;
+}
+
+.supplyInboundList {
+    margin-bottom: .75rem;
+    padding-bottom: .75rem;
+    border-bottom: rgba(128,128,128,.45) solid .0625rem;
+}
+
+.supplyFreighterIncoming {
+    border-style: dashed;
+    opacity: .82;
+}
+
+.supplyInboundStatus {
+    display: block;
+    margin-top: .2rem;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.supplyFreighterActions {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-top: .65rem;
+}
+
+.supplyInboundCargo {
+    margin-top: .65rem;
+    padding-top: .55rem;
+    border-top: rgba(128,128,128,.45) solid .0625rem;
+    font-size: .82rem;
+}
+
+.supplyFreighterHead {
+    align-items: flex-start;
+}
+
+.supplyFreighterName {
+    display: block;
+    font-weight: 700;
+}
+
+.supplyFreighterCapacity {
+    display: block;
+    margin-top: .12rem;
+    font-size: .82rem;
+    opacity: .8;
+}
+
+.supplyFreighterStats {
+    justify-content: flex-end;
+    margin-top: 0;
+    text-align: right;
+}
+
+.supplyFreighterTabs {
+    display: flex;
+    gap: .4rem;
+    margin-top: .7rem;
+}
+
+.supplyFreighterMap {
+    margin-left: auto;
+}
+
+.supplyManifest,
+.supplyRoutePanel {
+    margin-top: .55rem;
+    padding-top: .6rem;
+    border-top: rgba(128,128,128,.45) solid .0625rem;
+}
+
+
+.supplyManifestHead {
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.supplyCargoRows {
+    margin-top: .35rem;
+}
+
+.supplyCargoRow {
+    min-height: 2rem;
+    padding: .2rem 0;
+    border-top: rgba(128,128,128,.45) solid .0625rem;
+    font-size: .85rem;
+
+    > span:first-child {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .button {
+        min-width: 4.2rem;
+    }
+}
+
+.supplyDispatch {
+    align-items: flex-start;
+    margin-top: .7rem;
+    padding-top: .6rem;
+    border-top: rgba(128,128,128,.45) solid .0625rem;
+    font-size: .8rem;
+
+    > div {
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: .3rem;
+    }
+}
+
+.supplyLoadModal {
+    width: 90vw;
+    max-width: 54rem;
+}
+
+.supplyLoadAmount {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin: .75rem 0;
+
+    label {
+        font-weight: 700;
+    }
+
+    .control {
+        max-width: 9rem;
+    }
+}
+
+.supplyLoadCapacity {
+    margin-left: auto;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.supplyLoadResourceList {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .5rem;
+}
+
+.supplyLoadResource {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    min-height: 2.35rem;
+    white-space: normal;
+    text-align: left;
+}
+
+.supplyRoutePickerHead {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    min-height: 2.35rem;
+    margin: .65rem 0;
+}
+
+.supplyRouteSelectionSummary {
+    min-width: 0;
+    font-size: .85rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.supplyRouteResource {
+    border: rgba(128,128,128,.55) solid .0625rem;
+    background: rgba(128,128,128,.08);
+    transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease;
+
+    &:not(.supplyRouteResourceSelected) {
+        opacity: .68;
+    }
+
+    &.supplyRouteResourceSelected {
+        border-color: currentColor;
+        box-shadow: inset 0 0 0 .0625rem rgba(255,255,255,.25);
+        opacity: 1;
+    }
+}
+
+.supplyRouteResourceName {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-width: 0;
+}
+
+.supplyRouteResourceMark {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    border: currentColor solid .0625rem;
+    border-radius: 50%;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.supplyLoadEmpty {
+    padding: .75rem 0;
+}
+
+@media only screen and (max-width: 600px) {
+    .supplyZone {
+        margin-left: 0;
+        margin-right: 0;
+        padding: .7rem;
+    }
+
+    .supplyFreighterList {
+        grid-template-columns: 1fr;
+    }
+
+    .supplyZoneHead,
+    .supplyFreighterHead {
+        gap: .4rem;
+    }
+
+    .supplyFreighterStats {
+        max-width: 42%;
+        font-size: .72rem;
+    }
+
+    .supplyDispatch {
+        display: block;
+
+        > div {
+            justify-content: flex-start;
+            margin-top: .35rem;
+        }
+    }
+
+    .supplyLoadResourceList {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+// Black Market zone picker and resource offers.
+.bmZone {
+    display: grid;
+    grid-template-columns: auto minmax(8rem, 1fr) auto;
+    align-items: center;
+    gap: .45rem .65rem;
+    margin: .65rem 1rem .85rem;
+    padding: .65rem .75rem;
+    border: rgba(128,128,128,.42) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.08);
+    font-weight: 700;
+
+    .viewing { min-width: 0; text-align: center; }
+    .bmNote {
+        grid-column: 1 / span 3;
+        padding-top: .4rem;
+        border-top: rgba(128,128,128,.28) solid .0625rem;
+        font-weight: 400;
+        font-size: .85em;
+        opacity: .8;
+    }
+}
+.blackMarketBoard {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .7rem;
+    margin: 0 1rem .75rem;
+}
+.bmRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        'resource price'
+        'volume volume'
+        'routes routes';
+    gap: .4rem .65rem;
+    align-items: center;
+    margin: 0;
+    padding: .7rem .75rem;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.07);
+
+    .res {
+        grid-area: resource;
+        width: auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .bmPrice {
+        grid-area: price;
+        font-size: 1.05em;
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    .bmVolume {
+        grid-area: volume;
+        padding: .25rem .4rem;
+        border-radius: .22rem;
+        background: rgba(128,128,128,.12);
+        font-size: .82em;
+        opacity: .9;
+    }
+    .trade {
+        display: flex;
+        grid-area: routes;
+        align-items: center;
+        min-width: 0;
+        margin: .05rem 0 0;
+        padding-top: .45rem;
+        border-top: rgba(128,128,128,.25) solid .0625rem;
+
+        .current {
+            font-size: 1.05em;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .zero { margin-left: auto; }
+    }
+}
+@media only screen and (max-width: 700px) {
+    .bmZone,
+    .blackMarketBoard { margin-left: 0; margin-right: 0; }
+    .blackMarketBoard { grid-template-columns: minmax(0, 1fr); }
 }

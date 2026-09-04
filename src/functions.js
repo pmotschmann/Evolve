@@ -12,7 +12,8 @@ import { govEffect } from './civics.js';
 import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
-import { shipCosts, TPShipDesc } from './truepath.js';
+import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
+import { shipCosts, TPShipDesc, freightArrivals } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
 import { big_bang } from './resets.js';
 
@@ -172,8 +173,6 @@ export function gameLoop(act){
 }
 
 // Computes the real-time duration of a single loop (common for all three loop types).
-// Note that these values are not tied to the time_multiplier from fastLoop - the relative speed of time in the game
-// is controlled by loop lengths.
 export function loopTimers(){
     // Here come any speed modifiers affecting the passage of game time.
     let modifier = 1.0;
@@ -281,10 +280,7 @@ export function techInEra(c_action,era){
     return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
 }
 
-// The argument object handed to reqs() and to every cost() function. An object rather than a bare
-// era so more can be carried later without changing signatures again.
-//   era   active era for the game, the page being rendered for the wiki
-//   wiki  true when the wiki is asking, false when the game is
+// The argument object handed to reqs() and to every cost() function.
 export function actionArgs(c_action,opts){
     opts = opts || {};
     return {
@@ -423,9 +419,8 @@ export function initMessageQueue(filters){
 }
 
 export function messageQueue(msg,color,dnr,tags,reload){
-    // While simulating offline time most per-loop messages are suppressed to avoid flooding the
-    // log, but intentional random-event notifications (tagged 'events') are allowed through so the
-    // player can see the major/minor events that fired while they were away.
+    // While simulating offline time most per-loop messages are suppressed to avoid flooding the log, but intentional
+    // random-event notifications (tagged 'events') are allowed through so the player can see the major/minor events
     if (webWorker.offline && !(Array.isArray(tags) && tags.includes('events'))){ return; }
 
     const origin = dnr ? null : lastLocalization(msg);
@@ -771,9 +766,8 @@ export function tagEvent(event, data){
 }
 
 export function resetResBuffer(){
-    // During fastLoop, temporarily increase the maximum storage to avoid unfortunate cases where
-    // storage cannot be maximized as a result of consuming a resource after it is produced.
-    // The resource buffer is eliminated at the end of fastLoop.
+    // During fastLoop, temporarily increase the maximum storage to avoid unfortunate cases where storage cannot be
+    // maximized as a result of consuming a resource after it is produced.
     Object.keys(tmp_vars.resource).forEach(function (res) {
         let temp_max = global.resource[res].max;
         // Don't change infinite storage (-1) into finite storage
@@ -784,10 +778,14 @@ export function resetResBuffer(){
     });
 }
 
-export function modRes(res,val,notrack){
+// Apply a resource change globally or to a regional supply pool.
+export function modRes(res,val,notrack,region){
     if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
         return false;
+    }
+    if (partitioned(res)){
+        return modRegRes(res,val,notrack,region);
     }
     let count = global.resource[res].amount + val;
     let success = true;
@@ -812,6 +810,80 @@ export function modRes(res,val,notrack){
         }
     }
     return success;
+}
+
+// Apply a resource change to one supply pool and update aggregate totals.
+function modRegRes(res,val,notrack,region){
+    // Reject invalid values before they can corrupt the regional ledger.
+    if (Number.isNaN(val)){ return true; }
+    ensureLedger(res);
+    // Unattributed regional resource changes default to the home-world pool.
+    const pool = supplyPool(region || CAPITAL);
+    // Apply this change only to the selected supply pool.
+    let success = true;
+    if (val < 0 && regAmount(res, pool) + val < 0){ success = false; }
+    poolMod(res, pool, val);
+    syncTotal(res);
+    if (!notrack){
+        global.resource[res].delta += val;
+        // Tallied against the zone as well, so a world can be shown its own rate rather than only
+        // the civilisation's.
+        const delta = regDelta(res);
+        delta[pool] = (delta[pool] || 0) + val;
+        if (val < 0){
+            tmp_vars.resource[res].temp_max = Math.max(0, tmp_vars.resource[res].temp_max + val);
+        }
+    }
+    return success;
+}
+
+// Accumulate resource changes by zone before applying them.
+export function zoneTally(){
+    const by = {};
+    let shortages = [];
+    return {
+        add(zone, amount){
+            if (amount){ by[zone] = (by[zone] || 0) + amount; }
+            return this;
+        },
+        // A multiplier on the whole of it — the global rate, hunger, and the like.
+        scale(f){
+            for (const z in by){ by[z] *= f; }
+            return this;
+        },
+        total(){
+            let t = 0;
+            for (const z in by){ t += by[z]; }
+            return t;
+        },
+        zones(){ return by; },
+        // Supply pools that could not cover this tally's demand. A connected group is one pool, so
+        // food made anywhere in it is available to all of its members before it is called short.
+        shortagePools(){ return shortages; },
+        // False if any zone could not meet what was asked of it, matching what modRes returns.
+        apply(res, mult, notrack){
+            const m = mult === undefined ? 1 : mult;
+            shortages = [];
+            if (supplyMode() === 'global'){
+                return modRes(res, this.total() * m, notrack);
+            }
+            // Apply one combined balance per shared pool. Applying each member in object-key order
+            // can report a shortage before a later linked member's production has arrived.
+            const pooled = {};
+            for (const z in by){
+                const pool = supplyPool(z);
+                pooled[pool] = (pooled[pool] || 0) + by[z] * m;
+            }
+            let ok = true;
+            for (const pool in pooled){
+                if (!modRes(res, pooled[pool], notrack, pool)){
+                    ok = false;
+                    shortages.push(pool);
+                }
+            }
+            return ok;
+        },
+    };
 }
 
 export function genCivName(alt){
@@ -1019,6 +1091,62 @@ export function harmonyEffect(){
     return 0;
 }
 
+// The stock, ceiling and rate a thing actually draws on.
+export function poolStock(res, pool){
+    const r = global.resource[res];
+    if (!r){ return { have: 0, max: 0, diff: 0 }; }
+    // Global costs use the combined resource totals.
+    if (!pool || pool === ANYWHERE || !partitioned(res)){ return { have: r.amount, max: r.max, diff: r.diff }; }
+    return { have: regAmount(res, pool), max: regMax(res, pool), diff: regDiff(res)[pool] || 0 };
+}
+
+export function poolHeld(res, pool){
+    const r = global.resource[res];
+    if (!r){ return 0; }
+    return pool && partitioned(res) ? regAmount(res, pool) : r.amount;
+}
+
+export function poolCap(res, pool){
+    const r = global.resource[res];
+    if (!r){ return 0; }
+    return pool && partitioned(res) ? regMax(res, pool) : r.max;
+}
+
+// The pool a building pays from, or false for anything with no place of its own.
+export function actionPool(c_action){
+    if (supplyMode() === 'global' || !c_action || !c_action.id){ return false; }
+    return supplyPool(supplyOf(c_action));
+}
+
+// How many seconds of production a game day is worth. The long loop is one day and fires every
+// `longRatio` fast ticks, each of which is a quarter of a game second.
+export function gameDaySeconds(){
+    return (webWorker.longRatio || 20) * 0.25;
+}
+
+// When a store will reach a figure, counting both what it makes and what is being shipped to it.
+function waitForStock(res, pool, need, have, rate, cap){
+    if (have >= need){ return 0; }
+    const arrivals = pool ? freightArrivals(res, pool) : [];
+    if (!arrivals.length){ return rate > 0 ? (need - have) / rate : -1; }
+    const day = gameDaySeconds();
+    let at = 0, stock = have;
+    for (const drop of arrivals){
+        const when = drop.at * day;
+        if (when < at){ continue; }
+        if (rate > 0){
+            // Production gets there on its own before this delivery lands.
+            const alone = at + (need - stock) / rate;
+            if (alone <= when){ return alone; }
+        }
+        stock += rate * (when - at) + drop.amount;
+        if (cap >= 0 && stock > cap){ stock = cap; }
+        at = when;
+        if (stock >= need){ return when; }
+    }
+    return rate > 0 ? at + (need - stock) / rate : -1;
+}
+
 export function timeCheck(c_action,track,detailed,reqMet){
     reqMet = typeof reqMet === 'undefined' ? true : reqMet;
     if (c_action.cost){
@@ -1045,14 +1173,18 @@ export function timeCheck(c_action,track,detailed,reqMet){
             });
         }
         let shorted = {};
+        // Where this building would be paid from, so the wait is reckoned against that world's stock
+        // and rate rather than the civilisation's.
+        const pool = actionPool(c_action);
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool','Army','Troops'].includes(res)){
                 var testCost = Number(costs[res]({ offset: offset }));
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
-                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
-                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[f_res].max;
-                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[f_res].diff;
+                    let stock = poolStock(f_res, pool);
+                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(stock.have);
+                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : stock.max;
+                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : stock.diff;
 
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
@@ -1079,8 +1211,11 @@ export function timeCheck(c_action,track,detailed,reqMet){
                         }
                     }
                     if (testCost > res_have){
-                        if (res_diff > 0){
-                            let r_time = (testCost - res_have) / res_diff;
+                        // Counting the freighters on their way here, so a world that makes none of
+                        // this itself still has an answer when a delivery is booked for it.
+                        let r_time = res === 'Supply' ? (res_diff > 0 ? (testCost - res_have) / res_diff : -1)
+                            : waitForStock(f_res, pool, testCost, res_have, res_diff, res_max);
+                        if (r_time >= 0){
                             if (r_time > time){
                                 bottleneck = f_res;
                                 time = r_time;
@@ -1122,8 +1257,6 @@ export function timeCheck(c_action,track,detailed,reqMet){
 }
 
 // This function returns the time to complete all remaining Arpa segments.
-// Note: remain is a fraction between 0 and 1 representing the fraction of
-// remaining arpa segments to be completed
 export function arpaTimeCheck(project, remain, track, detailed){
     let offset = track && track.id[project.id] ? track.id[project.id] : false;
     let costs = arpaAdjustCosts(project.cost,{ offset: offset });
@@ -1252,9 +1385,7 @@ function unmountApp(el){
     }
 }
 
-// How long a tab slide takes — keep in sync with the `.slide-*-enter-active` transition duration
-// in evolve.less. The teardown of an outgoing panel is held off for this long so the panel still
-// has its content while it slides out of view.
+// How long a tab slide takes — keep in sync with the `.slide-*-enter-active` transition duration in evolve.less.
 const tabSlideTime = 300;
 
 // Tab panels waiting on a slide to finish before they are torn down, keyed by selector.
@@ -1366,9 +1497,7 @@ export function vBind(bind,action){
             }
             return;
         }
-        // The app is still mounted (Vue keeps _container set until unmount) but we couldn't get a
-        // proxy to force-update. It's live and its reactive bindings update on their own — do NOT
-        // re-create it, which would orphan the live app and leak. Skip instead.
+        // The app is still mounted (Vue keeps _container set until unmount) but we couldn't get a proxy to force-update.
         if (app && app._container){
             return;
         }
@@ -1405,10 +1534,8 @@ export function vBind(bind,action){
                 delete vueOptions.filters;
             }
 
-            // Bind Vue's reactivity directly to the original data object so that
-            // mutations made elsewhere (the game loop mutates `global` directly and
-            // refreshes via vBind(...,'update')) and structural changes such as
-            // deleting array elements propagate without any copy/sync layer.
+            // Bind Vue's reactivity directly to the original data object so that mutations made elsewhere (the game loop
+            // mutates `global` directly and refreshes via vBind(...,'update')) and structural changes such as deleting array
             if (vueOptions.data && typeof vueOptions.data === 'object') {
                 const originalData = vueOptions.data;
                 vueOptions.data = function() {

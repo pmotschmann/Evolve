@@ -1,9 +1,9 @@
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
-import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount, showZoneFor } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
@@ -19,6 +19,7 @@ import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js'
 import { bioseed, blast_away } from './resets.js';
 import { loadTab } from './index.js';
 import { fightLogModal, thrusterOrbitProjection, fossilCount } from './iceage.js';
+import { partitioned, supplyOf, supplyPool, poolMod, regAmount, regMax, syncTotal, drawPools, ANYWHERE } from './supply.js';
 
 export const actions = {
     evolution: {
@@ -2059,6 +2060,7 @@ export const actions = {
                     }
                 }
             },
+            supply(){ return 'spc_home'; },
             res(){
                 let r_list = ['Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron','Aluminium','Cement','Coal'];
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
@@ -6760,6 +6762,9 @@ export function setAction(c_action,action,type,old,prediction){
 
     popover(id,function(){ return undefined; },{
         in: function(obj){
+            // Swing the resource list round to the zone this building stands in, so the costs about
+            // to be read are shown against the store that will actually meet them.
+            showZoneFor(c_action);
             actionDesc(obj.popper,c_action,global[action][type],old,action,type);
         },
         out: function(){
@@ -7396,8 +7401,6 @@ export function powerOnNewStruct(c_action){
 }
 
 // Return the powered/supported/enabled quantity of a struct.
-// When called from the wiki, assume that "enough" support is available, because this information is not in the save.
-// For structs that cannot be enabled, powered, or supported, always return 0.
 export function getStructNumActive(c_action,wiki){
     let parts = c_action.id.split('-');
     if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
@@ -7828,7 +7831,8 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         label = label.replace("_", " ");
                         let color = 'has-text-dark';
                         let aria = '';
-                        if (global.resource[f_res].amount < res_cost){
+                        // Against the store this building would actually be paid from.
+                        if (poolHeld(f_res, actionPool(c_action)) < res_cost){
                             if (tc.r === f_res){
                                 color = 'has-text-danger';
                                 aria = ' <span class="is-sr-only">(blocking resource)</span>';
@@ -7965,7 +7969,9 @@ export function updateDesc(c_action,category,action){
 
 export function payCosts(c_action, costs){
     costs = costs || adjustCosts(c_action);
-    if (checkCosts(costs)){
+    // Use the action’s supply zone when regional storage is active.
+    const pool = supplyPool(supplyOf(c_action));
+    if (checkCosts(costs, pool)){
         Object.keys(costs).forEach(function (res){
             if (global.prestige.hasOwnProperty(res)){
                 let cost = costs[res]();
@@ -7990,7 +7996,20 @@ export function payCosts(c_action, costs){
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Troops' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
-                global.resource[res].amount -= cost;
+                if (partitioned(res)){
+                    // Taken out of the pool that was just tested, and the total folded back down
+                    // Global costs draw from regional pools, preferring active producers.
+                    if (pool === ANYWHERE){
+                        drawPools(res, cost);
+                    }
+                    else {
+                        poolMod(res, pool, -cost);
+                        syncTotal(res);
+                    }
+                }
+                else {
+                    global.resource[res].amount -= cost;
+                }
                 if (res === 'Knowledge'){
                     global.stats.know += cost;
                 }
@@ -8005,10 +8024,12 @@ export function checkAffordable(c_action,max,raw){
     if (c_action.cost){
         let cost = raw ? c_action.cost : adjustCosts(c_action);
         if (max){
-            return checkMaxCosts(cost);
+            // "Could this ever be afforded" — a question about storage rather than stock, but still
+            // about the storage of the world that would be paying.
+            return checkMaxCosts(cost, supplyPool(supplyOf(c_action)));
         }
         else {
-            return checkCosts(cost);
+            return checkCosts(cost, supplyPool(supplyOf(c_action)));
         }
     }
     return true;
@@ -8042,7 +8063,8 @@ export function templeCount(zig){
     return 0;
 } 
 
-function checkMaxCosts(costs){
+// Whether a cost could ever be met.
+function checkMaxCosts(costs, pool){
     var test = true;
     Object.keys(costs).forEach(function (res){
         if (res === 'Custom'){
@@ -8109,7 +8131,8 @@ function checkMaxCosts(costs){
         else {
             var testCost = Number(costs[res]()) || 0;
             let f_res = res === 'Species' ? global.race.species : res;
-            if ((!global.resource[f_res].display && testCost > 0) || (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1)){
+            let cap = Number(poolCap(f_res, pool));
+            if ((!global.resource[f_res].display && testCost > 0) || (cap >= 0 && testCost > cap)){
                 test = false;
                 return;
             }
@@ -8118,7 +8141,8 @@ function checkMaxCosts(costs){
     return test;
 }
 
-export function checkCosts(costs){
+// An omitted pool checks civilisation-wide capacity.
+export function checkCosts(costs, pool){
     var test = true;
     Object.keys(costs).forEach(function (res){
         if (res === 'Custom'){
@@ -8192,7 +8216,11 @@ export function checkCosts(costs){
                 return;
             }
             let f_res = res === 'Species' ? global.race.species : res;
-            if (testCost > Number(global.resource[f_res].amount) || (global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max)){
+            // What is on hand where it is needed. With no pool named, or with the resource not one
+            // that is split, that is simply everything there is.
+            let have = pool && partitioned(f_res) ? regAmount(f_res, pool) : Number(global.resource[f_res].amount);
+            let room = pool && partitioned(f_res) ? regMax(f_res, pool) : global.resource[f_res].max;
+            if (testCost > have || (room >= 0 && testCost > room)){
                 test = false;
                 return;
             }

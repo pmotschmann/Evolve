@@ -896,8 +896,7 @@ export function checkAchievements(){
         unlockFeat('demon_slayer');
     }
 
-    // Zombie Genocider: a checklist, ranked by how many of its tasks are done. Task 1 is the kill count;
-    // the rest record themselves from wherever the objective happens (see zombieGenociderTask).
+    // Zombie Genocider: a checklist, ranked by how many of its tasks are done.
     {
         if (global.stats.zkills >= zombieGenociderKills){
             zombieGenociderTask('z1');

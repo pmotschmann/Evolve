@@ -5,6 +5,7 @@ import { actions, checkCityRequirements, checkPowerRequirements } from './action
 import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
 import { checkRequirements, checkSpaceRequirements, convertSpaceSector, planetName } from './space.js';
+import { supplyZone } from './supply.js';
 import { fortressTech } from './portal.js';
 import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
@@ -683,20 +684,54 @@ export const factoryData = {
         });
         return remaining;
     },
+    // Return active factory lines grouped by supply zone.
+    capacityByZone(){
+        const by = {};
+        const add = (struct, lines) => {
+            if (!(lines > 0)){ return; }
+            const at = supplyZone(struct);
+            by[at] = (by[at] || 0) + lines;
+        };
+        add('city:factory', p_on['factory'] || 0);
+        add('space:red_factory', p_on['red_factory'] || 0);
+        add('interstellar:int_factory', (p_on['int_factory'] || 0) * 2);
+        add('surface:crater_factory',  Math.floor((support_on['crater_factory'] || 0) / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1)));
+        add('portal:hell_factory', (p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines());
+        add('space:industrial_complex', (actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines());
+        add('tauceti:tau_factory', (support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
+        return by;
+    },
     // The actual operating capacity of factories, which may be less than the total capacity if some are switched on but not powered.
     // This could be due to lack power, support, or other special factors.
+    // Summed from the map above so the total and the split can never disagree about what is running.
     actualCapacity(){
-        let on_factories = (p_on['factory'] || 0)
-                    + (p_on['red_factory'] || 0)
-                    + ((p_on['int_factory'] || 0) * 2)
-                    + ((p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines())
-                    + ((p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines())
-                    + Math.floor((support_on['crater_factory'] || 0) / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1))
-                    + ((actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines())
-                    + ((support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
+        const by = factoryData.capacityByZone();
+        let on_factories = 0;
+        for (const zone in by){ on_factories += by[zone]; }
         return on_factories;
     }
 };
+
+// Return smelter capacity grouped by supply zone.
+export function smelterCapacityByZone(){
+    const by = {};
+    const add = (struct, count) => {
+        if (!(count > 0)){ return; }
+        const at = supplyZone(struct);
+        by[at] = (by[at] || 0) + count;
+    };
+    if (!global.city['smelter']){ return by; }
+    add('city:smelter', global.city.smelter.count);
+    add('interstellar:stellar_forge', (p_on['stellar_forge'] || 0) * actions.interstellar.int_neutron.stellar_forge.smelting());
+    add('portal:hell_forge', (p_on['hell_forge'] || 0) * actions.portal.prtl_ruins.hell_forge.smelting());
+    add('portal:demon_forge', (p_on['demon_forge'] || 0) * actions.portal.prtl_wasteland.demon_forge.smelting());
+    add('eden:sacred_smelter', (p_on['sacred_smelter'] || 0) * actions.eden.eden_elysium.sacred_smelter.smelting());
+    add('tauceti:ore_refinery', (p_on['ore_refinery'] || 0) * actions.tauceti.tau_gas.ore_refinery.smelting());
+    // Counted on what is built rather than what is powered, as the capacity sum has always done.
+    add('space:hell_smelter', (global.space['hell_smelter'] ? global.space.hell_smelter.count : 0) * actions.space.spc_hell.hell_smelter.smelting());
+    add('space:geothermal', (p_on['geothermal'] || 0) * actions.space.spc_hell.geothermal.smelting());
+    return by;
+}
 
 function loadFactory(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{ on_f(count) }}/{{ max_f(on) }}</span></div>`);

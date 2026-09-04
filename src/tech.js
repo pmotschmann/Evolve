@@ -9,12 +9,14 @@ import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters } from './truepath.js';
+import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 import { ecoGainMajorTrait } from './iceage.js';
+import { activeSupplyRegions } from './supply.js';
 
 const techs = {
     club: {
@@ -5083,14 +5085,15 @@ const techs = {
         title(){ return loc('tech_lab_assistants'); },
         desc(){ return loc('tech_lab_assistants'); },
         category: 'science',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 },
+        reqs(r){ return r.era === 'matrioshka' ? { science: 9, womling_tech: 10, tau_gas2: 8, m_ignite: 2 } : { science: 9, womling_tech: 10, shadow: 2 }; },
         grant: ['science',10],
         cost: {
             Knowledge(){ return 17500000; }
         },
-        effect(){ return loc('tech_lab_assistants_effect',[5]); },
+        effect(){ return loc('tech_lab_assistants_effect',[global.tech['shadow'] ? 2 : 5]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -15136,9 +15139,10 @@ const techs = {
         title(){ return loc('outer_shipyard_engine_optimizations'); },
         desc(){ return loc('outer_shipyard_engine_optimizations'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_engine: 5, m_ignite: 4, resettle: 2 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_engine: 5, m_ignite: 4, resettle: 2 } : { syard_engine: 5, shadow: 2 }; },
         grant: ['syard_engine',6],
         cost: {
             Knowledge(){ return 18950000; },
@@ -15157,7 +15161,8 @@ const techs = {
         title(){ return loc('outer_shipyard_engine_electrokinetic'); },
         desc(){ return loc('outer_shipyard_engine_electrokinetic'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
         reqs: { syard_engine: 6 },
         grant: ['syard_engine',7],
@@ -15220,9 +15225,10 @@ const techs = {
         title(){ return loc('tech_antimatter_generator'); },
         desc(){ return loc('tech_antimatter_generator'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_power: 5, m_ignite: 4, resettle: 2, womling_energy: 1 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_power: 5, m_ignite: 4, resettle: 2, womling_energy: 1 } : { syard_power: 5, shadow: 2, womling_energy: 1 }; },
         grant: ['syard_power',6],
         cost: {
             Knowledge(){ return 19450000; },
@@ -15309,12 +15315,13 @@ const techs = {
         title(){ return loc('tech_fleet_command'); },
         desc(){ return loc('tech_fleet_command'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { resettle: 8 },
+        reqs(r){ return r.era === 'matrioshka' ? { resettle: 8 } : { shadow: 4 }; },
         grant: ['syard_fleet',1],
         cost: {
-            Knowledge(){ return 21000000; }
+            Knowledge(){ return global.tech['shadow'] ? 20000000 : 21000000; }
         },
         effect: loc('tech_fleet_command_effect'),
         action(){
@@ -15326,6 +15333,31 @@ const techs = {
         post(){
             // Fleet Command brings the Fleet Tactical Command panel with it.
             defineFleetCommand();
+        }
+    },
+    fleet_refit: {
+        id: 'tech-fleet_refit',
+        title(){ return loc('tech_fleet_refit'); },
+        desc(){ return loc('tech_fleet_refit'); },
+        category: 'space_militarization',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
+        path: ['truepath'],
+        reqs: { syard_fleet: 1 },
+        grant: ['syard_fleet',2],
+        cost: {
+            Knowledge(){ return global.tech['shadow'] ? 20500000 : 21500000; }
+        },
+        effect: loc('tech_fleet_refit_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            // Refresh the shipyard to expose newly unlocked refit actions.
+            drawShipYard();
         }
     },
     alien_outpost: {
@@ -18541,6 +18573,31 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 initStruct(actions.tauceti.tau_star.server_farm);
+                return true;
+            }
+            return false;
+        }
+    },
+    syndicate_threat_analysis: {
+        id: 'tech-syndicate_threat_analysis',
+        title(){ return loc('tech_syndicate_threat_analysis'); },
+        desc(){ return loc('tech_syndicate_threat_analysis'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 4, syard_fleet: 1 },
+        grant: ['shadow',5],
+        cost: {
+            Knowledge(){ return 20500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.showSupplyZones = true;
+                grantSupplyFreighters(activeSupplyRegions());
+                messageQueue(loc('tech_syndicate_threat_analysis_msg'),'info',false,['progress']);
                 return true;
             }
             return false;
