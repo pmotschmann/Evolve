@@ -9497,7 +9497,7 @@ function minorWish(parent){
                         'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium',
                         'Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Crystal','Chrysotile'
                     ].forEach(function(res){
-                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max){
+                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && res !== 'Lumber')){
                             resList.push(res);
                         }
                     });
@@ -9862,7 +9862,7 @@ function majorWish(parent){
                         'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium',
                         'Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Crystal','Chrysotile'
                     ].forEach(function(res){
-                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max){
+                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && res !== 'Lumber')){
                             resList.push(res);
                         }
                     });

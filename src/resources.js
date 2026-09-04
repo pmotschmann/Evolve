@@ -511,6 +511,13 @@ export const craftingRatio = (function(){
                     auto: p_on['core_blacksmith'] * 0.2 * mineshaft_effect
                 });
             }
+            if (global.underground['blacksmith_perk']){
+                crafting.general.multi.push({
+                    name: loc(`underground_core_blacksmith`),
+                    manual: 1 + 0.02 * global.underground['blacksmith_perk'].count,
+                    auto: 1 + 0.02 * global.underground['blacksmith_perk'].count
+                });
+            }
             if (global.tech['crater'] >= 3 && support_on['crater_fabrication']){
                 crafting.general.add.push({
                     name: loc(`surface_crater_fabrication`),

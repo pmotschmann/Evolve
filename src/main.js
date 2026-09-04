@@ -5728,12 +5728,6 @@ function fastLoop(){
                 star_forge = p_on['stellar_forge'] * actions.interstellar.int_neutron.stellar_forge.smelting();
                 global.city.smelter.Star = Math.max(global.city.smelter.Star, star_forge);
             }
-            if (p_on['core_forge']){
-                capacity += p_on['core_forge'] * actions.underground.core.core_forge.smelting();
-            }
-            if (p_on['rocket_engine']){
-                capacity += p_on['rocket_engine'] * actions.surface.crater.rocket_engine.smelting();
-            }
             global.city.smelter.cap = capacity;
             global.city.smelter.StarCap = star_forge;
 
@@ -5918,6 +5912,10 @@ function fastLoop(){
                 iron_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
                 iridium_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
             }
+            if(global.underground['smelter_perk']){
+                iron_smelter *= 1 + (global.underground['smelter_perk'].count / 50);
+                iridium_smelter *= 1 + (global.underground['smelter_perk'].count / 50);
+            }
             if (global.race['pyrophobia']){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
@@ -6008,6 +6006,9 @@ function fastLoop(){
                         mineshaft_effect = 1;
                     }
                     steel_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
+                }
+                if(global.underground['smelter_perk']){
+                    steel_smelter *= 1 + (global.underground['smelter_perk'].count / 50);
                 }
                 if (global.race['elemental'] && traits.elemental.vars()[0] === 'fire'){
                     steel_smelter *= 1 + highPopAdjust(traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
@@ -9801,7 +9802,7 @@ function midLoop(){
                 breakdown.c.Authority[loc('underground_hunting_lodge')] = gain+'v';
             }
             if (global.underground['hunting_lodge_perk']){
-                let gain = global.underground.hunting_lodge_perk.count * 0.5;
+                let gain = global.underground.hunting_lodge_perk.count;
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('underground_hunting_lodge')] = gain+'v';
             }
@@ -11337,7 +11338,7 @@ function midLoop(){
             lCaps['cement_worker'] += jobScale(support_on['tau_factory'] * 2);
         }
         if (support_on['crater_fabrication']){
-            lCaps['cement_worker'] += jobScale(support_on['crater_fabrication']);
+            lCaps['cement_worker'] += jobScale(support_on['crater_fabrication']) * 2;
         }
         // Exclude descender surface work while the tether is stopped.
         if (actions.space.spc_venus.descender.operating() && support_on['industrial_complex']){

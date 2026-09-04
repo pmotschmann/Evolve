@@ -2569,7 +2569,10 @@ const iceAgeModules = {
                     Spent_Fossil(r={}){ return fossilCostMultiplier(1); }
                 },
                 effect(wiki){
-                    return `<div>${loc('interstellar_stellar_forge_effect3', [1])}</div><div>${loc('underground_core_forge_effect', [3])}</div>`;
+                    return `<div>${loc('interstellar_stellar_forge_effect3', [1])}</div><div>${loc('underground_core_forge_effect', [2])}</div>`;
+                },
+                smelting(){
+                    return 1;
                 },
                 action(args){
                     if (payCosts($(this)[0])){
@@ -2674,6 +2677,9 @@ const iceAgeModules = {
                     return desc;
                 },
                 trophy_effect(creature){
+                    if(!global.underground['cave_arena_perk']){
+                        return 1;
+                    }
                     if (creature === 'herbivores'){
                         return 1 + (global.underground['cave_arena_perk'].herbivores_trophy ** 0.25) / 100;
                     }
@@ -6272,6 +6278,7 @@ export function drawPerkUnderground(){
         }
     }
 }
+
 export function fossilCount(){
     let count = global.prestige.Fossil.count;
     count *= actions.underground.cave_perk.cave_arena_perk.trophy_effect('scavengers');

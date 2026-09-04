@@ -730,6 +730,9 @@ export function smelterCapacityByZone(){
     // Counted on what is built rather than what is powered, as the capacity sum has always done.
     add('space:hell_smelter', (global.space['hell_smelter'] ? global.space.hell_smelter.count : 0) * actions.space.spc_hell.hell_smelter.smelting());
     add('space:geothermal', (p_on['geothermal'] || 0) * actions.space.spc_hell.geothermal.smelting());
+    add('underground:core_forge', (p_on['core_forge'] || 0) * actions.underground.core.core_forge.smelting());
+    add('surface:rocket_engine', (p_on['rocket_engine'] || 0) * actions.surface.crater.rocket_engine.smelting());
+    add('underground:smelter_perk', (global.underground.smelter_perk?.count || 0) * actions.underground.cave_perk.smelter_perk.smelting());
     return by;
 }
 

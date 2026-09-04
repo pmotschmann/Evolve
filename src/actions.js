@@ -6100,6 +6100,9 @@ export function storageMultipler(scale = 1, wiki = false){
     if (global.blood['hoarder']){
         multiplier *= 1 + (global.blood['hoarder'] / 100);
     }
+    if (global.underground['storage_space_perk']){
+        multiplier *= 1 + (0.08 * global.underground['storage_space_perk'].count);
+    }
     if (global.tech['storage'] >= 7 && global.interstellar['cargo_yard']){
         multiplier *= 1 + ((global.interstellar['cargo_yard'].count * get_qlevel(wiki)) / 100);
     }

@@ -1072,6 +1072,18 @@ export function craftsmanCapacityByZone(){
     if (global.city['foundry']){
         add('city:foundry', jobScale(global.city.foundry.count));
     }
+    if (global.underground['under_foundry']){
+        add('underground:under_foundry', jobScale(global.underground['under_foundry'].count));
+    }
+    if (p_on['core_blacksmith']){
+        add('underground:core_blacksmith', jobScale(global.underground['core_blacksmith'].count * 2));
+    }
+    if (support_on['crater_fabrication']){
+        add('surface:crater_fabrication', jobScale(support_on['crater_fabrication']) * 2);
+    }
+    if (global.underground['blacksmith_perk']){
+        add('underground:blacksmith_perk', jobScale(global.underground['blacksmith_perk'].count));
+    }
     if (support_on['fabrication']){
         add('space:fabrication', jobScale(support_on['fabrication']));
     }
