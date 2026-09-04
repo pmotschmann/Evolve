@@ -4347,16 +4347,16 @@ export function bloodwar(){
         }
     };
 
-    let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
+    let armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
-        pat_armor += traits.armored.vars()[1];
+        armor += traits.armored.vars()[1];
     }
     let torFathom = fathomCheck('tortoisan');
     if (torFathom > 0){
-        pat_armor += Math.floor(traits.armored.vars(1)[1] * torFathom);
+        armor += Math.floor(traits.armored.vars(1)[1] * torFathom);
     }
     if (global.race['scales']){
-        pat_armor += traits.scales.vars()[2];
+        armor += traits.scales.vars()[2];
     }
 
     let forgeOperating = false;                    
@@ -4453,6 +4453,10 @@ export function bloodwar(){
                 patrol_report.droid = true;
                 pat_size += global.tech['hdroid'] ? jobScale(2) : jobScale(1);
                 terminators--;
+            }
+            let pat_armor = armor;
+            if (global.race['protective']){
+                pat_armor += Math.floor(pat_size / traits.protective.vars()[0]);
             }
             let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));
 
@@ -6467,7 +6471,7 @@ function checkBossResist(boss,weapon){
 }
 
 export function drawMechLab(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
     clearElement($('#mechLab'));

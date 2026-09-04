@@ -6263,20 +6263,45 @@ div.bigbang {
     }
     h3 {
         font-weight: 700;
+        margin-right: 0.25rem;
     }
 }
 
-#mTabCivil .empowered, .TTEmpowered {
+#mTabCivil .empowered, .TTEmpowered, #perkUnderground .empowered {
     text-shadow: @bulma-info 0px 0 5px, @bulma-info 0px 0 5px, @bulma-info 0px 0 5px;
 }
 
 #modalBox .modalBoxTitle:has(.empowered) {
     display: none;
 }
+
+#srperkUnderground{
+    .fossils{
+        margin-left: 1rem;
+    }
+}
 .extinction_fading{
     transition: opacity 10s;
     opacity: 1;
     opacity: 0;
+}
+
+.blast {
+    transition: transform 2s, filter 5s;
+    transform: scale(0.95);
+    &.away{
+        transform: scale(0);
+        filter: blur(5px);
+    }
+}
+.blast_burn{
+    transition: box-shadow 5s;
+    box-shadow: 0 0 150px 50px Orange;
+    z-index:1;
+    &.away_burn{
+        transition: box-shadow 2s;
+        box-shadow: 0 0 150px 100px Orange;
+    }
 }
 
 // --- The screen bleeding out ---------------------------------------------------------------------

@@ -1,6 +1,6 @@
 import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery } from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars} from './races.js';
 import { defineGovernor, govActive } from './governor.js';
@@ -1539,7 +1539,7 @@ export function describeSoldier(){
     }
     let fur = +(rating / 10).toFixed(2);
     loot_args.push(fur, global.resource.Furs.name);
-    if (global.race['evil'] && !global.race['kindling_kindred'] && !global.race['smoldering']) {
+    if (global.race['evil'] && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['iceage']) {
         let bones = +(rating / (global.race['soul_eater'] ? 3 : 5)).toFixed(2);
         loot_args.push(bones, global.resource.Lumber.name);
     }
@@ -1704,7 +1704,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += traits.frail.vars()[0];
         }
-        let armor = armorCalc(death);
+        let armor = armorCalc(death, global.civic.garrison.raid);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -2018,7 +2018,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
-        let armor = armorCalc(death);
+        let armor = armorCalc(death, global.civic.garrison.raid);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -2075,7 +2075,7 @@ function war_campaign(gov){
     }
 }
 
-export function armorCalc(dead){
+export function armorCalc(dead, group=0){
     let armor = 0;
     if (global.race['scales']){
         armor += traits.scales.vars()[0];
@@ -2085,6 +2085,9 @@ export function armorCalc(dead){
     }
     if (global.race['high_pop']){
         armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
+    }
+    if (global.race['protective']){
+        armor += Math.floor(group / traits.protective.vars()[0]);
     }
     if (global.race['armored']){
         let armored = traits.armored.vars()[0] / 100;
@@ -2407,6 +2410,16 @@ export function armyRating(val,type,wound,analysis){
         }
         army *= 1 + grenadier;
         data.push({ k: 'trait_grenadier_name', v: grenadier });
+    }
+    if (global.race['deep_power']){
+        let power = (traits.deep_power.vars()[1] * calc_mastery() / 10000);
+        army *= 1 + power;
+        data.push({ k: 'trait_deep_power_name', v: power });
+    }
+    if (global.underground['hunting_lodge_perk']){
+        let hunter = (global.underground['hunting_lodge_perk'].count * 0.02);
+        army *= 1 + hunter;
+        data.push({ k: 'underground_hunting_lodge', v: hunter });
     }
     if (global.race['rejuvenated']){
         army *= 1.05;

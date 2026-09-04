@@ -177,7 +177,7 @@ export const genus_def = {
             elusive: 1,
             iron_allergy: 1
         },
-        oppose: ['eldritch','synthetic']
+        oppose: ['eldritch']
     },
     heat: {
         traits: {
@@ -221,7 +221,7 @@ export const genus_def = {
             artifical: 1,
             powered: 1
         },
-        oppose: ['eldritch','fey']
+        oppose: ['primordial']
     },
     eldritch: {
         traits: {
@@ -230,7 +230,14 @@ export const genus_def = {
             darkness: 1,
             unfathomable: 1
         },
-        oppose: ['synthetic','fey']
+        oppose: ['fey']
+    },
+    primordial: {
+        traits: {
+            deep_power: 1,
+            ancient: 1
+        },
+        oppose: ['synthetic']
     },
     hybrid: {
         traits: {},
@@ -2594,7 +2601,7 @@ export const traits = {
     },
     iron_wood: { // Removes Plywood as a resource, adds attack bonus
         name(){ return loc('trait_iron_wood_name'); },
-        desc(v){ return loc('trait_iron_wood',v); },
+        desc(v){ return global.race['iceage'] && !hallowed.active ? loc('trait_iron_wood_alt',v) : loc('trait_iron_wood',v); },
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
@@ -4595,7 +4602,9 @@ export const traits = {
                     moisture = 0;
                     break;
             }
-
+            if (global.race['iceage']){
+                moisture = 10;
+            }
             if (global.city.calendar.weather === 0 && global.city.calendar.temp > 0){
                 moisture += 10;
             }
@@ -4859,6 +4868,224 @@ export const traits = {
                     return [6];
                 case 4:
                     return [4];
+            }
+        }
+    },
+    deep_power: { //increased mastery, mastery applies to soldier hunting, combat rating and healing
+        name(){ return loc('trait_deep_power_name'); },
+        desc(v){ return loc('trait_deep_power',v); },
+        type: 'genus',
+        origin: 'primordial',
+        taxonomy: 'combat',
+        val: 9,
+        vars(r){
+            // [mastery increase, percentage of mastery as bonus to hunting, combat rating and healing]
+            switch (r || traitRank('deep_power') || 1){
+                case 0.1:
+                    return [8, 10];
+                case 0.25:
+                    return [10, 20];
+                case 0.5:
+                    return [15, 20];
+                case 1:
+                    return [18, 30];
+                case 2:
+                    return [20, 35];
+                case 3:
+                    return [20, 45];
+                case 4:
+                    return [25, 45];
+            }
+        }
+    },
+    ancient: { //reduced quantum level
+        name(){ return loc('trait_ancient_name'); },
+        desc(v){ return loc('trait_ancient',v); },
+        type: 'genus',
+        origin: 'primordial',
+        taxonomy: 'resource',
+        val: -8,
+        vars(r){
+            // [reduction to quantum in percentage]
+            switch (r || traitRank('ancient') || 1){
+                case 0.1:
+                    return [35];
+                case 0.25:
+                    return [30];
+                case 0.5:
+                    return [25];
+                case 1:
+                    return [20];
+                case 2:
+                    return [18];
+                case 3:
+                    return [15];
+                case 4:
+                    return [12];
+            }
+        }
+    },
+    scrounger: { //scavengers are available, scavengers produce raider resources
+        name(){ return loc('trait_scrounger_name'); },
+        desc(v){ return loc('trait_scrounger',v); },
+        type: 'major',
+        origin: 'raptors',
+        taxonomy: 'production',
+        val: 5,
+        vars(r){
+            // [Percentage of scavenger production]
+            switch (r || traitRank('scrounger') || 1){
+                case 0.1:
+                    return [10];
+                case 0.25:
+                    return [15];
+                case 0.5:
+                    return [25];
+                case 1:
+                    return [50];
+                case 2:
+                    return [75];
+                case 3:
+                    return [90];
+                case 4:
+                    return [100];
+            }
+        }
+    },
+    nostalgic: { //morale reduction for science/high tech techs.
+        name(){ return loc('trait_nostalgic_name'); },
+        desc(v){
+            return loc('trait_nostalgic',v);
+        },
+        type: 'major',
+        origin: 'raptors',
+        taxonomy: 'production',
+        val: -6,
+        vars(r){
+            // [morale reduction per tech]
+            switch (r || traitRank('nostalgic') || 1){
+                case 0.1:
+                    return [2];
+                case 0.25:
+                    return [1.5];
+                case 0.5:
+                    return [1.2];
+                case 1:
+                    return [1];
+                case 2:
+                    return [0.8];
+                case 3:
+                    return [0.65];
+                case 4:
+                    return [0.55];
+            }
+        }
+    },
+    humongous: { //general production, storage and citizen workers increased in strength. Building cost and cost creep increased (UNIMPLEMENTED)
+        name(){ return loc('trait_humongous_name'); },
+        desc(v){ return loc('trait_humongous',v); },
+        type: 'major',
+        origin: 'rexicus',
+        taxonomy: 'utility',
+        val: 12,
+        vars(r){
+            // [production/storage/job mult, building cost/creep mult]
+            switch (r || traitRank('humongous') || 1){
+                case 0.1:
+                    return [1.5, 1.6];
+                case 0.25:
+                    return [2, 2];
+                case 0.5:
+                    return [2.6, 2.5];
+                case 1:
+                    return [3.2, 3];
+                case 2:
+                    return [3.5, 3.2];
+                case 3:
+                    return [3.8, 3.4];
+                case 4:
+                    return [4, 3.6];
+            }
+        }
+    },
+    limited: { //reduced crafting
+        name(){ return loc('trait_limited_name'); },
+        desc(v){ return loc('trait_limited',v); },
+        type: 'major',
+        origin: 'rexicus',
+        taxonomy: 'resource',
+        val: -6,
+        vars(r){
+            // [reduction in percentage]
+            switch (r || traitRank('limited') || 1){
+                case 0.1:
+                    return [35];
+                case 0.25:
+                    return [28];
+                case 0.5:
+                    return [20];
+                case 1:
+                    return [15];
+                case 2:
+                    return [12];
+                case 3:
+                    return [10];
+                case 4:
+                    return [7];
+            }
+        }
+    },
+    protective: { //soldiers gain armor when in groups
+        name(){ return loc('trait_protective_name'); },
+        desc(v){ return loc('trait_protective',v); },
+        type: 'major',
+        origin: 'mammuth',
+        taxonomy: 'combat',
+        val: 5,
+        vars(r){
+            // [soldiers needed per point of armor]
+            switch (r || traitRank('protective') || 1){
+                case 0.1:
+                    return [8];
+                case 0.25:
+                    return [7];
+                case 0.5:
+                    return [6];
+                case 1:
+                    return [4];
+                case 2:
+                    return [3.5];
+                case 3:
+                    return [3];
+                case 4:
+                    return [2.8];
+            }
+        }
+    },
+    mourning: { //global production reduced when citizens die. (works similar to warmonger) (UNIMPLEMENTED)
+        name(){ return loc('trait_mourning_name'); },
+        desc(v){ return loc('trait_mourning',v); },
+        type: 'major',
+        origin: 'mammuth',
+        taxonomy: 'production',
+        val: -5,
+        vars(r){
+            // [citizen contribution]
+            switch (r || traitRank('protective') || 1){
+                case 0.1:
+                    return [2.5];
+                case 0.25:
+                    return [2];
+                case 0.5:
+                    return [1.5];
+                case 1:
+                    return [1];
+                case 2:
+                    return [0.8];
+                case 3:
+                    return [0.6];
+                case 4:
+                    return [0.5];
             }
         }
     },
@@ -6390,6 +6617,47 @@ export const races = {
         fanaticism: 'living_tool',
         basic(){ return false; }
     },
+    raptors: {
+        name: loc('race_raptors'),
+        desc(){ return raptorPlumage() ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
+        desc: loc('race_raptors_desc'),
+        type: 'primordial',
+        home: loc('race_raptors_home'),
+        entity: loc('race_raptors_entity'),
+        traits: {
+            scrounger: 1,
+            nostalgic: 1
+        },
+        solar: {
+            red: loc('race_raptors_solar_red'),
+            hell: loc('race_raptors_solar_hell'),
+            gas: loc('race_raptors_solar_gas'),
+            gas_moon: loc('race_raptors_solar_gas_moon'),
+            dwarf: loc('race_raptors_solar_dwarf'),
+        },
+        fanaticism: 'scrounger',
+        basic(){ return false; }
+    },
+    rexicus: {
+        name: loc('race_rexicus'),
+        desc: loc('race_rexicus_desc'),
+        type: 'primordial',
+        home: loc('race_rexicus_home'),
+        entity: loc('race_rexicus_entity'),
+        traits: {
+            humongous: 1,
+            limited: 1
+        },
+        solar: {
+            red: loc('race_rexicus_solar_red'),
+            hell: loc('race_rexicus_solar_hell'),
+            gas: loc('race_rexicus_solar_gas'),
+            gas_moon: loc('race_rexicus_solar_gas_moon'),
+            dwarf: loc('race_rexicus_solar_dwarf'),
+        },
+        fanaticism: 'humongous',
+        basic(){ return false; }
+    },
     dwarf: {
         name: loc('race_dwarf'),
         desc: loc('race_dwarf_desc'),
@@ -6577,6 +6845,27 @@ export const races = {
             dwarf: loc('race_nephilim_solar_dwarf'),
         },
         fanaticism: 'empowered',
+        basic(){ return false; }
+    },
+    mammuth: {
+        name: loc('race_mammuth'),
+        desc: loc('race_mammuth_desc'),
+        type: 'hybrid',
+        hybrid: ['primordial','herbivore'],
+        home: loc('race_mammuth_home'),
+        entity: loc('race_mammuth_entity'),
+        traits: {
+            protective: 1,
+            mourning: 1
+        },
+        solar: {
+            red: loc('race_mammuth_solar_red'),
+            hell: loc('race_mammuth_solar_hell'),
+            gas: loc('race_mammuth_solar_gas'),
+            gas_moon: loc('race_mammuth_solar_gas_moon'),
+            dwarf: loc('race_mammuth_solar_dwarf'),
+        },
+        fanaticism: 'protective',
         basic(){ return false; }
     },
     hellspawn: {
@@ -6784,7 +7073,8 @@ export const genusVars = {
     demonic: {},
     angelic: {},
     synthetic: {},
-    eldritch: {}
+    eldritch: {},
+    primordial: {}
 };
 
 // Solar planets/moons encountered in Truepath, unique on genus rather than race.
@@ -7718,8 +8008,11 @@ function getPurgatory(s,t){
 }
 
 function purgeLumber(){
-    releaseResource('Lumber');
     releaseResource('Plywood');
+    if (global.race['iceage']){
+        return;
+    }
+    releaseResource('Lumber');
     removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
     removeFromRQueue(['reclaimer', 'axe', 'saw']);
     setPurgatory('city','sawmill');
@@ -8070,6 +8363,7 @@ export function cleanAddTrait(trait){
             checkPurgatory('tech','slaves');
             if (global.tech['slaves'] >= 1) {
                 checkPurgatory('city','slave_pen',{ count: 0 });
+                checkPurgatory('underground','slave_pen',{ count: 0 });
                 if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
                     global.resource.Slave.display = true;
                 }
@@ -8160,6 +8454,7 @@ export function cleanAddTrait(trait){
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',actions.city.meditation.struct().d);
+                checkPurgatory('underground','meditation',{ count: 0});
                 if (!global.race['orbit_decayed']){
                     global.resource.Zen.display = true;
                 }
@@ -8178,6 +8473,7 @@ export function cleanAddTrait(trait){
                 Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
                 Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
             });
+            checkPurgatory('underground','nanite_factory',{ count: 1});
             break;
         case 'shapeshifter':
             shapeShift(false,true);
@@ -8261,6 +8557,9 @@ export function cleanRemoveTrait(trait,rank){
             if (global.race['kindling_kindred']){
                 break;
             }
+            if (global.race['iceage'] && !global.surface['wooductter']){
+                break;
+            }
             global.resource.Lumber.display = true;
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
@@ -8274,13 +8573,13 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
+            if ((global.tech['axe'] || global.tech['reclaimer'] || global.surface['wooductter']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
             setResourceName('Useless');
             break;
         case 'iron_wood':
-            if (global.tech['foundry']){
+            if (global.tech['foundry'] && !global.race['smoldering'] && (!global.race['iceage'] || global.surface.woodcutter)){
                 global.resource.Plywood.display = true;
             }
             break;
@@ -8326,6 +8625,7 @@ export function cleanRemoveTrait(trait,rank){
         case 'environmentalist':
             delete power_generated[loc('city_hydro_power')];
             delete power_generated[loc('city_wind_power')];
+            delete power_generated[loc('underground_thermal_power')];
             break;
         case 'terrifying':
             checkPurgatory('tech','trade');
@@ -8338,8 +8638,10 @@ export function cleanRemoveTrait(trait,rank){
             break;
         case 'slaver':
             removeFromQueue(['city-slave_pen']);
+            removeFromQueue(['underground-slave_pen']);
             removeFromRQueue(['slaves']);
             setPurgatory('city','slave_pen');
+            setPurgatory('underground', 'slave_pen');
             setPurgatory('tech','slaves');
             global.resource.Slave.amount = 0;
             global.resource.Slave.max = 0;
@@ -8357,7 +8659,9 @@ export function cleanRemoveTrait(trait,rank){
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
+            removeFromQueue(['surface-shrine']);
             setPurgatory('city','shrine');
+            setPurgatory('surface','shrine');
             break;
         case 'thalassophobia':
             if (global.tech['wharf']){
@@ -8392,16 +8696,20 @@ export function cleanRemoveTrait(trait,rank){
             break;
         case 'calm':
             removeFromQueue(['city-meditation']);
+            removeFromQueue(['underground-meditation']);
             global.resource.Zen.display = false;
             setPurgatory('city','meditation');
+            setPurgatory('underground','meditation');
             break;
         case 'blood_thirst':
             delete global.race['blood_thirst_count'];
             break;
         case 'deconstructor':
             removeFromQueue(['city-nanite_factory']);
+            removeFromQueue(['underground-nanite_factory']);
             global.resource.Nanite.display = false;
             setPurgatory('city','nanite_factory');
+            setPurgatory('underground','nanite_factory');
             break;
         case 'shapeshifter':
             clearElement($('#sshifter'));
@@ -8544,7 +8852,7 @@ export function shapeShift(genus,setup,forceClean){
     if (genus){
         if (genus !== 'none'){
             Object.keys(genus_def[genus].traits).forEach(function (trait) {
-                if (!global.race[trait] && trait !== 'high_pop'){
+                if (!global.race[trait] && trait !== 'high_pop' && (!global.race['iceage'] || trait !== 'sappy')){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
                     }
@@ -8973,6 +9281,10 @@ function foxColor(){
     return loc(`color_red`);
 }
 
+function raptorPlumage(){
+    return global.race.hasOwnProperty('raptor_plumage');
+}
+
 export function basicRace(skip){
     skip = skip || [];
     let basicList = Object.keys(races).filter(function(r){ return !['custom','hybrid'].includes(r) && !skip.includes(r) && races[r].basic(); });
@@ -8981,7 +9293,7 @@ export function basicRace(skip){
 }
 
 export function renderSupernatural(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 7)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 8)){
         return;
     }
     let parent = $(`#supernatural`);
@@ -10025,7 +10337,7 @@ function ocularPower(parent){
 }
 
 export function renderPsychicPowers(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 7)){
         return;
     }
     let parent = $(`#psychicPowers`);

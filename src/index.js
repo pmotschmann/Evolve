@@ -14,7 +14,7 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
-import { renderUnderground, renderSurface } from './iceage.js';
+import { renderUnderground, renderSurface, drawPerkUnderground } from './iceage.js';
 import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js';
 
 // main.js registers its offline-time handler here so unpausing can trigger the catch-up without
@@ -492,6 +492,7 @@ export function loadTab(tab){
                     <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry" :label="label('tab_industry')"></b-tab-item>
                     <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid" :label="label('tab_power_grid')"></b-tab-item>
                     <b-tab-item id="military" class="militaryTab" :visible="s.showMil" :label="label('tab_military')"></b-tab-item>
+                    <b-tab-item id="perkUnderground" class="perkUndergroundTab" :visible="s.showPerkUnderground" :label="label('tab_perk_underground')"></b-tab-item>
                     <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab" :label="label('tab_mech')"></b-tab-item>
                     <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard" :label="label('tab_shipyard')"></b-tab-item>
                     <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic" :label="label('tab_psychic')"></b-tab-item>
@@ -506,12 +507,13 @@ export function loadTab(tab){
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
+                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#perkUnderground`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
                                 clearTabPanels({
                                     [`#civic`]: [clearSpyopDrag],
                                     [`#industry`]: [],
                                     [`#powerGrid`]: [clearGrids],
                                     [`#military`]: [],
+                                    [`#perkUnderground`]: [],
                                     [`#mechLab`]: [clearMechDrag],
                                     [`#dwarfShipYard`]: [clearShipDrag],
                                     [`#psychicPowers`]: [],
@@ -554,21 +556,26 @@ export function loadTab(tab){
                                         }
                                         break;
                                     case 4:
+                                        if (global.race.species !== 'protoplasm' && !global.race['iceage'] && global.tech['perk_underground']){
+                                            drawPerkUnderground();
+                                        }
+                                        break;
+                                    case 5:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             drawMechLab();
                                         }
                                         break;
-                                    case 5:
+                                    case 6:
                                         if (global.race['truepath'] && global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             drawShipYard();
                                         }
                                         break;
-                                    case 6:
+                                    case 7:
                                         if (global.race['psychic'] && global.tech['psychic'] && global.race.species !== 'protoplasm'){
                                             renderPsychicPowers();
                                         }
                                         break;
-                                    case 7:
+                                    case 8:
                                         if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']) && global.race.species !== 'protoplasm'){
                                             renderSupernatural();
                                         }
@@ -600,6 +607,9 @@ export function loadTab(tab){
                     }
                     foreignGov();
                     drawMechLab();
+                    if (!global.race['iceage'] && global.tech['perk_underground']){
+                        drawPerkUnderground();
+                    }
                     if (global.race['truepath']){
                         drawShipYard();
                     }

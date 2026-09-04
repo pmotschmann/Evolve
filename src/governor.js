@@ -2,7 +2,7 @@ import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
-import { govCivics, govTitle, govEffect } from './civics.js';
+import { govCivics, govTitle, govEffect, garrisonSize } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment, mechGeneralSlots, wlEquipSlots } from './portal.js';
@@ -482,7 +482,7 @@ export function drawnGovernOffice(){
         let storage = $(`<div class="storage"></div>`);
         storeContain.append(storage);
 
-        let crt_mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+        let crt_mat = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
         let cnt_mat = 'Steel';
 
         storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[crt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.crt" :controls="false"></b-numberinput></b-field>`));
@@ -682,6 +682,48 @@ export function drawnGovernOffice(){
         contain.append(repair);
 
         repair.append($(`<b-field>${loc(`gov_task_repair_threat`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.repair.threat" :controls="false"></b-numberinput></b-field>`));
+    }
+
+    { // Aberrant Hunter
+        if (!global.race.governor.config.hasOwnProperty('hunter')){
+            global.race.governor.config['hunter'] = {};
+        }
+        if (!global.race.governor.config.hunter.hasOwnProperty('herbivores')){
+            global.race.governor.config.hunter['herbivores'] = { on: false, soldiers: 100, injuries: 5 };
+        }
+        if (!global.race.governor.config.hunter.hasOwnProperty('carnivores')){
+            global.race.governor.config.hunter['carnivores'] = { on: false, soldiers: 100, injuries: 5 };
+        }
+        if (!global.race.governor.config.hunter.hasOwnProperty('scavengers')){
+            global.race.governor.config.hunter['scavengers'] = { on: false, soldiers: 100, injuries: 5 };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('hunt')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_hunt`)}</div></div>`);
+        options.append(contain);
+
+        let identifier = $(`<div class="storage"></div>`);
+        contain.append(identifier);
+        identifier.append($(`<div class="has-text-success">${loc(`gov_task_hunt_herbivores`)}</div>`));
+        identifier.append($(`<div class="has-text-success">${loc(`gov_task_hunt_carnivores`)}</div>`));
+        identifier.append($(`<div class="has-text-success">${loc(`gov_task_hunt_scavengers`)}</div>`));
+
+        let enabler = $(`<div class="storage"></div>`);
+        contain.append(enabler);
+        enabler.append($(`<div class="chk"><b-checkbox v-model="c.hunter.herbivores.on">${loc(`gov_task_hunt_activate`)}</b-checkbox></div>`));
+        enabler.append($(`<div class="chk"><b-checkbox v-model="c.hunter.carnivores.on">${loc(`gov_task_hunt_activate`)}</b-checkbox></div>`));
+        enabler.append($(`<div class="chk"><b-checkbox v-model="c.hunter.scavengers.on">${loc(`gov_task_hunt_activate`)}</b-checkbox></div>`));
+
+        let soldiers = $(`<div class="storage"></div>`);
+        contain.append(soldiers);
+        soldiers.append($(`<b-field>${loc(`gov_task_hunt_soldiers`)}<b-numberinput min="0" v-model="c.hunter.herbivores.soldiers" :controls="false"></b-numberinput></b-field>`));
+        soldiers.append($(`<b-field>${loc(`gov_task_hunt_soldiers`)}<b-numberinput min="0" v-model="c.hunter.carnivores.soldiers" :controls="false"></b-numberinput></b-field>`));
+        soldiers.append($(`<b-field>${loc(`gov_task_hunt_soldiers`)}<b-numberinput min="0" v-model="c.hunter.scavengers.soldiers" :controls="false"></b-numberinput></b-field>`));
+
+        let injured = $(`<div class="storage"></div>`);
+        contain.append(injured);
+        injured.append($(`<b-field>${loc(`gov_task_hunt_injured`)}<b-numberinput min="0" v-model="c.hunter.herbivores.injuries" :controls="false"></b-numberinput></b-field>`));
+        injured.append($(`<b-field>${loc(`gov_task_hunt_injured`)}<b-numberinput min="0" v-model="c.hunter.carnivores.injuries" :controls="false"></b-numberinput></b-field>`));
+        injured.append($(`<b-field>${loc(`gov_task_hunt_injured`)}<b-numberinput min="0" v-model="c.hunter.scavengers.injuries" :controls="false"></b-numberinput></b-field>`));
     }
 
     vBind({
@@ -2031,8 +2073,11 @@ export const gov_tasks = {
 
             let rBal = false;
             let blacklist = ['Asphodel_Powder', 'Elysanite'];
-            if(global.race['fasting']){
+            if (global.race['fasting']){
                 blacklist.push('Food');
+            }
+            if (global.race['iceage']){
+                blacklist.push('Lumber');
             }
 
             // How many lines the scheduler is responsible for. The second one only counts once the dual
@@ -2124,4 +2169,26 @@ export const gov_tasks = {
             });
         }
     },
+    hunt: { // Aberrant Hunter
+        name: loc(`gov_task_hunt`),
+        req(){
+            return true;
+            return (global.stats.achieve.hasOwnProperty('living_extinction') && global.stats.achieve.living_extinction.l > 0 ||
+                global.stats.achieve.hasOwnProperty('back_on_track') && global.stats.achieve.back_on_track.l > 0) &&
+                (global.tech['ecosystem_genetics'] >= 4 || global.underground['cave_arena_perk']?.count);
+        },
+        task(){
+            if($(this)[0].req()){
+                let available = ['herbivores', 'carnivores', 'scavengers'].filter(s => {
+                    return global.aberrants?.[s].count && global.race.governor.config.hunter[s].on &&
+                        garrisonSize() >= global.race.governor.config.hunter[s].soldiers &&
+                        global.civic.garrison.wounded <= global.race.governor.config.hunter[s].injuries
+                });
+                let target = available[Math.rand(0, available.length)];
+                if(target){
+                    actions.surface.ecosystem[`aberrant_${target}`].action();
+                }
+            }
+        }
+    }
 };

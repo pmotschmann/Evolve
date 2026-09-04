@@ -2361,7 +2361,7 @@ export function apotheosisProjection(){
 }
 
 function deadCalc(dead, armySize){
-    let armor = armorCalc(dead);
+    let armor = armorCalc(dead, armySize);
     dead -= Math.floor(seededRandom(0,armor,true));
     if (dead > armySize){ dead = armySize }
     else if (dead < 0){ dead = 0; }

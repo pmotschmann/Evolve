@@ -328,7 +328,7 @@ export function powerGrid(type,reset){
                 'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
                 'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
                 'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_headquarters',
-                'crater:refinery_funnel',
+                'crater:refinery_funnel','thruster_site:nuclear_heater_complete',
                 'city:replicator'
             ];
             break;
@@ -1758,6 +1758,10 @@ export function masteryType(universe,detailed,unmodified){
                 m_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
                 u_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
             }
+            if (global.race['deep_power']){
+                m_rate *= 1 + (traits.deep_power.vars()[0] / 100);
+                u_rate *= 1 + (traits.deep_power.vars()[0] / 100);
+            }
         }
 
         let m_mastery = ua_level.aLvl * m_rate;
@@ -1942,6 +1946,7 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
         supercoiled: 0,
+        fossil: 0,
         talens: 0,
         pdebt: 0
     };
@@ -2006,6 +2011,12 @@ export function calcPrestige(type,inputs){
         else if (global.race['lone_survivor']){
             new_plasmid += 800;
         }
+        else if (type === 'living_extinction'){
+            new_plasmid = 600;
+        }
+        if((type === 'living_extinction' || type === 'thrusters') && global.race['iceage']){
+            new_plasmid *= 2.5;
+        }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);
 
@@ -2041,7 +2052,11 @@ export function calcPrestige(type,inputs){
         gains.dark = new_dark;
     }
     else if(type === 'thrusters' || type === 'living_extinction'){
-        gains.dark = 10;
+        let dark = 10;
+        if(global.race['iceage'] && type !== 'living_extinction'){
+            dark *= 2.5;
+        }
+        gains.dark = challenge_multiplier(dark,'thrusters',3,inputs);
     }
 
 
@@ -2111,6 +2126,10 @@ export function calcPrestige(type,inputs){
     if (type === 'za'){
         gains.talens = 1;
     }
+
+    if((type === 'thrusters' || type === 'living_extinction') && global.race['iceage']){
+        gains.fossil = universe === 'micro' ? 4 : 10;
+    }
     
     if (global.stats.pdebt > 0){
         gains.plasmid -= global.stats.pdebt;
@@ -2173,7 +2192,9 @@ function razedAdjust(costs, c_action, args){
             let adjustRate = global.tech['salvage'] ? (struct.razed > struct.count ? 0.15 : 0.35) : (struct.razed > struct.count ? 0.25 : 0.5);
             var newCosts = {};
             Object.keys(costs).forEach(function (res){
-                newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate); }
+                if(res !== 'Spent_Fossil'){
+                    newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate); }
+                }
             });
             return newCosts;
         }
@@ -3798,6 +3819,9 @@ const traitExtra = {
     unfathomable: [
         loc(`wiki_trait_effect_unfathomable_ex1`),
         loc(`wiki_trait_effect_unfathomable_ex2`)
+    ],
+    nostalgic: [
+        loc(`wiki_trait_effect_logical_ex1`)
     ]
 };
 
@@ -3811,6 +3835,7 @@ const altTraitDesc = {
     blurry: 'warlord',
     ghostly: 'warlord',
     playful: 'warlord',
+    musical: 'iceage'
 };
 
 export function getTraitDesc(info, trait, opts){

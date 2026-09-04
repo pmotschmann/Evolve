@@ -614,19 +614,19 @@ export function production(id,val,wiki){
             switch (val){
                 case 'iron':
                 {
-                    return highPopAdjust(0.4);
+                    return highPopAdjust(2.5);
                 }
                 case 'copper':
                 {
-                    return highPopAdjust(0.3);
+                    return highPopAdjust(2.2);
                 }
                 case 'coal':
                 {
-                    return highPopAdjust(0.3);
+                    return highPopAdjust(1);
                 }
                 case 'uranium':
                 {
-                    return highPopAdjust(0.002);
+                    return highPopAdjust(0.003);
                 }
             }
         }

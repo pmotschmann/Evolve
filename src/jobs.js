@@ -29,7 +29,12 @@ export const job_data = {
         desc(servant){
             let desc = loc('job_hunter_desc',[global.resource.Food.name]);
             if (global.race['unfathomable']){
-                desc = loc('job_eld_hunter_desc');
+                if(global.race['iceage']){
+                    desc = loc('job_eld_hunter_desc_iceage');
+                }
+                else{
+                    desc = loc('job_eld_hunter_desc');
+                }
             }
             if (global.race['artifical']){
                 desc = global.race['soul_eater'] ? loc('job_art_demon_hunter_desc',[global.resource.Furs.name, global.resource.Lumber.name]) : loc('job_art_hunter_desc',[global.resource.Furs.name]);
@@ -85,7 +90,7 @@ export const job_data = {
         name(){
             if(global.race['iceage']){
                 if(!global.race['artifical']){
-                    return loc('job_mushroom_farmer');
+                    return loc('job_mushroom_farmer', [actions.underground.cave.mushroom_farm.mushroom_type()]);
                 }
                 else{
                     return loc('job_runner');
@@ -104,7 +109,7 @@ export const job_data = {
             if(global.race['iceage']){
                 if(global.race['high_pop'] && !servant){
                     if(!global.race['artifical']){
-                        desc = loc('job_mushroom_farmer_desc_hp', [farmer,global.resource.Food.name,global.underground.mushroom_farm.count,farmhand,actions.underground.mushroom_farm.mushroom_type(), jobScale(1) * global.underground.mushroom_farm.count, highPopAdjust(1), jobScale(1)]);
+                        desc = loc('job_mushroom_farmer_desc_hp', [farmer,global.resource.Food.name,global.underground.mushroom_farm.count,farmhand,actions.underground.cave.mushroom_farm.mushroom_type(), jobScale(1) * global.underground.mushroom_farm.count, highPopAdjust(1), jobScale(1)]);
                     }
                     else{
                         desc = loc('job_runner_desc_hp', [farmer,global.resource.Food.name,jobScale(1) * (global.underground.under_transmitter?.count || 0),farmhand, highPopAdjust(1), jobScale(1)]);
@@ -112,7 +117,7 @@ export const job_data = {
                 }
                 else{
                     if(!global.race['artifical']){
-                        desc = loc('job_mushroom_farmer_desc', [farmer,global.resource.Food.name,global.underground.mushroom_farm.count,farmhand,actions.underground.mushroom_farm.mushroom_type(), loc('underground_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]), 1]);
+                        desc = loc('job_mushroom_farmer_desc', [farmer,global.resource.Food.name,global.underground.mushroom_farm.count,farmhand,actions.underground.cave.mushroom_farm.mushroom_type(), loc('underground_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]), 1]);
                     }
                     else{
                         desc = loc('job_runner_desc', [farmer,global.resource.Food.name,(global.underground.under_transmitter?.count || 0),farmhand, 1]);
@@ -132,7 +137,7 @@ export const job_data = {
         color(){ return false; }
     },
     lumberjack: {
-        name(){ return global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_lumberjack'); },
+        name(){ return global.race['evil'] && !global.race['iceage'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_lumberjack'); },
         desc(servant){
             let workers = servant && global.race['servants'] ? global.race.servants.jobs.lumberjack : global.civic.lumberjack.workers;
             let impact = job_data.lumberjack.impact();
@@ -374,7 +379,7 @@ export const job_data = {
         mine_effect(){
             let effect = 1;
             if(global.tech['mineshaft'] >= 5 && global.underground['mineshaft']){
-                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 100000) * 0.00003;
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
                 if(mineshaft_effect >= 1){
                     effect *= mineshaft_effect;
                 }
@@ -416,7 +421,7 @@ export const job_data = {
                 return global.race['sappy'] ? loc('job_cement_worker_amber_desc',vars) : loc('job_cement_worker_desc',vars);
             }
             else{
-                let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name,unit_price*1.5];
+                let vars = [gain,unit_price,global.resource.Cement.name,global.resource.Stone.name,unit_price];
                 return loc('job_cement_worker_iceage_desc',vars);
             }
         },
@@ -485,7 +490,7 @@ export const job_data = {
                 morale *= traits.high_pop.vars()[1] / 100;
             }
             morale = +workerScale(morale,'entertainer').toFixed(2);
-            let water = morale * 2;
+            let water = +(morale * 1.5).toFixed(1);
             return loc('job_gardener_desc_iceage',[water, +(morale).toFixed(2)]);
         },
         stress(){ return 10; },
@@ -495,7 +500,10 @@ export const job_data = {
         name(){ return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('job_pofficer') : loc('job_priest'); },
         desc(){
             let desc = ``;
-            if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+            if (global.race['iceage']){
+                desc = loc('job_priest_desc4');
+            }
+            else if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 desc = loc('job_priest_desc2');
             }
             else {
@@ -528,7 +536,11 @@ export const job_data = {
                 professor *= 1 - (govEffect.theocracy()[1] / 100);
             }
             professor = +professor.toFixed(2);
-            return loc('job_professor_desc',[professor]);
+            let desc = loc('job_professor_desc',[professor]);
+            if(global.tech['science'] >= 5 && global.race['iceage']){
+                desc += ` ${loc('job_professor_desc2', [+(400 / actions.underground.cave.stone_slab.breakthrough_chance()).toFixed(1)])}`;
+            }
+            return desc;
         },
         impact(){
             if (global.tech['science'] && global.tech.science >= 3){
@@ -620,7 +632,7 @@ export const job_data = {
         name(){ return loc('job_archaeologist'); },
         desc(){
             if(global.race['iceage']){
-                let chance = (100 / actions.underground.industry.archaeological_dig.fossil_chance()).toFixed(2);
+                let chance = (100 / actions.underground.industry.archaeological_dig.relic_chance()).toFixed(2);
                 return loc('job_archaeologist_underground_desc', [chance]);
             }
             else{

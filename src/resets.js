@@ -2,6 +2,7 @@ import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates,
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
+import { thrusterOrbitProjection } from './iceage.js';
 
 // Mutual Assured Destruction
 export function warhead(){
@@ -1284,67 +1285,102 @@ export function blast_away(){
     global.stats.pdebt = gains.pdebt;
     global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
     global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
+    global.prestige.Fossil.count += gains.fossil;
+    global.stats.fossil += gains.fossil;
 
-    unlockAchieve(`squished`,true);
-    unlockAchieve(`extinct_${global.race.species}`);
+    unlockAchieve(`gone`);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let mainType = global.race.hasOwnProperty('maintype') ? global.race.maintype : false;
-    global['race'] = {
-        species : global.race.species,
-        gods: global.race.gods,
-        old_gods: global.race.old_gods,
-        universe: global.race.universe,
-        seeded: false,
-        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-        truepath: global.race.truepath
-    };
+    let orbit = global.city.calendar.orbit;
+    if(global.race['iceage'] && global.surface.giant_thrusters){ //set new orbit based on aimed projection
+        let god = global.race.species;
+        let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
+        let biome = global.city.biome;
+        let atmo = global.city.ptrait;
+        unlockAchieve(`back_on_track`);
+        unlockAchieve(`biome_${biome}`);
+        atmo.forEach(function(a){
+            if (planetTraits.hasOwnProperty(a)){
+                unlockAchieve(`atmo_${a}`);
+            }
+        });
+        unlockAchieve(`genus_${genus}`);
+        if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge' && global.race.species != 'hybrid'){
+            unlockAchieve(`gross`);
+        }
+        let project = thrusterOrbitProjection();
+        let aim = global.surface.giant_thrusters.orbitAim;
+        let variance = seededRandom(0, project.variance, false, global.stats.reset);
+        let ratio = (aim - project.min) / (project.max - project.min);
+        let difference = variance - (project.variance * ratio);
+        orbit = Math.round(aim + difference);
+        global['race'] = {
+            species : 'protoplasm',
+            gods: global.race.species,
+            old_gods: global.race.gods,
+            universe: global.race.universe,
+            seeded: false,
+            seed: Math.floor(seededRandom(10000)),
+            ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        };
+    }
+    else{ //thruster reset outside of ice age puts you in ice age like cataclysm. It's also considered extinction instead of greatness
+        unlockAchieve(`squished`,true);
+        unlockAchieve(`extinct_${global.race.species}`);
+        global['race'] = {
+            species : global.race.species,
+            gods: global.race.gods,
+            old_gods: global.race.old_gods,
+            universe: global.race.universe,
+            seeded: false,
+            ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+            truepath: global.race.truepath
+        };
+        if (mainType){
+            global.race['maintype'] = mainType;
+        }
+        if (global.race.truepath){
+            global.race['nerfed'] = 1;
+            global.race['badgenes'] = 1;
+        }
+        else if (global.race.universe === 'antimatter') {
+            global.race['weak_mastery'] = 1;
+        }
+        else {
+            global.race['no_plasmid'] = 1;
+        }
+        if(!global.race.truepath){
+            global.race['no_crispr'] = 1;
+        }
+        global.race['no_trade'] = 1;
+        global.race['no_craft'] = 1;
+        
+        global.race['start_iceage'] = 1;
+        global.race['iceage'] = 1;
+    }
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
     if (srace){
         global.race['srace'] = srace;
     }
-    if (mainType){
-        global.race['maintype'] = mainType;
-    }
-            
+
     resetCommon({
-        orbit: global.city.calendar.orbit, 
+        orbit: orbit, 
         biome: global.city.biome, 
         ptrait: global.city.ptrait, 
         geology: global.city.geology
     });
 
-    if (global.race.truepath){
-        global.race['nerfed'] = 1;
-        global.race['badgenes'] = 1;
-    }
-    else if (global.race.universe === 'antimatter') {
-        global.race['weak_mastery'] = 1;
-    }
-    else {
-        global.race['no_plasmid'] = 1;
-    }
-    if(!global.race.truepath){
-        global.race['no_crispr'] = 1;
-    }
-    global.race['no_trade'] = 1;
-    global.race['no_craft'] = 1;
-    
-    global.race['start_iceage'] = 1;
-    global.race['iceage'] = 1;
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    writeSave();
     window.location.reload();
 }
 
 export function living_extinction(){
     if (webWorker.w){
         webWorker.w.terminate();
-    }
-    if (!global['sim']){
-        writeBackup();
     }
     clearSavedMessages();
 
@@ -1354,6 +1390,7 @@ export function living_extinction(){
 
     unlockAchieve(`extinct_${global.race.species}`);
     unlockAchieve(`squished`,true);
+    unlockAchieve(`living_extinction`);
 
     let god = global.race.species;
     let old_god = global.race.gods;
@@ -1367,6 +1404,7 @@ export function living_extinction(){
 
     global.stats.lextinct++;
     updateResetStats();
+
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){

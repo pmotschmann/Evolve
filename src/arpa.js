@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on, writeBackup } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
@@ -12,7 +12,8 @@ import { govActive, defineGovernor } from './governor.js';
 import { highPopAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
-import { renderSurface, ecosystemInfo, ecoMinorTraitEffect } from './iceage.js';
+import { renderSurface, ecosystemInfo, ecoMinorTraitEffect, aberrant_stats } from './iceage.js';
+
 export function arpa(type) {
     switch(type){
         case 'Physics':
@@ -56,6 +57,9 @@ export const arpaProjects = {
                 if (global.race['warlord']){
                     return loc('arpa_projects_lhc_warlord2',[loc('portal_twisted_lab_title'),sc,5]);
                 }
+                else if (global.race['iceage']){
+                    return loc('arpa_projects_lhc_iceage2',[loc('underground_stone_slab'),sc,loc('surface_genetics_lab'),sc/2,5]);
+                }
                 else if (global.tech['particles'] && global.tech['particles'] >= 4){
                     return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
                 }
@@ -66,6 +70,9 @@ export const arpaProjects = {
             else {
                 if (global.race['warlord']){
                     return loc('arpa_projects_lhc_warlord1',[loc('portal_twisted_lab_title'),sc]);
+                }
+                else if (global.race['iceage']){
+                    return loc('arpa_projects_lhc_iceage1',[loc('underground_stone_slab'),sc,loc('surface_genetics_lab'),sc/2]);
                 }
                 else {
                     return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
@@ -109,7 +116,7 @@ export const arpaProjects = {
         },
         cost: {
             Money(r={}){ return costMultiplier('stock_exchange', r.offset, 3000000, 1.06, r.wiki); },
-            Plywood(r={}){ return costMultiplier('stock_exchange', r.offset, 25000, 1.06, r.wiki); },
+            Plywood(r={}){ return !global.race['iceage'] ? costMultiplier('stock_exchange', r.offset, 25000, 1.06, r.wiki) : 0; },
             Brick(r={}){ return costMultiplier('stock_exchange', r.offset, 20000, 1.06, r.wiki); },
             Wrought_Iron(r={}){ return costMultiplier('stock_exchange', r.offset, 10000, 1.06, r.wiki); }
         }
@@ -168,12 +175,12 @@ export const arpaProjects = {
             return loc('arpa_projects_surface_elevator_effect1');
         },
         cost: {
-            Money(offset){ return costMultiplier('surface_elevator', offset, 4000000, 1.1); },
-            Knowledge(offset){ return costMultiplier('surface_elevator', offset, 1000000, 1.1); },
-            Iridium(offset){ return costMultiplier('surface_elevator', offset, 50000, 1.1); },
-            Sheet_Metal(offset){ return costMultiplier('surface_elevator', offset, 80000, 1.1); },
-            Polymer(offset){ return costMultiplier('surface_elevator', offset, 150000, 1.1); },
-            Oil(offset){ return costMultiplier('surface_elevator', offset, 500000, 1.1); }
+            Money(r={}){ return costMultiplier('surface_elevator', r.offset, 3000000, 1.1); },
+            Knowledge(r={}){ return costMultiplier('surface_elevator', r.offset, 1000000, 1.1); },
+            Iridium(r={}){ return costMultiplier('surface_elevator', r.offset, 30000, 1.1); },
+            Sheet_Metal(r={}){ return costMultiplier('surface_elevator', r.offset, 15000, 1.1); },
+            Polymer(r={}){ return costMultiplier('surface_elevator', r.offset, 80000, 1.1); },
+            Oil(r={}){ return costMultiplier('surface_elevator', r.offset, 200000, 1.1); }
         }
     },
     monument: {
@@ -1728,7 +1735,7 @@ function pick_monument(){
     if (!global.race['flier'] && global.arpa['m_type'] !== 'Monolith'){
         monuments.push('Monolith');
     }
-    if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred'] && !global.race['smoldering']){
+    if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['iceage']){
         monuments.push('Pillar');
     }
     if (global.race.universe === 'magic' && global.arpa['m_type'] !== 'Megalith'){
@@ -2097,7 +2104,11 @@ function genetics(){
             if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
                 breakdown.append(`<div class="trait major has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_gain')}</div>`);
 
-                let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
+                let conflict_traits = ['dumb','smart','iceage','sappy']; //Conflicting traits are paired together
+                let swap_traits = {}; //swap available traits with another one under certain cirucmstances
+                if (global.race['iceage']){
+                    swap_traits.kindling_kindred = 'iron_wood';
+                }
                 let mainType = races[global.race.species].type === 'hybrid' ? global.race.maintype : races[global.race.species].type
                 let speciesTypes = races[global.race.species].type === 'hybrid' ? races[global.race.species].hybrid : [races[global.race.species].type];
                 Object.keys(races).forEach(function (race){
@@ -2105,6 +2116,9 @@ function genetics(){
                         (speciesTypes.includes(races[race].type) || (races[race].type === 'hybrid' && race === global.race.species))
                     ){
                         Object.keys(races[race].traits).forEach(function (trait){
+                            if(swap_traits[trait]){
+                                trait = swap_traits[trait];
+                            }
                             if (!global.race[trait] && trait !== 'soul_eater'){
                                 let conflict_pos = conflict_traits.indexOf(trait);
                                 if (conflict_pos === -1){
@@ -2819,9 +2833,9 @@ function drawEcosystem(){
     let types = ['trees', 'herbivores', 'carnivores', 'scavengers'];
     
     ['trees', 'herbivores', 'carnivores', 'scavengers'].forEach(function(type){
+        let breakdown = $(`<div id="geneticBreakdown_${type}" class="ecoTraits"></div>`);
+        $('#arpaEcosystem').append(breakdown);
         if(global.surface[type]){
-            let breakdown = $(`<div id="geneticBreakdown_${type}" class="ecoTraits"></div>`);
-            $('#arpaEcosystem').append(breakdown);
 
 
             let minorElem = $(`<div id="geneticMinor_${type}" class="traitListing minor"></div>`);
@@ -2837,7 +2851,7 @@ function drawEcosystem(){
                 let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${type}', '${index}')" @click="gene('${type}', '${index}')">${loc('genelab_eco_rank')}</span>`);
                 m_trait.append(gene);
 
-                m_trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.surface[type].minorTraits[index]}) ${loc(`trait_${trait_name}_name`)}</span>`);
+                m_trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.surface[type].traits[index]}) ${loc(`trait_${trait_name}_name`)}</span>`);
 
                 trait_box.append(m_trait);
             };
@@ -2858,10 +2872,10 @@ function drawEcosystem(){
                         let can_purchase = true;
                         let redraw = false;
                         while (curr_iteration < iterations && can_purchase){
-                            let cost = mGeneCost(global.surface[eco].minorTraits[type], eco);
+                            let cost = mGeneCost(global.surface[eco].traits[type], eco);
                             if (global.resource.Genes.amount >= cost){
                                 global.resource.Genes.amount -= cost;
-                                global.surface[eco].minorTraits[type]++;
+                                global.surface[eco].traits[type]++;
                                 redraw = true;
                             }
                             else {
@@ -2874,13 +2888,13 @@ function drawEcosystem(){
                         }
                     },
                     geneCost(eco, type){
-                        return mGeneCost(global.surface[eco].minorTraits[type], eco);
+                        return mGeneCost(global.surface[eco].traits[type], eco);
                     },
                     traitEffect(t){
                         return 'description';
                     },
                     genePurchasable(eco, type){
-                        if(global.resource.Genes.amount >= mGeneCost(global.surface[eco].minorTraits[type], eco) && !global.tech['living_extinction']){
+                        if(global.resource.Genes.amount >= mGeneCost(global.surface[eco].traits[type], eco) && !global.tech['living_extinction']){
                             return true;
                         }
                         return false;
@@ -2893,9 +2907,9 @@ function drawEcosystem(){
 
                 popover(`ecoGenetrait${index}`, function(){
                     if(global.tech['living_extinction']){
-                        return loc('arpa_eco_gene_empowered_danger');
+                        return loc('arpa_eco_gene_extinction');
                     }
-                    return `${loc('arpa_eco_gene_buy',[loc(`trait_${trait_name}_name`),sizeApproximation(mGeneCost(global.surface[type].minorTraits[index], type)),global.resource.Genes.name])}`;
+                    return `${loc('arpa_eco_gene_buy',[loc(`trait_${trait_name}_name`),sizeApproximation(mGeneCost(global.surface[type].traits[index], type)),global.resource.Genes.name])}`;
                 },
                 {
                     elm: `#geneticMinor_${type} .t-${index} .gbuy`,
@@ -2910,31 +2924,33 @@ function drawEcosystem(){
                     classes: `has-background-light has-text-dark`
                 });
             }
-
-            let majorList = global.aberrants?.[type] || {};
+        }
+        if(global.aberrants?.[type]){
+            let majorList = global.aberrants[type].traits || {};
             if(Object.keys(majorList).length){
                 let majorElem = $(`<div id="geneticMajor_${type}" class="traitListing major"></div>`);
                 breakdown.append(majorElem);
-                majorElem.append(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_aberrant_major_traits',[loc(`surface_${type}_single`)])} ${Object.keys(majorList).length - (majorList.hasOwnProperty('count') ? 1 : 0)}/${ecosystemInfo.majorTraitCap()}</div>`);
+                let traitHeading = $(`<div class="traitHeading has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_aberrant_major_traits',[global.race['iceage'] || type !== 'trees' ? loc(`surface_${type}_single`) : loc('arpa_race_genetic_aberrant_environmental')])} ${Object.keys(majorList).length}/${ecosystemInfo.majorTraitCap()}</div>`);
+                if(type !== 'trees' && global.tech['ecoMutate']){
+                    traitHeading.append(`<span style="float:right;">${loc('arpa_race_genetic_aberrant_loot', [+((aberrant_stats(type).loot_mult) * 100).toFixed(1)])}</span>`);
+                }
+                majorElem.append(traitHeading);
                 let majorTrait_box = $(`<div class="traitBox"></div>`);
                 majorElem.append(majorTrait_box);
                 for(let [index, entry] of Object.entries(majorList)){
-                    if(index === 'count'){
-                        continue;
-                    }
                     let trait = $(`<div class="trait t-${index} traitRow"></div>`);
                     let gene = $(`<span v-bind:class="['add', 'majorgene', raisePurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="raiseCost('${type}', '${index}')" @click="raise('${type}', '${index}')">»</span>`);
                     let purge = $(`<span v-bind:class="['sub', 'majorgene' ,'has-text-danger', lowerPurchasable('${type}', '${index}') ? '' : 'has-text-fade']" role="button" :aria-label="lowerCost('${type}', '${index}')" @click="lower('${type}', '${index}')">«</span>`);
                     trait.append(purge);
                     trait.append(gene);
                     
-                    trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.aberrants[type][index]}) ${ecosystemInfo.majorTraits[index].name()}</span>`);
+                    trait.append(`<h4 class="is-sr-only">${index}</h4><span class="has-text-warning name">(${global.aberrants[type].traits[index]}) ${ecosystemInfo.majorTraits[index].name()}</span>`);
 
                     majorTrait_box.append(trait);
                 }
 
                 let raiseCost = ecosystemInfo.majorTraitCost;
-                let lowerCost = (rank, lifeform) => raiseCost(rank, lifeform) / 4;
+                let lowerCost = (rank, lifeform) => Math.round(raiseCost(rank, lifeform) / 4);
                 vBind({
                     el: `#geneticMajor_${type}`,
                     data: {
@@ -2951,10 +2967,10 @@ function drawEcosystem(){
                             let can_purchase = true;
                             let redraw = false;
                             while (curr_iteration < iterations && can_purchase){
-                                let cost = raiseCost(global.aberrants[eco][type], eco);
+                                let cost = raiseCost(global.aberrants[eco].traits[type], eco);
                                 if (global.resource.Genes.amount >= cost){
                                     global.resource.Genes.amount -= cost;
-                                    global.aberrants[eco][type]++;
+                                    global.aberrants[eco].traits[type]++;
                                     redraw = true;
                                 }
                                 else {
@@ -2970,9 +2986,12 @@ function drawEcosystem(){
                             if(type === 'empowered' || global.tech['living_extinction']){
                                 return;
                             }
-                            let lethal = global.aberrants.trees.hasOwnProperty('hivemind') && global.aberrants.herbivores.hasOwnProperty('shapeshifter') && 
-                                global.aberrants.carnivores.hasOwnProperty('intelligent') && global.aberrants.scavengers.hasOwnProperty('infiltrator');
-                            if(type !== 'hivemind' && lethal){
+                            let lethal = global.aberrants.trees.traits.hasOwnProperty('hivemind') && global.aberrants.herbivores.traits.hasOwnProperty('shapeshifter') && 
+                                global.aberrants.carnivores.traits.hasOwnProperty('intelligent') && global.aberrants.scavengers.traits.hasOwnProperty('infiltrator');
+                            if(lethal && ['intelligent', 'shapeshifter', 'infiltrator'].includes(type)){
+                                if (!global['sim']){
+                                    writeBackup();
+                                }
                                 global.tech['living_extinction'] = 1;
                                 ecosystem();
                                 return;
@@ -2982,15 +3001,15 @@ function drawEcosystem(){
                             let can_purchase = true;
                             let redraw = false;
                             while (curr_iteration < iterations && can_purchase){
-                                let cost = lowerCost(global.aberrants[eco][type], eco);
+                                let cost = lowerCost(global.aberrants[eco].traits[type], eco);
                                 if (global.resource.Genes.amount >= cost){
                                     global.resource.Genes.amount -= cost;
-                                    global.aberrants[eco][type]--;
-                                    if(global.aberrants[eco][type] <= 1){
+                                    global.aberrants[eco].traits[type]--;
+                                    if(global.aberrants[eco].traits[type] <= 1){
                                         can_purchase = false;
                                     }
-                                    if(global.aberrants[eco][type] === 0){
-                                        delete global.aberrants[eco][type];
+                                    if(global.aberrants[eco].traits[type] === 0){
+                                        delete global.aberrants[eco].traits[type];
                                         clearPopper(`ecoGenetrait${type}`);
                                     }
                                     redraw = true;
@@ -3005,10 +3024,10 @@ function drawEcosystem(){
                             }
                         },
                         raiseCost(eco, type){
-                            return raiseCost(global.aberrants[eco][type], eco);
+                            return raiseCost(global.aberrants[eco].traits[type], eco);
                         },
                         lowerCost(eco, type){
-                            return lowerCost(global.aberrants[eco][type], eco);
+                            return lowerCost(global.aberrants[eco].traits[type], eco);
                         },
                         traitEffect(t){
                             return 'description';
@@ -3017,37 +3036,31 @@ function drawEcosystem(){
                             if(type === 'empowered' || ecosystemInfo.majorTraits[type].danger || global.tech['living_extinction']){
                                 return false;
                             }
-                            return global.resource.Genes.amount >= raiseCost(global.aberrants[eco][type], eco);
+                            return global.resource.Genes.amount >= raiseCost(global.aberrants[eco].traits[type], eco);
                         },
                         lowerPurchasable(eco, type){
                             if(type === 'empowered' || global.tech['living_extinction']){
                                 return false;
                             }
-                            return global.resource.Genes.amount >= lowerCost(global.aberrants[eco][type], eco);
+                            return global.resource.Genes.amount >= lowerCost(global.aberrants[eco].traits[type], eco);
                         },
                     }
                 });
                 for(let [index, entry] of Object.entries(majorList)){
-                    if(index === 'count'){
-                        continue;
-                    }
-
+                    
                     popover(`ecoGenetrait${index}`, function(){
                         if(global.tech['living_extinction']){
-                            return loc('arpa_eco_gene_empowered_danger');
+                            return loc('arpa_eco_gene_extinction');
                         }
-                        let desc = `<div>${loc('arpa_eco_gene_buy',[loc(`trait_${index}_name`),sizeApproximation(raiseCost(global.aberrants[type][index], type)), global.resource.Genes.name])}</div>`;
+                        let desc = `<div>${loc('arpa_eco_gene_buy',[loc(`trait_${index}_name`),sizeApproximation(raiseCost(global.aberrants[type].traits[index], type)), global.resource.Genes.name])}</div>`;
                         if(index === 'empowered' || ecosystemInfo.majorTraits[index].danger){
                             let danger = false;
                             for(let [index, entry] of Object.entries(majorList)){
-                                if(index !== 'count' && ecosystemInfo.majorTraits[index].danger){
+                                if(ecosystemInfo.majorTraits[index].danger){
                                     danger = true;
                                     break;
                                 }
                             };
-                            if(danger && index === 'empowered'){
-                                return loc('arpa_eco_gene_empowered_danger'); //empowered gets feisty
-                            }
                             return loc('arpa_eco_gene_empowered');
                         }
                         return desc;
@@ -3058,34 +3071,31 @@ function drawEcosystem(){
                     });
                     popover(`ecoGenetrait${index}`, function(){
                         if(global.tech['living_extinction']){
-                            return loc('arpa_eco_gene_empowered_danger');
+                            return loc('arpa_eco_gene_extinction');
                         }
-                        let desc = `<div>${loc('arpa_eco_gene_sub',[loc(`trait_${index}_name`),sizeApproximation(lowerCost(global.aberrants[type][index], type)), global.resource.Genes.name])}</div>`;
+                        let desc = `<div>${loc('arpa_eco_gene_sub',[loc(`trait_${index}_name`),sizeApproximation(lowerCost(global.aberrants[type].traits[index], type)), global.resource.Genes.name])}</div>`;
                         if(index === 'empowered'){
                             let danger = false;
                             for(let [index, entry] of Object.entries(majorList)){
-                                if(index !== 'count' && ecosystemInfo.majorTraits[index].danger){
+                                if(ecosystemInfo.majorTraits[index].danger){
                                     danger = true;
                                     break;
                                 }
                             };
-                            if(danger && index === 'empowered'){
-                                return loc('arpa_eco_gene_empowered_danger');
-                            }
                             return loc('arpa_eco_gene_empowered');
                         }
                         let danger = ecosystemInfo.majorTraits[index].danger;
-                        let lethal = global.aberrants.trees.hasOwnProperty('hivemind') && global.aberrants.herbivores.hasOwnProperty('shapeshifter') && 
-                            global.aberrants.carnivores.hasOwnProperty('intelligent') && global.aberrants.scavengers.hasOwnProperty('infiltrator');
+                        let lethal = global.aberrants.trees.traits.hasOwnProperty('hivemind') && global.aberrants.herbivores.traits.hasOwnProperty('shapeshifter') && 
+                            global.aberrants.carnivores.traits.hasOwnProperty('intelligent') && global.aberrants.scavengers.traits.hasOwnProperty('infiltrator');
                         if(lethal && index === 'hivemind'){
                             desc += `<div class="has-text-warning">${loc('ecotrait_hivemind_effect_safe')}</div>`;
                         }
                         else if(lethal && danger){
                             let gains = calcPrestige('living_extinction');
                             let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                            desc += `<div class="has-text-advanced">${loc('ecotrait_hivemind_effect_reset', [gains.plasmid,plasmidType,gains.phage,gains.dark])}</div>`;
+                            desc += `<div class="has-text-advanced">${loc('ecotrait_hivemind_effect_reset', [gains.plasmid,plasmidType,gains.phage,gains.dark,gains.fossil])}</div>`;
                         }
-                        else if(global.aberrants[type][index] <= 1){
+                        else if(global.aberrants[type].traits[index] <= 1){
                             desc += `<div class="has-text-danger">${loc('arpa_eco_gene_sub_zero')}</div>`;
                         }
                         return desc;
@@ -3095,7 +3105,10 @@ function drawEcosystem(){
                         classes: `has-background-light has-text-dark`
                     });
                     popover(`ecoGenetrait${index}`, function(){
-                        return `<div>${loc(`ecotrait_${index}_desc`)}</div>${ecosystemInfo.majorTraits[index].effect(type, global.aberrants[type][index])}`;
+                        //let traitInfo = ecosystemInfo.majorTraits[index];
+                        let desc = `<div>${ecosystemInfo.majorTraits[index].desc()}</div>`;
+                        //${global.race['iceage'] || type !== 'trees' ? '' : '_env'}
+                        return `${desc}${ecosystemInfo.majorTraits[index].effect(type, global.aberrants[type].traits[index])}`;
                     },
                     {
                         elm: `#geneticMajor_${type} .t-${index} .name`,
@@ -3136,7 +3149,6 @@ function addProject(parent,project){
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ remain(complete) }}%</button>`));
-
         vBind({
             el: `#arpa${project}`,
             data: global.arpa[project],
@@ -3277,6 +3289,10 @@ export function buildArpa(pro,num,update,queue){
                 if (pro === 'surface_elevator'){
                     global.settings.showSurface = true;
                     global.tech['surface'] = 1;
+                    if (global.race['magnificent']){
+                        initStruct(actions.city.shrine);
+                        initStruct(actions.surface.wastes.shrine);
+                    }
                     clearPopper('popArpasurface_elevator');
                     [1,10,25,100].forEach(function(amount){
                         clearPopper(`popArpasurface_elevator${amount}`);

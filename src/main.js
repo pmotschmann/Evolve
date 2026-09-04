@@ -903,6 +903,7 @@ if (global.race.species === 'protoplasm'){
         global.tech['evo_heat'] = 1;
         global.tech['evo_fey'] = 1;
         global.tech['evo_aquatic'] = 1;
+        global.tech['evo_primordial'] = 1;
     }
     if (global.race.universe === 'bigbang'){
         global.seed = global.race.seed;
@@ -1336,8 +1337,8 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if ((global.city.ptrait.includes('trashed') || global.race['scavenger'] || (global.race['servants'] && global.race.servants['force_scavenger'])) && global.civic['scavenger']){
-        let scavenger = global.city.ptrait.includes('trashed') || global.race['scavenger'] ? workerScale(global.civic.scavenger.workers,'scavenger') : 0;
+    if ((global.city.ptrait.includes('trashed') || global.race['scavenger'] || global.race['scrounger'] || (global.race['servants'] && global.race.servants['force_scavenger'])) && global.civic['scavenger']){
+        let scavenger = global.city.ptrait.includes('trashed') || global.race['scrounger'] || global.race['scavenger'] ? workerScale(global.civic.scavenger.workers,'scavenger') : 0;
         if (global.race['servants']){ scavenger += jobScale(global.race.servants.jobs.scavenger); }
         if (scavenger > 0){
             let bonus = (scavenger * traits.scavenger.vars()[0]);
@@ -2174,10 +2175,17 @@ function fastLoop(){
             power_generated[loc('tech_stellar_engine')] = -output;
         }
 
+        if (global.underground['core_tap_perk']){
+            let output = -(global.underground['core_tap_perk'].count * actions.underground.cave_perk.core_tap_perk.powered());
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('underground_core_tap_perk')] = output; //the default core tap gets overridden even if it doesn't exist so a replacement is used.
+        }
+
         [
             {r:'city',s:'coal_power'},{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
             {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'},{r:'tau_red',s:'antimatter_reactor'},
-            {r:'industry', s:'coal_power'},{r:'industry', s:'under_oil_power'},{r:'core', s:'core_tap'},{r:'crater', s:'crater_fission'}
+            {r:'industry', s:'under_coal_power'},{r:'industry', s:'under_oil_power'},{r:'core', s:'core_tap'},{r:'crater', s:'crater_fission'},{r:'crater', s:'rocket_engine'}
         ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
@@ -2668,6 +2676,7 @@ function fastLoop(){
                     case 'crater':
                         {
                             global[sup.a][sup.s].s_max += (p_on['crater_fission'] ? p_on['crater_fission'] : 0) * actions.surface.crater.crater_fission.support();
+                            global[sup.a][sup.s].s_max += (p_on['rocket_engine'] ? p_on['rocket_engine'] : 0) * actions.surface.crater.rocket_engine.support();
                         }
                         break;
                 }
@@ -3411,9 +3420,9 @@ function fastLoop(){
                 workers *= 1 + (govEffect.democracy()[0] / 100);
             }
             
-            let water_consumption = 2 * workers;
+            let water_consumption = 1.5 * workers;
             if(water_consumption * time_multiplier > global.resource.Water.amount){
-                workers = global.resource.Water.amount / 2;
+                workers = global.resource.Water.amount / 1.5;
             }
 
             breakdown.p.consume.Water[job_data.iceage_gardener.name()] = -(water_consumption);
@@ -3445,6 +3454,16 @@ function fastLoop(){
         }
         else{
             global.city.morale.aberrant_magnificent = 0;
+        }
+        if (global.race['nostalgic']){
+            let factor = global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0;
+            factor += global.tech.hasOwnProperty('science') ? global.tech.science : 0;
+            let penalty = traits.nostalgic.vars()[0] * -factor;
+            global.city.morale.nostalgic = penalty;
+            morale += global.city.morale.nostalgic;
+        }
+        else{
+            global.city.morale.nostalgic = 0;
         }
 
         if (global.tech['broadcast'] && !global.race['joyless']){
@@ -3886,12 +3905,12 @@ function fastLoop(){
                     global.city.transmitter['lpmod'] = production('transmitter') * global_multiplier * production('psychic_boost','Food');
                 }
                 if(global.race['iceage']){
-                    food_base = 1 * production('psychic_boost','Food');
+                    food_base = 2 * production('psychic_boost','Food');
                     breakdown.p['Food'][loc('underground_old_device')] = food_base + 'v';
                 }
             }
             else {
-                if (global.race['detritivore']){
+                if (global.race['detritivore'] && !global.race['iceage']){
                     if (global.city['compost']){
                         let operating = global.city.compost.on;
                         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
@@ -3919,7 +3938,7 @@ function fastLoop(){
                         food_base += food_compost;
                     }
                 }
-                else if (global.race['carnivore'] || global.race['soul_eater']){
+                else if ((global.race['carnivore'] || global.race['soul_eater'])){
                     let strength = weaponTechModifer();
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
                     food_hunt *= racialTrait(food_hunt,'hunting');
@@ -3981,7 +4000,7 @@ function fastLoop(){
                         }
                     }
                 }
-                else if (global.city['farm'] || global.race['forager'] || global.race['warlord'] || global.race['iceage']) {
+                else if (global.city['farm'] || global.race['forager'] || global.race['warlord']) {
                     let weather_multiplier = 1;
                     if (!global.race['submerged']){
                         if (global.city.calendar.temp === 0){
@@ -4067,6 +4086,20 @@ function fastLoop(){
                     farmers = jobScale(farm_count);
                 }
                 let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
+
+                if (global.race['servants']){
+                    let servants = global.race.servants.jobs.farmer;
+                    let servehands = 0;
+                    let open = farm_count - (farmers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1));
+                    if (servants > open){
+                        servehands = servants - open;
+                        servants = open;
+                    }
+                    food += (servants * farmerValue(true,true)) + (servehands * farmerValue(false,true));
+                    farmers += servants;
+                    farmhands += servehands;
+                }
+
                 let water_use = highPopAdjust(farmers + farmhands - workerScale(powered, 'farmer'));
                 if(water_use * time_multiplier > global.resource.Water.amount){
                     food *= (global.resource.Water.amount / (water_use * time_multiplier));
@@ -4087,8 +4120,11 @@ function fastLoop(){
                 if(global.race['artifical']){
                     produce = p_on['surface_farm'] * 50;
                 }
+                else if(global.race['carnivore'] || global.race['soul_eater'] || global.race['unfathomable']){
+                    produce = p_on['surface_farm'] * 0.08 * global.surface.herbivores.count;
+                }
                 else{
-                    produce = p_on['surface_farm'] * 0.03 * global.surface.overview.trees;
+                    produce = p_on['surface_farm'] * 0.05 * global.surface.trees.count;
                 }
                 let virgo = astroSign === 'virgo' ? 1 + (astroVal('virgo')[0] / 100) : 1;
                 breakdown.p['Food'][structName('surface_farm')] = (produce) + 'v';
@@ -4416,7 +4452,7 @@ function fastLoop(){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
-            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
+            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['iceage']){
                 // Do Nothing
             }
             else if (global.race['vax'] && global.race.vax >= 100){
@@ -4472,7 +4508,7 @@ function fastLoop(){
                 if (global.city.ptrait.includes('toxic')){
                     upperBound *= planetTraits.toxic.vars()[1];
                 }
-                if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
+                if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'] || global.race['iceage'])){
                     lowerBound = Math.round(lowerBound / 5);
                     upperBound *= 3;
                 }
@@ -4657,32 +4693,55 @@ function fastLoop(){
             modRes('Furs', shed * hunger * global_multiplier * time_multiplier);
         }
 
-        if (global.race['unfathomable'] && global.civic.hunter.display){
+        if ((global.race['unfathomable'] && global.civic.hunter.display) || (global.race['scrounger'] && global.civic.scavenger.display)){
             let weapons = weaponTechModifer();
-            let hunters = workerScale(global.civic.hunter.workers,'hunter');
-            hunters *= racialTrait(hunters,'hunting');
+            let hunters = 0;
+            let scavengers = 0;
+            if (global.race['unfathomable']){
+                let raiders = workerScale(global.civic.hunter.workers,'hunter');
+                raiders *= racialTrait(raiders,'hunting');
+                hunters += raiders;
+                if (global.race['servants']){
+                    let serve = jobScale(global.race.servants.jobs.hunter);
+                    serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
+                    hunters += highPopAdjust(serve);
+                }
+            }
 
-            if (global.race['servants']){
-                let serve = jobScale(global.race.servants.jobs.hunter);
-                serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
-                hunters += highPopAdjust(serve);
+            if (global.race['scrounger']){
+                let scav = workerScale(global.civic.scavenger.workers,'hunter');
+                scav *= racialTrait(scav,'hunting');
+                scav *= traits.scrounger.vars()[0] / 100;
+                scavengers += scav;
+                if (global.race['servants']){
+                    let serve = jobScale(global.race.servants.jobs.scavenger);
+                    serve *= servantTrait(global.race.servants.jobs.scavenger,'hunting');
+                    serve *= traits.scrounger.vars()[0] / 100;
+                    scavengers += highPopAdjust(serve);
+                }
             }
 
             hunters *= weapons / 20;
+            scavengers *= weapons / 20;
 
             let stealable = ['Lumber','Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
             stealable.forEach(function(res){
                 if (global.resource[res].display){
-                    let raid = hunters * production('psychic_boost',res) * tradeRatio[res] / 5;
-                    if (['Crystal','Uranium'].includes(res)){ raid *= 0.2; }
-                    else if (['Alloy','Polymer','Iridium'].includes(res)){ raid *= 0.35; }
-                    else if (['Steel','Cement'].includes(res)){ raid *= 0.85; }
-                    else if (['Titanium'].includes(res)){ raid *= 0.65; }
-                    breakdown.p[res][job_data.hunter.name()] = raid  + 'v';
-                    if (raid > 0){
-                        breakdown.p[res][`ᄂ${loc('quarantine')}+99`] = ((q_multiplier - 1) * 100) + '%';
+                    let total = 0;
+                    for (let i=0;i<2;i++){
+                        let type = [hunters, scavengers][i];
+                        let raid = type * production('psychic_boost',res) * tradeRatio[res] / 5;
+                        if (['Crystal','Uranium'].includes(res)){ raid *= 0.2; }
+                        else if (['Alloy','Polymer','Iridium'].includes(res)){ raid *= 0.35; }
+                        else if (['Steel','Cement'].includes(res)){ raid *= 0.85; }
+                        else if (['Titanium'].includes(res)){ raid *= 0.65; }
+                        breakdown.p[res][i === 0 ? job_data.hunter.name() : job_data.scavenger.name()] = raid  + 'v';
+                        if (raid > 0){
+                            breakdown.p[res][`ᄂ${loc('quarantine')}+99`] = ((q_multiplier - 1) * 100) + '%';
+                        }
+                        total += raid;
                     }
-                    modRes(res, raid * hunger * global_multiplier * time_multiplier * q_multiplier);
+                    modRes(res, total * hunger * global_multiplier * time_multiplier * q_multiplier);
                 }
             });
         }
@@ -4707,11 +4766,11 @@ function fastLoop(){
                 if(global.tech['science'] >= 2){
                     sundial_base += 2;
                 }
-                if(global.tech['science'] >= 5 && global.underground['stone_slab'].breakthrough){
+                if(global.tech['science'] >= 5){
                     if(Math.rand(0, actions.underground.cave.stone_slab.breakthrough_chance()) === 0){
                         global.underground['stone_slab'].breakthrough += 1;
                     }
-                    sundial_base += global.underground['stone_slab'].breakthrough;
+                    sundial_base += global.underground['stone_slab'].breakthrough * 0.5;
                     if(global.tech['science'] >= 7){
                         sundial_base *= 1.5;
                     }
@@ -4791,11 +4850,16 @@ function fastLoop(){
             }
             breakdown.p['Knowledge'][loc('tau_red_womlings')] = womling + 'v';
             breakdown.p['Knowledge'][loc('hunger')] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Knowledge'][global.race['unfathomable'] ? loc('tech_moondial') : global.race['iceage'] ? loc('rock_carving') : loc('tech_sundial')] = sundial_base + 'v';
+            breakdown.p['Knowledge'][global.race['iceage'] ? loc('rock_carving') : global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
 
-            if(global.race['iceage'] && global.tech['science'] >= 3){
+            if (global.race['iceage'] && global.tech['science'] >= 3){
                 sundial_base *= 1 + (0.05 * jobScale(global.civic.professor.workers));
                 breakdown.p['Knowledge'][`ᄂ${job_data.professor.name()}`] = 5 * jobScale(global.civic.professor.workers) + '%';
+            }
+            if (p_on['under_biolab']){
+                let biolab = actions.underground.industry.under_biolab.bio_effect();
+                sundial_base *= 1 + (biolab / 100 * p_on['under_biolab']);
+                breakdown.p['Knowledge'][`ᄂ${loc('city_biolab')}`] = +(biolab * p_on['under_biolab']).toFixed(2) + '%';
             }
             delta += sundial_base * global_multiplier;
             if (global.race['inspired']){
@@ -4832,6 +4896,10 @@ function fastLoop(){
             if (global.civic.govern.type === 'technocracy'){
                 breakdown.p['Knowledge'][loc('govern_technocracy')] = govEffect.technocracy()[2] + '%';
                 delta *= 1 + (govEffect.technocracy()[2] / 100);
+            }
+            if (global.underground['stone_slab_perk']){
+                breakdown.p['Knowledge'][loc('underground_stone_slab')] = (2 * global.underground['stone_slab_perk'].count) + '%';
+                delta *= 1 + (0.02 * global.underground['stone_slab_perk'].count);
             }
 
             if (gene_consume > 0) {
@@ -5404,9 +5472,9 @@ function fastLoop(){
                 workDone--;
             }
             if(global.race['iceage']){
-                workDone = Math.min(workDone, Math.floor(global.resource.Water.amount / unit_price / 1.5 * time_multiplier));
-                let water_cost = workDone * 1.5;
-                breakdown.p.consume.Water[loc('city_cement_plant_bd')] = -(water_cost * 1.5);
+                workDone = Math.min(workDone, Math.floor(global.resource.Water.amount / unit_price * time_multiplier));
+                let water_cost = workDone * unit_price;
+                breakdown.p.consume.Water[loc('city_cement_plant_bd')] = -(water_cost);
                 modRes('Water', -(water_cost * time_multiplier));
             }
 
@@ -5550,8 +5618,11 @@ function fastLoop(){
             if (p_on['geothermal']){
                 capacity += p_on['geothermal'] * actions.space.spc_hell.geothermal.smelting();
             }
-            if(p_on['core_forge']){
-                capacity += p_on['core_forge'];
+            if (p_on['core_forge']){
+                capacity += p_on['core_forge'] * actions.underground.core.core_forge.smelting();
+            }
+            if (p_on['rocket_engine']){
+                capacity += p_on['rocket_engine'] * actions.surface.crater.rocket_engine.smelting();
             }
             global.city.smelter.cap = capacity;
             global.city.smelter.StarCap = star_forge;
@@ -5559,7 +5630,7 @@ function fastLoop(){
             if (global.race['forge']){
                 global.city.smelter.Wood = 0;
                 global.city.smelter.Coal = 0;
-                global.city.smelter.Oil = Math.max(0, global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno);
+                global.city.smelter.Oil = Math.max(0, global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno - global.city.smelter.Super);
             }
 
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
@@ -5570,7 +5641,7 @@ function fastLoop(){
             }
 
             let total_fuel = 0;
-            ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
+            ['Wood', 'Coal', 'Oil', 'Star', 'Inferno', 'Super'].forEach(function(fuel){
                 if (total_fuel + global.city.smelter[fuel] > global.city.smelter.cap){
                     global.city.smelter[fuel] = global.city.smelter.cap - total_fuel;
                 }
@@ -5614,11 +5685,13 @@ function fastLoop(){
             let consume_wood = global.city.smelter.Wood * fuel_config.l_cost;
             let consume_coal = global.city.smelter.Coal * fuel_config.c_cost;
             let consume_oil = global.city.smelter.Oil * fuel_config.o_cost;
+            let consume_super = global.city.smelter.Super * fuel_config.s_cost;
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
             iridium_smelter = global.city.smelter.Iridium;
             let oil_bonus = global.city.smelter.Oil;
             let inferno_bonus = global.city.smelter.Inferno;
+            let super_bonus = global.city.smelter.Super;
 
             if (global.race['steelen']) {
                 iron_smelter += steel_smelter;
@@ -5675,6 +5748,15 @@ function fastLoop(){
                 modRes('Infernite', -(consume_infernite * time_multiplier));
             }
 
+            if (consume_super > 0){
+                let max_operable = Math.max(0, Math.floor(global.resource.Super_Fuel.amount / (fuel_config.s_cost * time_multiplier)));
+                if (max_operable < super_bonus){
+                    disable_smelters += super_bonus - max_operable;
+                    consume_super = max_operable * fuel_config.s_cost;
+                    super_bonus = max_operable;
+                }
+            }
+
             if (disable_smelters > 0){
                 let disable_steel = Math.min(disable_smelters, steel_smelter);
                 steel_smelter -= disable_steel;
@@ -5714,9 +5796,17 @@ function fastLoop(){
                 iron_smelter *= 1 + (star_forge / 500);
                 iridium_smelter *= 1 + (star_forge / 75);
             }
+            if (super_bonus){
+                iron_smelter *= 1 + (super_bonus / 100);
+                iridium_smelter *= 1 + (super_bonus / 100);
+            }
             if(p_on['core_forge']){
-                iron_smelter *= 1 + (p_on['core_forge'] / 12.5);
-                iridium_smelter *= 1 + (p_on['core_forge'] / 12.5);
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                if(mineshaft_effect < 1){
+                    mineshaft_effect = 1;
+                }
+                iron_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
+                iridium_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
             }
             if (global.race['pyrophobia']){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
@@ -5736,10 +5826,12 @@ function fastLoop(){
             breakdown.p.consume[fuel_config.l_type][loc('city_smelter')] = -(consume_wood);
             breakdown.p.consume.Coal[loc('city_smelter')] = -(consume_coal);
             breakdown.p.consume.Oil[loc('city_smelter')] = -(consume_oil);
+            breakdown.p.consume.Super_Fuel[loc('city_smelter')] = -(consume_super);
 
             modRes(fuel_config.l_type, -(consume_wood * time_multiplier));
             modRes('Coal', -(consume_coal * time_multiplier));
             modRes('Oil', -(consume_oil * time_multiplier));
+            modRes('Super_Fuel', -(consume_super * time_multiplier));
 
             // Uranium Ash (from coal smelters)
             if (consume_coal > 0 && global.tech['uranium'] && global.tech['uranium'] >= 3){
@@ -5794,11 +5886,18 @@ function fastLoop(){
                 if (star_forge){
                     steel_smelter *= 1 + (star_forge / 500);
                 }
+                if (super_bonus){
+                    steel_smelter *= 1 + (super_bonus / 100);
+                }
                 if (dirtVal){
                     steel_smelter *= 1 + (dirtVal / 100);
                 }
                 if(p_on['core_forge']){
-                    steel_smelter *= 1 + (p_on['core_forge'] / 12.5);
+                    let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                    if(mineshaft_effect < 1){
+                        mineshaft_effect = 1;
+                    }
+                    steel_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
                 }
                 if (global.race['elemental'] && traits.elemental.vars()[0] === 'fire'){
                     steel_smelter *= 1 + highPopAdjust(traits.elemental.vars()[3] * global.resource[global.race.species].amount / 100);
@@ -6057,7 +6156,7 @@ function fastLoop(){
                 modRes('Elerium', mine_delta * time_multiplier);
             }
 
-            if (global.resource.Infernite.display){ // Infernite
+            if (global.resource.Infernite.display){ // Infernites
                 let rate = production('shadow_mine','infernite');
                 let mine_base = p_on['shadow_mine'] * rate * production('psychic_boost','Infernite');
 
@@ -6364,7 +6463,12 @@ function fastLoop(){
                         let reserved_trees = info.area * (info.trees_reserved / 100) / tree_info.size * ecoMinorTraitEffect('trees', 'compact');
                         let avail_trees = Math.max(0, global.surface.trees.count - reserved_trees);
                         let tree_hardiness = actions.surface.ecosystem.trees.hardiness();
-                        lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier * tree_hardiness / 2);
+                        if(workers === 0){
+                            lack_of_trees = 1;
+                        }
+                        else{
+                            lack_of_trees = Math.min(1, avail_trees / workers / time_multiplier * tree_hardiness / 2);
+                        }
                         global.surface.trees.count -= workers * time_multiplier * lack_of_trees / tree_hardiness;
                         global.surface.trees.empowered = Math.min(global.surface.trees.count, global.surface.trees.empowered);
                         drawEcology('trees');
@@ -6408,7 +6512,7 @@ function fastLoop(){
 
         let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
         refinery *= q_multiplier;
-
+        
         // Stone / Amber
         if (global.race['sappy'] && !global.race['iceage']){
             if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
@@ -6553,7 +6657,7 @@ function fastLoop(){
             }
 
             if(global.underground['under_mine']){
-                underground_quarry += global.underground['under_mine'].count * 0.02;
+                underground_quarry += global.underground['under_mine'].count * 0.03;
                 stone_base *= underground_quarry;
             }
 
@@ -6759,14 +6863,14 @@ function fastLoop(){
                     collectors *= 1 + (global.tech['water'] - 1) * 0.3;
                 }
                 let ice_collectors = 1 + ((global.underground['ice_collector']?.count || 0) * 0.04);
-                let delta = collectors * global_multiplier * ice_collectors; //important for food, not affected by hunger
+                let delta = collectors * global_multiplier * ice_collectors * production('psychic_boost','Water'); //important for food, not affected by hunger
                 breakdown.p['Water'][loc('job_water_collector')] = collectors + 'v';
                 breakdown.p['Water'][`ᄂ${loc('underground_ice_collector')}`] = -((1 - ice_collectors) * 100) + '%';
                 modRes('Water', delta * time_multiplier);
             }
 
             if(p_on['water_pump']){
-                let prod = production('water_pump') * p_on['water_pump'];
+                let prod = production('water_pump') * p_on['water_pump'] * production('psychic_boost','Water');
                 let ice_collectors = 1 + ((global.underground['ice_collector']?.count || 0) * 0.04);
                 breakdown.p['Water'][loc('underground_water_pump')] = prod + 'v';
                 breakdown.p['Water'][`ᄂ${loc('underground_ice_collector')}+0`] = -((1 - ice_collectors) * 100) + '%';
@@ -6796,14 +6900,15 @@ function fastLoop(){
                 building.c.forEach(function(consume){
                     let cost = c_action.consume(consume);
                     let uppercase = consume.charAt(0).toUpperCase() + consume.slice(1);
-                    if (building.b.substring(0, 8) === 'surface_'){
-                        breakdown.p.consume[uppercase][loc(building.b)] = -(cost * max_active);
+                    /*if (building.b.substring(0, 8) === 'surface_'){
+                        breakdown.p.consume[uppercase][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
                     }
-                    else if(building.b === 'mineshaft_vator'){
+                    else */if(building.b === 'mineshaft_vator'){
                         breakdown.p.consume[uppercase][loc('underground_mineshaft_elevator')] = -(cost * max_active);
                     }
                     else{
-                        breakdown.p.consume[uppercase][structName(`${building.r}_${building.b}`)] = -(cost * max_active);
+                        breakdown.p.consume[uppercase][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
+                        //breakdown.p.consume[uppercase][structName(`${building.r}_${building.b}`)] = -(cost * max_active);
                     }
                     active = Math.floor(Math.min(
                         global.resource[uppercase].amount / (cost * time_multiplier),
@@ -6831,22 +6936,7 @@ function fastLoop(){
         });
 
         if(p_on['core_mine']){
-            let c_action = actions.underground.core.core_mine;
-            //-5MW, -100 water/s, -2 steel/s, -0.5 alloy/s
-            //each powered building adds another -2 steel/ -0.5 alloy/s to *each* building.
-            /*let active = Math.floor(Math.min(
-                global.resource.Water.amount / (c_action.consume('water') * time_multiplier * p_on['core_mine']),
-                global.resource.Steel.amount / (c_action.consume('steel') * time_multiplier * p_on['core_mine']),
-                global.resource.Alloy.amount / (c_action.consume('alloy') * time_multiplier * p_on['core_mine']),
-                p_on['core_mine']));
-            modRes('Water', -(c_action.consume('water') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Water[loc('underground_core_mine')] = -(c_action.consume('water') * p_on['core_mine']);
-            modRes('Steel', -(c_action.consume('steel') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Steel[loc('underground_core_mine')] = -(c_action.consume('steel') * p_on['core_mine']);
-            modRes('Alloy', -(c_action.consume('alloy') * p_on['core_mine'] * time_multiplier));
-            breakdown.p.consume.Alloy[loc('underground_core_mine')] = -(c_action.consume('alloy') * p_on['core_mine']);*/
             let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
-            //p_on['core_mine'] = active;
             base = workerScale(base, 'core_miner');
             let traits = racialTrait(base, 'miner');
             if (global.race['tough']){
@@ -6859,8 +6949,8 @@ function fastLoop(){
             traits = traits ** 0.5;
             base *= traits * job_data.core_miner.impact();
             if (global.race['gravity_well']){ delta = teamster(delta); }
-            let iridium_base = base * (1 + global.city.geology['Iridium'] || 0);
-            let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * 2;
+            let iridium_base = base * (1 + global.city.geology['Iridium'] || 0) * production('psychic_boost','Iridium');
+            let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * production('psychic_boost','Titanium') * 5;
             let multiplier = global_multiplier * hunger * shrineMetal.mult * job_data.core_miner.mine_effect();
             let iridium_delta = iridium_base * multiplier * (1 + iridium_smelter);
             let titanium_delta = titanium_base * multiplier;
@@ -6901,26 +6991,34 @@ function fastLoop(){
             let smelter_mult = 1 + (iron_smelter * 0.1);
             let refinery = 1;
             if(p_on['core_refinery']){
-                refinery += p_on['core_refinery'] * 0.05;
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                if(mineshaft_effect < 1){
+                    mineshaft_effect = 1;
+                }
+                refinery += 0.05 * p_on['core_refinery'] * mineshaft_effect;
             }
             breakdown.p['Iron'][loc('surface_crater_drill')] = (iron_base) + 'v';
             if (iron_base > 0){
-                breakdown.p['Iron'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+                breakdown.p['Iron'][`ᄂ${loc('underground_core_refinery')}+0`] = ((refinery - 1) * 100) + '%';
             }
             breakdown.p['Copper'][loc('surface_crater_drill')] = (copper_base) + 'v';
             if (copper_base > 0){
-                breakdown.p['Copper'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+                breakdown.p['Copper'][`ᄂ${loc('underground_core_refinery')}+0`] = ((refinery - 1) * 100) + '%';
             }
             breakdown.p['Coal'][loc('surface_crater_drill')] = (coal_base) + 'v';
             if (coal_base > 0){
-                breakdown.p['Coal'][`ᄂ${loc('underground_core_refinery')}`] = ((refinery - 1) * 100) + '%';
+                breakdown.p['Coal'][`ᄂ${loc('underground_core_refinery')}+0`] = ((refinery - 1) * 100) + '%';
             }
             breakdown.p['Uranium'][loc('surface_crater_drill')] = (uranium_base) + 'v';
+            if (uranium_base > 0 && global.tech['surface_uranium'] >= 3){
+                uranium_base *= refinery;
+                breakdown.p['Uranium'][`ᄂ${loc('underground_core_refinery')}+0`] = ((refinery - 1) * 100) + '%';
+            }
             
             modRes('Iron', iron_base * shrineMetal.mult * smelter_mult * refinery * global_multiplier * time_multiplier * hunger);
             modRes('Copper', copper_base * shrineMetal.mult * refinery * global_multiplier * time_multiplier * hunger);
             modRes('Coal', coal_base * refinery * global_multiplier * time_multiplier * hunger);
-            modRes('Uranium', uranium_base * refinery * global_multiplier * time_multiplier * hunger);
+            modRes('Uranium', uranium_base * global_multiplier * time_multiplier * hunger);
         }
         
         if(global.surface['overview']){
@@ -7149,7 +7247,11 @@ function fastLoop(){
 
                 let refinery = 1;
                 if(p_on['core_refinery']){
-                    refinery += p_on['core_refinery'] * 0.05;
+                    let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                    if(mineshaft_effect < 1){
+                        mineshaft_effect = 1;
+                    }
+                    refinery += 0.05 * p_on['core_refinery'] * mineshaft_effect;
                 }
 
                 let copper_power = power_mult;
@@ -7223,7 +7325,11 @@ function fastLoop(){
 
                 let refinery = 1;
                 if(p_on['core_refinery']){
-                    refinery += p_on['core_refinery'] * 0.05;
+                    let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                    if(mineshaft_effect < 1){
+                        mineshaft_effect = 1;
+                    }
+                    refinery += 0.05 * p_on['core_refinery'] * mineshaft_effect;
                 }
 
                 let space_iron = 0;
@@ -7528,7 +7634,11 @@ function fastLoop(){
 
             let refinery = 1;
             if(p_on['core_refinery']){
-                refinery += p_on['core_refinery'] * 0.05;
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                if(mineshaft_effect < 1){
+                    mineshaft_effect = 1;
+                }
+                refinery += 0.05 * p_on['core_refinery'] * mineshaft_effect;
             }
 
             let power_mult = 1;
@@ -8678,7 +8788,7 @@ function fastLoop(){
                 income_base *= 15;
             }
             if(global.race['iceage']){
-                income_base *= 3;
+                //income_base *= 2;
             }
             income_base *= production('psychic_cash');
 
@@ -8702,7 +8812,9 @@ function fastLoop(){
             let extra_income = 0;
             if (govActive('extravagant',0) && (global.city['apartment'] || support_on['surface_apartment'])){
                 let mult = income_base / citizens;
-                let pop = (p_on['apartment'] || 0 * actions.city.apartment.citizens()) + (support_on['surface_apartment'] || 0 * actions.surface.wastes.surface_apartment.citizens());
+                let pop = ((p_on['apartment'] || 0) * actions.city.apartment.citizens()) +
+                    ((support_on['surface_apartment'] || 0) * actions.surface.wastes.surface_apartment.citizens()) +
+                    ((global.underground['apartment_perk']?.count || 0) * actions.underground.cave_perk.citizens());
                 pop = Math.min(citizens, pop);
                 extra_income = pop * mult * (govCivics('tax_cap') / 20); //citizens in mansions pay max taxes always.
                 income_base -= pop * mult;
@@ -8817,11 +8929,12 @@ function fastLoop(){
         }
 
         if(p_on['surface_zoo']){
-            let income = 0.04 * (global.surface.trees?.count || 0) * ecoMinorTraitEffect('trees', 'playful');
-            income += 0.1 * (global.surface.herbivores?.count || 0) * ecoMinorTraitEffect('herbivores', 'playful');
-            income += 0.25 * (global.surface.carnivores?.count || 0) * ecoMinorTraitEffect('carnivores', 'playful');
-            income += 0.075 * (global.surface.scavengers?.count || 0) * ecoMinorTraitEffect('scavengers', 'playful');
+            let income = 0.2 * (global.surface.trees?.count || 0) * ecoMinorTraitEffect('trees', 'playful');
+            income += 0.5 * (global.surface.herbivores?.count || 0) * ecoMinorTraitEffect('herbivores', 'playful');
+            income += 1.5 * (global.surface.carnivores?.count || 0) * ecoMinorTraitEffect('carnivores', 'playful');
+            income += 0.28 * (global.surface.scavengers?.count || 0) * ecoMinorTraitEffect('scavengers', 'playful');
             income *= p_on['surface_zoo'];
+            income *= production('psychic_cash');
             breakdown.p['Money'][loc('surface_zoo')] = Math.round(income) + 'v';
             modRes('Money', +(income * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += income * global_multiplier * hunger;
@@ -8829,8 +8942,13 @@ function fastLoop(){
 
         if (global.portal['bazaar'] && global.portal['spire'] && global.tech['monuments']){
             let monuments = global.tech.monuments;
-            if (global.race['wish'] && global.race['wishStats'] && global.portal['wonder_gardens']){
-                 monuments += 5;
+            if (global.race['wish'] && global.race['wishStats']){
+                if (global.portal['wonder_gardens']){
+                    monuments += 5;
+                }
+                if (global.underground['wonder_fountain']){
+                    monuments += 5;
+                }
             }
             let revenue = global.portal.bazaar.count * monuments * global.portal.spire.count;
             revenue *= production('psychic_cash');
@@ -9259,7 +9377,7 @@ function midLoop(){
     }
     else {
         // Moon Phase
-        if (!global.race['orbit_decayed']){
+        if (!global.race['orbit_decayed'] && (!global.race['iceage'] || global.tech['surface'])){
             if (global.city.ptrait.includes('retrograde')){
                 global.city.calendar.moon_angle -= global.city.ptrait.includes('dense') ? 5.4 : 2.7;
                 if (global.city.calendar.moon_angle < 0){
@@ -9396,13 +9514,13 @@ function midLoop(){
             caps['Elerium'] += 999;
         }
         else if(global.race['iceage']){
-            caps['Money'] = 10000;
+            caps['Money'] = 1000;
             caps['Knowledge'] = 1000;
-            caps['Stone'] = 10000;
-            caps['Copper'] = 10000;
-            caps['Iron'] = 10000;
-            caps['Water'] = 10000;
-            caps['Furs'] = 10000;
+            caps['Stone'] = 1000;
+            caps['Copper'] = 1000;
+            caps['Iron'] = 1000;
+            caps['Water'] = 1000;
+            caps['Furs'] = 1000;
         }
 
         if (global.stats.feat['adept']){
@@ -9454,12 +9572,17 @@ function midLoop(){
                 caps.Authority += gain;
                 breakdown.c.Authority[actions.city.garrison.title()] = gain+'v';
             }
-            if(global.underground['hunting_lodge']){
+            if (global.underground['hunting_lodge']){
                 let gain = global.underground.hunting_lodge.on * 0.5;
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('underground_hunting_lodge')] = gain+'v';
             }
-            if(global.surface['watch_tower']){
+            if (global.underground['hunting_lodge_perk']){
+                let gain = global.underground.hunting_lodge_perk.count * 0.5;
+                caps.Authority += gain;
+                breakdown.c.Authority[loc('underground_hunting_lodge')] = gain+'v';
+            }
+            if (global.surface['watch_tower']){
                 let gain = global.surface.watch_tower.on * 1;
                 caps.Authority += gain;
                 breakdown.c.Authority[loc('surface_watch_tower')] = gain+'v';
@@ -9876,7 +9999,7 @@ function midLoop(){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
         }
         if (global.underground['under_foundry']){
-            lCaps['cement_worker'] += jobScale(global.underground.under_foundry.count * 2);
+            lCaps['cement_worker'] += jobScale(global.underground.under_foundry.count);
         }
         if (global.eden['eden_cement']){
             let ec = p_on['eden_cement'] || 0;
@@ -9893,6 +10016,9 @@ function midLoop(){
         }
         if (global.underground['hunting_lodge']){
             lCaps['garrison'] += global.underground.hunting_lodge.on * actions.underground.depths.hunting_lodge.soldiers();
+        }
+        if (global.underground['hunting_lodge_perk']){
+            lCaps['garrison'] += global.underground.hunting_lodge_perk.count * actions.underground.cave_perk.hunting_lodge_perk.soldiers();
         }
         if (support_on['watch_tower']){
             lCaps['garrison'] += support_on['watch_tower'] * actions.surface.wastes.watch_tower.soldiers();
@@ -10004,11 +10130,11 @@ function midLoop(){
                 pop += p_on['stone_house'] * 2;
             }
             caps[global.race.species] += pop;
-            breakdown.c[global.race.species][loc('underground_stone_house_title')] = pop + 'v';
+            breakdown.c[global.race.species][loc('underground_stone_house')] = pop + 'v';
             if (global.tech['home_safe']){
                 let gain = (global.underground['stone_house'].count * actions.underground.depths.stone_house.res_cap('money'));
                 caps['Money'] += gain;
-                breakdown.c.Money[loc('underground_stone_house_title')] = gain+'v';
+                breakdown.c.Money[loc('underground_stone_house')] = gain+'v';
             }
         }
         if (global.city['apartment']){
@@ -10030,6 +10156,11 @@ function midLoop(){
                 caps['Money'] += gain;
                 breakdown.c.Money[`${housingLabel('large')+0}`] = gain+'v';
             }
+        }
+        if (global.underground['apartment_perk']){
+            let pop = global.underground['apartment_perk'].count * actions.underground.cave_perk.apartment_perk.citizens();
+            caps[global.race.species] += pop;
+            breakdown.c[global.race.species][`${housingLabel('large')}+1`] = pop + 'v';
         }
         if (global.eden['rectory']){
             let pop = p_on['rectory'] * actions.eden.eden_asphodel.rectory.citizens();
@@ -10426,6 +10557,11 @@ function midLoop(){
                 }
             }
         }
+        if (global.surface['critical_storage']){
+            let gain = (global.surface['critical_storage'].count * actions.surface.crater.critical_storage.res_cap('uranium'));
+            caps['Uranium'] += gain;
+            breakdown.c.Uranium[loc('surface_critical_storage')] = gain+'v';
+        }
         if (global.space['propellant_depot']){
             let gain = (global.space['propellant_depot'].count * spatialReasoning(1250));
             gain *= global.tech['world_control'] ? 1.5 : 1;
@@ -10533,18 +10669,18 @@ function midLoop(){
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('city_university')] = gain+'v';
         }
-        if(global.underground['stone_slab']){
-            let gain = actions.underground.cave.stone_slab.knowVal() * global.underground.stone_slab.count;
-            lCaps['professor'] += jobScale(global.underground.stone_slab.count);
-            caps['Knowledge'] += gain;
-            breakdown.c.Knowledge[loc('underground_stone_slab')] = gain+'v';
-        }
         if (global.space['university'] && support_on['university']){
             let uni = actions.space.spc_venus.university;
             let gain = uni.knowledge() * support_on['university'];
             lCaps['professor'] += jobScale(support_on['university'] * uni.professors());
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('space_university_title')] = gain+'v';
+        }
+        if(global.underground['stone_slab']){
+            let gain = actions.underground.cave.stone_slab.knowVal() * global.underground.stone_slab.count;
+            lCaps['professor'] += jobScale(global.underground.stone_slab.count);
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('underground_stone_slab')] = gain+'v';
         }
         if (global.race['lone_survivor'] && global.tauceti['alien_outpost']){
             lCaps['professor'] += jobScale(global.tauceti.alien_outpost.count);
@@ -10793,7 +10929,7 @@ function midLoop(){
         }
         
         if(global.underground['archaeological_dig']){
-            let know = global.underground['archaeological_dig'].fossils * actions.underground.industry.archaeological_dig.knowVal();
+            let know = global.underground['archaeological_dig'].relics * actions.underground.industry.archaeological_dig.knowVal();
             caps['Knowledge'] += know;
             breakdown.c.Knowledge[loc('portal_archaeology_bd')] = (know)+'v';
         }
@@ -10876,7 +11012,7 @@ function midLoop(){
         }
 
         if(global.underground['vault']){
-            let gain = spatialReasoning(actions.underground.cave.vault.res_cap('money'));
+            let gain = actions.underground.cave.vault.res_cap('money') * global.underground['vault'].count;
             caps['Money'] += gain;
             breakdown.c.Money[loc('underground_vault')] = gain+'v';
         }
@@ -11071,9 +11207,9 @@ function midLoop(){
             lCaps['craftsman'] += jobScale(global.underground['core_blacksmith'].count * 2);
         }
         if (support_on['fabrication']){
-            lCaps['craftsman'] += jobScale(support_on['fabrication']);
+            lCaps['craftsman'] += jobScale(support_on['fabrication'] * 2);
             if (global.race['cataclysm']){
-                lCaps['cement_worker'] += jobScale(support_on['fabrication']);
+                lCaps['cement_worker'] += jobScale(support_on['fabrication'] * 2);
             }
         }
         if (support_on['crater_fabrication']){
@@ -11318,6 +11454,9 @@ function midLoop(){
                 }
                 else if (global.city['pylon']){
                     p_count = global.city.pylon.count;
+                }
+                else if(global.underground['pylon']){
+                    p_count = global.underground.pylon.count;
                 }
 
                 if (global.tech['roguemagic'] && global.tech.roguemagic >= 5){
@@ -11645,6 +11784,13 @@ function midLoop(){
             let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
+        }
+
+        if (global.underground['stone_slab_perk']){
+            let gain = Math.round(caps['Knowledge'] * 0.02 * global.underground['stone_slab_perk'].count);
+            lCaps['professor'] += jobScale(global.underground['stone_slab_perk'].count);
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('underground_stone_slab')] = gain+'v';
         }
 
         // Ignited Matrioshka Brain (True Path).
@@ -12367,7 +12513,10 @@ function midLoop(){
                     global.stats.spire[affix][global.portal.spire.boss] = rank;
                 }
 
-                if ((global.portal.spire.boss === 'djinni' && global.race.species === 'djinn') || global.portal.spire.boss === global.race.species){
+                if ((global.portal.spire.boss === 'djinni' && global.race.species === 'djinn') ||
+                    (global.portal.spire.boss === 'raptor' && global.race.species === 'raptors') ||
+                    (global.portal.spire.boss === 'dino' && (global.race.species === 'rexicus' || global.race.srace === 'rexicus') && global.race['artifical']) ||
+                    global.portal.spire.boss === global.race.species){
                     unlockAchieve('doppelganger');
                 }
 
@@ -12408,7 +12557,7 @@ function midLoop(){
         }
 
         if(global.tech['surface'] >= 10 && (global.tech['crater'] || 0) < 1){
-            let progress = 0.0075 + (0.002 * support_on['watch_tower']);
+            let progress = 0.005 + (0.002 * support_on['watch_tower']);
             global.surface['watch_tower'].explore += progress;
             if(global.surface['watch_tower'].explore >= 100){
                 global.tech['crater'] = 1;
@@ -12455,29 +12604,29 @@ function midLoop(){
             global.underground['mineshaft'].ice -= ice_break;
 
             global.underground['mineshaft'].depth += dig_rate;
-            if(global.tech['mineshaft'] < 5 && global.underground['mineshaft'].depth >= 100000){
-                global.underground['mineshaft'].depth = 100000;
+            if(global.tech['mineshaft'] < 5 && global.underground['mineshaft'].depth >= 200000){
+                global.underground['mineshaft'].depth = 200000;
             }
             global.underground['mineshaft'].ice += mineshaft.ice_rate(); //ice regrowth
             let depth = mineshaft.full_depth();
             if(depth >= 1000 && !global.tech['mineshaft_depth']){
-                global.tech['mineshaft_depth'] = 1;
                 messageQueue(loc('tech_mineshaft_depth1'),'info',false,['progress']);
+                global.tech['mineshaft_depth'] = 1;
             }
             if(depth >= 20000 && global.tech['mineshaft_depth'] === 1 && global.tech['mineshaft'] >= 2){
-                global.tech['mineshaft_depth'] = 2;
                 if(global.tech['support_beams'] >= 2){
                     initStruct(actions.underground.industry.industrial_support_beams);
                 }
-                initStruct(actions.underground.depths.archaeological_dig);
+                initStruct(actions.underground.industry.archaeological_dig);
                 messageQueue(loc('tech_mineshaft_depth2'),'info',false,['progress']);
+                global.tech['mineshaft_depth'] = 2;
             }
-            if(depth >= 100000 && global.tech['mineshaft_depth'] === 2 && p_on['mineshaft_vator']){
-                global.tech['mineshaft_depth'] = 3;
+            if(depth >= 200000 && global.tech['mineshaft_depth'] === 2 && p_on['mineshaft_vator']){
                 if(global.tech['support_beams'] >= 3){
                     initStruct(actions.underground.core.core_support_beams);
                 }
                 messageQueue(loc('tech_mineshaft_depth3'),'info',false,['progress']);
+                global.tech['mineshaft_depth'] = 3;
             }
         }
 
@@ -12507,9 +12656,6 @@ function midLoop(){
                             razed = Math.max(0, razed);
                             razed = Math.min(razed, global[category][struct].count);
                             razed = Math.ceil(razed);
-                            if(razed > 1){
-                                debugger;
-                            }
                             global[category][struct].count -= razed;
                             global[category][struct].razed = (global[category][struct].razed || 0) + razed;
                             total += razed;
@@ -13175,8 +13321,11 @@ function longLoop(){
             hellguard();
         }
         
-        if(global.surface['overview'] && !global.tech['living_extinction']){
+        if ((global.surface['overview'] || global.underground['cave_arena_perk']?.count) && !global.tech['living_extinction']){
             surfaceEcosystem();
+        }
+        if (support_on['genetics_lab'] && global.tech['science'] >= 9){
+            global.resource.Genes.amount += support_on['genetics_lab'] * 0.2;
         }
 
         if (global.civic.govern.rev > 0){
@@ -13307,13 +13456,20 @@ function longLoop(){
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];
             }
-            if(global.underground['color_garden']){
-                hc += global.underground['color_garden'] / 5 * actions.underground.depths.color_garden.mushroom_effect();
+            if (global.underground['color_garden'] && global.tech['medic'] >= 1){
+                hc += actions.underground.depths.color_garden.mushroom_effect();
             }
             if (global.race['fibroblast']){
                 hc += geneVars('fibroblast')[0] * global.race['fibroblast'];
             }
             hc *= geneBonus('mycelial');
+            if (global.race['deep_power']){
+                let power = (traits.deep_power.vars()[1] * calc_mastery() / 10000);
+                hc *= 1 + power;
+            }
+            if (global.underground['hunting_lodge_perk']){
+                hc *= 1 + (global.underground['hunting_lodge_perk'].count * 0.02);
+            }
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
             }
@@ -13374,16 +13530,14 @@ function longLoop(){
         if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
             global.race['rainbow_active']--;
         }
-        if(global.race['aberrant_magnificent'] && global.race['aberrant_magnificent'] > 1){
+        if(global.race['aberrant_magnificent'] && global.race['aberrant_magnificent'] >= 1){
             global.race['aberrant_magnificent']--;
         }
 
         if (global.city.calendar.day > 0){
             // Time. During offline catch-up a single long loop represents offlineScale whole days.
             let dayStep = webWorker.offline ? webWorker.offlineScale : 1;
-            if(!global.race['iceage']){ //with no sun, days are tracked by temperature changes in ice age.
-                global.city.calendar.day += dayStep;
-            }
+            global.city.calendar.day += dayStep;
             global.stats.days += dayStep;
             while (global.city.calendar.day > orbitLength() && !global.race['iceage']){
                 global.city.calendar.day -= orbitLength();
@@ -13431,62 +13585,56 @@ function longLoop(){
                 global.city.calendar.weather = -1;
             }
             else if(global.race['iceage']){
-                let new_temp = global.city.calendar.temp;
-                if(Math.rand(0,10) === 0){
+                let temp_adjust = 0;
+                if(Math.rand(0,5) === 0){
                     if(global.tech['mineshaft_depth'] < 2){
-                        //98% for cold, 1.9% for neutral, 0.1% for hot
-                        if(Math.rand(0, 50) > 0){
-                            new_temp = 0;
+                        //96% for colder, 3.5% for neutral, 0.5% for hotter
+                        if(Math.rand(0, 25) > 0){
+                            temp_adjust = -1;
                         }
-                        else if(Math.rand(0, 20) > 0){
-                            new_temp = 1;
+                        else if(Math.rand(0, 8) > 0){
+                            temp_adjust = 0;
                         }
                         else{
-                            new_temp = 2;
+                            temp_adjust = 1;
                         }
                     }
                     else if(global.tech['mineshaft_depth'] < 3){
-                        //95% for cold, 4% for neutral, 1% for hot
-                        if(Math.rand(0, 20) > 0){
-                            new_temp = 0;
+                        //92% for colder, 6% for neutral, 2% for hotter
+                        if(Math.rand(0, 25) > 1){
+                            temp_adjust = -1;
                         }
-                        else if(Math.rand(0, 5) > 0){
-                            new_temp = 1;
+                        else if(Math.rand(0, 4) > 0){
+                            temp_adjust = 0;
                         }
                         else{
-                            new_temp = 2;
+                            temp_adjust = 1;
                         }
                     }
                     else{
-                        //90% for cold, 7% for neutral, 3% for hot
-                        if(Math.rand(0, 10) > 0){
-                            new_temp = 0;
+                        //85% for colder, 10% for neutral, 5% for hotter
+                        if(Math.rand(0, 20) > 2){
+                            temp_adjust = -1;
                         }
-                        else if(Math.rand(0, 10) > 3){
-                            new_temp = 1;
+                        else if(Math.rand(0, 3) > 0){
+                            temp_adjust = 0;
                         }
                         else{
-                            new_temp = 2;
+                            temp_adjust = 1;
                         }
-                    }
-                    if(global.city.calendar.temp !== new_temp){
-                        global.city.calendar.day += dayStep;
-                        global.city.calendar.temp = new_temp;
-                    }
-                    if(false){
-                        if(Math.rand(0, 3) === 0){
-                            global.city.calendar.weather = Math.rand(0, 3);
-                        }
-                        if(Math.rand(0, 3) === 0){
-                            global.city.calendar.wind = Math.rand(0, 2);
-                        }
-                    }
-                    else{
-                        global.city.calendar.weather = 0;
-                        global.city.calendar.wind = 0;
-                        global.city.calendar.season = 3;
                     }
                 }
+                if((temp_adjust === -1 && global.city.calendar.temp > 0) || (temp_adjust === 1 && global.city.calendar.temp < 2)){
+                    global.city.calendar.temp += temp_adjust;
+                }
+                if(global.city.calendar.temp === 2){
+                    global.city.calendar.weather = 0;
+                }
+                else{
+                    global.city.calendar.weather = 1; //no snow
+                }
+                global.city.calendar.wind = 0;
+                global.city.calendar.season = 3;
             }
             else if (Math.rand(0,5) === 0){
                 let temp = Math.rand(0,3);
@@ -13639,22 +13787,6 @@ function longLoop(){
             else {
                 global.city.hot = 0;
             }
-
-            // Moon Phase
-            if (!global.race['orbit_decayed'] && (!global.race['iceage'] || global.tech['surface'])){
-                if (global.city.ptrait.includes('retrograde')){
-                    global.city.calendar.moon--;
-                    if (global.city.calendar.moon < 0){
-                        global.city.calendar.moon = 27;
-                    }
-                }
-                else {
-                    global.city.calendar.moon++;
-                    if (global.city.calendar.moon > 27){
-                        global.city.calendar.moon = 0;
-                    }
-                }
-            }
         }
         setWeather();
 
@@ -13702,7 +13834,7 @@ function longLoop(){
             global.race.gene_fortify = 0;
         }
 
-        if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
+        if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10 && !global.race['iceage']){
             global.tech['genesis'] = 1;
             messageQueue(loc('genesis'),'special',false,['progress']);
             drawTech();
@@ -13766,8 +13898,8 @@ function longLoop(){
             }
         }
         if(global.underground['archaeological_dig'] && global.civic.archaeologist.workers >= 1){
-            if(Math.rand(0, actions.underground.industry.archaeological_dig.fossil_chance()) === 0){
-                global.underground['archaeological_dig'].fossils++;
+            if(Math.rand(0, actions.underground.industry.archaeological_dig.relic_chance()) === 0){
+                global.underground['archaeological_dig'].relics++;
             }
         }
 
@@ -13873,7 +14005,7 @@ function longLoop(){
         // Womling artisans can create the servants record before this ever fires, so the gate is on the
         // prestige grant itself rather than on the record existing — otherwise an artisan workshop would
         // quietly cost the player their prestige servants.
-        if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && !(global.race['servants'] && global.race.servants['prestige']) && Math.rand(0,25) === 0){
+        if (!global.race['warlord'] && (global.stats.matrix > 0 || global.stats.retire > 0) && (!global.race['iceage'] || global.tech['surface']) && !(global.race['servants'] && global.race.servants['prestige']) && Math.rand(0,25) === 0){
             let womlings = Math.min(global.stats.matrix,100) + Math.min(global.stats.retire,100) + Math.min(global.stats.eden,100);
             let skilled = Math.min(Math.min(global.stats.matrix, global.stats.retire),100);
             skilled += global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
@@ -13971,6 +14103,10 @@ function longLoop(){
                 messageQueue(loc(tech_source,[loc('tech_steel')]),'info',false,['progress']);
                 global.resource.Steel.display = true;
                 global.tech.smelting = 2;
+                if(global.race['iceage']){
+                    global.tech['alumina'] = 1;
+                    initStruct(actions.city.metal_refinery);
+                }
                 defineIndustry();
                 drawTech();
             }
@@ -13979,7 +14115,12 @@ function longLoop(){
                 global.tech.high_tech = 2;
                 global.city['power'] = 0;
                 global.city['powered'] = true;
-                initStruct(actions.city.coal_power);
+                if(!global.race['iceage']){
+                    initStruct(actions.city.coal_power);
+                }
+                else{
+                    initStruct(actions.underground.industry.under_coal_power);
+                }
                 global.settings.showPowerGrid = true;
                 setPowerGrid();
                 drawTech();
@@ -13996,14 +14137,14 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= (actions.tech.fission.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
+            if (global.resource.Knowledge.max >= (actions.tech.fission.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium'] && !global.race['iceage']){
                 messageQueue(loc(tech_source,[loc('tech_fission')]),'info',false,['progress']);
                 global.tech.high_tech = 5;
                 initStruct(actions.city.fission_power);
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= (actions.tech.rocketry.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 6){
+            if (global.resource.Knowledge.max >= (actions.tech.rocketry.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 6 && !global.race['iceage']){
                 messageQueue(loc(tech_source,[loc('tech_rocketry')]),'info',false,['progress']);
                 global.tech.high_tech = 7;
                 if (global.race['truepath'] && !global.tech['rival']){
@@ -14101,6 +14242,10 @@ function longLoop(){
                 messageQueue(loc(tech_source,[loc('tech_smelting')]),'info',false,['progress']);
                 global.tech['smelting'] = 1;
                 initStruct(actions.city.smelter);
+                if(global.race['iceage']){
+                    initStruct(actions.city.metal_refinery);
+                    initStruct(actions.underground.depths.smelter);
+                }
                 if (global.race['steelen']){
                     global.tech['smelting'] = 2;
                 }
@@ -14130,6 +14275,9 @@ function longLoop(){
             if (moldFathom >= 0.20 && global.resource.Knowledge.max >= (actions.tech.uranium_storage.cost.Knowledge() * know_adjust) && checkTechRequirements('uranium_storage',false) && global.tech['uranium'] && global.tech.uranium === 1){
                 messageQueue(loc(tech_source,[loc('tech_uranium_storage')]),'info',false,['progress']);
                 global.tech.uranium = 1;
+                if(global.race['iceage']){
+                    initStruct(actions.surface.crater.critical_storage);
+                }
                 drawTech();
             }
             if (moldFathom >= 0.25 && global.resource.Knowledge.max >= (actions.tech.synthetic_fur.cost.Knowledge() * know_adjust) && checkTechRequirements('synthetic_fur',false) && !global.tech['synthetic_fur']){
@@ -14497,12 +14645,12 @@ function longLoop(){
             global.race['tidal_decay'] = 1;
             orbitDecayed();
         }
-
-        if(global.city.ptrait.includes('kamikaze') && !global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.tech['thrusters'] && (global.tech['corrupt'] >= 2 || global.tech['tau_red'] >= 3) && Math.rand(0, 100) === 0){
+        
+        if(global.city.ptrait.includes('kamikaze') && !global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['warlord'] && !global.tech['thrusters'] && !global.tech['isolation'] && (global.tech['corrupt'] >= 2 || global.tech['tau_red'] >= 3) && Math.rand(0, 100) === 0){
             let oddity = 0;
             if(!(global.race.species === 'hybrid' ? global.custom.race1?.hybrid || [] :
                 races[global.race.species].hybrid || [races[global.race.species].type]).includes('primordial')){
-                    //overcomplicated check that just checks whether your current race has the primordial genus, including hybrid main or secondary genus
+                    //overcomplicated check that just checks whether your current race does not have the primordial genus, including hybrid main or secondary genus
                     oddity++;
             }
             if(global.civic.scientist.workers === 0){
@@ -14510,6 +14658,7 @@ function longLoop(){
             }
             messageQueue(loc(`event_odd_scientist_${oddity}`, [races[global.race.species].home]),'caution',false,['events','major_events']);
             global.tech['thrusters'] = 1;
+            drawTech();
         }
 
         if (global.race['living_materials']){

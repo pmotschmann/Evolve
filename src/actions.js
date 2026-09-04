@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
@@ -18,7 +18,7 @@ import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed, blast_away } from './resets.js';
 import { loadTab } from './index.js';
-import { fightLogModal } from './iceage.js';
+import { fightLogModal, thrusterOrbitProjection, fossilCount } from './iceage.js';
 
 export const actions = {
     evolution: {
@@ -364,6 +364,7 @@ export const actions = {
                     global.tech['evo_sand'] = 1;
                     global.tech['evo_heat'] = 1;
                     global.tech['evo_polar'] = 1;
+                    global.tech['evo_primordial'] = 1;
                     return true;
                 }
                 return false;
@@ -803,6 +804,31 @@ export const actions = {
             queue_complete(){ return global.tech['evo'] && global.tech.evo === 5 ? 1 : 0; },
             emblem(){ return format_emblem('genus_sand'); }
         },
+        primordial: {
+            id: 'evolution-primordial',
+            title(){ return loc('evo_primordial_title'); },
+            desc(){ return loc('evo_primordial_desc'); },
+            reqs: { evo: 5, evo_primordial: 1 },
+            grant: ['evo',7],
+            condition(){
+                let allowed = global.stats.achieve['living_extinction'] && global.stats.achieve['living_extinction'].l ? true : false;
+                return allowed && genus_condition(5);
+            },
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_primordial_effect'),
+            action(args){
+                if (payCosts($(this)[0])){
+                    global.tech.evo_primordial = 2;
+                    global.evolution['final'] = 100;
+                    return true;
+                }
+                return false;
+            },
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 6 ? 1 : 0; },
+            emblem(){ return format_emblem('genus_primordial'); }
+        },
         eggshell: {
             id: 'evolution-eggshell',
             title(){ return loc('evo_eggshell_title'); },
@@ -1237,30 +1263,7 @@ export const actions = {
         horseshoe: buildTemplate(`horseshoe`,'city'),
         bonfire: buildTemplate(`bonfire`,'city'),
         firework: buildTemplate(`firework`,'city'),
-        slave_market: {
-            id: 'city-slave_market',
-            title(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
-            desc(){ return loc('city_slaver_market_desc',[global.resource.Slave.name]); },
-            category: 'outskirts',
-            reqs: { slaves: 2 },
-            trait: ['slaver'],
-            not_trait: ['cataclysm','lone_survivor'],
-            inflation: false,
-            cost: {
-                Money(){ return 25000; },
-            },
-            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.resource.Slave.amount : 0; },
-            action(args){
-                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.resource.Slave.amount){
-                    if (payCosts($(this)[0])){
-                        global.resource.Slave.amount++;
-                        return true;
-                    }
-                }
-                return false;
-            },
-            touchlabel: loc(`purchase`)
-        },
+        slave_market: buildTemplate(`slave_market`, 'city'),
         s_alter: buildTemplate(`s_alter`,'city'),
         basic_housing: {
             id: 'city-basic_housing',
@@ -2656,7 +2659,7 @@ export const actions = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    if (global.city['foundry'].count === 0){
+                    if (!global.civic.craftsman.display){
                         if (global.race['no_craft']) {
                             messageQueue(loc('city_foundry_msg2'),'info',false,['progress']);
                         }
@@ -2832,6 +2835,7 @@ export const actions = {
                         Star: 0,
                         StarCap: 0,
                         Inferno: 0,
+                        Super: 0,
                         Iron: 0,
                         Steel: 0,
                         Iridium: 0
@@ -3991,11 +3995,11 @@ export const actions = {
             queue_size: 5,
             queue_complete(){ return 100 - global.city.giant_thrusters.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 120000000 : 0; },
-                Steel(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 2000000 : 0; },
-                Mythril(offset){ return ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 200000 : 0; },
-                Infernite(offset){ return !global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 800000 : 0; },
-                Unobtainium(offset){ return global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 10000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 380000000 : 0; },
+                Steel(r={}){ return ((r.offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 7000000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 400000 : 0; },
+                Infernite(r={}){ return !global.race['truepath'] && ((r.offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 1200000 : 0; },
+                Unobtainium(r={}){ return global.race['truepath'] && ((r.offset || 0) + (global.city.hasOwnProperty('giant_thrusters') ? global.city.giant_thrusters.count : 0)) < 100 ? 20000 : 0; }
             },
             effect(wiki){
                 let effectText = '';
@@ -4033,12 +4037,12 @@ export const actions = {
             type: 'megaproject',
             category: 'utility',
             reqs: { thrusters: 2 },
-            queue_size: 5,
+            queue_size: 20,
             queue_complete(){ return 500 - global.city.thruster_fuel.count; },
             cost: {
-                Oil(offset){ return ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 6000000 : 0; },
-                Helium_3(offset){ return ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 3000000 : 0; },
-                Deuterium(offset){ return !global.race['truepath'] && ((offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 2000000 : 0; }
+                Oil(r={}){ return ((r.offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 6000000 : 0; },
+                Helium_3(r={}){ return ((r.offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 3000000 : 0; },
+                Deuterium(r={}){ return !global.race['truepath'] && ((r.offset || 0) + (global.city.hasOwnProperty('thruster_fuel') ? global.city.thruster_fuel.count : 0)) < 500 ? 2000000 : 0; }
             },
             effect(wiki){
                 let effectText = '';
@@ -4084,7 +4088,21 @@ export const actions = {
             },
             action(args){
                 if (payCosts($(this)[0])){
-                    blast_away();
+                    if (!global['sim']){
+                        writeBackup();
+                    }
+                    if (webWorker.w){
+                        webWorker.w.terminate();
+                    }
+                    $('#main').addClass('blast');
+                    $('#city-thruster_launch .button').addClass('blast_burn');
+                    setTimeout(function(){
+                        $('#main').addClass('away');
+                        $('#city-thruster_launch .button').addClass('away_burn');
+                    }, 2000);
+                    setTimeout(function(){
+                        blast_away();
+                    }, 5000);
                     return true;
                 }
                 return false;
@@ -4365,6 +4383,9 @@ export function setChallengeScreen(){
     if(global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['fasting'] = { count:0 };
     }
+    if(global.stats.achieve['gone'] || global['sim']){
+        global.evolution['iceage'] = { count:0 };
+    }
     challengeGeneHeader();
     if (global.race['truepath'] || global.race['lone_survivor']){
         addAction('evolution','nerfed');
@@ -4435,6 +4456,9 @@ export function setChallengeScreen(){
     if(global.stats.achieve['corrupted'] || global['sim']){
         addAction('evolution','fasting');
     }
+    if(global.stats.achieve['gone'] || global['sim']){
+        addAction('evolution','iceage');
+    }
     if (global.race.universe === 'evil' && ((global.stats.achieve['godslayer'] && global.stats.achieve.godslayer['e']) || global['sim'])){
         addAction('evolution','warlord');
     }
@@ -4462,7 +4486,7 @@ export function setChallengeScreen(){
 }
 
 export function buildTemplate(key, region){
-    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : (global.race['warlord'] ? 'warlord' : (global.race['iceage'] ? 'iceage' :'cataclysm'));
+    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : (global.race['warlord'] ? 'warlord' : 'cataclysm');
 
     let tKey = function(a,k,r){
         if (r === 'space' || r === 'portal'){
@@ -4580,7 +4604,7 @@ export function buildTemplate(key, region){
                     if (hallowed && global.race['soul_eater'] && !global.race['evil']){
                         return true;
                     }
-                    return global.race['soul_eater'] ? false : true;
+                    return global.race['soul_eater'] && !global.race['iceage'] ? false : true;
                 },
                 queue_complete(){ return 0; },
                 cost: {
@@ -4610,6 +4634,34 @@ export function buildTemplate(key, region){
                     return gain;
                 },
                 touchlabel: loc(`harvest`)
+            }
+            return tKey(action,tName,region);
+        }
+        case 'slave_market':
+        {
+            let action = {
+                id: `${region}-slave_market`,
+                title(){ return loc('city_slaver_market',[global.resource.Slave.name]); },
+                desc(){ return loc('city_slaver_market_desc',[global.resource.Slave.name]); },
+                category: 'outskirts',
+                reqs: { slaves: 2 },
+                trait: ['slaver'],
+                not_trait: ['cataclysm','lone_survivor'],
+                inflation: false,
+                cost: {
+                    Money(){ return 25000; },
+                },
+                queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.resource.Slave.amount : 0; },
+                action(args){
+                    if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.resource.Slave.amount){
+                        if (payCosts($(this)[0])){
+                            global.resource.Slave.amount++;
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                touchlabel: loc(`purchase`)
             }
             return tKey(action,tName,region);
         }
@@ -4883,13 +4935,13 @@ export function buildTemplate(key, region){
                 cost: {
                     Lumber(r={}){
                         let shoes = (global.race['shoecnt'] || 0) + (r.offset || 0);
-                        let active = !global.race['kindling_kindred'] && !global.race['smoldering']
+                        let active = !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['iceage']
                             && (!global.resource.Copper.display || shoes <= 12) ? true : false;
                         return active ? Math.round((shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Copper(r={}){
                         let shoes = (global.race['shoecnt'] || 0) + (r.offset || 0);
-                        let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
+                        let lum = (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage']) ? false : true;
                         let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
                             && (!global.resource.Iron.display || shoes <= 75) ? true : false;
                         return active ? Math.round((shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) * (traits.hooved.vars()[0] / 100)) : 0;
@@ -5166,6 +5218,7 @@ export function buildTemplate(key, region){
                 desc(){ return loc(`city_banquet_desc`); },
                 type: 'entertainment',
                 category: 'commercial',
+                region: 'city',
                 reqs: { banquet:1 },
                 queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].level : 0},
                 no_multi: true,
@@ -5365,6 +5418,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
+    'raptors','rexicus','mammuth',
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
@@ -5479,7 +5533,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                     delete global.race['nerfed'];
                     delete global.race['badgenes'];
                 }
-                ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
+                ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord','iceage'].forEach(function(s){
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });
@@ -5518,6 +5572,7 @@ const advancedChallengeList = {
     'lone_survivor': {t: 's', e: 'adam_eve' },
     'fasting': {t: 's', e: 'endless_hunger' },
     'warlord': {t: 's', e: 'what_is_best' },
+    'iceage': {t: 's', e: 'back_on_track' }
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
@@ -5943,7 +5998,7 @@ function setScenario(scenario){
         });
     }
     else {
-        ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath','lone_survivor','fasting','warlord','iceage'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -6294,7 +6349,7 @@ export function drawTech(){
     let old_categories = [];
     let all_categories = [];
 
-    ['primitive','civilized','discovery','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+    ['primitive','civilized','discovery','industrialized','globalized','glacial','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
         new_techs[era] = [];
     });
 
@@ -6417,6 +6472,9 @@ export function setAction(c_action,action,type,old,prediction){
     let tab = action;
     if (action === 'outerSol'){
         action = 'space';
+    }
+    if (action === 'perkUnderground'){
+        action = 'underground';
     }
     if (c_action['region']){
         action = c_action.region;
@@ -7717,6 +7775,19 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                 }
             }
+            else if (res === 'Spent_Fossil'){
+                let res_cost = costs[res]();
+                let color = 'has-text-dark';
+                if (res_cost > 0){
+                    let label = loc(`resource_Fossil_name`);
+                    if(global.resource.Spent_Fossil.amount + res_cost > fossilCount()){
+                        color = 'has-text-danger';
+                    }
+                    empty = false;
+                    //no res-${res}, this would otherwise cause midLoop to update the tooltip, changing resource color.
+                    cost.append($(`<div class="${color} ${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
@@ -7913,6 +7984,10 @@ export function payCosts(c_action, costs){
                 // If the default job does not have enough workers, then the main game loop will deplete some other job
                 global.civic[global.civic.d_job].workers = Math.max(0, global.civic[global.civic.d_job].workers - cost);
             }
+            else if (res === 'Spent_Fossil'){
+                let cost = costs[res]();
+                global.resource.Spent_Fossil.amount += cost;
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Troops' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
                 global.resource[res].amount -= cost;
@@ -8025,6 +8100,12 @@ function checkMaxCosts(costs){
                 return;
             }
         }
+        else if (res === 'Spent_Fossil'){
+            if(fossilCount() - global.resource.Spent_Fossil.amount < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
         else {
             var testCost = Number(costs[res]()) || 0;
             let f_res = res === 'Species' ? global.race.species : res;
@@ -8095,6 +8176,12 @@ export function checkCosts(costs){
         }
         else if (res === 'Supply'){
             if (!global.portal.hasOwnProperty('purifier') || global.portal.purifier.supply < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Spent_Fossil'){
+            if(fossilCount() - global.resource.Spent_Fossil.amount < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -8248,6 +8335,9 @@ function drawModal(c_action,type){
         case 'sacred_smelter':
         case 'geothermal':
         case 'ore_refinery':
+        case 'core_forge':
+        case 'rocket_engine':
+        case 'smelter_perk':
             loadIndustry('smelter',body);
             break;
         case 'factory':
@@ -8281,6 +8371,7 @@ function drawModal(c_action,type){
             loadIndustry('pylon',body);
             break;
         case 'rock_quarry':
+        case 'under_mine':
             loadIndustry('rock_quarry',body);
             break;
         case 'mineshaft':
@@ -8288,6 +8379,9 @@ function drawModal(c_action,type){
             break
         case 'woodcutter':
             loadIndustry('woodcutter', body);
+            break;
+        case 'thruster_fuel':
+            loadIndustry('thruster_fuel', body);
             break;
         case 'titan_mine':
             loadIndustry('titan_mine',body);
@@ -8539,9 +8633,14 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
+
     let halloween = eventActive('halloween');
     if (halloween.active){
         return loc(`events_halloween_medium_house`);
+    }
+
+    if (global.race['iceage']){
+        return loc('underground_stone_house');
     }
 
     switch (global.race.species){
@@ -8959,6 +9058,10 @@ function sentience(){
         });
     }
 
+    if(global.prestige.Fossil.count){
+        global.resource.Spent_Fossil.count = 0;
+    }
+
     clearElement($('#resources'));
     defineResources();
     if (!global.race['kindling_kindred'] && !global.race['smoldering']){
@@ -9206,6 +9309,10 @@ function sentience(){
         else {
             global.race['fox_color'] = 'red';
         }
+    }
+
+    if(global.race.species === 'Raptors'){
+        global.race['raptor_plumage'] = Math.rand(0, 2);
     }
     
     calcPillar(true);
@@ -9873,7 +9980,6 @@ function iceAgeStart(){
 
         global.settings.showUnderground = true;
         global.resource.Lumber.display = false;
-        global.resource.Steel.display = false;
         global.resource.Stone.display = true;
 
         global.resource.Lumber.amount = 0;
@@ -9882,22 +9988,44 @@ function iceAgeStart(){
         if(!global.aberrants){
             global.aberrants = {
                 trees: {
-                    empowered:0,
+                    mutations: 0,
+                    traits: { }
                 },
                 herbivores: {
-                    empowered: 0,
-                    count: 0
+                    count: 0,
+                    slain: 0,
+                    traits: { },
+                    fight_log: []
                 },
                 carnivores: {
-                    empowered: 0,
-                    count: 0
+                    count: 0,
+                    slain: 0,
+                    traits: { },
+                    fight_log: []
                 },
                 scavengers: {
-                    empowered: 0,
-                    count: 0
+                    count: 0,
+                    slain: 0,
+                    traits: { },
+                    fight_log: []
                 }
             }
         }
+        if(global.race['deconstructor']){
+            initStruct(actions.underground.cave.nanite_factory); global.underground.nanite_factory.count = 1;
+        }
+        delete global.aberrants.trees.traits.empowered;
+        delete global.aberrants.herbivores.traits.empowered;
+        delete global.aberrants.carnivores.traits.empowered;
+        delete global.aberrants.scavengers.traits.empowered;
+
+        delete global.race['sappy'];
+        if(global.race['kindling_kindred']){
+            global.race['iron_wood'] = global.race['kindling_kindred'];
+            delete global.race['kindling_kindred'];
+        }
+
+        initStruct(actions.surface.thruster_site.giant_thrusters);
 
         renderUnderground();
     }
@@ -9958,7 +10086,7 @@ export function absorbRace(race){
 }
 
 function fanaticTrait(trait,rank){
-    if (global.race['warlord'] && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
+    if ((global.race['warlord'] || global.race['iceage']) && trait === 'kindling_kindred'){ trait = 'iron_wood'; }
     else if (global.race['warlord'] && trait === 'spiritual'){ trait = 'unified'; }
     else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
@@ -10170,10 +10298,21 @@ export function start_iceage(){
     }
 }
 
-function thrusterProjection(){
+export function thrusterProjection(){
     let gains = calcPrestige('thrusters');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.dark,loc('resource_Dark_name')])}</div><div>${loc('city_giant_thrusters_effect')}</div>`;
+    let desc = `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div>
+        <div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div>
+        <div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.dark,loc('resource_Dark_name')])}</div>`;
+    if(!global.race['iceage']){
+        desc += `<div>${loc('city_giant_thrusters_effect1')}</div>`;
+    }
+    else{
+        let project = thrusterOrbitProjection();
+        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.fossil,loc('resource_Fossil_plural_name')])}</div>`;
+        desc += `<div>${loc('city_giant_thrusters_effect2', [project.min, project.max])}</div>`;
+    }
+    return desc;
 }
 
 var callback_repeat = new Map();

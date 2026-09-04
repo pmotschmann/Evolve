@@ -188,7 +188,7 @@ export function craftCost(manual=false){
         Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
         Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
         Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
-        Super_Fuel: [{ r: 'Oil', a: 4000},{ r: 'Power_Bones', a:0.8 }],
+        Super_Fuel: [{ r: 'Oil', a: 2000},{ r: 'Power_Bones', a:1.6 }],
         Aerographene: [{ r: 'Graphene', a: 5000 },{ r: 'Nano_Tube', a: 5000 }],
         Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
     };
@@ -453,14 +453,18 @@ export const craftingRatio = (function(){
                 crafting.Super_Fuel.multi.push({
                     name: loc(`surface_refinery_funnel`),
                     manual: 1,
-                    auto: 1 + (0.1 * p_on['refinery_funnel'])
+                    auto: 1 + (0.15 * p_on['refinery_funnel'])
                 });
             }
             if (global.tech['core'] >= 3 && p_on['core_blacksmith']){
+                let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
+                if(mineshaft_effect < 1){
+                    mineshaft_effect = 1;
+                }
                 crafting.general.add.push({
                     name: loc(`underground_core_blacksmith`),
-                    manual: p_on['core_blacksmith'] * 0.2,
-                    auto: p_on['core_blacksmith'] * 0.2
+                    manual: p_on['core_blacksmith'] * 0.2 * mineshaft_effect,
+                    auto: p_on['core_blacksmith'] * 0.2 * mineshaft_effect
                 });
             }
             if (global.tech['crater'] >= 3 && support_on['crater_fabrication']){
@@ -489,6 +493,13 @@ export const craftingRatio = (function(){
                     name: loc(`trait_rigid_name`),
                     manual: -(traits.rigid.vars()[0] / 100),
                     auto: -(traits.rigid.vars()[0] / 100)
+                });
+            }
+            if (global.race['limited']){
+                crafting.general.multi.push({
+                    name: loc(`trait_limited_name`),
+                    manual: 1 - (traits.limited.vars()[0] / 100),
+                    auto: 1 - (traits.limited.vars()[0] / 100)
                 });
             }
             if (global.civic.govern.type === 'socialist'){
@@ -836,6 +847,7 @@ export function defineResources(wiki){
     loadResource('Cipher',wiki,0,1,false,false,'caution');
     loadResource('Demonic_Essence',wiki,-2,0,false,false,'caution');
     loadResource('Blessed_Essence',wiki,-2,0,false,false,'caution');
+    loadResource('Spent_Fossil',wiki,-2,0,false,false,'caution');
     if (wiki){ return; }
     loadSpecialResource('Blood_Stone','caution');
     loadSpecialResource('Artifact','caution');
@@ -846,6 +858,7 @@ export function defineResources(wiki){
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
     loadSpecialResource('Harmony');
+    loadSpecialResource('Fossil');
     loadSpecialResource('AICore');
     loadSpecialResource('TALENs');
 }
@@ -1263,11 +1276,15 @@ export function setResourceName(name){
 
     if (global.race['evil']){
         switch(name){
-            case 'Lumber':
-                global['resource'][name].name = loc('resource_Bones_name');
-                break;
             case 'Furs':
                 global['resource'][name].name = loc('resource_Flesh_name');
+                break;
+        }
+    }
+    if (global.race['evil'] && !global.race['iceage']){
+        switch(name){
+            case 'Lumber':
+                global['resource'][name].name = loc('resource_Bones_name');
                 break;
             case 'Plywood':
                 global['resource'][name].name = loc('resource_Boneweave_name');
@@ -1457,6 +1474,12 @@ function loadSpecialResource(name,color) {
                         let trade = (coiled / (coiled + 500)) * 100;
                         desc.append($(`<span> ${loc(`resource_${name}_trade_desc`,[+trade.toFixed(2)])}</span>`));
                     }
+                }
+                break;
+
+            case 'Fossil':
+                {
+                    desc.append($(`<span>${loc(`resource_${name}_desc`)}</span>`));
                 }
                 break;
 
@@ -2540,7 +2563,7 @@ function tradeRouteColor(res){
 
 function buildCrateLabel(){
     let material = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : global.resource.Plywood.name);
-    if (global.race['iron_wood']){ material = global.resource.Lumber.name; }
+    if (global.race['iron_wood'] && !global.race['iceage']){ material = global.resource.Lumber.name; }
     let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] || global.race['iron_wood'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
@@ -2563,7 +2586,7 @@ export function crateGovHook(type,num){
 function buildCrate(num){
     let keyMutipler = num || keyMultiplier();
     let material = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
-    if (global.race['iron_wood']){ material = 'Lumber'; }
+    if (global.race['iron_wood'] && !global.race['iceage']){ material = 'Lumber'; }
     let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] || global.race['iron_wood'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
         keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;

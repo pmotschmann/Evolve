@@ -80,7 +80,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.city.ptrait.includes('flare') ? true : false;
+            return global.city.ptrait.includes('flare') && !global.race['iceage'] ? true : false;
         },
         effect(wiki){
             let at_risk = 0;
@@ -811,6 +811,10 @@ export const events = {
             if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 2){
                 return false;
             }
+            // Not ice age
+            if(global.race['iceage']){
+                return false;
+            }
             // Winter on tundra or taiga biome is always cold
             // Eden is idyllic, so normally cannot be hot except in summer. For heat wave, allow in spring, summer, or autumn.
             if (global.city.calendar.season === 3 && ['tundra','taiga','eden'].includes(global.city.biome)){
@@ -856,9 +860,9 @@ export const events = {
     cucumber: basicEvent('cucumber','primitive'),
     planking: basicEvent('planking','high_tech'),
     furryfish: basicEvent('furryfish','primitive'),
-    meteor_shower: basicEvent('meteor_shower','primitive'),
+    meteor_shower: basicEvent('meteor_shower','primitive', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
     hum: basicEvent('hum','high_tech'),
-    bloodrain: basicEvent('bloodrain','primitive'),
+    bloodrain: basicEvent('bloodrain','primitive', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
     haunting: basicEvent('haunting','science'),
     mothman: basicEvent('mothman','science'),
     dejavu: basicEvent('dejavu','theology'),
@@ -893,14 +897,14 @@ export const events = {
     cloud: basicEvent('cloud','primitive',function(){
         let type = Math.rand(0,11);
         return loc(`event_cloud_type${type}`);
-    }),
+    }, !global.race['iceage']),
     dark_cloud: {
         reqs: {
             tech: 'primitive',
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.weather !== 0){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['iceage'] && global.city.calendar.weather !== 0){
                 return true;
             }
             return false;
@@ -916,7 +920,7 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.weather !== 1){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['iceage'] && global.city.calendar.weather !== 1){
                 return true;
             }
             return false;

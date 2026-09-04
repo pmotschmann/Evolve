@@ -1657,7 +1657,7 @@ global['beta'] = 35;
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
-['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs','Exons'].forEach(function (res){
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','Fossil','TALENs','Exons'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
         global.prestige[res] = { count: 0 };
     }
@@ -1713,10 +1713,6 @@ if(!global.race.hasOwnProperty('inactiveTraits')){
     else{
         global.race.inactiveTraits = {};
     }
-}
-
-if(false){
-    global.aberrants = {};
 }
 
 if (!global.settings['icon']){
@@ -1983,9 +1979,9 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','blastaway','lextinct','geck','dark','harmony',
-        'blood','cores','artifact','supercoiled','talens','exons','cattle','tcattle','murders',
-        'tmurders','psykill','tpsykill','pdebt','uDead','zkills','hslain','cslain','sslain','amutations'
+        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','blastaway','lextinct',
+        'aslain','hslain','cslain','sslain','geck','dark','harmony','blood','cores','artifact','supercoiled',
+        'fossil','talens','exons','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2495,7 +2491,7 @@ if (!global.civic['new']){
 if (!global.race['purgatory']){
     global.race['purgatory'] = {};
 }
-['city', 'space', 'portal', 'eden', 'tech'].forEach((item) => {
+['city', 'space', 'portal', 'eden', 'underground', 'surface', 'tech'].forEach((item) => {
     if(!global.race['purgatory'][item]){
         global.race['purgatory'][item] = {};
     }
@@ -2805,7 +2801,7 @@ function setRegionStates(reset){
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
             'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic',
-            'showWish','showUnderground','showSurface'
+            'showWish','showUnderground','showSurface','showPerkUnderground'
         ],
         space: [
             'moon','red','hell','venus','survey','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
@@ -2815,7 +2811,7 @@ function setRegionStates(reset){
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
         tau: ['home','red','roid','gas','gas2','star'],
-        surface:['wastes', 'ecosystem', 'crater']
+        surface:['wastes', 'ecosystem', 'crater', 'thruster_site']
     };
     
     Object.keys(regions).forEach(function(r){
@@ -2931,6 +2927,9 @@ export function clearStates(){
     global.stats.murders = 0;
     global.stats.uDead = 0;
     global.stats.zkills = 0;
+    global.stats.hslain = 0;
+    global.stats.cslain = 0;
+    global.stats.sslain = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;
@@ -2945,6 +2944,25 @@ export function clearStates(){
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.queue.display = true;
+    }
+
+    if (global.aberrants){
+        global.aberrants.trees.mutations = 0;
+        delete global.aberrants.trees.traits.hivemind;
+        delete global.aberrants.herbivores.traits.shapeshifter;
+        delete global.aberrants.carnivores.traits.intelligent;
+        delete global.aberrants.scavengers.traits.infiltrator;
+        for (let i=0;i<4;i++){
+            let lifeform = ['trees', 'herbivores', 'carnivores', 'scavengers'][i];
+            for (let [index, entry] of Object.entries(global.aberrants[lifeform].traits)){
+                global.aberrants[lifeform].traits[index] = 1;
+            }
+            if(lifeform !== 'trees'){
+                global.aberrants[lifeform].count = 0;
+                global.aberrants[lifeform].slain = 0;
+                global.aberrants[lifeform].fight_log = [];
+            }
+        }
     }
 }
 
