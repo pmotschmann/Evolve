@@ -12802,7 +12802,7 @@ function midLoop(){
             ['underground', 'surface'].forEach(function (category){
                 for(let [zone, entry] of Object.entries(actions[category])){
                     for(let [struct, entry2] of Object.entries(entry)){
-                        if(global[category][struct]?.count && !entry2.spared){
+                        if(global[category][struct]?.count && !entry2.spared && zone_reach[category][zone]){
                             let potential = (global.tech['living_extinction'] - zone_reach[category][zone]) / 500;
                             let razed = (potential - Math.random()) * (global[category][struct].count / 100 * Math.random());
                             razed = Math.max(0, razed);
