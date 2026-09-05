@@ -53,6 +53,7 @@ const evolutionPath = {
     sand: ['phagocytosis', 'sand'],
     small: ['phagocytosis', 'mammals', 'dwarfism'],
     synthetic: ['exterminate'],
+    primordial: ['phagocytosis', 'primordial'],
 };
 
 Object.keys(evolutionPath).forEach(function (key) {

@@ -7152,7 +7152,7 @@ export function renderTauCeti(){
 }
 
 export function drawShipYard(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
         return;
     }
     setOrbits();
@@ -9074,7 +9074,7 @@ function copyShipDesign(ship){
 }
 
 function drawShips(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
         return;
     }
     clearShipDrag();

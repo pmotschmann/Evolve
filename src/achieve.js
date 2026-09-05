@@ -13,7 +13,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted','red_dead','godslayer','traitor','doppelganger','geneticist'
+        'corrupted','red_dead','godslayer','traitor','doppelganger','geneticist','gone'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -46,7 +46,7 @@ const achieve_list = {
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
         'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
-        'zombie_genocider','brainless'
+        'back_on_track','living_extinction','zombie_genocider','brainless'
     ],
 };
 
@@ -1830,6 +1830,32 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</span>`])
         ]
     },
+    living_extinction: {
+        name: loc(`achieve_living_extinction_name`),
+        desc(){
+            return loc("achieve_perks_living_extinction");
+        },
+        active(){
+            return global.stats.achieve['living_extinction'] && global.stats.achieve.living_extinction.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_living_extinction_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_living_extinction_name`)}</span>`])
+        ]
+    },
+    back_on_track: {
+        name: loc(`achieve_back_on_track_name`),
+        desc(){
+            return loc("achieve_perks_back_on_track");
+        },
+        active(){
+            return global.stats.achieve['back_on_track'] && global.stats.achieve.back_on_track.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_back_on_track_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_back_on_track_name`)}</span>`])
+        ]
+    },
     gladiator: {
         name: loc(`achieve_gladiator_name`),
         desc(wiki){
@@ -2915,8 +2941,17 @@ export function drawStats(){
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ format(s.terraform) }}</div>`);
     }
+    if (global.stats.blastaway > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blast_away_resets")}</span> {{ format(s.blastaway) }}</div>`);
+    }
+    if (global.stats.lextinct > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_living_extinction_resets")}</span> {{ format(s.lextinct) }}</div>`);
+    }
     if (global.stats.geck > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_gecks")}</span> {{ format(s.geck) }}</div>`);
+    }
+    if (global.stats.aslain > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrants_slain")}</span> {{ format(s.aslain) }}</div>`);
     }
 
     // Current Run Stats
@@ -2944,7 +2979,17 @@ export function drawStats(){
     if (global.stats.zkills > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zombie_kills")}</span> {{ format(s.zkills) }}</div>`);
     }
-
+    if (global.aberrants){
+        if(global.aberrants.herbivores.slain){
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_herbivores_slain")}</span> {{ format(s.zkills) }}</div>`);
+        }
+        if(global.aberrants.carnivores.slain){
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_carnivores_slain")}</span> {{ format(s.zkills) }}</div>`);
+        }
+        if(global.aberrants.scavengers.slain){
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_scavengers_slain")}</span> {{ format(s.zkills) }}</div>`);
+        }
+    }
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ res(r.Thermite.amount) }}</div>`);
     }

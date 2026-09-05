@@ -13,6 +13,8 @@ export var global = {
     portal: {},
     eden: {},
     tauceti: {},
+    underground: {},
+    surface: {},
     civic: {},
     race: {},
     genes: {},
@@ -62,6 +64,7 @@ export function set_ulevel(u_level){
 export var hell_reports = {};
 export var hell_graphs = {};
 export var battle_log = [];
+export var fight_log = {herbivores: [], carnivores: [], scavengers: []};
 export var message_logs = {
     view: 'all'
 };
@@ -1653,6 +1656,11 @@ if (convertVersion(global['version']) <= 105000){
     }
 }
 
+if(convertVersion(global['version']) && true){
+    global.underground = global.underground || {};
+    global.surface = global.surface || {};
+}
+
 if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnProperty('battles')){
     delete global.space.shipyard.battles;
 }
@@ -1664,7 +1672,7 @@ global['beta'] = 42;
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
 }
-['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','TALENs','Exons'].forEach(function (res){
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','Supercoiled','Fossil','TALENs','Exons'].forEach(function (res){
     if (!global.prestige.hasOwnProperty(res)){
         global.prestige[res] = { count: 0 };
     }
@@ -1680,7 +1688,8 @@ if (!global.hasOwnProperty('support')){
 
 [
     'moon','red','belt','alpha','nebula','gateway','alien2','lake','spire',
-    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel'
+    'titan','enceladus','eris','venus','tau_home','tau_red','tau_roid','asphodel',
+    'wastes','crater'
 ].forEach(function(s){
     if (!global.support.hasOwnProperty(s)){
         global.support[s] = [];
@@ -2005,9 +2014,9 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','geck','dark','harmony',
-        'blood','cores','artifact','supercoiled','talens','exons','cattle','tcattle','murders',
-        'tmurders','psykill','tpsykill','pdebt','uDead','zkills'
+        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','blastaway','lextinct',
+        'aslain','hslain','cslain','sslain','geck','dark','harmony','blood','cores','artifact','supercoiled',
+        'fossil','talens','exons','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2337,8 +2346,8 @@ if (!global.city['hot']){
 }
 
 [
-    'unemployed','leadership','warmonger','rev','tax','shrine','blood_thirst',
-    'broadcast','vr','zoo','bliss_den','restaurant','cap','potential'
+    'unemployed','leadership','warmonger','gardener','aberrant_magnificent','rev','tax',
+    'shrine','blood_thirst','broadcast','vr','zoo','bliss_den','restaurant','cap','potential'
 ].forEach(function(k){
     if (!global.city.morale.hasOwnProperty(k)){
         global.city.morale[k] = 0;
@@ -2415,6 +2424,9 @@ if (global.city['foundry'] && !global.city.foundry['Quantium']){
 if (global.city['foundry'] && !global.city.foundry['Aerographene']){
     global.city.foundry['Aerographene'] = 0;
 }
+if (global.city['foundry'] && !global.city.foundry['Super_Fuel']){
+    global.city.foundry['Super_Fuel'] = 0;
+}
 
 if (!global.settings['arpa']){
     global.settings['arpa'] = {
@@ -2428,6 +2440,9 @@ if (!global.settings.arpa['crispr']){
 }
 if (!global.settings.arpa['blood']){
     global.settings.arpa['blood'] = false;
+}
+if(!global.settings.arpa['ecosystem']){
+    global.settings.arpa['ecosystem'] = false;
 }
 
 if (!global['arpa']){
@@ -2511,7 +2526,7 @@ if (!global.civic['new']){
 if (!global.race['purgatory']){
     global.race['purgatory'] = {};
 }
-['city', 'space', 'portal', 'eden', 'tech'].forEach((item) => {
+['city', 'space', 'portal', 'eden', 'underground', 'surface', 'tech'].forEach((item) => {
     if(!global.race['purgatory'][item]){
         global.race['purgatory'][item] = {};
     }
@@ -2822,7 +2837,8 @@ function setRegionStates(reset){
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage','showSupplyZones',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
-            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic','showWish'
+            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic',
+            'showWish','showUnderground','showSurface','showPerkUnderground'
         ],
         space: [
             'moon','red','hell','venus','survey','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
@@ -2831,7 +2847,8 @@ function setRegionStates(reset){
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],
-        tau: ['home','red','roid','gas','gas2','star']
+        tau: ['home','red','roid','gas','gas2','star'],
+        surface:['wastes', 'ecosystem', 'crater', 'thruster_site']
     };
     
     Object.keys(regions).forEach(function(r){
@@ -2878,6 +2895,8 @@ export function clearStates(){
     global.eden = {};
     global.starDock = {};
     global.tauceti = {};
+    global.underground = {};
+    global.surface = {};
     global.civic = { new: 0 };
     global.civic['foreign'] = {
         gov0: {
@@ -2945,6 +2964,9 @@ export function clearStates(){
     global.stats.murders = 0;
     global.stats.uDead = 0;
     global.stats.zkills = 0;
+    global.stats.hslain = 0;
+    global.stats.cslain = 0;
+    global.stats.sslain = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;
@@ -2959,6 +2981,25 @@ export function clearStates(){
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.queue.display = true;
+    }
+
+    if (global.aberrants){
+        global.aberrants.trees.mutations = 0;
+        delete global.aberrants.trees.traits.hivemind;
+        delete global.aberrants.herbivores.traits.shapeshifter;
+        delete global.aberrants.carnivores.traits.intelligent;
+        delete global.aberrants.scavengers.traits.infiltrator;
+        for (let i=0;i<4;i++){
+            let lifeform = ['trees', 'herbivores', 'carnivores', 'scavengers'][i];
+            for (let [index, entry] of Object.entries(global.aberrants[lifeform].traits)){
+                global.aberrants[lifeform].traits[index] = 1;
+            }
+            if(lifeform !== 'trees'){
+                global.aberrants[lifeform].count = 0;
+                global.aberrants[lifeform].slain = 0;
+                global.aberrants[lifeform].fight_log = [];
+            }
+        }
     }
 }
 

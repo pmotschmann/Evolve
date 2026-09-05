@@ -15,6 +15,7 @@ import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObse
 import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
+import { renderUnderground, renderSurface, drawPerkUnderground } from './iceage.js';
 import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js';
 
 // main.js registers its offline-time handler here so unpausing can trigger the catch-up without
@@ -425,6 +426,8 @@ export function loadTab(tab){
                     <b-tab-item id="outerSol" :visible="s.showOuter" :label="label('outer_local_space')"></b-tab-item>
                     <b-tab-item id="tauceti" :visible="s.showTau" :label="label('tab_tauceti')"></b-tab-item>
                     <b-tab-item id="eden" :visible="s.showEden" :label="label('tab_eden')"></b-tab-item>
+                    <b-tab-item id="underground" :visible="s.showUnderground" :label="label('tab_underground')"></b-tab-item>
+                    <b-tab-item id="surface" :visible="s.showSurface" :label="label('tab_surface')"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -436,7 +439,7 @@ export function loadTab(tab){
                             global.settings.spaceTabs = tab;
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`];
+                                let panels = [`#city`,`#space`,`#interstellar`,`#galaxy`,`#portal`,`#outerSol`,`#tauceti`,`#eden`,`#underground`,`#surface`];
                                 clearTabPanels(Object.fromEntries(panels.map(p => [p,[]])),panels[tab]);
                                 switch (tab){
                                     case 0:
@@ -457,6 +460,12 @@ export function loadTab(tab){
                                     case 7:
                                         renderEdenic();
                                         break;
+                                    case 8:
+                                        renderUnderground();
+                                        break;
+                                    case 9:
+                                        renderSurface();
+                                        break;
                                 }
                             }
                             return tab;
@@ -472,6 +481,8 @@ export function loadTab(tab){
                     renderFortress();
                     renderTauCeti();
                     renderEdenic();
+                    renderUnderground();
+                    renderSurface();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){
@@ -500,6 +511,7 @@ export function loadTab(tab){
                     <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry" :label="label('tab_industry')"></b-tab-item>
                     <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid" :label="label('tab_power_grid')"></b-tab-item>
                     <b-tab-item id="military" class="militaryTab" :visible="s.showMil" :label="label('tab_military')"></b-tab-item>
+                    <b-tab-item id="perkUnderground" class="perkUndergroundTab" :visible="s.showPerkUnderground" :label="label('tab_perk_underground')"></b-tab-item>
                     <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab" :label="label('tab_mech')"></b-tab-item>
                     <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard" :label="label('tab_shipyard')"></b-tab-item>
                     <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic" :label="label('tab_psychic')"></b-tab-item>
@@ -514,12 +526,13 @@ export function loadTab(tab){
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 // Indexed to match the b-tab-item order above, so panels[tab] is the incoming one.
-                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
+                                let panels = [`#civic`,`#industry`,`#powerGrid`,`#military`,`#perkUnderground`,`#mechLab`,`#dwarfShipYard`,`#psychicPowers`,`#supernatural`];
                                 clearTabPanels({
                                     [`#civic`]: [clearSpyopDrag],
                                     [`#industry`]: [],
                                     [`#powerGrid`]: [clearGrids],
                                     [`#military`]: [],
+                                    [`#perkUnderground`]: [],
                                     [`#mechLab`]: [clearMechDrag],
                                     [`#dwarfShipYard`]: [clearShipDrag],
                                     [`#psychicPowers`]: [],
@@ -562,21 +575,26 @@ export function loadTab(tab){
                                         }
                                         break;
                                     case 4:
+                                        if (global.race.species !== 'protoplasm' && !global.race['iceage'] && global.tech['perk_underground']){
+                                            drawPerkUnderground();
+                                        }
+                                        break;
+                                    case 5:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             drawMechLab();
                                         }
                                         break;
-                                    case 5:
+                                    case 6:
                                         if (global.race['truepath'] && global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             drawShipYard();
                                         }
                                         break;
-                                    case 6:
+                                    case 7:
                                         if (global.race['psychic'] && global.tech['psychic'] && global.race.species !== 'protoplasm'){
                                             renderPsychicPowers();
                                         }
                                         break;
-                                    case 7:
+                                    case 8:
                                         if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']) && global.race.species !== 'protoplasm'){
                                             renderSupernatural();
                                         }
@@ -608,6 +626,9 @@ export function loadTab(tab){
                     }
                     foreignGov();
                     drawMechLab();
+                    if (!global.race['iceage'] && global.tech['perk_underground']){
+                        drawPerkUnderground();
+                    }
                     if (global.race['truepath']){
                         drawShipYard();
                     }
@@ -774,6 +795,7 @@ export function loadTab(tab){
                         <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc(global.race['artifical'] ? 'tab_arpa_machine' : 'tab_arpa_genetics')}"></b-tab-item>
                         <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
                         <b-tab-item id="arpaBlood" :visible="s.arpa.blood" label="${loc('tab_arpa_blood')}"></b-tab-item>
+                        <b-tab-item id="arpaEcosystem" :visible="s.arpa.ecosystem" label="${loc('tab_arpa_ecosystem')}"></b-tab-item>
                     </b-tabs>
                 </div>`);
                 vBind({
@@ -791,6 +813,7 @@ export function loadTab(tab){
                 arpa('Genetics');
                 arpa('Crispr');
                 arpa('Blood');
+                arpa('Ecosystem');
             }
             break;
         case 6:

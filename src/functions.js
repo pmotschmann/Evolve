@@ -321,7 +321,11 @@ export function powerGrid(type,reset){
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_dwarf:m_relay','tau_gas2:tcm_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
-                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','city:replicator','tau_star:server_farm'
+                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
+                'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
+                'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_headquarters',
+                'crater:refinery_funnel','thruster_site:nuclear_heater_complete',
+                'city:replicator'
             ];
             break;
         case 'moon':
@@ -374,6 +378,12 @@ export function powerGrid(type,reset){
             break;
         case 'asphodel':
             power_structs = ['eden_asphodel:soul_engine','eden_asphodel:bunker','eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station','eden_asphodel:bliss_den'];
+            break;
+        case 'wastes':
+            power_structs = ['wastes:watch_tower', 'wastes:woodcutter', 'wastes:surface_apartment', 'wastes:genetics_lab'];
+            break;
+        case 'crater':
+            power_structs = ['crater:work_station', 'crater:crater_drill', 'crater:crater_fabrication', 'crater:crater_factory', 'crater:fuel_refinery'];
             break;
     }
 
@@ -1716,6 +1726,9 @@ export function calcQuantumLevel(load){
             }
             qbits *= 1 + factor;
         }
+        if (global.race['ancient']){
+            qbits *= 1 - (traits.ancient.vars()[0] / 100);
+        }
         return +(qbits).toFixed(3);
     }
     return 0;
@@ -1875,6 +1888,14 @@ export function masteryType(universe,detailed,unmodified){
                 m_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
                 u_rate *= 1 + (geneVars('mastery')[0] * global.race.mastery / 100);
             }
+            if (global.race['deep_power']){
+                m_rate *= 1 + (traits.deep_power.vars()[0] / 100);
+                u_rate *= 1 + (traits.deep_power.vars()[0] / 100);
+            }
+            if (global.underground['arena']){
+                m_rate *= actions.underground.cave_perk.arena.trophy_effect('herbivores');
+                u_rate *= actions.underground.cave_perk.arena.trophy_effect('herbivores');
+            }
         }
 
         let m_mastery = ua_level.aLvl * m_rate;
@@ -2007,6 +2028,8 @@ export function getResetConstants(type, inputs){
             break;
         case 'ascend':
         case 'terraform':
+        case 'thrusters':
+        case 'living_extinction':
             rc.pop_divisor = 1.15;
             rc.k_inc = 30000;
             rc.k_mult = 1.008;
@@ -2057,6 +2080,7 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
         supercoiled: 0,
+        fossil: 0,
         talens: 0,
         pdebt: 0
     };
@@ -2121,6 +2145,12 @@ export function calcPrestige(type,inputs){
         else if (global.race['lone_survivor']){
             new_plasmid += 800;
         }
+        else if (type === 'living_extinction'){
+            new_plasmid = 600;
+        }
+        if((type === 'living_extinction' || type === 'thrusters') && global.race['iceage']){
+            new_plasmid *= 2.5;
+        }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);
 
@@ -2154,6 +2184,13 @@ export function calcPrestige(type,inputs){
         let new_dark = +(Math.log2(mana)/5).toFixed(3);
         new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
+    }
+    else if(type === 'thrusters' || type === 'living_extinction'){
+        let dark = 10;
+        if(global.race['iceage'] && type !== 'living_extinction'){
+            dark *= 2.5;
+        }
+        gains.dark = challenge_multiplier(dark,'thrusters',3,inputs);
     }
 
 
@@ -2223,6 +2260,10 @@ export function calcPrestige(type,inputs){
     if (type === 'za'){
         gains.talens = 1;
     }
+
+    if((type === 'thrusters' || type === 'living_extinction') && global.race['iceage']){
+        gains.fossil = universe === 'micro' ? 4 : 10;
+    }
     
     if (global.stats.pdebt > 0){
         gains.plasmid -= global.stats.pdebt;
@@ -2269,6 +2310,7 @@ export function adjustCosts(c_action, opts){
     costs = dictatorAdjust(costs, args);
     costs = lMatAdjust(costs, c_action, args);
     costs = nexusAdjust(costs, c_action, args);
+    costs = undergroundTradeAdjust(costs, c_action, args);
     costs = razedAdjust(costs, c_action, args);
     return craftAdjust(costs, args);
 }
@@ -2284,7 +2326,9 @@ function razedAdjust(costs, c_action, args){
             let adjustRate = global.tech['salvage'] ? (struct.razed > struct.count ? 0.15 : 0.35) : (struct.razed > struct.count ? 0.25 : 0.5);
             var newCosts = {};
             Object.keys(costs).forEach(function (res){
-                newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate); }
+                if(res !== 'Spent_Fossil'){
+                    newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate); }
+                }
             });
             return newCosts;
         }
@@ -2531,10 +2575,10 @@ function flierAdjust(costs, args){
 
 function craftAdjust(costs, args){
     let fathom = fathomCheck('pterodacti');
-    if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Aerographene'] || costs['Scarletite'] || costs['Quantium'])){
+    if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Aerographene'] || costs['Scarletite'] || costs['Quantium'] || costs['Super_Fuel'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Aerographene' || res === 'Scarletite' || res === 'Quantium'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Aerographene' || res === 'Scarletite' || res === 'Quantium' || res === 'Super_Fuel'){
                 newCosts[res] = function(){
                     let cost = costs[res](args);
                     if (global.race['hollow_bones']){
@@ -2600,6 +2644,23 @@ function nexusAdjust(costs, c_action, args){
             }
             else {
                 newCosts[res] = function(){ return costs[res](args); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+export function undergroundTradeAdjust(costs, offset, wiki){
+    if(global.underground['trade']){
+        let newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            let adjustRate = (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
+            if (['Money'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -3892,6 +3953,9 @@ const traitExtra = {
     unfathomable: [
         loc(`wiki_trait_effect_unfathomable_ex1`),
         loc(`wiki_trait_effect_unfathomable_ex2`)
+    ],
+    nostalgic: [
+        loc(`wiki_trait_effect_logical_ex1`)
     ]
 };
 
@@ -3905,6 +3969,7 @@ const altTraitDesc = {
     blurry: 'warlord',
     ghostly: 'warlord',
     playful: 'warlord',
+    musical: 'iceage'
 };
 
 export function getTraitDesc(info, trait, opts){

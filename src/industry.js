@@ -11,6 +11,7 @@ import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
 import { highPopAdjust, production } from './prod.js';
 import { govEffect } from './civics.js';
+import { undergroundTech, surfaceTech, thrusterOrbitProjection } from './iceage.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -34,6 +35,15 @@ export function loadIndustry(industry,parent,bind){
             break;
         case 'rock_quarry':
             loadQuarry(parent,bind);
+            break;
+        case 'mineshaft':
+            loadMineshaft(parent,bind);
+            break;
+        case 'woodcutter':
+            loadTreeRatio(parent,bind);
+            break;
+        case 'thruster_fuel':
+            loadProjectOrbit(parent,bind);
             break;
         case 'titan_mine':
             loadTMine(parent,bind);
@@ -137,6 +147,22 @@ export function defineIndustry(){
         $(`#industry`).append(replicator);
         loadIndustry('replicator',replicator,'#iReplicator');
     }
+    
+    if (global.underground['mineshaft']?.count){
+        var mineshaft = $(`<div id="iMineshaft" class="industry"><h2 class="header has-text-advanced">${loc('underground_mineshaft')}</h2></div>`);
+        $(`#industry`).append(mineshaft);
+        loadIndustry('mineshaft',mineshaft,'#iMineshaft');
+    }
+    if (global.surface['woodcutter']?.count){
+        var woodcutter = $(`<div id="iWoodcutter" class="industry"><h2 class="header has-text-advanced">${loc('surface_woodcutter')}</h2></div>`);
+        $(`#industry`).append(woodcutter);
+        loadIndustry('woodcutter',woodcutter,'#iWoodcutter');
+    }
+    if (global.surface['thruster_fuel']?.count >= 500){
+        var thruster = $(`<div id="iThruster" class="industry"><h2 class="header has-text-advanced">${loc('city_giant_thrusters')}</h2></div>`);
+        $(`#industry`).append(thruster);
+        loadIndustry('thruster_fuel',thruster,'#iThruster');
+    }
 }
 
 export const f_rate = {
@@ -181,6 +207,7 @@ export function smelterFuelConfig(){
         c_cost: (global.race['kindling_kindred'] || global.race['smoldering']) ? 0.15 : 0.25,
         // Oil bonus is free with Forge trait
         o_cost: global.race['forge'] ? 0 : 0.35,
+        s_cost: 1 //Super Fuel
     };
 
     if (global.race['evil']){
@@ -193,7 +220,7 @@ export function smelterFuelConfig(){
         }
     }
     // Set default fuel to coal if it's not possible to burn lumber, souls, or flesh
-    else if (global.race['kindling_kindred'] || global.race['smoldering']){
+    else if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage']){
         fuel.d_fuel = 'Coal';
     }
 
@@ -229,7 +256,7 @@ function loadSmelter(parent,bind){
     parent.append(fuelTypes);
 
     if (!global.race['forge']){
-        if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
+        if (!global.race['iceage'] && ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil'])){
             let f_label = global.resource[fuel_config.l_type].name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood', '${f_label}')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
@@ -266,6 +293,15 @@ function loadSmelter(parent,bind){
         let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
         let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
         allocation(fuelTypes, subInferno, inferno, addInferno);
+    }
+
+    if (global.tech['super_fuel'] && global.tech['super_fuel'] >= 2){
+        let super_f = $(`<span :aria-label="buildLabel('super') + ariaCount('Super')" class="current super">${loc('modal_smelter_super')} {{ s.Super }}</span>`);
+        let subSuper_f = $(`<span role="button" class="sub" @click="subFuel('Super')" aria-label="Remove super fuel"><span>&laquo;</span></span>`);
+        let addSuper_f = $(`<span role="button" class="add" @click="addFuel('Super')" aria-label="Add super fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subSuper_f);
+        fuelTypes.append(super_f);
+        fuelTypes.append(addSuper_f);
     }
 
     let available = $('<div class="avail"></div>');
@@ -338,7 +374,7 @@ function loadSmelter(parent,bind){
             addFuel(type){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                    let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
                     if (type === 'Star' && global.city.smelter.Star >= global.city.smelter.StarCap){
                         break;
                     }
@@ -363,6 +399,10 @@ function loadSmelter(parent,bind){
                             global.city.smelter.Inferno--;
                             global.city.smelter[type]++;
                         }
+                        else if (type !== 'Super' && global.city.smelter.Super > 0){
+                            global.city.smelter.Super--;
+                            global.city.smelter[type]++;
+                        }
                     }
                     else {
                         break;
@@ -377,7 +417,7 @@ function loadSmelter(parent,bind){
                         if (global.race['forge'] && type === 'Inferno'){
                             global.city.smelter.Oil++;
                         }
-                        let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                        let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
                         let used = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
                         if (used > total){
                             if (global.city.smelter.Iron > 0){
@@ -402,7 +442,7 @@ function loadSmelter(parent,bind){
             addMetal(m){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
                     if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
                         global.city.smelter[m]++;
                     }
@@ -443,11 +483,11 @@ function loadSmelter(parent,bind){
                 return global.resource[res].diff >= 0 ? 'has-text-success' : 'has-text-danger';
             },
             level(){
-                let workers = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                let workers = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
                 return colorRange(workers,global.city.smelter.count);
             },
             on_f(c){
-                return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
             },
             son(c){
                 return global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
@@ -501,6 +541,8 @@ function loadSmelter(parent,bind){
                     let infernite = 0.5;
                     return loc('modal_build_inferno',[coal,global.resource.Coal.name,oil,global.resource.Oil.name,infernite,global.resource.Infernite.name]);
                 }
+            case 'super':
+                return loc('modal_build_super', ['1', global.resource.Super_Fuel.name]);
         }
     }
 
@@ -538,7 +580,7 @@ function loadSmelter(parent,bind){
     }
 
     let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
-    ['wood','coal','oil','star','inferno'].forEach(function(fuel){
+    ['wood','coal','oil','star','inferno','super'].forEach(function(fuel){
         popover(`${id}${fuel}`,function(){
             return tooltip(fuel);
         }, {
@@ -573,7 +615,7 @@ export function smelterUnlocked(){
 export function addSmelter(num=1, product="Iron", fuel="Oil"){
     global.city.smelter.cap += num;
     global.city.smelter[product] += num; // ["Iron", "Steel", "Iridium"]
-    global.city.smelter[fuel] += num; // ["Wood", "Coal", "Oil", "Star", "Inferno"]
+    global.city.smelter[fuel] += num; // ["Wood", "Coal", "Oil", "Star", "Inferno","Super"]
     if (fuel === 'star') {
         global.city.smelter.StarCap += num;
     }
@@ -583,7 +625,7 @@ export const factoryData = {
     // The factory's products, in the order its lines are handed out and taken away.
     factoryLines: ['Lux','Furs','Alloy','Polymer','Nano','Stanene'],
     // Structures that put production lines into the shared factory pool.
-    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','industrial_complex'],
+    factoryStructs: ['factory','red_factory','int_factory','hell_factory','tau_factory','under_factory','crater_factory','industrial_complex'],
     // Lines that were shut down when factory capacity was lost are remembered in factory.
     // When restored they are returned to the previously shut down lines first, then to Alloy if nothing is left to remember.
     addFactoryLines(num){
@@ -613,6 +655,8 @@ export const factoryData = {
             + (global.space['red_factory'] ? global.space.red_factory.on : 0)
             + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
             + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
+            + (global.underground['under_factory'] ? global.underground.under_factory.on * actions.underground.industry.under_factory.lines() : 0)
+            + Math.floor(global.surface['crater_factory'] ? global.surface.crater_factory.on / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1) : 0)
             + (global.space['industrial_complex'] ? global.space.industrial_complex.on * actions.space.spc_venus.industrial_complex.lines() : 0)
             + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
     },
@@ -642,6 +686,8 @@ export const factoryData = {
         add('city:factory', p_on['factory'] || 0);
         add('space:red_factory', p_on['red_factory'] || 0);
         add('interstellar:int_factory', (p_on['int_factory'] || 0) * 2);
+        add('underground:under_factory', (p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines());
+        add('surface:crater_factory', Math.floor((support_on['crater_factory'] || 0) / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1)));
         add('portal:hell_factory', (p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines());
         add('space:industrial_complex', (actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines());
         add('tauceti:tau_factory', (support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
@@ -676,6 +722,9 @@ export function smelterCapacityByZone(){
     // Counted on what is built rather than what is powered, as the capacity sum has always done.
     add('space:hell_smelter', (global.space['hell_smelter'] ? global.space.hell_smelter.count : 0) * actions.space.spc_hell.hell_smelter.smelting());
     add('space:geothermal', (p_on['geothermal'] || 0) * actions.space.spc_hell.geothermal.smelting());
+    add('underground:core_forge', (p_on['core_forge'] || 0) * actions.underground.core.core_forge.smelting());
+    add('surface:rocket_engine', (p_on['rocket_engine'] || 0) * actions.surface.crater.rocket_engine.smelting());
+    add('underground:smelter_perk', (global.underground.smelter_perk?.count || 0) * actions.underground.cave_perk.smelter_perk.smelting());
     return by;
 }
 
@@ -767,7 +816,8 @@ function loadFactory(parent,bind){
                 }
             },
             addItem: function(item){
-                let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+                let max = factoryData.actualCapacity();
+                /*let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
@@ -779,7 +829,7 @@ function loadFactory(parent,bind){
                 }
                 if (global.space['industrial_complex'] && support_on['industrial_complex']){
                     max += support_on['industrial_complex'] * actions.space.spc_venus.industrial_complex.lines();
-                }
+                }*/
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -844,7 +894,7 @@ function loadFactory(parent,bind){
                 return loc('modal_factory_alloy_label',[copper,global.resource.Copper.name,aluminium,global.resource.Aluminium.name,global.resource.Alloy.name]);
             }
             case 'Polymer':{
-                if (global.race['kindling_kindred'] || global.race['smoldering']){
+                if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage']){
                     let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                     return loc('modal_factory_polymer_label2',[oil,global.resource.Oil.name,global.resource.Polymer.name]);
                 }
@@ -963,21 +1013,21 @@ function loadNFactory(parent,bind){
             },
             level(){
                 let on = 0;
-                nf_resources.forEach(function(r){
-                    on += global.city.nanite_factory[r];
+                nf_resources.forEach(function(r){ //extra ice age deconstructor seems to have caused some issues here
+                    on += global.city.nanite_factory?.[r] || 0;
                 });
-                let max = global.city.nanite_factory.count;
+                let max = global.city.nanite_factory?.count || 0;
                 return colorRange(on,max);
             },
             on_f(){
                 let on = 0;
                 nf_resources.forEach(function(r){
-                    on += global.city.nanite_factory[r];
+                    on += global.city.nanite_factory?.[r] || 0;
                 });
                 return on;
             },
             max_f(){
-                return global.city.nanite_factory.count * 50;
+                return (global.city.nanite_factory?.count || 0) * 50;
             }
         }
     });
@@ -1460,6 +1510,111 @@ function loadQuarry(parent,bind){
     });
 }
 
+function loadMineshaft(parent,bind){
+    parent.append($(`<div>${loc('modal_mineshaft_ratio')}</div>`));
+
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Divert less miners">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Divert more miners">&raquo;</span></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.underground.mineshaft,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.underground.mineshaft.ratio > 0){
+                    global.underground.mineshaft.ratio -= keyMult;
+                    if (global.underground.mineshaft.ratio < 0){
+                        global.underground.mineshaft.ratio = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.underground.mineshaft.ratio < 100){
+                    global.underground.mineshaft.ratio += keyMult;
+                    if (global.underground.mineshaft.ratio > 100){
+                        global.underground.mineshaft.ratio = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadTreeRatio(parent,bind){
+    parent.append($(`<div>${loc('modal_treecutter_ratio')}</div>`));
+
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Save the trees">&laquo;</span><b-slider v-model="trees_reserved" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Break the trees">&raquo;</span></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.surface.overview,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.surface.overview.trees_reserved > 0){
+                    global.surface.overview.trees_reserved -= keyMult;
+                    if (global.surface.overview.trees_reserved < 0){
+                        global.surface.overview.trees_reserved = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.surface.overview.trees_reserved < 100){
+                    global.surface.overview.trees_reserved += keyMult;
+                    if (global.surface.overview.trees_reserved > 100){
+                        global.surface.overview.trees_reserved = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadProjectOrbit(parent,bind){
+    parent.append($(`<div>${loc('modal_thruster_project_ratio')}</div><div>{{ projection() }}</div>
+        <span role="button" class="sub" @click="sub" aria-label="Lower orbit"><span>&laquo;</span></span>
+        <span aria-label="Current orbit" class="current">{{ curr() }}</span>
+        <span role="button" class="add" @click="add" aria-label="Raise orbit"><span>&raquo;</span></span>`));
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.surface.giant_thrusters,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                let project = thrusterOrbitProjection();
+                if (global.surface.giant_thrusters.orbitAim > project.min){
+                    global.surface.giant_thrusters.orbitAim -= keyMult;
+                    if (global.surface.giant_thrusters.orbitAim < project.min){
+                        global.surface.giant_thrusters.orbitAim = project.min;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                let project = thrusterOrbitProjection();
+                if (global.surface.giant_thrusters.orbitAim < project.max){
+                    global.surface.giant_thrusters.orbitAim += keyMult;
+                    if (global.surface.giant_thrusters.orbitAim > project.max){
+                        global.surface.giant_thrusters.orbitAim = project.max;
+                    }
+                }
+            },
+            curr(){
+                return global.surface.giant_thrusters.orbitAim;
+            },
+            projection(){
+                let project = thrusterOrbitProjection();
+                return loc('giant_thruster_possible_ranges', [project.min, project.max, project.variance]);
+            }
+        }
+    });
+}
+
 function loadMechStation(parent,bind){
     let mech = $(`<div class="factory"><span>${global.race['warlord'] ? loc(`eden_demon_station_control`) : loc(`eden_mech_station_control`)}</span></div>`);
     parent.append(mech);
@@ -1697,8 +1852,9 @@ export function altReplicatorRes(res){
 // Resources the replicator will never offer. Anything with an atomic mass is fair game otherwise, so
 // long as the player has actually unlocked it.
 export function replicatorRes(){
-    let blacklist = ['Asphodel_Powder','Elysanite','Quantium'];
+    let blacklist = ['Asphodel_Powder','Elysanite','Quantium','Super_Fuel'];
     if (global.race['fasting']){ blacklist.push('Food'); }
+    if (global.race['iceage']){ blacklist.push('Lumber'); }
     return Object.keys(atomic_mass).filter(res => global.resource[res].display && !blacklist.includes(res));
 }
 
@@ -1815,7 +1971,7 @@ function loadReplicator(parent,bind){
                     }
                 },
                 avail(r){
-                    return global.resource[r].display && !(global.race['fasting'] && r === 'Food');
+                    return global.resource[r].display && !(global.race['fasting'] && r === 'Food') && !(global.race['iceage'] && r === 'Lumber');
                 },
                 taken(r,field){
                     let other = field === 'res' ? 'res2' : 'res';
@@ -1888,6 +2044,9 @@ const replicator_complexity = {
 
 export function replicator(res,pow){
     let mass = replicator_complexity[res] ? atomic_mass[res] * replicator_complexity[res] : atomic_mass[res];
+    if (global.race['iceage'] && res === 'Uranium'){
+        mass *= 4;
+    }
     if (global.race['lone_survivor']){
         return 17.5 * quantum_level / mass * pow;
     }
@@ -1942,11 +2101,11 @@ export function gridEnabled(c_action,region,p0,p1){
                 isOk = true;
             }
             else {
-                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? false : checkCityRequirements(p1);
+                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] || global.race['iceage'] ? false : checkCityRequirements(p1);
             }
             break;
         case 'space':
-            isOk = global.tech['isolation'] || global.race['warlord'] ? false : checkSpaceRequirements(region,p0,p1);
+            isOk = global.tech['isolation'] || global.race['warlord'] || global.race['iceage'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
@@ -1956,6 +2115,12 @@ export function gridEnabled(c_action,region,p0,p1){
             break;
         case 'eden':
             isOk = checkRequirements(edenicTech(),p0,p1);
+            break;
+        case 'underground':
+            isOk = checkRequirements(undergroundTech(),p0,p1);
+            break;
+        case 'surface':
+            isOk = checkRequirements(surfaceTech(),p0,p1);
             break;
         default:
             isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
@@ -2146,6 +2311,8 @@ export function gridDefs(){
         tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[planetName().red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
         tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
         asphodel: { l: global.support.asphodel, n: loc(`eden_asphodel_name`), s: global.settings.eden.asphodel, r: 'eden', rs: 'encampment' },
+        wastes: { l: global.support.wastes, n: loc(`surface_wastes`), s: global.settings.surface.wastes, r: 'surface', rs: 'great_heater'},
+        crater: { l: global.support.crater, n: loc(`surface_crater`), s: global.settings.surface.crater, r: 'surface', rs: 'crater_headquarters'}
     };
 }
 

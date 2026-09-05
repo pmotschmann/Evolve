@@ -601,6 +601,35 @@ export function production(id,val,wiki){
             }
             return 0;
         }
+        case 'water_pump':
+        {
+            let water = 4;
+            if(global.tech['water'] >= 5){
+                water *= 1.5;
+            }
+            return water;
+        }
+        case 'crater_drill':
+        {
+            switch (val){
+                case 'iron':
+                {
+                    return highPopAdjust(2.5);
+                }
+                case 'copper':
+                {
+                    return highPopAdjust(2.2);
+                }
+                case 'coal':
+                {
+                    return highPopAdjust(1);
+                }
+                case 'uranium':
+                {
+                    return highPopAdjust(0.003);
+                }
+            }
+        }
     }
 }
 
