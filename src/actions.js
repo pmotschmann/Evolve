@@ -5758,21 +5758,21 @@ function challengeEffect(c){
             let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.val(cement_name));
             let num_fuel_depot = 0; // max with no CRISPR is usually 20 fuel depots
             let offset = global.city?.oil_depot?.count ?? 0;
-            while (true){
+            while (num_fuel_depot < 1000){
                 let costs = adjustCosts(actions.city.oil_depot, { offset: num_fuel_depot - offset });
-                let cement_cost = costs[cement_name](num_fuel_depot - offset);
-                if (cement_cost > max_cement){ break; }
+                let cement_cost = costs.Cement(num_fuel_depot - offset);
+                if (!Number.isFinite(cement_cost) || cement_cost <= 0 || cement_cost > max_cement){ break; }
                 num_fuel_depot++;
             }
 
             let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.val('Steel'));
             let num_oil_derrick = 0; // max with no CRISPR is usually 16 oil derricks
             offset = global.city?.oil_well?.count ?? 0;
-            while (true){
+            while (num_oil_derrick < 1000){
                 let costs = adjustCosts(actions.city.oil_well, { offset: num_oil_derrick - offset });
-                let cement_cost = costs[cement_name](num_oil_derrick - offset);
+                let cement_cost = costs.Cement(num_oil_derrick - offset);
                 let steel_cost = costs['Steel'](num_oil_derrick - offset);
-                if (cement_cost + steel_cost > max_derrick){ break; }
+                if (!Number.isFinite(cement_cost) || !Number.isFinite(steel_cost) || cement_cost + steel_cost <= 0 || cement_cost + steel_cost > max_derrick){ break; }
                 num_oil_derrick++;
             }
 
@@ -5780,10 +5780,10 @@ function challengeEffect(c){
             let unified = global.race['unified'] ? 1.5 : 1;
             let max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
             offset = global.space?.propellant_depot?.count ?? 0;
-            while (true){
+            while (num_propellant_depot < 1000){
                 let costs = adjustCosts(actions.space.spc_home.propellant_depot, { offset: num_propellant_depot - offset });
                 let oil_cost = costs['Oil'](num_propellant_depot - offset);
-                if (oil_cost > max_oil){ break; }
+                if (!Number.isFinite(oil_cost) || oil_cost <= 0 || oil_cost > max_oil){ break; }
                 num_propellant_depot++;
                 max_oil = spatialReasoning(1000*unified*num_fuel_depot + 500*num_oil_derrick + 1250*unified*num_propellant_depot);
             }

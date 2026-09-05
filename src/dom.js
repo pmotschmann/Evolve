@@ -1,19 +1,9 @@
-// A vanilla-DOM stand-in for the slice of jQuery this codebase actually uses.
-//
-// The game used jQuery purely as a DOM convenience layer: no $.fn plugins, no $.ajax, no vendored
-// library depending on it. This module reimplements that slice on native DOM so the CDN dependency
-// can be dropped without touching the ~3600 call sites, which keep their existing shape.
-//
-// It is deliberately NOT a general jQuery clone. Methods here match jQuery's behaviour only as far
-// as this codebase relies on it; anything unused is absent rather than approximated. If a call site
-// needs a behaviour that is missing, add it here rather than working around it at the call site.
+// Native-DOM compatibility layer for the jQuery methods used by this project.
 
 // ---------------------------------------------------------------------------------------------
 // Node coercion
 
-// No trim: an insertion fragment can legitimately open with text (", <span…>"), and dropping the
-// leading whitespace would change what is rendered. Callers that need the trimmed form for a
-// starts-with-'<' test do that themselves before calling in.
+// Preserve leading text in HTML insertion fragments.
 function parseHTML(html){
     const tpl = document.createElement('template');
     tpl.innerHTML = String(html);
@@ -27,19 +17,23 @@ function toNodes(value, context){
     if (value instanceof Node || value === window){ return [value]; }
     if (typeof value === 'string'){
         const str = value.trim();
+        // Empty selectors produce an empty set.
+        if (str === ''){ return []; }
         if (str.charAt(0) === '<'){ return parseHTML(str); }
         const root = context ? (context instanceof DomList ? context.get(0) : context) : document;
         if (!root || !root.querySelectorAll){ return []; }
-        return Array.from(root.querySelectorAll(str));
+        // Invalid selectors are logged and return an empty set.
+        try { return Array.from(root.querySelectorAll(str)); }
+        catch (e){
+            console.error(`dom.js: unparseable selector ${JSON.stringify(str)}`, e);
+            return [];
+        }
     }
     // NodeList, HTMLCollection, array, or any other iterable of nodes.
     if (typeof value.length === 'number' && typeof value !== 'function'){
         return Array.from(value).filter(n => n instanceof Node || n === window);
     }
-    // Anything else becomes a one-item set, exactly as jQuery does. This is not an edge case here:
-    // the action registries wrap their own `this` to reach it, as in `$(this)[0].name()`, ~1900
-    // times across tech/space/truepath/actions/portal/edenic. Those objects are not nodes, and
-    // dropping them would turn every such call into a read of undefined.
+    // Preserve non-node values used by jQuery-style call sites.
     return [value];
 }
 
@@ -47,10 +41,7 @@ function toNodes(value, context){
 function isElement(node){ return node && node.nodeType === 1; }
 
 // ---------------------------------------------------------------------------------------------
-// Event bookkeeping
-//
-// Native listeners carry no identity, so removing one by name (or by jQuery's "namespace" suffix)
-// means remembering what was bound. One record per (element, type, namespace, selector, handler).
+// Event bookkeeping for namespaced listener removal.
 
 const eventStore = new WeakMap();
 
@@ -68,11 +59,7 @@ function parseEvent(token){
 }
 
 // ---------------------------------------------------------------------------------------------
-// Data store
-//
-// .data() here reads data-* attributes, which is how every call site uses it (the value is written
-// into the markup as data-id / data-panel / data-gov). A written value is kept in memory the way
-// jQuery does, so a round-trip through .data() does not have to survive as a string.
+// Storage for data-* attributes and values set through .data().
 
 const dataStore = new WeakMap();
 
@@ -102,8 +89,7 @@ class DomList {
 
     [Symbol.iterator](){ return this.toArray()[Symbol.iterator](); }
 
-    // Callback runs with `this` set to the node, and (index, node) as arguments — both forms are
-    // used in the codebase.
+    // Call callbacks with the jQuery-style receiver and arguments.
     each(fn){
         const nodes = this.toArray();
         for (let i = 0; i < nodes.length; i++){
@@ -180,8 +166,7 @@ class DomList {
         return new DomList(out);
     }
 
-    // Every preceding sibling. jQuery orders these nearest-first, which is what the power-grid
-    // lookup in industry.js depends on — it takes .attr() off the first match.
+    // Return preceding siblings nearest first.
     prevAll(selector){
         const out = [];
         for (const node of this){
@@ -360,19 +345,24 @@ class DomList {
     _insert(args, place){
         const targets = this.toArray();
         if (!targets.length){ return this; }
-        const incoming = [];
-        for (const arg of args){
-            // A string handed to an insertion method is always markup, never a selector — jQuery
-            // draws the same line, and only $() itself guesses between the two. Routing these
-            // through toNodes() would send a fragment that happens not to start with '<' (the
-            // wiki builds `, <span…>` when joining requirements) into querySelectorAll, which
-            // throws on it. parseHTML also keeps any leading text node, which that markup relies on.
-            if (typeof arg === 'string'){ incoming.push(...parseHTML(arg)); }
-            else { incoming.push(...toNodes(arg)); }
-        }
+        // Insert strings as HTML and discard non-node values.
+        const asNodes = (value) => (typeof value === 'string' ? parseHTML(value) : toNodes(value))
+            .filter(n => n instanceof Node);
+
         targets.forEach((target, index) => {
             if (!target || !target.appendChild){ return; }
-            const batch = index === 0 ? incoming : incoming.map(n => n.cloneNode(true));
+            const batch = [];
+            for (const arg of args){
+                if (typeof arg === 'function'){
+                    // Evaluate insertion callbacks for each target.
+                    batch.push(...asNodes(arg.call(target, index, target.innerHTML)));
+                }
+                else {
+                    // Clone nodes for later targets.
+                    const nodes = asNodes(arg);
+                    batch.push(...(index === 0 ? nodes : nodes.map(n => n.cloneNode(true))));
+                }
+            }
             place(target, batch);
         });
         return this;
@@ -591,8 +581,7 @@ class DomList {
         return this;
     }
 
-    // jQuery calls the matching native method when there is one, so .trigger('focus') actually
-    // focuses rather than only dispatching an event nothing acted on.
+    // Use native methods for events such as focus before dispatching.
     trigger(type, detail){
         for (const node of this){
             if (!node){ continue; }
@@ -604,8 +593,7 @@ class DomList {
 
     // -- animation -----------------------------------------------------------------------------
 
-    // Only the handful of height/opacity tweens the game runs, driven by a CSS transition rather
-    // than a JS timer. Anything not animatable this way is set immediately.
+    // Animate supported properties with CSS transitions.
     animate(props, duration){
         const ms = typeof duration === 'number' ? duration : 400;
         for (const node of this){
@@ -627,8 +615,7 @@ class DomList {
     }
 }
 
-// Shorthand event binders the codebase uses directly. With a handler they bind; with none they
-// fire, which for click/focus/select means calling the element's own method (see trigger).
+// Shorthand event binders and triggers.
 for (const name of ['click','focus','blur','select','change','input','submit','keydown','keyup',
                     'mouseover','mouseenter','mouseleave','touchend','resize','scroll']){
     DomList.prototype[name] = function(handler){
@@ -654,12 +641,7 @@ export function $(value, context){
 $.fn = DomList.prototype;
 
 // ---------------------------------------------------------------------------------------------
-// Static helpers
-//
-// The four $.* functions the codebase calls. These stay faithful to jQuery rather than being
-// modernised: locale.js loads its string pack with async:false and every loc() call downstream
-// assumes the strings are in place the moment getString() returns. Moving that to fetch would be
-// a behavioural change well beyond removing the dependency, so the synchronous path is preserved.
+// Static helpers used by existing call sites.
 
 let ajaxAsync = true;
 
@@ -685,8 +667,7 @@ $.getJSON = function(url, success){
         catch (e){ return; }
         if (success){ success(data); }
     };
-    // A synchronous request has already completed by the time send() returns, and onload is not
-    // dispatched for it, so the callback is run inline instead.
+    // Synchronous requests require an inline completion callback.
     if (ajaxAsync){ xhr.onload = done; }
     xhr.send(null);
     if (!ajaxAsync){ done(); }
