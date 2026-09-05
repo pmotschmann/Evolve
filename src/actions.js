@@ -59,7 +59,7 @@ export const actions = {
             title(){ return loc('evo_membrane_title'); },
             desc(){ return loc('evo_membrane_desc'); },
             condition(){ return global.evolution.hasOwnProperty('membrane') && !global.race['evoFinalMenu']; },
-            cost: { RNA(offset){ return evolveCosts('membrane',2,2,offset); } },
+            cost: { RNA(r={}){ return evolveCosts('membrane',2,2,r.offset); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                 return loc('evo_membrane_effect',[effect]);

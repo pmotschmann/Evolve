@@ -1363,7 +1363,7 @@ export function index(){
         <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ label('boring') }}</span></b-switch>
         <b-switch class="setting" v-model="s.touch"><span class="settings16" aria-label="${loc('settings16')}">{{ label('touch') }}</span></b-switch>
         <b-switch class="setting" v-model="s.solarNames" @update:model-value="redrawNames"><span class="settings19" aria-label="${loc('settings19')}">{{ label('solar_names') }}</span></b-switch>
-        <div>
+        <div class="keyMappings">
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
             <div class="keyMap"><span>${loc('multiplier',[25])}</span> <b-input class="keyMap" v-model="s.keyMap.x25" id="x25Key"></b-input></div>
@@ -1533,11 +1533,13 @@ export function index(){
         if (window.innerWidth > 768) {
             return;
         }
-        const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        // The message bar is part of the bottom chrome and changes height as the player resizes it,
-        // so it is measured rather than baked into the constant alongside the two fixed bars.
+        // Size scroll panels below the fixed mobile bars.
         const msgBar = document.getElementById('mobileMsg');
-        const barsPx = 3.7 * remPx + (msgBar && msgBar.offsetParent ? msgBar.offsetHeight : 0);
+        const navBar = document.getElementById('mobileNav');
+        const promoBar = document.querySelector('.promoBar');
+        const barsPx = (navBar ? navBar.offsetHeight : 0)
+            + (promoBar ? promoBar.offsetHeight : 0)
+            + (msgBar && msgBar.offsetParent ? msgBar.offsetHeight : 0);
         document.querySelectorAll('#settings, #evolution, .resTabs > section, .govTabs2 > section').forEach((el) => {
             if (!el.offsetParent) {
                 return;
@@ -1547,12 +1549,35 @@ export function index(){
         });
     };
 
+    // Show edge cues only while hidden sub-tabs remain in that direction.
+    const setTabCue = (nav) => {
+        const list = nav.querySelector('ul');
+        if (!list){
+            return;
+        }
+        // Ignore sub-pixel overflow from layout rounding.
+        const max = list.scrollWidth - list.clientWidth;
+        nav.classList.toggle('canScrollLeft', list.scrollLeft > 1);
+        nav.classList.toggle('canScrollRight', list.scrollLeft < max - 1);
+    };
+    const tabScrollCues = () => {
+        document.querySelectorAll('.resTabs > nav.tabs').forEach(setTabCue);
+    };
+    // Capture scrolling from dynamically created tab bars.
+    document.addEventListener('scroll', (e) => {
+        const nav = e.target && e.target.parentElement;
+        if (nav && nav.matches && nav.matches('.resTabs > nav.tabs')){
+            setTabCue(nav);
+        }
+    }, true);
+
     // Messages restored from the save were queued before this bar existed, so draw it once here.
     updateMobileMsg();
 
     sizeScrollPanels();
-    window.addEventListener('resize', sizeScrollPanels);
+    tabScrollCues();
+    window.addEventListener('resize', () => { sizeScrollPanels(); tabScrollCues(); });
     // Re-measure after any click (tab switches, panel switches) — delayed past the 300ms
     // slide-transition so we measure the settled position, not mid-animation.
-    document.addEventListener('click', () => setTimeout(sizeScrollPanels, 400));
+    document.addEventListener('click', () => setTimeout(() => { sizeScrollPanels(); tabScrollCues(); }, 400));
 }
