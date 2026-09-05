@@ -165,6 +165,7 @@
   "offline_time_progress": "Calculating offline progress...",
   "offline_time_msg": "You were credited %0 of offline time.",
   "offline_time_close": "Close",
+  "solar_map_close": "Close Star Map",
   "offline_time_cancel": "Cancel",
   "offline_time_cancel_desc": "Canceling stops the offline calculation and forfeits all uncalculated gains.",
   "offline_time_day": "day",

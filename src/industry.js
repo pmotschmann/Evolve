@@ -59,6 +59,11 @@ export function loadIndustry(industry,parent,bind){
     }
 }
 
+// Wrap an allocation's decrement, value, and increment controls together.
+function allocation(parent, sub, current, add){
+    parent.append($('<span class="allocation-control"></span>').append(sub, current, add));
+}
+
 export function defineIndustry(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
         return;
@@ -229,18 +234,14 @@ function loadSmelter(parent,bind){
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood', '${f_label}')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove ${f_label} fuel"><span>&laquo;</span></span>`);
             let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add ${f_label} fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subWood);
-            fuelTypes.append(wood);
-            fuelTypes.append(addWood);
+            allocation(fuelTypes, subWood, wood, addWood);
         }
 
         if (global.resource.Coal.display){
             let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="spook(s.Coal)"></span></span>`);
             let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove ${global.resource.Coal.name} fuel"><span>&laquo;</span></span>`);
             let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add ${global.resource.Coal.name} fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subCoal);
-            fuelTypes.append(coal);
-            fuelTypes.append(addCoal);
+            allocation(fuelTypes, subCoal, coal, addCoal);
         }
     }
 
@@ -252,9 +253,7 @@ function loadSmelter(parent,bind){
         let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
         let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove ${global.resource.Oil.name} fuel"><span>&laquo;</span></span>`);
         let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add ${global.resource.Oil.name} fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subOil);
-        fuelTypes.append(oil);
-        fuelTypes.append(addOil);
+        allocation(fuelTypes, subOil, oil, addOil);
     }
 
     if (global.tech['star_forge'] && global.tech.star_forge >= 2){
@@ -266,9 +265,7 @@ function loadSmelter(parent,bind){
         let inferno = $(`<span :aria-label="buildLabel('inferno') + ariaCount('Inferno')" class="current inferno">${loc('modal_smelter_inferno')} {{ s.Inferno }}</span>`);
         let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
         let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subInferno);
-        fuelTypes.append(inferno);
-        fuelTypes.append(addInferno);
+        allocation(fuelTypes, subInferno, inferno, addInferno);
     }
 
     let available = $('<div class="avail"></div>');
@@ -310,26 +307,20 @@ function loadSmelter(parent,bind){
         let iron = $(`<span :aria-label="mLabel('iron') + ariaProd('Iron')" class="current iron">${global.resource.Iron.name} {{ s.Iron }}</span>`);
         let ironSub = $(`<span role="button" class="sub" @click="subMetal('Iron')" aria-label="Smelt less iron"><span>&laquo;</span></span>`);
         let ironAdd = $(`<span role="button" class="add" @click="addMetal('Iron')" aria-label="Smelt more iron"><span>&raquo;</span></span>`);
-        smeltTypes.append(ironSub);
-        smeltTypes.append(iron);
-        smeltTypes.append(ironAdd);
+        allocation(smeltTypes, ironSub, iron, ironAdd);
 
         if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
             let steel = $(`<span :aria-label="mLabel('steel') + ariaProd('Steel')" class="current steel">${global.resource.Steel.name} {{ s.Steel }}</span>`);
             let steelSub = $(`<span role="button" class="sub" @click="subMetal('Steel')" aria-label="Smelt less steel"><span>&laquo;</span></span>`);
             let steelAdd = $(`<span role="button" class="add" @click="addMetal('Steel')" aria-label="Smelt more steel"><span>&raquo;</span></span>`);
-            smeltTypes.append(steelSub);
-            smeltTypes.append(steel);
-            smeltTypes.append(steelAdd);
+            allocation(smeltTypes, steelSub, steel, steelAdd);
         }
 
         if (global.resource.Iridium.display && irid_smelt){
             let iridium = $(`<span :aria-label="mLabel('iridium') + ariaProd('Iridium')" class="current iridium">${global.resource.Iridium.name} {{ s.Iridium }}</span>`);
             let iridiumSub = $(`<span role="button" class="sub" @click="subMetal('Iridium')" aria-label="Smelt less iridium"><span>&laquo;</span></span>`);
             let iridiumAdd = $(`<span role="button" class="add" @click="addMetal('Iridium')" aria-label="Smelt more iridium"><span>&raquo;</span></span>`);
-            smeltTypes.append(iridiumSub);
-            smeltTypes.append(iridium);
-            smeltTypes.append(iridiumAdd);
+            allocation(smeltTypes, iridiumSub, iridium, iridiumAdd);
         }
     }
 
@@ -1139,27 +1130,21 @@ function loadGraphene(parent,bind,source,struct){
         let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ Lumber }}</span>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
         let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subWood);
-        fuelTypes.append(wood);
-        fuelTypes.append(addWood);
+        allocation(fuelTypes, subWood, wood, addWood);
     }
 
     if (global.resource.Coal.display){
         let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} {{ Coal }}</span>`);
         let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
         let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subCoal);
-        fuelTypes.append(coal);
-        fuelTypes.append(addCoal);
+        allocation(fuelTypes, subCoal, coal, addCoal);
     }
 
     if (global.resource.Oil.display){
         let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ Oil }}</span>`);
         let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
         let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
-        fuelTypes.append(subOil);
-        fuelTypes.append(oil);
-        fuelTypes.append(addOil);
+        allocation(fuelTypes, subOil, oil, addOil);
     }
 
     vBind({
@@ -1520,7 +1505,7 @@ function loadMechStation(parent,bind){
 function loadTMine(parent,bind){
     parent.append($(`<div>${loc('modal_quarry_ratio',[global.resource.Adamantite.name])}</div>`));
 
-    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Increase Aluminium Production">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Increase Adamantite Production">&raquo;</span></div>`);
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Increase Aluminium Production">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="sliderValue">{{ ratio }}%</span><span class="add" role="button" @click="add" aria-label="Increase Adamantite Production">&raquo;</span></div>`);
     parent.append(slider);
 
     vBind({
@@ -1612,16 +1597,16 @@ function loadMetalworks(parent,bind){
 
 function loadMiningShip(parent,bind){
     parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iron.name,global.resource.Aluminium.name])}</div>`));
-    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('common')" aria-label="Increase Iron Production">&laquo;</span><b-slider v-model="common" format="percent"></b-slider><span class="add" role="button" @click="add('common')" aria-label="Increase Aluminium Production">&raquo;</span></div>`);
+    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('common')" aria-label="Increase Iron Production">&laquo;</span><b-slider v-model="common" format="percent"></b-slider><span class="sliderValue">{{ common }}%</span><span class="add" role="button" @click="add('common')" aria-label="Increase Aluminium Production">&raquo;</span></div>`);
     parent.append(common);
 
     parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iridium.name,global.resource.Neutronium.name])}</div>`));
-    let uncommon = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('uncommon')" aria-label="Increase Iridium Production">&laquo;</span><b-slider v-model="uncommon" format="percent"></b-slider><span class="add" role="button" @click="add('uncommon')" aria-label="Increase Neutronium Production">&raquo;</span></div>`);
+    let uncommon = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('uncommon')" aria-label="Increase Iridium Production">&laquo;</span><b-slider v-model="uncommon" format="percent"></b-slider><span class="sliderValue">{{ uncommon }}%</span><span class="add" role="button" @click="add('uncommon')" aria-label="Increase Neutronium Production">&raquo;</span></div>`);
     parent.append(uncommon);
 
     if (global.tech.tau_roid >= 5){
         parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Orichalcum.name,global.resource.Elerium.name])}</div>`));
-        let rare = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('rare')" aria-label="Increase Orichalcum Production">&laquo;</span><b-slider v-model="rare" format="percent"></b-slider><span class="add" role="button" @click="add('rare')" aria-label="Increase Elerium Production">&raquo;</span></div>`);
+        let rare = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('rare')" aria-label="Increase Orichalcum Production">&laquo;</span><b-slider v-model="rare" format="percent"></b-slider><span class="sliderValue">{{ rare }}%</span><span class="add" role="button" @click="add('rare')" aria-label="Increase Elerium Production">&raquo;</span></div>`);
         parent.append(rare);
     }
 
@@ -1766,7 +1751,7 @@ function loadReplicator(parent,bind){
         if (bind){
             // The resource list is long enough that a scrolling dropdown buries most of it. The button
             // opens a popup laying every unlocked resource out as its own button instead.
-            let picks = $(`<div></div>`);
+            let picks = $(`<div class="replicator-picker"></div>`);
             content.append(picks);
             picks.append(`<div><button class="button is-info" @click="pickRes('res')" aria-haspopup="dialog"><span>{{ resName(res) }}</span></button></div>`);
             if (dual){
@@ -1786,7 +1771,7 @@ function loadReplicator(parent,bind){
             });
         }
 
-        let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
+        let power = bind ? $(`<div class="replicator-power"></div>`) : $(`<div class="right replicator-power"></div>`);
         content.append(power);
 
         let current = $(`<span :aria-label="aria" class="current"><span>{{ pow }}MW</span></span>`);

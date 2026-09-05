@@ -6232,6 +6232,7 @@ function rebuildSolarMap(){
 export function buildSolarMap(parentNode, keep, openAt) {
     // A rebuild replaces the previous map wholesale rather than stacking a second one under it.
     parentNode.find('.solarMapHost').remove();
+    parentNode.closest('.animation-content').find('.mapRightControls').remove();
     let currentNode = $(`<div class="solarMapHost" style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
     mapHost = parentNode;
     let canvasOffset = {};
@@ -6387,6 +6388,8 @@ export function buildSolarMap(parentNode, keep, openAt) {
         mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * factor;
     }
 
+    // Overlay right-side controls against the canvas edge.
+    let mapRightControls = $('<div class="mapRightControls" style="position: absolute; z-index: 2; inset: 0; pointer-events: none;"></div>').appendTo(currentNode.closest('.animation-content'));
     currentNode.append(
       $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh;${global.settings['touch'] ? ' touch-action: none;' : ''}"></canvas>`)
         // A left press that ends without the pointer really moving is a click, not a pan: if it landed on a body, centre the
@@ -6590,14 +6593,14 @@ export function buildSolarMap(parentNode, keep, openAt) {
             }
             return false;
         }),
-      $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; bottom: 34px; right: 2px;">`)
+      $(`<input type="button" value="+" style="position: absolute; pointer-events: auto; width: 30px; height: 30px; bottom: 34px; right: 2px;">`)
         .on("click", () => {
             mapScale /= 0.8;
             mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
             mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
             drawMap();
         }),
-      $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; bottom: 2px; right: 2px;">`)
+      $(`<input type="button" value="-" style="position: absolute; pointer-events: auto; width: 30px; height: 30px; bottom: 2px; right: 2px;">`)
         .on("click", () => {
             mapScale *= 0.8;
             mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
@@ -6605,6 +6608,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
             drawMap();
         }),
     );
+    currentNode.children('input[value="+"], input[value="-"]').appendTo(mapRightControls);
 
     // Keep system shortcuts together so translated labels do not need fixed offsets.
     const systemNav = $('<div class="mapSystemNav" style="position: absolute; top: 2px; left: 2px; display: flex; gap: 4px;"></div>').appendTo(currentNode);
@@ -6673,7 +6677,8 @@ export function buildSolarMap(parentNode, keep, openAt) {
 
     let searchHits = [], searchSel = 0, searchRows = [];
     const SEARCH_SEL_BG = 'rgba(255,165,0,0.25)';
-    let searchPanel = $(`<div class="mapSearch" style="position: absolute; top: 2px; right: 36px; display: ${mapSearchOpen ? 'block' : 'none'}; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; width: 15em; max-width: calc(100% - 40px);"></div>`);
+    // Position search beside the controls unless it overlaps system shortcuts.
+    let searchPanel = $(`<div class="mapSearch" style="position: absolute; top: 2px; right: 70px; display: ${mapSearchOpen ? 'block' : 'none'}; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; width: 15em; max-width: calc(100% - 74px);"></div>`);
     let searchInput = $(`<input type="text" class="mapSearchInput" aria-label="${loc('solar_map_search')}" placeholder="${loc('solar_map_search_hint')}" style="width: 100%; height: 26px; box-sizing: border-box;">`);
     let searchList = $(`<div class="mapSearchResults" style="margin-top: 4px; max-height: 13em; overflow-y: auto;"></div>`);
     searchPanel.append(searchInput, searchList);
@@ -6723,6 +6728,21 @@ export function buildSolarMap(parentNode, keep, openAt) {
         drawMap();
     }
 
+    // Move search below the controls when it overlaps system shortcuts.
+    const SEARCH_EDGE_GAP = 4;
+    function positionSearchPanel(){
+        // Reset to the default position before checking for overlap.
+        searchPanel.css({ top: '2px', right: '70px', 'max-width': 'calc(100% - 74px)' });
+        if (!searchPanel[0] || !systemNav[0]){ return; }
+        const panel = searchPanel[0].getBoundingClientRect();
+        const nav = systemNav[0].getBoundingClientRect();
+        // Keep the default position until both elements are laid out.
+        if (panel.width === 0 || nav.width === 0){ return; }
+        if (panel.left < nav.right + SEARCH_EDGE_GAP){
+            searchPanel.css({ top: '36px', right: '2px', 'max-width': 'calc(100% - 4px)' });
+        }
+    }
+
     function setSearchOpen(open){
         mapSearchOpen = open;
         searchPanel.css('display', open ? 'block' : 'none');
@@ -6732,6 +6752,8 @@ export function buildSolarMap(parentNode, keep, openAt) {
         searchHits = searchMatches(searchInput.val());
         searchSel = 0;
         renderSearch();
+        // Position after rendering so dimensions are current.
+        positionSearchPanel();
         searchInput.trigger('focus').trigger('select');
     }
 
@@ -6765,16 +6787,23 @@ export function buildSolarMap(parentNode, keep, openAt) {
     // Keep the pointer to itself. The camera's own handlers hang off the canvas element rather than this container, so they
     // Stop clicks from reaching the modal backdrop.
     searchPanel.on('mousedown mouseup click wheel touchstart', function(e){ e.stopPropagation(); });
-    searchPanel.appendTo(currentNode);
+    searchPanel.css('pointer-events', 'auto').appendTo(mapRightControls);
     // Left open from last time — a renderer switch, or simply how the map was closed.
     if (mapSearchOpen){
         searchHits = searchMatches(mapSearchQuery);
         renderSearch();
     }
 
-    $(`<input type="button" value="🔍" title="${loc('solar_map_search')}" aria-label="${loc('solar_map_search')}" style="position: absolute; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 15px; line-height: 1;">`)
+    $(`<input type="button" value="🔍" title="${loc('solar_map_search')}" aria-label="${loc('solar_map_search')}" style="position: absolute; z-index: 2; pointer-events: auto; width: 30px; height: 30px; top: 2px; right: 36px; padding: 0; font-size: 15px; line-height: 1;">`)
         .on("click", function(){ setSearchOpen(!mapSearchOpen); })
-        .appendTo(currentNode);
+        .appendTo(mapRightControls);
+
+    // Map-owned close control for mobile.
+    $(`<input type="button" value="×" title="${loc('solar_map_close')}" aria-label="${loc('solar_map_close')}" style="position: absolute; z-index: 2; pointer-events: auto; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 24px; line-height: 1;">`)
+        .on("click", function(){
+            $(this).closest('.modal').find('.modal-close').trigger('click');
+        })
+        .appendTo(mapRightControls);
 
     // Settings for the Star Map.
     let mapSettings = $(`<div class="mapSettings" style="position: absolute; bottom: 36px; left: 2px; display: ${mapSettingsOpen ? 'flex' : 'none'}; flex-direction: column; align-items: stretch; gap: 4px; padding: 6px; background: rgba(0,0,0,0.75); border: 1px solid #999; max-width: 15em;"></div>`);
@@ -6877,6 +6906,10 @@ export function buildSolarMap(parentNode, keep, openAt) {
         .appendTo(currentNode);
 
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
+    let modalBounds = mapRightControls.parent()[0].getBoundingClientRect();
+    mapRightControls.css('right', Math.max(0, modalBounds.right - bounds.right) + 'px');
+    // Reposition an open search panel after aligning the control overlay.
+    if (mapSearchOpen){ positionSearchPanel(); }
     canvasOffset.x = bounds.width / 2;
     canvasOffset.y = bounds.height / 2;
     // The map open location depends on game state. Locked on as well as centred, so the first zoom pulls in on that star

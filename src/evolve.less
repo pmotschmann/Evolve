@@ -4284,6 +4284,12 @@ a {
     }
 }
 
+// Hidden outside mobile layouts.
+.marketRouteMultiplier,
+.storageMultiplier {
+    display: none;
+}
+
 .storage-header {
     button {
         font-size: .875rem;
@@ -4566,11 +4572,9 @@ a {
         right: .5rem;
     }
 
-    // Keep the Star Map close control below its upper-right search button.
+    // Hide Buefy's duplicate close button; the map control triggers it.
     .animation-content.solarMapModal .modal-close {
-        top: 2.5rem;
-        right: .5rem;
-        left: auto;
+        display: none;
     }
 
     .genus_selection {
@@ -6483,6 +6487,12 @@ div.bigbang {
 
 @media only screen and (max-width: 48rem) {
 
+    :root {
+        --mobile-footer-height: 2.4rem;
+        --mobile-nav-height: 44px;
+        --mobile-fixed-height: calc(var(--mobile-footer-height) + var(--mobile-nav-height));
+    }
+
     html {
         // Mobile browsers by default will scale up the font size based on screen width, and font size translates to layout dimensions in most places
         // this ends up causing nearly the entire UI to become massively overscaled and entirely unusable on narrow screens, unless the user manually adjusts their browser's font size settings
@@ -6514,7 +6524,7 @@ div.bigbang {
 
     .promoBar {
         bottom: 0; // stays at bottom
-        height: 2.4rem; // two 1.2rem rows
+        height: var(--mobile-footer-height); // two 1.2rem rows
         flex-wrap: wrap;
         align-content: center;
 
@@ -6578,7 +6588,7 @@ div.bigbang {
     #mobileMsg {
         display: block;
         position: fixed;
-        bottom: 4.8rem;  // promoBar (2.4) + mobileNav (2.4) — sit directly above the buttons
+        bottom: var(--mobile-fixed-height);
         left: 0;
         right: 0;
         z-index: 30;
@@ -6627,11 +6637,11 @@ div.bigbang {
     #mobileNav {
         display: flex;
         position: fixed;
-        bottom: 2.4rem; // promoBar height (now two rows) — sit directly above it
+        bottom: var(--mobile-footer-height);
         left: 0;
         right: 0;
         z-index: 30;
-        height: 2.4rem;
+        height: var(--mobile-nav-height);
         border-top: 1px solid;
 
         .mobile-nav-btn {
@@ -6677,7 +6687,7 @@ div.bigbang {
         
         .resources {
             margin-top:-0.75rem;
-            height: ~"calc(100svh - 7.5rem - var(--mMsg))";
+            height: ~"calc(100svh - 2.7rem - var(--mobile-fixed-height) - var(--mMsg))";
             padding-top:0.75rem;
             padding-bottom: 0.5rem;
 
@@ -6688,10 +6698,12 @@ div.bigbang {
 
         .resTabs {
             > section {
-                position: static !important;
+                // Preserve the containing block used by the tab slide transition.
+                position: relative !important;
                 overflow-y: auto !important;
                 overflow-x: hidden !important;
-                height: ~"calc(100svh - 13rem)" !important;
+                // Keep tab content above the mobile message bar.
+                height: ~"calc(100svh - 14.25rem - var(--mMsg))" !important;
             }
 
             > .tab-content {
@@ -6701,7 +6713,7 @@ div.bigbang {
 
         .govTabs2 {
             > section {
-                position: static !important;
+                position: relative !important;
                 overflow-y: auto !important;
                 overflow-x: hidden !important;
             }
@@ -6782,17 +6794,19 @@ div.bigbang {
     }
 
     .b-tabs .tabs {
-        overflow-x: auto;
-        overflow-y: hidden;
-        // Swipe to scroll; no persistent scrollbar taking a row under the tabs.
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
+        // Keep the nav fixed while its tab list scrolls.
+        overflow: visible;
 
         ul {
             flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            // Hide the scrollbar; edge cues indicate additional tabs.
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         li,
@@ -6857,6 +6871,45 @@ div.bigbang {
 
     // --- Sub-tab bars ---
     .resTabs > nav.tabs {
+        position: relative;
+
+        // Edge cues show when additional sub-tabs are available.
+        &::before,
+        &::after {
+            position: absolute;
+            top: 0;
+            z-index: 1;
+            display: grid;
+            width: 1.4rem;
+            height: 100%;
+            pointer-events: none;
+            font-size: 1.45rem;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity .15s ease;
+        }
+
+        &::before {
+            content: '‹';
+            left: 0;
+            place-items: center start;
+            padding-left: .12rem;
+            background: linear-gradient(270deg, transparent, var(--body-background, rgba(0, 0, 0, .8)) 45%);
+        }
+
+        &::after {
+            content: '›';
+            right: 0;
+            place-items: center end;
+            padding-right: .12rem;
+            background: linear-gradient(90deg, transparent, var(--body-background, rgba(0, 0, 0, .8)) 45%);
+        }
+
+        &.canScrollLeft::before,
+        &.canScrollRight::after {
+            opacity: 1;
+        }
+
         > ul {
             width: 100%;
             margin-left: 0;
@@ -6902,6 +6955,33 @@ div.bigbang {
         }
     }
 
+    // Mobile route and storage multiplier selectors.
+    #market .marketRouteMultiplier,
+    #resStorage .storageMultiplier {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: .35rem;
+        width: 100%;
+        margin: 0 0 .65rem;
+
+        button {
+            min-width: 0;
+            min-height: 44px;
+            border: 1px solid rgba(127,127,127,.5);
+            border-radius: .25rem;
+            background: rgba(127,127,127,.1);
+            color: inherit;
+            font-weight: 700;
+        }
+
+        button.is-selected {
+            border-color: currentColor;
+            background: rgba(127,127,127,.3);
+            outline: 2px solid currentColor;
+            outline-offset: -3px;
+        }
+    }
+
     // --- Storage tab ---
     #resStorage {
         .storage-header {
@@ -6939,6 +7019,43 @@ div.bigbang {
                     text-align: center;
                 }
             }
+        }
+
+        // Use a header row and equal crate/container controls.
+        .market-item:not(.stacked):not(#crateTotal) {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-areas:
+                "resource total"
+                "crate container";
+            gap: .35rem .5rem;
+            align-items: center;
+            padding: .45rem 0;
+
+            .res {
+                grid-area: resource;
+                width: auto;
+                margin: 0;
+            }
+
+            .storage-total {
+                grid-area: total;
+                white-space: nowrap;
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .trade {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 0;
+                margin: 0;
+                white-space: nowrap;
+            }
+
+            .storage-crate-control { grid-area: crate; }
+            .storage-container-control { grid-area: container; }
         }
 
         #crateTotal {
@@ -7000,7 +7117,7 @@ div.bigbang {
     .leftColumn {
         display: block;
         height: auto;
-        padding-bottom: ~"calc(4.9rem + var(--mMsg))"; // promoBar (2.4) + mobileNav (2.4) + 0.1 gap, plus the message bar
+        padding-bottom: ~"calc(0.1rem + var(--mobile-fixed-height) + var(--mMsg))";
 
         #sideQueue {
             display: none;
@@ -7020,7 +7137,7 @@ div.bigbang {
 
         #mainColumn {
             display: block;
-            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
+            padding-bottom: ~"calc(0.1rem + var(--mobile-fixed-height) + var(--mMsg))";
         }
     }
 
@@ -7030,7 +7147,7 @@ div.bigbang {
             display: block;
             height: auto;
             padding-top: 0.75rem;
-            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
+            padding-bottom: ~"calc(0.1rem + var(--mobile-fixed-height) + var(--mMsg))";
 
             #race,
             #resources {
@@ -7055,11 +7172,113 @@ div.bigbang {
 
         #mainColumn {
             display: block;
-            padding-bottom: ~"calc(4.9rem + var(--mMsg))";
+            padding-bottom: ~"calc(0.1rem + var(--mobile-fixed-height) + var(--mMsg))";
         }
 
         #mainTabs > nav.tabs {
             display: none;
+        }
+    }
+
+    // Stack Settings controls into mobile form rows.
+    #main.mobile-panel-settings #settings {
+        padding: .25rem .25rem 1rem;
+
+        .theme,
+        .localization,
+        .queue {
+            display: grid;
+            grid-template-columns: minmax(7rem, .9fr) minmax(0, 1.1fr);
+            align-items: center;
+            gap: .45rem .6rem;
+            margin: 0 0 1rem;
+
+            > span {
+                min-width: 0;
+            }
+
+            > .dropdown,
+            .dropdown-trigger,
+            .dropdown-trigger .button {
+                width: 100%;
+            }
+        }
+
+        > .setting.switch {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-height: 44px;
+            margin: 0;
+            padding: .45rem .25rem;
+            border-bottom: 1px solid rgba(127,127,127,.28);
+
+            .control-label {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+
+        .keyMappings,
+        .importExport {
+            margin-top: 1.25rem;
+            padding-top: .75rem;
+            border-top: 1px solid rgba(127,127,127,.28);
+        }
+
+        .keyMap {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            width: 100%;
+            min-height: 44px;
+            height: auto;
+            margin: 0;
+
+            > span {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            > .control {
+                flex: 0 0 5rem;
+                width: 5rem;
+            }
+        }
+
+        .stringPack {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .45rem;
+
+            .fileImport {
+                flex: 1 0 100%;
+                width: 100%;
+                margin-top: 0;
+            }
+
+            .button.right {
+                margin-left: 0;
+            }
+        }
+
+        .importExport .button {
+            margin: .2rem .35rem .2rem 0;
+        }
+
+        .reset .notification .content > p {
+            display: flex;
+            gap: .5rem;
+            margin-bottom: 0;
+
+            .button,
+            .button.right {
+                flex: 1 1 0;
+                min-width: 0;
+                margin: 0;
+            }
         }
     }
 
@@ -7070,7 +7289,7 @@ div.bigbang {
 
     // Resource list height
     .resources {
-        height: ~"calc(100svh - 9.2rem - var(--mMsg))";
+        height: ~"calc(100svh - 4.4rem - var(--mobile-fixed-height) - var(--mMsg))";
     }
 
     // --- Action-button grid ---
@@ -7136,13 +7355,153 @@ div.bigbang {
         padding-right: 0.55rem !important;
     }
 
+    // Keep each allocation control group on one line.
+    #industry .allocation-control {
+        display: inline-flex;
+        align-items: stretch;
+        margin: .12rem .16rem;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    #industry .allocation-control .current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Provide finger-sized Industry increment controls.
+    #industry .add,
+    #industry .sub {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        margin: 0;
+        padding: 0 !important;
+    }
+
+    #industry .factory {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #industry .factory > :first-child {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #industry .factory .current {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        bottom: auto;
+        min-height: 44px;
+    }
+
+    // Keep slider controls in one row.
+    #industry .sliderbar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .35rem;
+    }
+
+    #industry .sliderbar {
+        position: relative;
+    }
+
+    #industry .sliderbar .sliderValue {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 50%;
+        display: grid;
+        height: 44px;
+        margin: 0;
+        place-items: center;
+        pointer-events: none;
+        transform: translateX(-50%);
+        color: #000;
+        font-size: .9rem;
+        font-weight: 700;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, .45);
+    }
+
+    #industry .sliderbar > .add,
+    #industry .sliderbar > .sub {
+        flex: 0 0 44px;
+        width: 44px;
+        bottom: auto;
+    }
+
+    #industry .sliderbar > .b-slider {
+        flex: 1 1 0 !important;
+        display: flex;
+        align-items: center;
+        width: auto !important;
+        min-width: 0;
+        height: 44px;
+        margin: 0 !important;
+    }
+
+    #industry .sliderbar .b-slider-track {
+        flex: 1 1 auto;
+        width: 100%;
+        height: 44px;
+    }
+
+    // Keep replicator picker and power controls on one row.
+    #iReplicator .doublePane {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+
+    #iReplicator .replicator-picker {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    #iReplicator .replicator-picker .button {
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        padding-left: .45rem;
+        padding-right: .45rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #iReplicator .replicator-power {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+    }
+
+    #iReplicator .replicator-power .current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        text-align: center;
+    }
+
     // Action / settings / modal buttons — give them a finger-sized minimum height.
     .button {
-        min-height: 2.1rem;
+        min-height: 44px;
     }
 
     // Tab bar links — taller hit area makes tab switching reliable on touch.
     .b-tabs .tabs a {
+        min-height: 44px;
         padding-top: 0.55rem;
         padding-bottom: 0.55rem;
     }

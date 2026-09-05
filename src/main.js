@@ -1009,7 +1009,8 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
     let cancelled = false;
     let overlay = drawOfflineModal(function(){ cancelled = true; });
 
-    const chunk = 100;    // steps simulated per animation frame
+    // Yield after a short time slice so offline cancellation remains responsive.
+    const sliceMs = 24;   // simulation per turn before yielding to the browser
     let done = 0;
 
     // Restore live-play state, persist the (possibly partial) result, and either show the
@@ -1024,7 +1025,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
         }
         if (cancelledEarly){
             // global.stats.current was already advanced to now, so uncalculated time is forfeit.
-            overlay.remove();
+            closeOfflineModal(overlay);
         }
         else {
             finishOfflineModal(overlay, creditedMinutes);
@@ -1034,9 +1035,13 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
     const step = function(){
         if (cancelled){ finalize(true); return; }
 
-        const batch = Math.min(chunk, totalSteps - done);
         try {
-            execGameLoops(batch, true);
+            // Advance at least one step before yielding.
+            const until = performance.now() + sliceMs;
+            do {
+                execGameLoops(1, true);
+                done++;
+            } while (done < totalSteps && performance.now() < until);
         }
         catch (e){
             // Never leave reactivity suppressed if a simulated tick throws.
@@ -1044,7 +1049,6 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
             finalize(true);
             return;
         }
-        done += batch;
 
         const pct = Math.floor(done / totalSteps * 100);
         $('#offlineProg').css('width', `${pct}%`);
@@ -1062,6 +1066,8 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
 
 function drawOfflineModal(onCancel){
     $('#offlineModal').remove();
+    // Remove a previous modal's Escape handler.
+    $(document).off('keydown.offlineModal');
     let overlay = $(`<div id="offlineModal"><div class="offlineBox">`
         + `<p class="offlineTitle has-text-warning">${loc('offline_time_title')}</p>`
         + `<p class="offlineMsg">${loc('offline_time_progress')}</p>`
@@ -1094,13 +1100,32 @@ function formatOfflineTime(totalMinutes){
     return parts.join(', ');
 }
 
+// Close the active offline modal and remove its event handlers.
+function closeOfflineModal(overlay){
+    clearPopper();
+    if (overlay){ overlay.remove(); }
+    $('#offlineModal').remove();
+    $(document).off('keydown.offlineModal');
+}
+
 function finishOfflineModal(overlay, minutes){
     overlay.find('.offlineBox').html(
         `<p class="offlineTitle has-text-warning">${loc('offline_time_title')}</p>`
         + `<p class="offlineMsg">${loc('offline_time_msg',[formatOfflineTime(minutes)])}</p>`
         + `<button id="offlineClose" class="button">${loc('offline_time_close')}</button>`
     );
-    overlay.find('#offlineClose').on('click', function(){ overlay.remove(); });
+    // Support both click and touch close events from the modal button.
+    overlay.off('.offlineClose').on('click.offlineClose touchend.offlineClose', '#offlineClose', function(e){
+        e.preventDefault();
+        closeOfflineModal(overlay);
+    });
+    // Allow closing the completed modal from its backdrop or Escape.
+    overlay.on('click.offlineClose touchend.offlineClose', function(e){
+        if (e.target === overlay[0]){ closeOfflineModal(overlay); }
+    });
+    $(document).on('keydown.offlineModal', function(e){
+        if (e.key === 'Escape'){ closeOfflineModal(overlay); }
+    });
 }
 
 if (window.Worker){

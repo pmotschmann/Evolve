@@ -1589,6 +1589,64 @@ function loadSpecialResource(name,color) {
     });
 }
 
+// Mobile Market route multiplier; desktop uses the keyboard multiplier.
+let mobileRouteMultiplier = 1;
+function marketRouteMultiplier(){
+    return window.innerWidth <= 768 ? mobileRouteMultiplier : keyMultiplier();
+}
+
+function loadMarketRouteMultiplier(){
+    const picker = $(
+        '<div id="marketRouteMultiplier" class="marketRouteMultiplier" role="radiogroup" aria-label="' + loc('resource_market_routes') + '">' +
+            '<button role="radio" :aria-checked="multiplier === 1" :class="multiplier === 1 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(1)">1X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 5" :class="multiplier === 5 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(5)">5X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 10" :class="multiplier === 10 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(10)">10X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 25" :class="multiplier === 25 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(25)">25X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 100" :class="multiplier === 100 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(100)">100X</button>' +
+        '</div>'
+    );
+    $('#market').append(picker);
+    vBind({
+        el: '#marketRouteMultiplier',
+        data: { multiplier: mobileRouteMultiplier },
+        methods: {
+            set(multiplier){
+                mobileRouteMultiplier = multiplier;
+                this.multiplier = multiplier;
+            }
+        }
+    });
+}
+
+// Mobile Storage multiplier for crate and container actions.
+let mobileStorageMultiplier = 1;
+function storageMultiplier(){
+    return window.innerWidth <= 768 ? mobileStorageMultiplier : keyMultiplier();
+}
+
+function loadStorageMultiplier(){
+    const picker = $(
+        '<div id="storageMultiplier" class="storageMultiplier" role="radiogroup" aria-label="' + loc('tab_storage') + '">' +
+            '<button role="radio" :aria-checked="multiplier === 1" :class="multiplier === 1 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(1)">1X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 5" :class="multiplier === 5 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(5)">5X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 10" :class="multiplier === 10 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(10)">10X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 25" :class="multiplier === 25 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(25)">25X</button>' +
+            '<button role="radio" :aria-checked="multiplier === 100" :class="multiplier === 100 ? &quot;is-selected has-text-warning&quot; : &quot;&quot;" @click="set(100)">100X</button>' +
+        '</div>'
+    );
+    $('#resStorage').append(picker);
+    vBind({
+        el: '#storageMultiplier',
+        data: { multiplier: mobileStorageMultiplier },
+        methods: {
+            set(multiplier){
+                mobileStorageMultiplier = multiplier;
+                this.multiplier = multiplier;
+            }
+        }
+    });
+}
+
 function exportRouteEnabled(route){
     let routeCap = global.tech.currency >= 6 ? -1000000 : (global.tech.currency >= 4 ? -100 : -25);
     if (global.race['banana']){
@@ -1785,8 +1843,8 @@ export function loadBlackMarket(){
                 price(){ return sizeApproximation(blackMarketPrice(res, global.city.market.bmZone), 1); },
                 volume(){ return loc('resource_black_market_volume',[+(blackMarketVolume(res)).toFixed(2)]); },
                 routes(){ return bmRoutes(res, global.city.market.bmZone); },
-                more(){ bmAdjust(res, global.city.market.bmZone, keyMultiplier()); },
-                less(){ bmAdjust(res, global.city.market.bmZone, -keyMultiplier()); },
+                more(){ bmAdjust(res, global.city.market.bmZone, marketRouteMultiplier()); },
+                less(){ bmAdjust(res, global.city.market.bmZone, -marketRouteMultiplier()); },
                 none(){ bmAdjust(res, global.city.market.bmZone, -bmRoutes(res, global.city.market.bmZone)); }
             }
         });
@@ -1951,7 +2009,7 @@ export function marketItem(mount,market_item,name,color,full){
                     }
                 }
             },
-            autoBuy(res, keyMult = keyMultiplier()){
+            autoBuy(res, keyMult = marketRouteMultiplier()){
                 for (let i=0; i<keyMult; i++){
                     if (govActive('dealmaker',0)){
                         let exporting = 0;
@@ -1984,7 +2042,7 @@ export function marketItem(mount,market_item,name,color,full){
                 }
                 tradeRouteColor(res);
             },
-            autoSell(res, keyMult = keyMultiplier()){
+            autoSell(res, keyMult = marketRouteMultiplier()){
                 for (let i=0; i<keyMult; i++){
                     if (global.resource[res].trade <= 0){
                         if (exportRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
@@ -2270,7 +2328,7 @@ function stackMod(res,field,pool,val){
 }
 
 function unassignCrate(res,pool){
-    let keyMutipler = keyMultiplier();
+    let keyMutipler = storageMultiplier();
     let cap = crateValue();
     if (keyMutipler > stackHeld(res,'crates',pool)){
         keyMutipler = stackHeld(res,'crates',pool);
@@ -2285,7 +2343,7 @@ function unassignCrate(res,pool){
 }
 
 function assignCrate(res,pool){
-    let keyMutipler = keyMultiplier();
+    let keyMutipler = storageMultiplier();
     let cap = crateValue();
     if (keyMutipler > global.resource.Crates.amount){
         keyMutipler = global.resource.Crates.amount;
@@ -2300,7 +2358,7 @@ function assignCrate(res,pool){
 }
 
 function unassignContainer(res,pool){
-    let keyMutipler = keyMultiplier();
+    let keyMutipler = storageMultiplier();
     let cap = containerValue();
     if (keyMutipler > stackHeld(res,'containers',pool)){
         keyMutipler = stackHeld(res,'containers',pool);
@@ -2315,7 +2373,7 @@ function unassignContainer(res,pool){
 }
 
 function assignContainer(res,pool){
-    let keyMutipler = keyMultiplier();
+    let keyMutipler = storageMultiplier();
     let cap = containerValue();
     if (keyMutipler > global.resource.Containers.amount){
         keyMutipler = global.resource.Containers.amount;
@@ -2385,9 +2443,10 @@ export function containerItem(mount,market_item,name,color){
     }
     else {
         head.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
+        head.append($(`<span class="storage-total">{{ stored() }}</span>`));
 
         if (global.resource.Crates.display){
-            let crate = $(`<span class="trade"><span class="has-text-warning">${global.resource.Crates.name}</span></span>`);
+            let crate = $(`<span class="trade storage-crate-control"><span class="has-text-warning">${global.resource.Crates.name}</span></span>`);
             head.append(crate);
             crate.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
             crate.append($(`<span class="current" v-html="cCnt(crates,'${name}')"></span>`));
@@ -2395,7 +2454,7 @@ export function containerItem(mount,market_item,name,color){
         }
 
         if (global.resource.Containers.display){
-            let container = $(`<span class="trade"><span class="has-text-warning">${global.resource.Containers.name}</span></span>`);
+            let container = $(`<span class="trade storage-container-control"><span class="has-text-warning">${global.resource.Containers.name}</span></span>`);
             head.append(container);
             container.append($(`<span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
             container.append($(`<span class="current" v-html="trick(containers)"></span>`));
@@ -2441,6 +2500,9 @@ export function containerItem(mount,market_item,name,color){
             },
             subCon(res,pool){
                 unassignContainer(res,pool);
+            },
+            stored(){
+                return `${sizeApproximation(global.resource[name].amount,1)} / ${sizeApproximation(global.resource[name].max,1)}`;
             },
             trick(v){
                 if (name === 'Stone' && global.resource[name].crates === 10 && global.resource[name].containers === 31){
@@ -3236,7 +3298,7 @@ export function crateGovHook(type,num){
 }
 
 function buildCrate(num){
-    let keyMutipler = num || keyMultiplier();
+    let keyMutipler = num || storageMultiplier();
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
     if (global.race['iron_wood']){ material = 'Lumber'; }
     let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iron_wood'] ? 200 : 10;
@@ -3253,7 +3315,7 @@ function buildCrate(num){
 }
 
 function buildContainer(num){
-    let keyMutipler = num || keyMultiplier();
+    let keyMutipler = num || storageMultiplier();
     if (keyMutipler + global.resource.Containers.amount > global.resource.Containers.max){
         keyMutipler = global.resource.Containers.max - global.resource.Containers.amount;
     }
@@ -3500,6 +3562,7 @@ function initMarket(){
         return;
     }
     clearElement($('#market'));
+    loadMarketRouteMultiplier();
     if (supplyMode() !== 'global'){
         loadBlackMarket();
         return;
@@ -3829,6 +3892,7 @@ function initStorage(){
     }
     let store = $(`<div id="createHead" class="storage-header"><h2 class="is-sr-only">${loc('tab_storage')}</h2></div>`);
     clearElement($('#resStorage'));
+    loadStorageMultiplier();
     $('#resStorage').append(store);
 
     if (supplyMode() !== 'global'){
