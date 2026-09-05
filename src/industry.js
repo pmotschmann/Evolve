@@ -695,7 +695,8 @@ export const factoryData = {
         add('city:factory', p_on['factory'] || 0);
         add('space:red_factory', p_on['red_factory'] || 0);
         add('interstellar:int_factory', (p_on['int_factory'] || 0) * 2);
-        add('surface:crater_factory',  Math.floor((support_on['crater_factory'] || 0) / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1)));
+        add('underground:under_factory', (p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines());
+        add('surface:crater_factory', Math.floor((support_on['crater_factory'] || 0) / 2 * global.civic.crater_worker.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1)));
         add('portal:hell_factory', (p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines());
         add('space:industrial_complex', (actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines());
         add('tauceti:tau_factory', (support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));
@@ -2182,15 +2183,14 @@ export function setPowerGrid(){
         $('#powerGrid').append(grid);
 
         let idx = 0;
-
         for (let i=0; i< grids[grid_type].l.length; i++){
             let struct = grids[grid_type].l[i];
 
             let parts = struct.split(":");
             let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
-
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
             switch (parts[1]){

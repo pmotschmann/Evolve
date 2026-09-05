@@ -1726,6 +1726,9 @@ export function calcQuantumLevel(load){
             }
             qbits *= 1 + factor;
         }
+        if (global.race['ancient']){
+            qbits *= 1 - (traits.ancient.vars()[0] / 100);
+        }
         return +(qbits).toFixed(3);
     }
     return 0;
@@ -1888,6 +1891,10 @@ export function masteryType(universe,detailed,unmodified){
             if (global.race['deep_power']){
                 m_rate *= 1 + (traits.deep_power.vars()[0] / 100);
                 u_rate *= 1 + (traits.deep_power.vars()[0] / 100);
+            }
+            if (global.underground['arena']){
+                m_rate *= actions.underground.cave_perk.arena.trophy_effect('herbivores');
+                u_rate *= actions.underground.cave_perk.arena.trophy_effect('herbivores');
             }
         }
 

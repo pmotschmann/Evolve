@@ -2655,8 +2655,8 @@ const iceAgeModules = {
                     };
                 }
             },
-            cave_arena_perk: {
-                id: 'underground-cave_arena_perk',
+            arena: {
+                id: 'underground-arena',
                 title(){ return loc('cave_arena'); },
                 desc(){ return loc('cave_arena_desc'); },
                 type: 'military',
@@ -2664,37 +2664,37 @@ const iceAgeModules = {
                 reqs: { military: 1, perk_underground: 1 },
                 not_trait: ['lone_survivor'],
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('cave_arena_perk', r.offset, 450, 4); },
-                    Furs(r={}){ return undergroundCostMultiplier('cave_arena_perk', r.offset, 90, 4); },
-                    Steel(r={}){ return undergroundCostMultiplier('cave_arena_perk', r.offset, 150, 4); },
-                    Spent_Fossil(r={}){ return ((r.offset || 0) + (global.underground.cave_arena_perk?.count || 0)) < 1 ? 0 : undergroundCostMultiplier('cave_arena_perk', r.offset, 1, 1.5); }
+                    Money(r={}){ return undergroundCostMultiplier('arena', r.offset, 450, 4); },
+                    Furs(r={}){ return undergroundCostMultiplier('arena', r.offset, 90, 4); },
+                    Steel(r={}){ return undergroundCostMultiplier('arena', r.offset, 150, 4); },
+                    Spent_Fossil(r={}){ return ((r.offset || 0) + (global.underground.arena?.count || 0)) < 1 ? 0 : undergroundCostMultiplier('arena', r.offset, 1, 1.5); }
                 },
                 effect(wiki){
-                    let desc = `<div>${loc('cave_arena_perk_effect1', [1])}</div>`;
-                    desc += `<div>${loc('cave_arena_perk_effect2', [+(($(this)[0].trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.cave_arena_perk.herbivores_trophy])}</div>`;
-                    desc += `<div>${loc('cave_arena_perk_effect3', [+(($(this)[0].trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.cave_arena_perk.carnivores_trophy])}</div>`;
-                    desc += `<div>${loc('cave_arena_perk_effect4', [+(($(this)[0].trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.cave_arena_perk.scavengers_trophy])}</div>`;
+                    let desc = `<div>${loc('cave_arena_effect1', [1])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect2', [+(($(this)[0].trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.arena.herbivores_trophy])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect3', [+(($(this)[0].trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.arena.carnivores_trophy])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect4', [+(($(this)[0].trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.arena.scavengers_trophy])}</div>`;
                     return desc;
                 },
                 trophy_effect(creature){
-                    if(!global.underground['cave_arena_perk']){
+                    if(!global.underground['arena']){
                         return 1;
                     }
                     if (creature === 'herbivores'){
-                        return 1 + (global.underground['cave_arena_perk'].herbivores_trophy ** 0.25) / 100;
+                        return 1 + (global.underground['arena'].herbivores_trophy ** 0.25) / 100;
                     }
                     else if (creature === 'carnivores'){
-                        return 1 + (global.underground['cave_arena_perk'].carnivores_trophy ** 0.25) / 30;
+                        return 1 + (global.underground['arena'].carnivores_trophy ** 0.25) / 30;
                     }
                     else if (creature === 'scavengers'){
-                        return 1 + (global.underground['cave_arena_perk'].scavengers_trophy ** 0.25) / 10;
+                        return 1 + (global.underground['arena'].scavengers_trophy ** 0.25) / 10;
                     }
                     return 1;
                 },
                 action(args){
                     if (payCosts($(this)[0])){
                         incrementStruct($(this)[0]);
-                        if (global.underground['cave_arena_perk'].count === 1){
+                        if (global.underground['arena'].count === 1){
                             global.tech['ecoMutate'] = 1;
                             drawPerkUnderground();
                         }
@@ -2710,7 +2710,7 @@ const iceAgeModules = {
                             carnivores_trophy: 0,
                             scavengers_trophy: 0
                         },
-                        p: ['cave_arena_perk','underground']
+                        p: ['arena','underground']
                     };
                 }
             }
@@ -5687,10 +5687,10 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
             global.surface[creature].count = Math.max(0, global.surface[creature].count + cycle.total_change);
             global.surface[creature].empowered += cycle.empowered;
         }
-        if (global.surface[creature]?.empowered || global.underground['cave_arena_perk']?.count){
+        if (global.surface[creature]?.empowered || global.underground['arena']?.count){
             let aberrant_odds = 0;
-            if (global.underground['cave_arena_perk']?.count){
-                aberrant_odds = global.underground['cave_arena_perk']?.count - (global.aberrants[creature].count+1);
+            if (global.underground['arena']?.count){
+                aberrant_odds = global.underground['arena']?.count - (global.aberrants[creature].count+1);
             }
             else{
                 aberrant_odds = Math.floor(((global.surface[creature].empowered - 50) ** 0.25) / (global.aberrants[creature].count+1));
@@ -5726,9 +5726,9 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
             //raze a ecosystem or wastes building
             let location = 'surface';
             let targetList = ['great_heater', 'watch_tower', 'woodcutter', 'surface_apartment', 'genetics_lab', 'surface_farm', 'surface_zoo', 'bone_storage', 'area_heater', 'water_pipe'];
-            if (!global.race['iceage'] && global.underground['cave_arena_perk']){
+            if (!global.race['iceage'] && global.underground['arena']){
                 location = 'underground';
-                targetList = ['core_tap_perk', 'stone_slab_perk', 'apartment_perk', 'hunting_lodge_perk', 'storage_space_perk', 'smelter_perk', 'blacksmith_perk', 'cave_arena_perk'];
+                targetList = ['core_tap_perk', 'stone_slab_perk', 'apartment_perk', 'hunting_lodge_perk', 'storage_space_perk', 'smelter_perk', 'blacksmith_perk', 'arena'];
             }
             let standing = targetList.filter(s => global[location][s]?.count && (global[location][s]?.razed || 0) < 3); //Only 3 buildings of each type can be razed at most
             let target = standing[Math.rand(0, standing.length)];
@@ -5757,16 +5757,18 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
         messageQueue(loc('tech_plant_odd_seed_result2'),'info',false,['progress']);
         global.tech['ecosystem_genetics'] = 3;
     }
+    console.log(global.surface.trees?.empowered, global.aberrants.herbivores.traits.empowered);
     if (global.surface.trees?.empowered >= 300 && !global.aberrants.herbivores.traits.empowered){
+        global.aberrants.herbivores.traits = {empowered:1 , ...global.aberrants.herbivores.traits};
         global.aberrants.herbivores.traits.empowered = 1;
         messageQueue(loc('tech_plant_odd_seed_result3'),'info',false,['progress']);
     }
     if (global.surface.herbivores?.empowered >= 250 && !global.aberrants.carnivores.traits.empowered){
-        global.aberrants.carnivores.traits.empowered = 1;
+        global.aberrants.carnivores.traits = {empowered:1 , ...global.aberrants.carnivores.traits};
         messageQueue(loc('tech_plant_odd_seed_result4'),'info',false,['progress']);
     }
     if (global.surface.carnivores?.empowered >= 100 && !global.aberrants.scavengers.traits.empowered){
-        global.aberrants.scavengers.traits.empowered = 1;
+        global.aberrants.scavengers.traits = {empowered:1 , ...global.aberrants.scavengers.traits};
         messageQueue(loc('tech_plant_odd_seed_result5'),'info',false,['progress']);
     }
     if (global.aberrants.herbivores.count + global.aberrants.carnivores.count + global.aberrants.scavengers.count > 0 && global.tech['ecosystem_genetics'] === 3){
@@ -5981,7 +5983,7 @@ export function ecoGainMajorTrait(lifeform, trait, suppress){
             global.aberrants.trees.mutations++;
         }
         if (!suppress && success){
-            messageQueue(loc('aberrant_mutation', [loc(`surface_${lifeform}`)]),'info',false,['events', 'major_events']);
+            messageQueue(loc((global.race['iceage'] || lifeform !== 'trees' ? 'aberrant_mutation' : 'aberrant_mutation_env'), [loc(`surface_${lifeform}`)]),'info',false,['events', 'major_events']);
         }
     }
 }
@@ -6254,7 +6256,7 @@ export function drawPerkUnderground(){
             let c_action = actions.underground.cave_perk[index];
             setAction(c_action,'perkUnderground',index);
         }
-        if (global.underground['cave_arena_perk'].count){
+        if (global.underground['arena'].count){
             $(`<div id="underground-dist-perkArena" class="space"><div id="srperkArena"><h3 class="name has-text-warning">${loc('underground_arena')}</h3></div></div>`)
                 .appendTo('#perkUnderground');
 
@@ -6281,9 +6283,7 @@ export function drawPerkUnderground(){
 
 export function fossilCount(){
     let count = global.prestige.Fossil.count;
-    count *= actions.underground.cave_perk.cave_arena_perk.trophy_effect('scavengers');
-    //let tri = fossilCostMultiplier(0);
-    //count -= tri*(tri+1)/2; //4 = 1 + 2 + 3 + 4
+    count *= actions.underground.cave_perk.arena.trophy_effect('scavengers');
     return Math.floor(count);
 }
 

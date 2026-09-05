@@ -3444,7 +3444,7 @@ function fastLoop(){
                         workers /= traits.high_pop.vars()[0];
                     }
 
-                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner', 'core_miner'].includes(job)){
+                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner','core_miner'].includes(job)){
                         workers *= 1 + (traits.sky_lover.vars()[0] / 100);
                     }
 
@@ -4028,7 +4028,7 @@ function fastLoop(){
                         food_base += food_compost;
                     }
                 }
-                else if ((global.race['carnivore'] || global.race['soul_eater'])){
+                else if (global.race['carnivore'] || global.race['soul_eater']){
                     let strength = weaponTechModifer();
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
                     food_hunt *= racialTrait(food_hunt,'hunting');
@@ -6275,7 +6275,7 @@ function fastLoop(){
                 modRes('Elerium', mine_delta * time_multiplier, false, 'prtl_pit');
             }
 
-            if (global.resource.Infernite.display){ // Infernites
+            if (global.resource.Infernite.display){ // Infernite
                 let rate = production('shadow_mine','infernite');
                 let mine_base = p_on['shadow_mine'] * rate * production('psychic_boost','Infernite');
 
@@ -6640,7 +6640,7 @@ function fastLoop(){
 
         let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
         refinery *= q_multiplier;
-        
+
         // Stone / Amber
         if (global.race['sappy'] && !global.race['iceage']){
             if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
@@ -6784,7 +6784,6 @@ function fastLoop(){
                     forage_base *= stone_ratio;
                 }
             }
-
             if(global.underground['under_mine']){
                 underground_quarry += global.underground['under_mine'].count * 0.03;
                 stone_base *= underground_quarry;
@@ -7029,15 +7028,11 @@ function fastLoop(){
                 building.c.forEach(function(consume){
                     let cost = c_action.consume(consume);
                     let uppercase = consume.charAt(0).toUpperCase() + consume.slice(1);
-                    /*if (building.b.substring(0, 8) === 'surface_'){
-                        breakdown.p.consume[uppercase][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
-                    }
-                    else */if(building.b === 'mineshaft_vator'){
+                    if(building.b === 'mineshaft_vator'){
                         breakdown.p.consume[uppercase][loc('underground_mineshaft_elevator')] = -(cost * max_active);
                     }
                     else{
                         breakdown.p.consume[uppercase][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
-                        //breakdown.p.consume[uppercase][structName(`${building.r}_${building.b}`)] = -(cost * max_active);
                     }
                     active = Math.floor(Math.min(
                         global.resource[uppercase].amount / (cost * time_multiplier),
@@ -8937,9 +8932,6 @@ function fastLoop(){
             }
             if (global.tech['isolation']){
                 income_base *= 15;
-            }
-            if(global.race['iceage']){
-                //income_base *= 2;
             }
             income_base *= production('psychic_cash');
 
@@ -13429,7 +13421,7 @@ function longLoop(){
             healSoldiers(astroSign);
         }
         
-        if ((global.surface['overview'] || global.underground['cave_arena_perk']?.count) && !global.tech['living_extinction']){
+        if ((global.surface['overview'] || global.underground['arena']?.count) && !global.tech['living_extinction']){
             surfaceEcosystem();
         }
         if (support_on['genetics_lab'] && global.tech['science'] >= 9){
@@ -14150,7 +14142,7 @@ function longLoop(){
                 }
             }
         }
-        //todo: update for ice age
+
         if (global.race['infiltrator']){
             let tech_source = global.tech['world_control'] ? `trait_infiltrator_steal_alt` : `trait_infiltrator_steal`;
             let know_adjust = traits.infiltrator.vars()[0] / 100;

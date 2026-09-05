@@ -2233,10 +2233,9 @@ export const gov_tasks = {
     hunt: { // Aberrant Hunter
         name: loc(`gov_task_hunt`),
         req(){
-            return true;
             return (global.stats.achieve.hasOwnProperty('living_extinction') && global.stats.achieve.living_extinction.l > 0 ||
                 global.stats.achieve.hasOwnProperty('back_on_track') && global.stats.achieve.back_on_track.l > 0) &&
-                (global.tech['ecosystem_genetics'] >= 4 || global.underground['cave_arena_perk']?.count);
+                (global.tech['ecosystem_genetics'] >= 4 || global.underground['arena']?.count);
         },
         task(){
             if($(this)[0].req()){

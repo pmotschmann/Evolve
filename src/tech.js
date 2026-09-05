@@ -6340,7 +6340,7 @@ const techs = {
         effect: loc('tech_plant_odd_seed_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.aberrants.trees.traits.empowered = 1;
+                global.aberrants.trees.traits = {empowered:1 , ...global.aberrants.trees.traits}; //put empowered at the start
                 messageQueue(loc('tech_plant_odd_seed_result1'),'info',false,['progress']);
                 return true;
             }

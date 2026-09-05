@@ -11,14 +11,13 @@ import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affi
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
-import { undergroundTech, surfaceTech, renderUnderground, renderSurface } from './iceage.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed, blast_away } from './resets.js';
 import { loadTab } from './index.js';
-import { fightLogModal, thrusterOrbitProjection, fossilCount } from './iceage.js';
+import { undergroundTech, surfaceTech, renderUnderground, renderSurface, fightLogModal, thrusterOrbitProjection, fossilCount } from './iceage.js';
 import { partitioned, supplyOf, supplyPool, poolMod, regAmount, regMax, syncTotal, drawPools, ANYWHERE } from './supply.js';
 
 export const actions = {
@@ -66,6 +65,7 @@ export const actions = {
                 return loc('evo_membrane_effect',[effect]);
             },
             action(args){
+                debugger;
                 if (payCosts($(this)[0])){
                     global['resource']['RNA'].max += global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                     global.evolution.membrane.count++;
@@ -7781,7 +7781,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                 }
             }
-            else if (res === 'Spent_Fossil'){
+            else if (res === 'Spent_Fossil'){ //this is more like a tracker of how much you have spent of a resource instead of an actual resource.
                 let res_cost = costs[res]();
                 let color = 'has-text-dark';
                 if (res_cost > 0){
@@ -8664,7 +8664,6 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
-
     let halloween = eventActive('halloween');
     if (halloween.active){
         return loc(`events_halloween_medium_house`);
@@ -9087,10 +9086,6 @@ function sentience(){
             elm: `#infoTimer`,
             classes: `has-background-light has-text-dark`
         });
-    }
-
-    if(global.prestige.Fossil.count){
-        global.resource.Spent_Fossil.count = 0;
     }
 
     clearElement($('#resources'));

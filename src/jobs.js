@@ -184,7 +184,6 @@ export const job_data = {
                 if(global.race['iceage']){
                     let hardiness = actions.surface.ecosystem.trees.hardiness();
                     if(hardiness === 1){
-                        //global.surface.overview.trees -= workers * time_multiplier * lack_of_trees / tree_hardiness;
                         desc = loc('job_lumberjack_desc_iceage',[gain,global.resource.Lumber.name, (workerScale(1,'lumberjack') / hardiness).toFixed(2)]);
                     }
                     else{
@@ -775,7 +774,7 @@ export function workerScale(num,job){
         num *= 1 - (global.underground['mineshaft'].ratio / 100);
     }
     if (global.race['lone_survivor']){
-        if (['hunter','forager','water_collector','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
+        if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
             num *= 80;
         }
         else if (['craftsman'].includes(job)){
@@ -784,7 +783,7 @@ export function workerScale(num,job){
         else if (['miner','coal_miner','cement_worker','banker','entertainer','priest','pit_miner'].includes(job)){
             num *= 45;
         }
-        else if (['professor','scientist','archaeologist'].includes(job)){
+        else if (['professor','scientist'].includes(job)){
             num *= 125;
         }
     }

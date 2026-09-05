@@ -3157,6 +3157,7 @@ function addProject(parent,project){
         buy.append($(`<button :aria-label="arpaProjectSRCosts('10','${project}')" class="button x10" @click="build('${project}',10)">10%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('25','${project}')" class="button x25" @click="build('${project}',25)">25%</button>`));
         buy.append($(`<button :aria-label="arpaProjectSRCosts('100','${project}')" class="button x100" @click="build('${project}',100)">{{ remain(complete) }}%</button>`));
+
         vBind({
             el: `#arpa${project}`,
             data: global.arpa[project],

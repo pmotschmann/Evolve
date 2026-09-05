@@ -2468,6 +2468,11 @@ export function armyRating(val,type,wound,analysis){
         army *= 1 + hunter;
         data.push({ k: 'underground_hunting_lodge', v: hunter });
     }
+    if (global.underground['arena']){
+        let trophy = actions.underground.cave_perk.arena.trophy_effect('carnivores');
+        army *= trophy;
+        data.push({ k: 'underground_hunting_lodge', v: trophy - 1 });
+    }
     if (global.race['rejuvenated']){
         army *= 1.05;
         data.push({ k: 'rejuvenated', v: 0.05 });
