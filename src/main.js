@@ -3458,41 +3458,42 @@ function fastLoop(){
                         global.civic[job].workers = 0;
                     }
                 }
-                if (job !== 'unemployed' && job !== 'hunter' && job !== 'forager'){
-                    let stress_level = job_data[job].stress();
-                    if (global.city.ptrait.includes('mellow')){
-                        stress_level += planetTraits.mellow.vars()[1];
-                    }
-                    if (global.race['content']){
-                        let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
-                        stress_level += global.race['content'] * per;
-                    }
-                    if (support_on['botanical']){
-                        let tenders = global.civic['gardener'] ? global.civic.gardener.workers : 0;
-                        if (global.race['high_pop']){
-                            tenders /= traits.high_pop.vars()[0];
-                        }
-                        let tended = 1 + (tenders * job_data.gardener.boost() / 100);
-                        stress_level += support_on['botanical'] * actions.space.spc_red.botanical.calm * tended;
-                    }
-                    if (global.city.ptrait.includes('dense') && job === 'miner'){
-                        stress_level -= planetTraits.dense.vars()[1];
-                    }
-                    if (global.race['freespirit'] && job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
-                        stress_level /= 1 + (traits.freespirit.vars()[0] / 100);
-                    }
-
-                    let workers = global.civic[job].workers;
-                    if (global.race['high_pop']){
-                        workers /= traits.high_pop.vars()[0];
-                    }
-
-                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner','core_miner'].includes(job)){
-                        workers *= 1 + (traits.sky_lover.vars()[0] / 100);
-                    }
-
-                    stress -= workers / stress_level;
+                let stress_level = job_data[job].stress();
+                if (!stress_level){
+                    return;
                 }
+                if (global.city.ptrait.includes('mellow')){
+                    stress_level += planetTraits.mellow.vars()[1];
+                }
+                if (global.race['content']){
+                    let per = geneVars('content')[0] * (job === 'hell_surveyor' ? 0.5 : 1);
+                    stress_level += global.race['content'] * per;
+                }
+                if (support_on['botanical']){
+                    let tenders = global.civic['gardener'] ? global.civic.gardener.workers : 0;
+                    if (global.race['high_pop']){
+                        tenders /= traits.high_pop.vars()[0];
+                    }
+                    let tended = 1 + (tenders * job_data.gardener.boost() / 100);
+                    stress_level += support_on['botanical'] * actions.space.spc_red.botanical.calm * tended;
+                }
+                if (global.city.ptrait.includes('dense') && job === 'miner'){
+                    stress_level -= planetTraits.dense.vars()[1];
+                }
+                if (global.race['freespirit'] && job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
+                    stress_level /= 1 + (traits.freespirit.vars()[0] / 100);
+                }
+
+                let workers = global.civic[job].workers;
+                if (global.race['high_pop']){
+                    workers /= traits.high_pop.vars()[0];
+                }
+
+                if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner','core_miner'].includes(job)){
+                    workers *= 1 + (traits.sky_lover.vars()[0] / 100);
+                }
+
+                stress -= workers / stress_level;
             }
         });
         global.civic[global.civic.d_job].workers += global.resource[global.race.species].amount - total;
@@ -12802,7 +12803,7 @@ function midLoop(){
             ['underground', 'surface'].forEach(function (category){
                 for(let [zone, entry] of Object.entries(actions[category])){
                     for(let [struct, entry2] of Object.entries(entry)){
-                        if(global[category][struct]?.count && !entry2.spared){
+                        if(global[category][struct]?.count && !entry2.spared && zone_reach[category][zone]){
                             let potential = (global.tech['living_extinction'] - zone_reach[category][zone]) / 500;
                             let razed = (potential - Math.random()) * (global[category][struct].count / 100 * Math.random());
                             razed = Math.max(0, razed);

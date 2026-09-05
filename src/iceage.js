@@ -5007,7 +5007,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
             }
             if (revive_active > 0){ //gain extra hp. Can go above hp cap.
                 hp = enemy_stats.health * revive_active;
-                fight_log.push(['aberrant_revive', enemy_stats.health * revive_active]);
+                fight_log.push(['aberrant_revive', (enemy_stats.health * revive_active).toFixed(0)]);
                 revive_active = 0;
             }
         }
@@ -5758,7 +5758,6 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
         messageQueue(loc('tech_plant_odd_seed_result2'),'info',false,['progress']);
         global.tech['ecosystem_genetics'] = 3;
     }
-    console.log(global.surface.trees?.empowered, global.aberrants.herbivores.traits.empowered);
     if (global.surface.trees?.empowered >= 300 && !global.aberrants.herbivores.traits.empowered){
         global.aberrants.herbivores.traits = {empowered:1 , ...global.aberrants.herbivores.traits};
         global.aberrants.herbivores.traits.empowered = 1;

@@ -8,7 +8,7 @@ import { defineGovernor, govActive, removeTask } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
 import { jobScale } from './jobs.js';
-import { templeCount } from './actions.js';
+import { templeCount, actions } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
 import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal } from './truepath.js';
