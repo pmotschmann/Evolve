@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue } from './functions.js';
 import { races } from './races.js';
@@ -111,7 +112,7 @@ export const gmen = {
 export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
-        effect(b){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_tactician_effect`,[this.vars(b)[0]]); },
         vars(b){
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -121,7 +122,7 @@ export const gov_traits = {
     },
     militant: {
         name: loc(`gov_trait_militant`),
-        effect(b){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_militant_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -131,12 +132,12 @@ export const gov_traits = {
     },
     noquestions: {
         name: loc(`gov_trait_noquestions`),
-        effect(b){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_noquestions_effect`,[this.vars(b)[0]]); },
         vars(b){ return [0.005]; },
     },
     racketeer: {
         name: loc(`gov_trait_racketeer`),
-        effect(b){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_racketeer_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
         vars(b){
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -146,7 +147,7 @@ export const gov_traits = {
     },
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
-        effect(b){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_dealmaker_effect`,[this.vars(b)[0]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -156,7 +157,7 @@ export const gov_traits = {
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),
-        effect(b){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_risktaker_effect`,[this.vars(b)[0]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -166,12 +167,12 @@ export const gov_traits = {
     },
     teacher: {
         name: loc(`gov_trait_teacher`),
-        effect(b){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars(b)[0], $(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_teacher_effect`,[this.vars(b)[0], this.vars(b)[1]]); },
         vars(b){ return [6,30]; },
     },
     theorist: {
         name: loc(`gov_trait_theorist`),
-        effect(b){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_theorist_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
         vars(b){
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -181,7 +182,7 @@ export const gov_traits = {
     },
     inspirational: {
         name: loc(`gov_trait_inspirational`),
-        effect(b){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_inspirational_effect`,[this.vars(b)[0]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -192,13 +193,13 @@ export const gov_traits = {
     pious: {
         name: loc(`gov_trait_pious`),
         effect(b,wiki){
-            let val = $(this)[0].vars(b)[1];
+            let val = this.vars(b)[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && isStargateOn(wiki) ? 3 : 1;
             val *= xeno;
             if (global.civic.govern.type === 'corpocracy'){
                 val *= 1 + (govEffect.corpocracy()[2] / 100);
             }
-            return loc(`gov_trait_pious_effect`,[$(this)[0].vars(b)[0],val]);
+            return loc(`gov_trait_pious_effect`,[this.vars(b)[0],val]);
         },
         vars(b){ 
             if (typeof(b) === 'undefined'){
@@ -209,7 +210,7 @@ export const gov_traits = {
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),
-        effect(b){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_pragmatist_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -219,7 +220,7 @@ export const gov_traits = {
     },
     dirty_jobs: {
         name: loc(`gov_trait_dirty_jobs`),
-        effect(b){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]); },
+        effect(b){ return loc(`gov_trait_dirty_jobs_effect`,[this.vars(b)[0],this.vars(b)[1],this.vars(b)[2]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -229,7 +230,7 @@ export const gov_traits = {
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(b){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars(b)[0],housingLabel('large',true),$(this)[0].vars(b)[1],jobScale($(this)[0].vars(b)[2]+5)]); },
+        effect(b){ return loc(`gov_trait_extravagant_effect`,[this.vars(b)[0],housingLabel('large',true),this.vars(b)[1],jobScale(this.vars(b)[2]+5)]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -239,7 +240,7 @@ export const gov_traits = {
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
-        effect(b){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]); },
+        effect(b){ return loc(`gov_trait_aristocrat_effect`,[this.vars(b)[0],this.vars(b)[1],this.vars(b)[2]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -250,7 +251,7 @@ export const gov_traits = {
     gaslighter: {
         name: loc(`gov_trait_gaslighter`),
         effect(b){
-            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars(b)[0],wardenLabel(),$(this)[0].vars(b)[1],$(this)[0].vars(b)[2],$(this)[0].vars(b)[3]]);
+            return loc(`gov_trait_gaslighter_effect`,[this.vars(b)[0],wardenLabel(),this.vars(b)[1],this.vars(b)[2],this.vars(b)[3]]);
         },
         vars(b){ 
             if (typeof(b) === 'undefined'){
@@ -262,7 +263,7 @@ export const gov_traits = {
     muckraker: {
         name: loc(`gov_trait_muckraker`),
         effect(b){
-            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars(b)[1],$(this)[0].vars(b)[2]]);
+            return loc(`gov_trait_muckraker_effect`,[this.vars(b)[1],this.vars(b)[2]]);
         },
         vars(b){ 
             if (typeof(b) === 'undefined'){
@@ -273,7 +274,7 @@ export const gov_traits = {
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
-        effect(b){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars(b)[0],jobScale($(this)[0].vars(b)[1]),$(this)[0].vars(b)[2],wardenLabel()]); },
+        effect(b){ return loc(`gov_trait_athleticism_effect`,[this.vars(b)[0],jobScale(this.vars(b)[1]),this.vars(b)[2],wardenLabel()]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -283,7 +284,7 @@ export const gov_traits = {
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
-        effect(b){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_nopain_effect`,[this.vars(b)[0]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -293,7 +294,7 @@ export const gov_traits = {
     },
     runner: {
         name: loc(`gov_trait_runner`),
-        effect(b){ return loc(`gov_trait_runner_effect`,[$(this)[0].vars(b)[0],$(this)[0].vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_runner_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -303,7 +304,7 @@ export const gov_traits = {
     },
     organizer: {
         name: loc(`gov_trait_organizer`),
-        effect(b){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_organizer_effect`,[this.vars(b)[0]]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 2 ? true : false;
@@ -1202,7 +1203,7 @@ export const gov_tasks = {
             return global.civic.taxes.display;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let add_morale = 1;
                 if (global.civic.taxes.tax_rate >= 40){
                     add_morale += 0.5;
@@ -1236,7 +1237,7 @@ export const gov_tasks = {
                 && global.space.shipyard.ships.some(ship => ship.class === 'freighter') ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 runAutoRoutes(freightConfig());
             }
         }
@@ -1247,7 +1248,7 @@ export const gov_tasks = {
             return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 if (global.resource.Crates.amount < global.resource.Crates.max){
                     let mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
                     let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
@@ -1274,7 +1275,7 @@ export const gov_tasks = {
             return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let crates = global.resource.Crates.amount;
                 let sCrate = crates;
                 let containers = global.resource.Containers.amount;
@@ -1425,7 +1426,7 @@ export const gov_tasks = {
             return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display && global.genes.governor >= 3 ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 gov_tasks.storage.task();
                 gov_tasks.bal_storage.task();
             }
@@ -1437,7 +1438,7 @@ export const gov_tasks = {
             return global.race['artifical'] && (!global.tech['focus_cure'] || global.tech.focus_cure < 7) ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
                     actions.city.assembly.action();
                 }
@@ -1450,7 +1451,7 @@ export const gov_tasks = {
             return global.tech['cloning'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
                     actions.tauceti.tau_home.cloning_facility.action();
                 }
@@ -1463,7 +1464,7 @@ export const gov_tasks = {
             return checkCityRequirements('garrison') && global.tech['mercs'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.merc.reserve / 100);
                 while (global.civic.garrison.max > global.civic.garrison.workers + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= cashCap || global.resource.Money.diff >= govCivics('m_cost')) ){
                     govCivics('m_buy');
@@ -1483,7 +1484,7 @@ export const gov_tasks = {
             return global.tech['spy'] && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.spy.reserve / 100);
                 let max = global.race['truepath'] && rivalActive() ? 4 : 3;
                 let min = global.tech['world_control'] ? 3 : 0;
@@ -1508,7 +1509,7 @@ export const gov_tasks = {
             return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let range = global.race['truepath'] && rivalActive() ? [0,1,2,3] : [0,1,2];
                 if (global.tech['world_control']){ range = [3]; }
                 range.forEach(function(gov){
@@ -1547,7 +1548,7 @@ export const gov_tasks = {
             return (global.genes.governor >= 3) && gov_tasks.spyop.req();
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 gov_tasks.spy.task();
                 gov_tasks.spyop.task();
             }
@@ -1568,7 +1569,7 @@ export const gov_tasks = {
             if (extraVal){
                 slaveCost *= 1 + (extraVal / 100);
             }
-            if ( $(this)[0].req() && global.resource.Money.amount >= slaveCost && (global.resource.Money.diff >= slaveCost || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
+            if ( this.req() && global.resource.Money.amount >= slaveCost && (global.resource.Money.diff >= slaveCost || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
                 let max = global.city.slave_pen.count * 4;
                 if (max > global.resource.Slave.amount){
                     actions.city.slave_market.action();
@@ -1582,7 +1583,7 @@ export const gov_tasks = {
             return checkCityRequirements('s_alter') && global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? true : false;
         },
         task(){
-            if ( $(this)[0].req() && global.resource[global.race.species].amount === global.resource[global.race.species].max ){
+            if ( this.req() && global.resource[global.race.species].amount === global.resource[global.race.species].max ){
                 if ((!global.race['kindling_kindred'] && !global.race['smoldering'] && global.city.s_alter.harvest <= 10000) || global.city.s_alter.mind <= 10000 || global.city.s_alter.mine <= 10000 || global.city.s_alter.rage <= 10000 || global.city.s_alter.regen <= 10000){
                     actions.city.s_alter.action();
                 }
@@ -1596,7 +1597,7 @@ export const gov_tasks = {
         },
         task(){
             let cost = actions.city.horseshoe.cost;
-            if ( $(this)[0].req() && checkAffordable(cost)){
+            if ( this.req() && checkAffordable(cost)){
                 cost = adjustCosts(actions.city.horseshoe);
                 let res = 'Copper';
                 let amount = 10;
@@ -1662,7 +1663,7 @@ export const gov_tasks = {
             return global.tech['gov_repair'] && global.tech['queue'] ? true : false;
         },
         task(){
-            if ( !$(this)[0].req() ){ return; }
+            if ( !this.req() ){ return; }
 
             let targets = repairQueueTargets();
             if (targets.length === 0){ return; }
@@ -1842,7 +1843,7 @@ export const gov_tasks = {
             return global.stats.achieve.hasOwnProperty('corrupted') && global.stats.achieve.corrupted.l > 0 && checkHellRequirements('prtl_spire','mechbay') && global.portal.hasOwnProperty('mechbay') ? true : false;
         },
         task(){
-            if ( $(this)[0].req() ){
+            if ( this.req() ){
                 let ctype = global.race['warlord'] ? 'cyberdemon' : 'large';
                 let mCosts = mechCost(ctype,false);
                 let cost = mCosts.c;
@@ -1998,7 +1999,7 @@ export const gov_tasks = {
                                 if (pattern.equip.length < 1 + mechGeneralSlots(pattern.size)){
                                     // The free slot goes to the most valuable counter this mech is still missing
                                     let equip = '???';
-                                    $(this)[0].equipPriority.forEach(function(val){
+                                    this.equipPriority.forEach(function(val){
                                         if (equip === '???' && !pattern.equip.includes(val)){
                                             equip = val;
                                         }
@@ -2029,10 +2030,10 @@ export const gov_tasks = {
 
                     if (global.race['warlord']){
                         let built = global.portal.mechbay.mechs.length;
-                        let cList = $(this)[0].wlChassisWheel[ctype] || ['imp'];
+                        let cList = this.wlChassisWheel[ctype] || ['imp'];
                         chassis = cList[built % cList.length];
                     
-                        let points = $(this)[0].wlHardpoints(ctype,chassis);
+                        let points = this.wlHardpoints(ctype,chassis);
                         weapons = [];
                         for (let p=0; p<points; p++){
                             // Every archfiend hardpoint past the first draws from the elemental pool, and a hydra's
@@ -2045,7 +2046,7 @@ export const gov_tasks = {
                             weapons.push(pick);
                         }
                     
-                        let slots = $(this)[0].wlSlots(ctype);
+                        let slots = this.wlSlots(ctype);
                         if (ctype === 'minion'){
                             // Slot zero is the minion's job and takes nothing else. A minion already counts as a
                             // scout just by existing, so this only chooses between doubling that and earning
@@ -2053,17 +2054,17 @@ export const gov_tasks = {
                             // Any slot past the first is a real attribute, which the job slot will not accept.
                             equipment = [(mechs.minion.equip.scavenger || 0) < 16 ? 'scavenger' : 'scouter'];
                             if (slots > 1){
-                                let kits = $(this)[0].wlEquipKits;
+                                let kits = this.wlEquipKits;
                                 equipment = equipment.concat(kits[(built + Math.floor(built / kits.length)) % kits.length].slice(0,slots - 1));
                             }
                         }
                         else if (ctype === 'cyberdemon'){
                             // The battery occupies one of the slots rather than sitting outside the count.
-                            let kits = $(this)[0].wlCyberKits;
+                            let kits = this.wlCyberKits;
                             equipment = ['special'].concat(kits[(built + Math.floor(built / kits.length)) % kits.length].slice(0,slots - 1));
                         }
                         else {
-                            let kits = $(this)[0].wlEquipKits;
+                            let kits = this.wlEquipKits;
                             equipment = kits[(built + Math.floor(built / kits.length)) % kits.length].slice(0,slots);
                         }
                     }
@@ -2071,12 +2072,12 @@ export const gov_tasks = {
                         // Everything below comes off a rotation rather than being picked one item at a
                         // time by whatever is currently rarest. 
                         let built = global.portal.mechbay.mechs.length;
-                        let wheels = $(this)[0].chassisWheel;
-                        let kits = $(this)[0].equipKits;
+                        let wheels = this.chassisWheel;
+                        let kits = this.equipKits;
 
                         chassis = wheels[built % wheels.length];
 
-                        let weaponSet = $(this)[0].weaponWheel[built % $(this)[0].weaponWheel.length];
+                        let weaponSet = this.weaponWheel[built % this.weaponWheel.length];
                         let wCap = ctype === 'titan' ? 4 : (ctype === 'large' || ctype === 'medium' ? 2 : 1);
                         weapons = weaponSet.slice(0,wCap);
 
@@ -2085,7 +2086,7 @@ export const gov_tasks = {
                         let kit = kits[(built + Math.floor(built / kits.length)) % kits.length];
                         // Every frame now carries the special mount for free, including a small with no
                         // general slots at all.
-                        let eCap = $(this)[0].equipSlots(ctype);
+                        let eCap = this.equipSlots(ctype);
                         equipment = ['special'].concat(kit.slice(0,eCap));
                     }
 
@@ -2238,7 +2239,7 @@ export const gov_tasks = {
                 (global.tech['ecosystem_genetics'] >= 4 || global.underground['arena']?.count);
         },
         task(){
-            if($(this)[0].req()){
+            if(this.req()){
                 let available = ['herbivores', 'carnivores', 'scavengers'].filter(s => {
                     return global.aberrants?.[s].count && global.race.governor.config.hunter[s].on &&
                         garrisonSize() >= global.race.governor.config.hunter[s].soldiers &&

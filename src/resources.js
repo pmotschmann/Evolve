@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
 import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';

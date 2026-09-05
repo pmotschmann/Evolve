@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, vBind, adjustCosts } from './../functions.js';

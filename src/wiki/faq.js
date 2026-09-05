@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 import { races } from './../races.js';
 
 export function faqPage(){
-    let content = $(`#content`);
+    const content = document.getElementById('content');
     clearElement(content);
 
     let questions = [
@@ -24,14 +24,17 @@ export function faqPage(){
     };
 
     for (let i=0; i<questions.length; i++){
-        let qna = $(`<div class="question"></div>`);
-        content.append(qna);
+        const qna = document.createElement('div');
+        qna.className = 'question';
+        content.appendChild(qna);
         let tokens = [];
         if (values.hasOwnProperty(questions[i])){
             tokens = values[questions[i]];
         }
 
-        qna.append(`<h2 class="has-text-warning" id="${questions[i]}">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
-        qna.append(`<div>${loc(`wiki_faq_a_${questions[i]}`,tokens)}</div>`);
+        // insertAdjacentHTML, not append: native append() inserts a string as text, so it would
+        // escape the markup rather than parse it the way jQuery's .append() did.
+        qna.insertAdjacentHTML('beforeend', `<h2 class="has-text-warning" id="${questions[i]}">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
+        qna.insertAdjacentHTML('beforeend', `<div>${loc(`wiki_faq_a_${questions[i]}`,tokens)}</div>`);
     }
 }

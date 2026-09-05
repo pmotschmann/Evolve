@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
@@ -931,6 +932,30 @@ function midSteps(){ return webWorker.offline ? (webWorker.longRatio / webWorker
 function fastSteps(){ return webWorker.offline ? webWorker.longRatio * webWorker.offlineScale : 1; }
 
 var loopTick = 0; // Used to synchronize the fast, mid, and long loops to each other
+// A power-grid entry is written "sector:struct" ("city:factory", "spc_red:red_factory"). fastLoop
+// walks the grid twice per tick, four times a second, and each pass used to re-split every entry
+// and re-resolve its region and action — around 1000 string splits a second on a large save, all
+// producing the same answers. The mapping is a pure function of the entry string: convertSpaceSector
+// is string-only and `actions` is a static registry, so nothing here can go stale and the memo
+// needs no invalidation. Entries are bounded by the number of powered structure types.
+const powerEntryCache = new Map();
+function parsePowerEntry(entry){
+    let parsed = powerEntryCache.get(entry);
+    if (parsed){ return parsed; }
+    const split = entry.indexOf(':');
+    const sector = entry.slice(0, split);
+    const struct = entry.slice(split + 1);
+    const region = sector === 'city' ? sector : convertSpaceSector(sector);
+    parsed = {
+        sector,
+        struct,
+        region,
+        c_action: sector === 'city' ? actions.city[struct] : actions[region][sector][struct]
+    };
+    powerEntryCache.set(entry, parsed);
+    return parsed;
+}
+
 export function execGameLoops(periods = 1, offline = false){
     if (offline){
         // Offline catch-up: each period is one time-compressed step.
@@ -2469,10 +2494,7 @@ function fastLoop(){
         let totalPowerDemand = 0;
         let pb_list = [];
         for (let i=0; i<p_structs.length; i++){
-            const parts = p_structs[i].split(":");
-            const struct = parts[1];
-            const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
-            const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
+            const { struct, region, c_action } = parsePowerEntry(p_structs[i]);
             if (global[region][struct]?.on){
                 if (checkPowerRequirements(c_action) && (region !== 'galaxy' || p_on['s_gate'])){
                     totalPowerDemand += global[region][struct].on * c_action.powered();
@@ -2490,14 +2512,10 @@ function fastLoop(){
         if (global.settings.lowPowerBalance && totalPowerDemand > power_grid){
             let totalPowerUsage = totalPowerDemand;
             for (let i=pb_list.length-1; i >= 0; i--){
-                const parts = pb_list[i].split(":");
-                const struct = parts[1];
+                const { struct, region, c_action } = parsePowerEntry(pb_list[i]);
                 let on = p_on[struct];
 
                 if (totalPowerUsage > power_grid && on > 0){
-                    const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
-                    const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
-
                     let balValues = c_action.powerBalancer();
                     if (balValues){
                         balValues.forEach(function(v){
@@ -2534,10 +2552,7 @@ function fastLoop(){
         // Power structures in priority order
         let power_grid_temp = power_grid;
         for (let i=0; i<p_structs.length; i++){
-            const parts = p_structs[i].split(":");
-            const struct = parts[1];
-            const region = parts[0] === 'city' ? parts[0] : convertSpaceSector(parts[0]);
-            const c_action = parts[0] === 'city' ? actions.city[struct] : actions[region][parts[0]][struct];
+            const { struct, region, sector, c_action } = parsePowerEntry(p_structs[i]);
             if (global[region][struct]?.on){
                 let power = p_on[struct] * c_action.powered();
                 // Use a loop specifically because of citadel stations, which have variable power cost. Other buildings would accept a closed form.
@@ -2551,15 +2566,18 @@ function fastLoop(){
                     if (!Array.isArray(s_fuels)){
                         s_fuels = [s_fuels];
                     }
+                    // Both of these are constant for the structure, but used to be recomputed per
+                    // fuel and — for the supply key — once per powered unit, inside the loop below.
+                    const title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+                    const supplyKey = supplyRegionKey(sector);
                     for (let j=0; j<s_fuels.length; j++){
-                        const title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
                         const fuel = s_fuels[j];
-                        const fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                        const fuel_cost = (fuel.r === 'Oil' || fuel.r === 'Helium_3') && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
                         let mb_consume = p_on[struct] * fuel_cost;
                         for (let k=0; k<p_on[struct]; k++){
-                            // `parts[0]` is the world the powered structure stands on — the grid
-                            // entries are written `region:struct`.
-                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost), false, supplyRegionKey(parts[0]))){
+                            // `sector` is the world the powered structure stands on — the grid
+                            // entries are written `sector:struct`.
+                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost), false, supplyKey)){
                                 mb_consume = k * fuel_cost;
                                 p_on[struct] = k;
                                 power = p_on[struct] * c_action.powered();
@@ -14956,49 +14974,77 @@ function diffCalc(res,period){
     // Skip during offline catchup
     if (webWorker.offline){ return; }
 
-    let el = $(`#res${res} .diff`);
+    const el = diffEl(res);
+    // Nothing to colour: the resource has a rate but no row on screen (not yet displayed, or the
+    // tab holding it is not built). Every tick would otherwise pay for a selector that matches
+    // nothing, and diffCalc runs for every tracked resource.
+    if (!el){ return; }
+
+    const diff = global.resource[res].diff;
     if (global.race['decay']){
-        if (global.resource[res].diff < 0){
-            if (global.resource[res].diff >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
-                if (!el.hasClass('has-text-warning')){
-                    el.removeClass('has-text-danger');
-                    el.addClass('has-text-warning');
+        if (diff < 0){
+            if (diff >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
+                if (!el.classList.contains('has-text-warning')){
+                    el.classList.remove('has-text-danger');
+                    el.classList.add('has-text-warning');
                 }
             }
             else {
-                if (!el.hasClass('has-text-danger')){
-                    el.removeClass('has-text-warning');
-                    el.addClass('has-text-danger');
+                if (!el.classList.contains('has-text-danger')){
+                    el.classList.remove('has-text-warning');
+                    el.classList.add('has-text-danger');
                 }
             }
         }
-        else if (global.resource[res].diff >= 0 && (el.hasClass('has-text-danger') || el.hasClass('has-text-warning'))){
-            el.removeClass('has-text-danger');
-            el.removeClass('has-text-warning');
+        else if (diff >= 0 && (el.classList.contains('has-text-danger') || el.classList.contains('has-text-warning'))){
+            el.classList.remove('has-text-danger');
+            el.classList.remove('has-text-warning');
         }
     }
-    else if(res === global.race.species && global.race['fasting']){
-        if(global.resource[res].diff >= 0 && global.resource[res].diff < 0.75){
-            el.addClass('has-text-warning');
-            el.removeClass('has-text-danger');
+    else if (res === global.race.species && global.race['fasting']){
+        // Guarded like the other two branches: this one used to re-apply the same pair of classes
+        // on every tick regardless of whether anything had changed.
+        if (diff >= 0 && diff < 0.75){
+            if (!el.classList.contains('has-text-warning')){
+                el.classList.add('has-text-warning');
+                el.classList.remove('has-text-danger');
+            }
         }
-        else if(global.resource[res].diff < 0){
-            el.removeClass('has-text-warning');
-            el.addClass('has-text-danger');
+        else if (diff < 0){
+            if (!el.classList.contains('has-text-danger')){
+                el.classList.remove('has-text-warning');
+                el.classList.add('has-text-danger');
+            }
         }
-        else if(global.resource[res].diff >= 0.75){
-            el.removeClass('has-text-danger');
-            el.removeClass('has-text-warning');
+        else if (diff >= 0.75){
+            if (el.classList.contains('has-text-danger') || el.classList.contains('has-text-warning')){
+                el.classList.remove('has-text-danger');
+                el.classList.remove('has-text-warning');
+            }
         }
     }
     else {
-        if (global.resource[res].diff < 0 && !el.hasClass('has-text-danger')){
-            el.addClass('has-text-danger');
+        if (diff < 0 && !el.classList.contains('has-text-danger')){
+            el.classList.add('has-text-danger');
         }
-        else if (global.resource[res].diff >= 0 && el.hasClass('has-text-danger')){
-            el.removeClass('has-text-danger');
+        else if (diff >= 0 && el.classList.contains('has-text-danger')){
+            el.classList.remove('has-text-danger');
         }
     }
+}
+
+// The .diff node for each resource, remembered between ticks. Looking it up is the bulk of what
+// diffCalc costs — it runs for every tracked resource, four times a second — while the node itself
+// only changes when the resource rows are rebuilt. isConnected catches exactly that: a row that has
+// been replaced leaves the cached node detached, so the next tick re-resolves it. No explicit
+// invalidation is needed, which means a tab rebuild anywhere cannot leave this stale.
+const diffElCache = {};
+function diffEl(res){
+    const cached = diffElCache[res];
+    if (cached && cached.isConnected){ return cached; }
+    const el = document.querySelector(`#res${res} .diff`);
+    diffElCache[res] = el;
+    return el;
 }
 
 function steelCheck(){

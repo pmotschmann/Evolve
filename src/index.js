@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, tmp_vars, save, message_logs, message_filters, webWorker, writeSave } from './vars.js';
 import { loc, locales } from './locale.js';
 import { supplyMode } from './supply.js';

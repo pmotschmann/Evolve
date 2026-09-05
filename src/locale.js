@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, save } from './vars.js';
 
 let strings;

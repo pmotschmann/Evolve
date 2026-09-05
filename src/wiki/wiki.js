@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { global, setGlobal, save } from './../vars.js';
 import { decodeSaveString } from './../save.js';
 import { loc } from './../locale.js';

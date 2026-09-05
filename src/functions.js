@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
 import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
 import { loc, lastLocalization } from './locale.js';
@@ -1461,21 +1462,47 @@ export function flushTabPanelClears(){
     pendingPanelClear = {};
 }
 
+// Build a detached element from an HTML string — the native stand-in for jQuery's $('<div…>').
+// Returns the first element the markup produces, which is what every call site here wants.
+export function elFromHTML(html){
+    const tpl = document.createElement('template');
+    tpl.innerHTML = String(html).trim();
+    return tpl.content.firstElementChild;
+}
+
+// Normalise the several shapes a call site can hand a helper: a real element, a NodeList or array,
+// a selector string, or (until the jQuery migration finishes) a DomList from dom.js. Keeping this
+// polymorphic is what lets files be converted to native DOM one at a time.
+export function elementsOf(elm){
+    if (!elm){ return []; }
+    if (elm instanceof Node){ return [elm]; }
+    if (typeof elm === 'string'){ return Array.from(document.querySelectorAll(elm)); }
+    if (typeof elm.toArray === 'function'){ return elm.toArray(); }
+    if (typeof elm.length === 'number'){ return Array.from(elm); }
+    return [];
+}
+
 export function clearElement(elm,remove){
-    // Unmount nested Vue apps deepest-first.
-    let vbs = elm.find('.vb').get();
-    for (let i = vbs.length - 1; i >= 0; i--){
-        unmountApp(vbs[i]);
+    const nodes = elementsOf(elm);
+    for (const node of nodes){
+        if (!node.querySelectorAll){ continue; }
+        // Unmount nested Vue apps deepest-first.
+        const vbs = Array.from(node.querySelectorAll('.vb'));
+        for (let i = vbs.length - 1; i >= 0; i--){
+            unmountApp(vbs[i]);
+        }
     }
     // Also unmount any Vue app mounted directly on the element(s) itself, after its descendants.
-    elm.each(function(){
-        unmountApp(this);
-    });
-    if (remove){
-        elm.remove();
+    for (const node of nodes){
+        unmountApp(node);
     }
-    else {
-        elm.empty();
+    for (const node of nodes){
+        if (remove){
+            if (node.parentNode){ node.parentNode.removeChild(node); }
+        }
+        else {
+            node.textContent = '';
+        }
     }
 }
 

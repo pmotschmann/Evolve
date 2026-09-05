@@ -1,5 +1,6 @@
 // Star catalogue and solar-map rendering.
 // game knows about, and everything here that is not drawing works out where one of those bodies is: orbital shape, the positions the game loop advances, and the coordinates ships navigate by.
+import { $ } from './dom.js';
 import { global, webWorker } from './vars.js';
 import { clearElement } from './functions.js';
 import { races, orbitLength } from './races.js';
