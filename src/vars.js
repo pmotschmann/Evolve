@@ -2428,6 +2428,9 @@ if (global.city['foundry'] && !global.city.foundry['Aerographene']){
 if (global.city['foundry'] && !global.city.foundry['Super_Fuel']){
     global.city.foundry['Super_Fuel'] = 0;
 }
+if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Super')){
+    global.city.smelter['Super'] = 0;
+}
 
 if (!global.settings['arpa']){
     global.settings['arpa'] = {
