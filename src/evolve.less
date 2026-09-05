@@ -4284,9 +4284,13 @@ a {
     }
 }
 
-// Hidden outside mobile layouts.
+// Hidden outside mobile layouts. .storage-total belongs here with the multipliers: the mobile
+// storage rows are a grid with a dedicated "total" area, but the desktop rows are still the flex
+// layout whose columns line up by the fixed margins on .storage-header below — an extra inline
+// span between the resource name and the crate control pushes those columns out of register.
 .marketRouteMultiplier,
-.storageMultiplier {
+.storageMultiplier,
+.storage-total {
     display: none;
 }
 
@@ -7039,6 +7043,9 @@ div.bigbang {
             }
 
             .storage-total {
+                // Re-enables the element the desktop rules hide, the same way the multiplier
+                // selectors above do.
+                display: block;
                 grid-area: total;
                 white-space: nowrap;
                 text-align: right;
