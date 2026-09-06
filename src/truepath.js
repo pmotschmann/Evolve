@@ -8018,7 +8018,7 @@ export function shipAttackPower(ship){
     }
 }
 
-export const FREIGHTER_CAPACITY = 250000;
+export const FREIGHTER_CAPACITY = 500000;
 export function freightCapacity(ship){
     return ship && ship.class === 'freighter' && shipSpecial(ship) === 'extra_cargo'
         ? Math.round(FREIGHTER_CAPACITY * 1.5) : FREIGHTER_CAPACITY;
@@ -8043,7 +8043,7 @@ export function freightWeight(ship){
 }
 export function freightSpeedPenalty(ship){
     if (!ship || ship.class !== 'freighter'){ return 0; }
-    const penalty = Math.floor(freightWeight(ship) / 500000);
+    const penalty = Math.floor(freightWeight(ship) / 750000);
     return shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty;
 }
 

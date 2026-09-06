@@ -873,6 +873,22 @@ export function pointResourceListAt(zone){
         vBind({ el: `#res${res}` }, 'update');
     }
     vBind({ el: '#resRegionSwitch' }, 'update');
+    pointBlackMarketAt(zone);
+}
+
+// Keep the black-market board aligned with the selected supply region.
+export function pointBlackMarketAt(zone){
+    if (!zone || zone === 'all'){ return; }
+    if (!global.city['market'] || global.city.market.bmZone === zone){ return; }
+    if (!supplyPools().includes(zone)){ return; }
+    global.city.market.bmZone = zone;
+    // Update affected bindings without rebuilding the resource tab.
+    if ($('#bmZone').length){
+        vBind({ el: '#bmZone' }, 'update');
+        blackMarketable().forEach(function(res){
+            vBind({ el: `#bm-${res}` }, 'update');
+        });
+    }
 }
 
 // Show the resource pool that will pay for the selected building.
@@ -1882,6 +1898,8 @@ export function loadBlackMarket(){
             cycle(step){
                 const at = zones.indexOf(global.city.market.bmZone);
                 global.city.market.bmZone = zones[(at + step + zones.length) % zones.length];
+                // Keep the resource list on the selected market region.
+                pointResourceListAt(global.city.market.bmZone);
                 drawResourceTab('market');
             }
         }
@@ -2486,10 +2504,11 @@ export function containerItem(mount,market_item,name,color){
         head.append($(`<span class="expander has-text-warning" :aria-expanded="open()">{{ caret() }}</span>`));
         head.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
         head.append($(`<span class="stored">{{ whole() }}</span>`));
+        // Inline labels identify crate and container totals on mobile.
         head.append(global.resource.Crates.display
-            ? $(`<span class="stackTotal" v-html="cCnt(crates,'${name}')"></span>`) : $(`<span></span>`));
+            ? $(`<span class="stackTotal"><span class="stackLabel">${global.resource.Crates.name}</span><span v-html="cCnt(crates,'${name}')"></span></span>`) : $(`<span></span>`));
         head.append(global.resource.Containers.display
-            ? $(`<span class="stackTotal" v-html="trick(containers)"></span>`) : $(`<span></span>`));
+            ? $(`<span class="stackTotal"><span class="stackLabel">${global.resource.Containers.name}</span><span v-html="trick(containers)"></span></span>`) : $(`<span></span>`));
 
         let zones = $(`<div class="stackZones" v-show="open()"></div>`);
         market_item.append(zones);
@@ -2500,11 +2519,13 @@ export function containerItem(mount,market_item,name,color){
             line.append($(`<span class="zoneName">${where}</span>`));
             line.append($(`<span class="stored">{{ held('${pool}') }}</span>`));
             line.append(global.resource.Crates.display ? $(`<span class="adjust">
+                <span class="stackLabel">${global.resource.Crates.name}</span>
                 <span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Crates.name} from ${where}" class="sub has-text-danger" @click="subCrate('${name}','${pool}')">&laquo;</span>
                 <span class="current">{{ stacks('${pool}','crates') }}</span>
                 <span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Crates.name} to ${where}" class="add has-text-success" @click="addCrate('${name}','${pool}')">&raquo;</span>
             </span>`) : $(`<span></span>`));
             line.append(global.resource.Containers.display ? $(`<span class="adjust">
+                <span class="stackLabel">${global.resource.Containers.name}</span>
                 <span role="button" aria-label="remove ${global.resource[name].name} ${global.resource.Containers.name} from ${where}" class="sub has-text-danger" @click="subCon('${name}','${pool}')">&laquo;</span>
                 <span class="current">{{ stacks('${pool}','containers') }}</span>
                 <span role="button" aria-label="add ${global.resource[name].name} ${global.resource.Containers.name} to ${where}" class="add has-text-success" @click="addCon('${name}','${pool}')">&raquo;</span>

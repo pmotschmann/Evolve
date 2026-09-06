@@ -4,8 +4,8 @@ import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, ad
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle, govEffect, garrisonSize, rivalActive, spyActive } from './civics.js';
-import { crateGovHook, atomic_mass } from './resources.js';
-import { supplyMode, dealStacks } from './supply.js';
+import { crateGovHook, atomic_mass, blackMarketable, blackMarketVolume, bmRoutes, bmAdjust, bmUsed } from './resources.js';
+import { supplyMode, dealStacks, supplyPools, regDiff } from './supply.js';
 import { gridDefs, dualReplicator } from './industry.js';
 import { checkHellRequirements, mechSize, mechCost, validWeapons, validEquipment, mechGeneralSlots, wlEquipSlots } from './portal.js';
 import { loc } from './locale.js';
@@ -13,7 +13,7 @@ import { jobScale } from './jobs.js';
 import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
 import { shipCosts, checkPathRequirements, titanReclaimed } from './truepath.js';
-import { runAutoRoutes } from './autoroute.js';
+import { runAutoRoutes, PRIORITY } from './autoroute.js';
 import { checkEdenRequirements } from './edenic.js';
 
 export const gmen = {
@@ -690,6 +690,26 @@ export function drawnGovernOffice(){
         freight.append($(`<b-field>${loc(`gov_task_freight_horizon`)}<b-numberinput min="1" :max="Number.MAX_SAFE_INTEGER" v-model="c.freight.horizon" :controls="false"></b-numberinput></b-field>`));
     }
 
+    { // Market Trader
+        if (!global.race.governor.config.hasOwnProperty('trader')){
+            global.race.governor.config['trader'] = {};
+        }
+        if (!global.race.governor.config.trader.hasOwnProperty('margin')){
+            global.race.governor.config.trader['margin'] = marketTraderMarginDefault;
+        }
+        if (!global.race.governor.config.trader.hasOwnProperty('reserve')){
+            global.race.governor.config.trader['reserve'] = marketTraderReserveDefault;
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('trader')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_trader`)}</div></div>`);
+        options.append(contain);
+        let trader = $(`<div class="storage"></div>`);
+        contain.append(trader);
+
+        trader.append($(`<b-field>${loc(`gov_task_trader_margin`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.trader.margin" :controls="false"></b-numberinput></b-field>`));
+        trader.append($(`<b-field>${loc(`gov_task_trader_reserve`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.trader.reserve" :controls="false"></b-numberinput></b-field>`));
+    }
+
     { // Rebuild Ruins
         if (!global.race.governor.config.hasOwnProperty('repair')){
             global.race.governor.config['repair'] = {};
@@ -1145,6 +1165,80 @@ export const repairWaitCap = 900;           // 15 minutes
 export const repairWaitCapFavoured = 3600;  // 60 minutes for a type the governor is biased toward
 export const repairThreatDefault = 50000; // Default setting for rebuilding structures in danger
 export const freightHorizonDefault = 400; // Days ahead a shortage has to bite before a freighter is sent
+export const marketTraderMarginDefault = 0;  // Extra production per second to buy beyond breaking even
+export const marketTraderReserveDefault = 0; // Money the trader will not spend below
+
+// Route priority for Market Trader shortages; Water follows the shared freight priorities.
+export const marketTraderPriority = PRIORITY.concat(['Water']);
+
+export function marketTraderRank(res){
+    const at = marketTraderPriority.indexOf(res);
+    // Rank unlisted resources after configured priorities.
+    return at < 0 ? marketTraderPriority.length : at;
+}
+
+// Treat missing governor settings as inactive.
+export function marketTraderConfig(){
+    let cfg = global.race.governor['config'] && global.race.governor.config['trader']
+        ? global.race.governor.config.trader : false;
+    return {
+        margin: cfg && typeof cfg.margin === 'number' && !isNaN(cfg.margin) && cfg.margin > 0 ? cfg.margin : marketTraderMarginDefault,
+        reserve: cfg && typeof cfg.reserve === 'number' && !isNaN(cfg.reserve) && cfg.reserve > 0 ? cfg.reserve : marketTraderReserveDefault
+    };
+}
+
+// Assign black-market routes to regional shortages, reclaiming only surplus routes when needed.
+export function runMarketTrader(cfg){
+    const pools = supplyPools();
+    if (!pools.length){ return; }
+    const cap = global.city.market.mtrade;
+    const free = () => cap - bmUsed();
+
+    let deficits = [];      // Regional shortages needing routes.
+    let spare = [];         // Routes supporting a regional surplus.
+
+    for (const pool of pools){
+        for (const res of blackMarketable()){
+            const vol = blackMarketVolume(res);
+            if (!(vol > 0)){ continue; }
+            const routes = bmRoutes(res, pool);
+            const diff = regDiff(res)[pool] || 0;
+            // Production excluding black-market imports.
+            const base = diff - (routes * vol);
+
+            if (diff < 0){
+                deficits.push({ pool, res, short: -diff, rank: marketTraderRank(res),
+                    want: Math.ceil((-diff + cfg.margin) / vol) });
+            }
+            else if (routes > 0 && base >= cfg.margin){
+                spare.push({ pool, res, routes, rank: marketTraderRank(res) });
+            }
+        }
+    }
+    if (!deficits.length){ return; }
+
+    // Prioritize configured resources, then the largest shortfall.
+    deficits.sort((a,b) => a.rank - b.rank || b.short - a.short);
+    // Reclaim lower-priority surplus routes first.
+    spare.sort((a,b) => b.rank - a.rank);
+
+    for (const d of deficits){
+        // Respect the configured money reserve.
+        if (global.resource.Money.amount <= cfg.reserve){ break; }
+        if (free() < d.want){
+            for (const s of spare){
+                if (free() >= d.want){ break; }
+                // Do not reclaim the route being evaluated.
+                if (s.routes <= 0 || (s.pool === d.pool && s.res === d.res)){ continue; }
+                const take = Math.min(s.routes, d.want - free());
+                bmAdjust(s.res, s.pool, -take);
+                s.routes -= take;
+            }
+        }
+        const add = Math.min(d.want, free());
+        if (add > 0){ bmAdjust(d.res, d.pool, add); }
+    }
+}
 
 // Treat missing governor settings as inactive.
 export function freightConfig(){
@@ -1239,6 +1333,19 @@ export const gov_tasks = {
         task(){
             if ( this.req() ){
                 runAutoRoutes(freightConfig());
+            }
+        }
+    },
+    trader: { // Market Trader
+        name: loc(`gov_task_trader`),
+        req(){
+            // Requires regional storage and at least one trade route.
+            return supplyMode() !== 'global' && global.city['market']
+                && global.city.market.mtrade > 0 && supplyPools().length > 0 ? true : false;
+        },
+        task(){
+            if ( this.req() ){
+                runMarketTrader(marketTraderConfig());
             }
         }
     },

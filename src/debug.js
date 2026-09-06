@@ -38,8 +38,21 @@ export function enableDebug(){
             updateDebugData: deepClone(updateDebugData),
             global: {},
             breakdown: {},
-            // Expose the live supply registry for debugging and scripts.
-            supply: {
+            supply: {}
+        };
+        if (global['beta']){
+            window.evolve['starData'] = deepClone(starData);
+            window.evolve['starInfo'] = starInfo;
+        }
+    }
+}
+
+export function updateDebugData(){
+    if (global.settings.expose){
+        window.evolve.global = deepClone(global);
+        window.evolve.craftCost = deepClone(craftCost(true)),
+        window.evolve.breakdown = deepClone(breakdown);
+        window.evolve.supply = deepClone({
                 mode: supplyMode,
                 regions: supplyRegions,
                 active: activeSupplyRegions,
@@ -56,19 +69,6 @@ export function enableDebug(){
                 held: regAmount,
                 room: regMax,
                 split: splitSupply,
-            },
-        };
-        if (global['beta']){
-            window.evolve['starData'] = deepClone(starData);
-            window.evolve['starInfo'] = starInfo;
-        }
-    }
-}
-
-export function updateDebugData(){
-    if (global.settings.expose){
-        window.evolve.global = deepClone(global);
-        window.evolve.craftCost = deepClone(craftCost(true)),
-        window.evolve.breakdown = deepClone(breakdown);
+            });
     }
 }
