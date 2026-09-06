@@ -35,6 +35,12 @@ export function renderStructurePage(zone,path){
         case 'tauceti':
             taucetiPage(content);
             break;
+        case 'underground':
+            undergroundPage(content);
+            break;
+        case 'surface':
+            surfacePage(content);
+            break;
     }
 }
 
@@ -57,6 +63,8 @@ const extraInformation = {
     hell: {},
     eden: {},
     tauceti: {},
+    underground: {},
+    surface: {}
 };
 
 function addInfomration(parent,section,key){
@@ -84,13 +92,17 @@ const calcInfo = {
             'home_mission','dismantle','excavate','alien_outpost','red_mission','matrix','roid_mission','alien_station_survey',
             'contact','introduce','subjugate','gas_contest','gas_contest2','ignite_gas_giant','jeff','goe_facility'
         ],
-        eden: ['survery_meadows','rune_gate_open','survey_fields','fortress','siege_fortress','raid_supplies','ambush_patrol','ruined_fortress','scout_elysium','reincarnation','west_tower','isle_garrison','east_tower','soul_compactor','scout_palace','throne']
+        eden: ['survery_meadows','rune_gate_open','survey_fields','fortress','siege_fortress','raid_supplies','ambush_patrol','ruined_fortress','scout_elysium','reincarnation','west_tower','isle_garrison','east_tower','soul_compactor','scout_palace','throne'],
+        underground: ['food', 'stone', 'chrysotile','slaughter','slave_market','thruster_launch'],
+        surface: ['overview']
     },
     excludeCreep: { // Things that aren't one-offs, but also don't have conventional cost creep.
         planetary: ['horseshoe'],
         space: ['horseshoe'],
         hell: ['ancient_pillars','sphinx','waygate'],
-        tauceti: ['horseshoe']
+        tauceti: ['horseshoe'],
+        underground: ['horseshoe', 'cave_creatures'],
+        surface: ['trees', 'herbivores', 'carnivores', 'scavengers', 'aberrant_herbivores', 'aberrant_carnivores', 'aberrant_scavengers']
     },
     max: { // Structures that can have a max to the number of them that you can get. Things with a max of 1 that are included here as opposed to in the exclude section are things that linger around after being purchased, usually having a changing text after being bought.
         prehistoric: {},
@@ -98,7 +110,9 @@ const calcInfo = {
             s_alter: 1,
             banquet: 5,
             wonder_lighthouse: 1,
-            wonder_pyramid: 1
+            wonder_pyramid: 1,
+            giant_thrusters: 100,
+            thruster_fuel: 500
         },
         space: {
             star_dock: 1,
@@ -161,6 +175,22 @@ const calcInfo = {
             infuser: 25,
             conduit: 25,
             tomb: 10
+        },
+        underground: {
+            mineshaft: 1,
+            mineshaft_elevator: 100,
+            mineshaft_vator: 1,
+            wonder_fountain: 1,
+            old_device: 1,
+            s_alter: 1,
+            banquet: 5,
+        },
+        surface: {
+            grand_dome: 100,
+            giant_thrusters: 1000,
+            thruster_fuel: 5000,
+            nuclear_heater: 100,
+            nuclear_heater_complete: 1
         }
     },
     count: { // Structures that have "count" values that aren't tracked in the building itself. Here you calculate the count that building would have from the save provided.
@@ -182,6 +212,16 @@ const calcInfo = {
         tauceti: {}, 
         eden: {
             rune_gate: global.eden.hasOwnProperty('rune_gate') ? global.eden.rune_gate.count : 0
+        },
+        underground: {},
+        surface: {
+            trees: Math.floor(global.surface.trees?.count || 0),
+            herbivores: Math.floor(global.surface.herbivores?.count || 0),
+            carnivores: Math.floor(global.surface.carnivores?.count || 0),
+            scavengers: Math.floor(global.surface.scavengers?.count || 0),
+            aberrant_herbivores: (global.aberrants?.herbivores?.count || 0),
+            aberrant_carnivores: (global.aberrants?.carnivores?.count || 0),
+            aberrant_scavengers: (global.aberrants?.scavengers?.count || 0),
         }
     },
     creepCalc: { // Because the cost creep is reverse engineered, buildings with very low cost creep can calculation discrepencies by using the base offset of 100. Here you set higher amounts for those specific buildings to use with the calculation to get a more accurate result.
@@ -196,6 +236,9 @@ const calcInfo = {
             spirit_vacuum: 2000,
             research_station: 2000,
             asphodel_harvester: 2000
+        },
+        surface: {
+            thruster_fuel: 1000
         }
     }
 };
@@ -257,6 +300,14 @@ function addCalcInputs(parent,key,section,region,path){
         case 'tauceti':
             action = actions.tauceti[region][key];
             inputs.real_owned = global.tauceti[key] ? global.tauceti[key].count : 0;
+            break;
+        case 'underground':
+            action = actions.underground[region][key];
+            inputs.real_owned = global.underground[key] ? global.underground[key].count : 0;
+            break;
+        case 'surface':
+            action = actions.surface[region][key];
+            inputs.real_owned = global.surface[key] ? global.surface[key].count : 0;
             break;
     }
     if (calcInfo.count[section] && calcInfo.count[section][key]){
@@ -567,6 +618,42 @@ function taucetiPage(content){
                 addCalcInputs(info,struct,'tauceti',region);
                 sideMenu('add',`tauceti-structures`,id[1],typeof actions.tauceti[region][struct].title === 'function' ? actions.tauceti[region][struct].title() : actions.tauceti[region][struct].title);
                 popover(`pop${actions.tauceti[region][struct].id}`,$(`<div>${desc}</div>`));
+            }
+        });
+    });
+}
+
+function undergroundPage(content){
+    Object.keys(actions.underground).forEach(function (region){
+        Object.keys(actions.underground[region]).forEach(function (struct){
+            if ((!actions.underground[region][struct].hasOwnProperty('wiki') || actions.underground[region][struct].wiki)){
+                let id = actions.underground[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.underground[region][struct], { isStruct: true });
+                addInfomration(info,'underground',struct);
+                addCalcInputs(info,struct,'underground',region);
+                sideMenu('add',`underground-structures`,id[1],typeof actions.underground[region][struct].title === 'function' ? actions.underground[region][struct].title() : actions.underground[region][struct].title);
+            }
+        });
+    });
+}
+
+function surfacePage(content){
+    Object.keys(actions.surface).forEach(function (region){        
+        let name = typeof actions.surface[region].info.name === 'string' ? actions.surface[region].info.name : actions.surface[region].info.name(true);
+        let desc = typeof actions.surface[region].info.desc === 'string' ? actions.surface[region].info.desc : actions.surface[region].info.desc(true);
+
+        Object.keys(actions.surface[region]).forEach(function (struct){
+            if (struct !== 'info' && (!actions.surface[region][struct].hasOwnProperty('wiki') || actions.surface[region][struct].wiki)){
+                let id = actions.surface[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.surface[region][struct], { extended: `<span id="pop${actions.surface[region][struct].id}">${name}</span>`, isStruct: true });
+                addInfomration(info,'surface',struct);
+                addCalcInputs(info,struct,'surface',region);
+                sideMenu('add',`surface-structures`,id[1],typeof actions.surface[region][struct].title === 'function' ? actions.surface[region][struct].title() : actions.surface[region][struct].title);
+                popover(`pop${actions.surface[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });

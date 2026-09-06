@@ -18,6 +18,7 @@ const iceAgeModules = {
     underground:{
         gather_zone: {
             stone: buildTemplate(`stone`,'underground'),
+            chrysotile: buildTemplate(`chrysotile`,'underground'),
             food: buildTemplate(`food`,'underground'),
             water: {
                 id: `underground-water`,
@@ -285,15 +286,7 @@ const iceAgeModules = {
                 trait: ['artifical'],
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('under_transmitter', r.offset, 180, 1.35, 'cave')},
-                    Stone(r={}){
-                        r.offset = r.offset ?? 0;
-                        if ((global.surface.under_transmitter?.count || 0) + r.offset >= 8){
-                            return 0;
-                        }
-                        else {
-                            return undergroundCostMultiplier('under_transmitter', r.offset, 120, 1.38, 'cave');
-                        }
-                    },
+                    Stone(r={}){ return undergroundCostMultiplier('under_transmitter', r.offset, 120, 1.38, 'cave')},
                     Copper(r={}){
                         r.offset = r.offset ?? 0;
                         if ((global.surface.under_transmitter?.count || 0) + r.offset >= 3){
@@ -893,9 +886,9 @@ const iceAgeModules = {
                 reqs: { mineshaft: 1 },
                 queue_complete(){ return 1 - global.underground.mineshaft.count; },
                 cost: {
-                    Money(r={}){ return !global.underground.mineshaft.count ? 18000 : 0; },
-                    Iron(r={}){ return !global.underground.mineshaft.count ? 1300 : 0; },
-                    Water(r={}){ return !global.underground.mineshaft.count ? 2400 : 0; }
+                    Money(r={}){ return ((r.offset || 0) + (global.underground.mineshaft?.count || 0)) < 1 ? 18000 : 0; },
+                    Iron(r={}){ return ((r.offset || 0) + (global.underground.mineshaft?.count || 0)) < 1 ? 1300 : 0; },
+                    Water(r={}){ return ((r.offset || 0) + (global.underground.mineshaft?.count || 0)) < 1 ? 2400 : 0; }
                 },
                 effect(){
                     let depth = this.full_depth();
@@ -916,7 +909,7 @@ const iceAgeModules = {
                     return false;
                 },
                 dig_rate(){
-                    let ratio = global.underground['mineshaft'].ratio;
+                    let ratio = global.underground['mineshaft']?.ratio || 100;
                     let miner_base = workerScale(global.civic.miner.workers * ratio / 100,'mineshaft_miner');
                     let trait_mods = racialTrait(miner_base,'miner'); 
                     if (global.race['tough']){
@@ -949,22 +942,28 @@ const iceAgeModules = {
                     if (p_on['mineshaft_vator']){
                         miner_base *= 2;
                     }
-                    if (global.underground['mineshaft'].depth >= 200000){
+                    if (global.underground['mineshaft']?.depth >= 200000){
                         miner_base *= 0.9995 ** (global.underground['mineshaft'].depth - 200000);
                     }
                     return miner_base;
                 },
                 ice_rate(){
+                    if (!global.underground['mineshaft']){
+                        return 0;
+                    }
                     if (p_on['mineshaft_vator']){
                         return global.underground['mineshaft'].ice / -1000;
                     }
-                    let rate = Math.max(0, Math.min(global.underground['mineshaft'].depth, 200000) - global.underground['mineshaft'].ice) / 1000;
+                    let rate = Math.max(0, Math.min(global.underground['mineshaft']?.depth, 200000) - global.underground['mineshaft'].ice) / 1000;
                     if (global.tech['mineshaft'] >= 2){
                         rate *= 0.75;
                     }
                     return rate;
                 },
                 full_depth(){
+                    if(!global.underground['mineshaft']){
+                        return 0;
+                    }
                     return global.underground['mineshaft'].depth - global.underground['mineshaft'].ice;
                 },
                 struct(){
@@ -1082,7 +1081,7 @@ const iceAgeModules = {
         depths: {
             stone_house: {
                 id: 'underground-stone_house',
-                title(){ return housingLabel('medium'); },
+                title(){ return loc('underground_stone_house'); },
                 desc(){ return loc('underground_stone_house_desc'); },
                 type: 'housing',
                 reqs: { housing: 2 },
@@ -1257,7 +1256,7 @@ const iceAgeModules = {
                 effect(){
                     let medic = global.tech['medic'] >= 1 ? `<div>${loc('underground_color_garden_effect2', [+this.mushroom_effect().toFixed(1)])}`: '';
                     return`<div>${loc('plus_max_resource',[jobScale(1),loc(`job_gardener`)])}</div><div>${loc('city_max_morale',[2])}</div>
-                        <div>${loc('underground_color_garden_effect1',[Math.floor(global.underground['color_garden'].mushrooms), this.mushroom_effect()])}</div>${medic}`;
+                        <div>${loc('underground_color_garden_effect1',[Math.floor(global.underground['color_garden']?.mushrooms || 0), this.mushroom_effect()])}</div>${medic}`;
                 },
                 action(args){
                     if (payCosts(this)){
@@ -1561,18 +1560,19 @@ const iceAgeModules = {
                 queue_complete(){ return 0; },
                 effect(){
                     let wins = 0;
-                    for (let i=0;i<18;i++){
+                    for (let i=0;i<5;i++){
                         if (cave_fight(false, global['warseed'] + (i * 1000)).success){
                             wins++;
                         }
                     }
-                    wins += seededRandom(-2,2,false, global['warseed']);
+                    wins += seededRandom(-5,5,false, global['warseed']);
                     if (wins < 0){
                         wins = 0;
                     }
-                    let calc_odds = (wins * 10 - 100).toFixed(0);
+
+                    let calc_odds = (wins * 20 - 100).toFixed(0);
                     let desc = `<div>${loc('underground_cave_creatures_effect', [3])}</div><div>${loc('underground_cave_creatures_effect2', [this.group_size()])}</div>`;
-                    if (global.underground['cave_creatures'].count >= 10){
+                    if (global.underground['cave_creatures']?.count >= 10){
                         desc += `<div class="has-text-special">${loc('underground_cave_creatures_effect3',[+(this.elites() * 100).toFixed(2)])}</div>`;
                     }
                     desc += `<div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
@@ -1601,10 +1601,10 @@ const iceAgeModules = {
                     return false;
                 },
                 elites(){ //armored + tortoisan thralls can make your army virtually immune to any single strike. Elites go straight through that.
-                    return Math.max(0, (global.underground['cave_creatures'].count - 10) / 500);
+                    return Math.max(0, ((global.underground['cave_creatures']?.count || 0) - 10) / 500);
                 },
                 group_size(){
-                    return Math.floor(20 + (4 * global.underground['cave_creatures'].count ) + (global.underground['cave_creatures'].count ** 2.5) * 1.5); //20, 25, 36, 59, 100, 165, etc
+                    return Math.floor(20 + (4 * (global.underground['cave_creatures']?.count || 0) ) + ((global.underground['cave_creatures']?.count || 0) ** 2.5) * 1.5); //20, 25, 36, 59, 100, 165, etc
                 },
                 struct(){
                     return {
@@ -1660,7 +1660,7 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<div>${loc('portal_archaeology_effect',[jobScale(1)])}</div>${ false ? `<div>${loc('underground_archaeological_dig_effect1',[(100 / this.relic_chance()).toFixed(2)])}</div>` : ''}
-                        <div>${loc('underground_archaeological_dig_effect2',[global.underground['archaeological_dig'].relics, (this.knowVal()).toFixed(0)])}</div>`;
+                        <div>${loc('underground_archaeological_dig_effect2',[global.underground['archaeological_dig']?.relics || 0, (this.knowVal()).toFixed(0)])}</div>`;
                     if (global.tech['high_tech'] >= 2){
                         desc += `<div class="has-text-caution">${loc('underground_archaeological_dig_effect3',[this.powered(), 30])}</div>`;
                     }
@@ -1683,7 +1683,7 @@ const iceAgeModules = {
                 power_reqs: { high_tech: 2 },
                 relic_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc. Rolled every midLoop interval (1 time/second)
                     let base = 20;
-                    base += 15 * global.underground['archaeological_dig'].relics;
+                    base += 15 * (global.underground['archaeological_dig']?.relics || 0);
                     let workers = workerScale(global.civic.archaeologist.workers,'archaeologist');
                     if (global.tech['science'] >= 6){
                         workers *= 1 + (0.02 * highPopAdjust(workerScale(global.civic.professor.workers, 'professor')));
@@ -2672,9 +2672,9 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<div>${loc('cave_arena_effect1', [1])}</div>`;
-                    desc += `<div>${loc('cave_arena_effect2', [+((this.trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.arena.herbivores_trophy])}</div>`;
-                    desc += `<div>${loc('cave_arena_effect3', [+((this.trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.arena.carnivores_trophy])}</div>`;
-                    desc += `<div>${loc('cave_arena_effect4', [+((this.trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.arena.scavengers_trophy])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect2', [+((this.trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.arena?.herbivores_trophy || 0])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect3', [+((this.trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.arena?.carnivores_trophy || 0])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect4', [+((this.trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.arena?.scavengers_trophy || 0])}</div>`;
                     return desc;
                 },
                 trophy_effect(creature){
@@ -3255,7 +3255,7 @@ const iceAgeModules = {
                 id: 'surface-grand_dome',
                 title(){ return loc('surface_grand_dome'); },
                 desc(wiki){
-                    return `<div>${loc('surface_grand_dome')}</div>${global.surface.grand_dome.count < 100 || wiki ? `<div class="has-text-special">${loc('requires_segments',[100])}</div>` : ``}`;
+                    return `<div>${loc('surface_grand_dome')}</div>${global.surface.grand_dome?.count < 100 || wiki ? `<div class="has-text-special">${loc('requires_segments',[100])}</div>` : ``}`;
                 },
                 type: 'megaproject',
                 spared: true,
@@ -3295,9 +3295,9 @@ const iceAgeModules = {
                 },
                 action(args){
                     if (payCosts(this)){
-                        if (global.surface.grand_dome.count < 100){
+                        if (global.surface.grand_dome?.count < 100){
                             incrementStruct(this);
-                            if (global.surface.grand_dome.count >= 100){
+                            if (global.surface.grand_dome?.count >= 100){
                                 let oddity = 0;
                                 if (!(global.race.species === 'hybrid' ? (global.custom.race1?.hybrid || []) :
                                     races[global.race.species].hybrid || [races[global.race.species].type]).includes('primordial')){
@@ -3336,6 +3336,9 @@ const iceAgeModules = {
                 title(){ return loc('surface_overview'); },
                 desc(){
                     let info = global.surface.overview;
+                    if(!info){
+                        return '';
+                    }
                     let desc = `<div>${loc('surface_overview_area', [(info.area).toFixed(0)])}</div>`;
                     let water_use = this.total_water_use();
                     desc += `<div class="${water_use > info.water ? 'has-text-danger' : ''}">${loc('surface_overview_water', [(info.water - water_use).toFixed(0), info.water, water_use.toFixed(0)])}</div>`;
@@ -3504,7 +3507,6 @@ const iceAgeModules = {
                 desc(){ return loc('surface_trees_desc'); },
                 count(){ return Math.floor(global.surface.trees?.count || 0); },
                 reqs: { surface: 4 },
-                wiki: false,
                 queue_complete(){ return false; },
                 show_count: true,
                 spared: true,
@@ -3516,7 +3518,7 @@ const iceAgeModules = {
                         serve *= servantTrait(global.race.servants.jobs.lumberjack,'lumberjack');
                         lumberjacks += serve;
                     }
-                    if (global.surface.trees.empowered){
+                    if (global.surface.trees?.empowered){
                         let ratio = global.surface.trees.empowered / global.surface.trees.count;
                         ratio = Math.min(1, ratio);
                         if (!global.surface.trees.count){
@@ -3531,7 +3533,7 @@ const iceAgeModules = {
                     let cooldown = Math.ceil(this.cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
                     desc += `<div class="has-text-special">${loc('surface_trees_effect1')}</div>`;
                     desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil(global.surface.overview.cooldown * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('surface_overview_cooldown_left', [Math.ceil((global.surface.overview?.cooldown || 0) * actions.surface.wastes.genetics_lab.creation_cooldown_mult())])}</div>`;
                     return desc;
                 },
                 hardiness(){
@@ -3573,7 +3575,7 @@ const iceAgeModules = {
                 spared: true,
                 effect(){
                     let desc = `<div>${loc('surface_herbivores_effect1', [((this.tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    if (global.surface.herbivores.empowered){
+                    if (global.surface.herbivores?.empowered){
                         let ratio = global.surface.herbivores.empowered / global.surface.herbivores.count;
                         ratio = Math.min(1, ratio);
                         if (!global.surface.herbivores.count){
@@ -3582,7 +3584,7 @@ const iceAgeModules = {
                         desc += `<div class="TTEmpowered">${loc('surface_ecosystem_empowered', [Math.floor(global.surface.herbivores.empowered), +(ratio * 100).toFixed(1)])}</div>`;
                     }
                     desc += cycle_breakdown('herbivores');
-                    if (support_on['genetics_lab'] > 0){
+                    if (support_on['genetics_lab'] > 0 && global.surface.overview){
                         let cooldown = Math.ceil(this.cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
                         desc += `<div class="has-text-special">${loc('surface_herbivores_effect2')}</div>`;
                         desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
@@ -3600,7 +3602,6 @@ const iceAgeModules = {
                     return 100;
                 },
                 reqs: { surface: 5 },
-                wiki: false,
                 queue_complete(){ return false; },
                 action(args){
                     if (global.surface.overview.cooldown === 0 && support_on['genetics_lab']){
@@ -3631,7 +3632,7 @@ const iceAgeModules = {
                 spared: true,
                 effect(){
                     let desc = `<div>${loc('surface_carnivores_effect1', [((this.tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    if (global.surface.carnivores.empowered){
+                    if (global.surface.carnivores?.empowered){
                         let ratio = global.surface.carnivores.empowered / global.surface.carnivores.count;
                         ratio = Math.min(1, ratio);
                         if (!global.surface.carnivores.count){
@@ -3640,10 +3641,10 @@ const iceAgeModules = {
                         desc += `<div class="TTEmpowered">${loc('surface_ecosystem_empowered', [Math.floor(global.surface.carnivores.empowered), +(ratio * 100).toFixed(1)])}</div>`;
                     }
                     desc += cycle_breakdown('carnivores');
-                    if (global.surface.carnivores.count * ecosystemInfo.carnivores.meat_use > global.surface.herbivores.count / 100){
+                    if ((global.surface.carnivores?.count || 0) * ecosystemInfo.carnivores.meat_use > (global.surface.herbivores?.count || 0) / 100){
                         desc += `<div class="has-text-danger">${loc('surface_carnivores_find_food')}</div>`;
                     }
-                    if (support_on['genetics_lab'] > 0){
+                    if (support_on['genetics_lab'] > 0 && global.surface.overview){
                         let cooldown = Math.ceil(this.cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
                         desc += `<div class="has-text-special">${loc('surface_carnivores_effect2')}</div>`;
                         desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
@@ -3661,7 +3662,6 @@ const iceAgeModules = {
                     return 300;
                 },
                 reqs: { surface: 7 },
-                wiki: false,
                 queue_complete(){ return false; },
                 action(args){
                     if (global.surface.overview.cooldown === 0 && support_on['genetics_lab']){
@@ -3692,7 +3692,7 @@ const iceAgeModules = {
                 spared: true,
                 effect(){
                     let desc = `<div>${loc('surface_scavengers_effect1', [((this.tree_effect() - 1) * 100).toFixed(0)])}</div>`;
-                    if (global.surface.scavengers.empowered){
+                    if (global.surface.scavengers?.empowered){
                         let ratio = global.surface.scavengers.empowered / global.surface.scavengers.count;
                         ratio = Math.min(1, ratio);
                         if (!global.surface.scavengers.count){
@@ -3701,7 +3701,7 @@ const iceAgeModules = {
                         desc += `<div class="TTEmpowered">${loc('surface_ecosystem_empowered', [Math.floor(global.surface.scavengers.empowered), +(ratio * 100).toFixed(1)])}</div>`;
                     }
                     desc += cycle_breakdown('scavengers');
-                    if (support_on['genetics_lab'] > 0){
+                    if (support_on['genetics_lab'] > 0 && global.surface.overview){
                         let cooldown = Math.ceil(this.cooldown() * actions.surface.wastes.genetics_lab.creation_cooldown_mult());
                         desc += `<div class="has-text-special">${loc('surface_scavengers_effect2')}</div>`;
                         desc += `<div class="has-text-special">${loc('surface_overview_cooldown', [cooldown])}</div>`;
@@ -3719,7 +3719,6 @@ const iceAgeModules = {
                     return 500;
                 },
                 reqs: { surface: 8 },
-                wiki: false,
                 queue_complete(){ return false; },
                 action(args){
                     if (global.surface.overview.cooldown === 0 && support_on['genetics_lab']){
@@ -3779,7 +3778,6 @@ const iceAgeModules = {
                     return desc;
                 },
                 reqs: { ecosystem_genetics: 3 },
-                wiki: false,
                 special: true,
                 queue_complete(){ return false; },
                 action(args){
@@ -3866,7 +3864,6 @@ const iceAgeModules = {
                     return desc;
                 },
                 reqs: { ecosystem_genetics: 3 },
-                wiki: false,
                 special: true,
                 queue_complete(){ return false; },
                 action(args){
@@ -3953,7 +3950,6 @@ const iceAgeModules = {
                     return desc;
                 },
                 reqs: { ecosystem_genetics: 3 },
-                wiki: false,
                 special: true,
                 queue_complete(){ return false; },
                 action(args){
@@ -4005,8 +4001,8 @@ const iceAgeModules = {
         },
         crater: {
             info: {
-                name: !global.tech['crater'] ? loc('surface_crater_hidden') : loc('surface_crater'),
-                desc: !global.tech['crater'] ? loc('surface_crater_hidden_desc') : loc('surface_crater_desc'),
+                name(wiki){ return !global.tech['crater'] && !wiki ? loc('surface_crater_hidden') : loc('surface_crater')},
+                desc(wiki){ return !global.tech['crater'] && !wiki ? loc('surface_crater_hidden_desc') : loc('surface_crater_desc')},
                 support: 'crater_headquarters',
                 extra(region){
                     if (!global.tech['crater']){
@@ -4505,31 +4501,35 @@ const iceAgeModules = {
                 max_count(){ return global.surface.thruster_fuel.count >= 500 ? 5000 : 500 },
                 cost: {
                     Money(r={}){
-                        if (global.surface.thruster_fuel?.count < 500){
-                            return ((r.offset || 0) + (global.surface.thruster_fuel?.count || 0)) < 500 ? 1500000 : 0;
-                        } else if (global.surface.thruster_fuel?.count < 5000){
-                            return undergroundCostMultiplier('thruster_fuel', (r.offset || 0) - 500, 1500000, 1.001, 'thruster_site', 'surface');
+                        let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
+                        if (count < 500){
+                            return count < 500 ? 1500000 : 0;
+                        } else if (count < 5000){
+                            return undergroundCostMultiplier('thruster_fuel', count - 500, 1500000, 1.001, 'thruster_site', 'surface');
                         } else{ return 0; }
                     },
                     Super_Fuel(r={}){ 
-                        if (global.surface.thruster_fuel?.count < 500){
-                            return ((r.offset || 0) + (global.surface.thruster_fuel?.count || 0)) < 500 ? 1000 : 0;
-                        } else if (global.surface.thruster_fuel?.count < 5000){
-                            return undergroundCostMultiplier('thruster_fuel', (r.offset || 0) - 500, 1000, 1.001, 'thruster_site', 'surface');
+                        let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
+                        if (count < 500){
+                            return count < 500 ? 1000 : 0;
+                        } else if (count < 5000){
+                            return undergroundCostMultiplier('thruster_fuel', count - 500, 1000, 1.001, 'thruster_site', 'surface');
                         } else{ return 0; }
                     },
                     Brick(r={}){
-                        if (global.surface.thruster_fuel?.count < 500){
-                            return ((r.offset || 0) + (global.surface.thruster_fuel?.count || 0)) < 500 ? 28000 : 0;
-                        } else if (global.surface.thruster_fuel?.count < 5000){
-                            return undergroundCostMultiplier('thruster_fuel', (r.offset || 0) - 500, 28000, 1.001, 'thruster_site', 'surface');
+                        let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
+                        if (count < 500){
+                            return count < 500 ? 28000 : 0;
+                        } else if (count < 5000){
+                            return undergroundCostMultiplier('thruster_fuel', count - 500, 28000, 1.001, 'thruster_site', 'surface');
                         } else{ return 0; }
                     },
                     Wrought_Iron(r={}){
-                        if (global.surface.thruster_fuel?.count < 500){
-                            return ((r.offset || 0) + (global.surface.thruster_fuel?.count || 0)) < 500 ? 20000 : 0;
-                        } else if (global.surface.thruster_fuel?.count < 5000){
-                            return undergroundCostMultiplier('thruster_fuel', (r.offset || 0) - 500, 20000, 1.001, 'thruster_site', 'surface');
+                        let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
+                        if (count < 500){
+                            return count < 500 ? 20000 : 0;
+                        } else if (count < 5000){
+                            return undergroundCostMultiplier('thruster_fuel', count - 500, 20000, 1.001, 'thruster_site', 'surface');
                         } else{ return 0; }
                     }
                 },
@@ -4737,12 +4737,22 @@ function cave_fight(real=false, seed=global['warseed']){
     //if no creatures are left, the battle counts as won. Otherwise it's a loss.
     //after the battle. Any dead soldiers can get saved by instincts as wounded soldiers or revive through the revive trait.
 
+    const rand = (min, max) => {
+        if(real){
+            return seededRandom(min, max, true);
+        }
+        max = max || 1;
+        min = min || 0;
+        let newSeed = (seed * 9301 + 49297) % 233280;
+        let rnd = newSeed / 233280;
+        seed = newSeed
+        return min + rnd * (max - min);
+    }
+
     let creatures = actions.underground.depths.cave_creatures.group_size();
     let army = garrisonSize();
     let starting_injuries = global.civic.garrison.wounded;
     let injuries = starting_injuries;
-    let stored_seed = global['warseed'];
-    global['warseed'] = seed;
     let ambushing_max = 70 - Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
                                     global.race['elusive'] ? traits.elusive.vars()[0] : 0);
     if (global.race['chicken']){
@@ -4751,7 +4761,7 @@ function cave_fight(real=false, seed=global['warseed']){
     if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
         ambushing_max -= Math.round(3 * traits.ocular_power.vars()[1] / 100);
     }
-    let ambushing = seededRandom(ambushing_max / 5, ambushing_max,true) / 500 * creatures; //by default, between 2.8% and 14% of creatures ambush
+    let ambushing = rand(ambushing_max / 5, ambushing_max,true) / 500 * creatures; //by default, between 2.8% and 14% of creatures ambush
     let pierce = actions.underground.depths.cave_creatures.elites();
     let deaths = Math.floor(ambushing / 3); //1 soldier dies per 3 ambushing creatures
     let guaranteed = Math.floor(deaths * pierce);
@@ -4771,10 +4781,10 @@ function cave_fight(real=false, seed=global['warseed']){
     let rounds = 0;
     
     while(creatures > 0 && army > 0 && rounds < (real ? 100 : 10)){
-        let rating = armyRating(army, Math.min(army, injuries));
-        creatures -= Math.ceil(seededRandom(rating * 0.3, rating,true));
+        let rating = armyRating(army, Math.min(army, injuries), 'army');
+        creatures -= Math.ceil(rand(rating * 0.3, rating,true));
         if (creatures > 0){
-            let new_deaths = Math.ceil(seededRandom(creatures / 15, creatures / 5,true));
+            let new_deaths = Math.ceil(rand(creatures / 15, creatures / 5,true));
             let guaranteed = Math.floor(new_deaths * pierce);
             let armor = armorCalc(new_deaths - guaranteed, army);
             let armor_reduce = Math.floor(Math.min(new_deaths, armor, army-injuries));
@@ -4807,7 +4817,7 @@ function cave_fight(real=false, seed=global['warseed']){
         global.civic.garrison.wounded = Math.min(army, injuries);
         if (global.race['revive']){
             let type = global.city.calendar.temp + (creatures <= 0 ? 0 : 3);
-            revive = deaths * Math.round(seededRandom(0, deaths / traits.revive.vars()[type], true));
+            revive = deaths * Math.round(rand(0, deaths / traits.revive.vars()[type], true));
             global.civic.garrison.workers += revive;
         }
         if (global.race['blood_thirst']){
@@ -4816,9 +4826,6 @@ function cave_fight(real=false, seed=global['warseed']){
                 global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
             }
         }
-    }
-    else{
-        global['warseed'] = stored_seed; //do not update seed in a preview attempt.
     }
     return {
         success: creatures <= 0,
@@ -4836,7 +4843,7 @@ export function aberrant_stats(lifeform){
     let loot_mult = 1;
     let aberrant_trait_list = ecosystemInfo.majorTraits;
     let aberrant_traits = global.aberrants[lifeform].traits;
-    let a_effect = (trait) => {
+    const a_effect = (trait) => {
         return aberrant_trait_list[trait].trait_effect(aberrant_traits[trait]).effect || 1;
     }
 
@@ -4900,11 +4907,22 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     let aberrant_traits = global.aberrants[lifeform].traits;
     let aberrant_trait_list = ecosystemInfo.majorTraits;
     let fight_log = [];
-    let a_effect = (trait) => {
+    const a_effect = (trait) => {
         return aberrant_trait_list[trait].trait_effect(aberrant_traits[trait]).effect || 1;
     }
-    let t_effect = (trait) => { //trees apply global effects to all aberrants
+    const t_effect = (trait) => { //trees apply global effects to all aberrants
         return aberrant_trait_list[trait].trait_effect(global.aberrants.trees.traits[trait]).effect || 1;
+    }
+    const rand = (min, max) => {
+        if(real){
+            return seededRandom(min, max, true);
+        }
+        max = max || 1;
+        min = min || 0;
+        let newSeed = (seed * 9301 + 49297) % 233280;
+        let rnd = newSeed / 233280;
+        seed = newSeed
+        return min + rnd * (max - min);
     }
     let revive_active = a_effect('revive') - 1;
     let army = garrisonSize();
@@ -4941,8 +4959,6 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
         }
     }
 
-    let stored_seed = global['warseed'];
-    global['warseed'] = seed;
     let ambush_power = 70 - Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
                                     global.race['elusive'] ? traits.elusive.vars()[0] : 0);
     if (global.race['chicken']){
@@ -4961,7 +4977,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     
     for(let i=0;i<ambushes; i++){
         //first strikes are 35-70% of its power by default. Later attacks are 33.3%-100%
-        let ambush_deaths = seededRandom(enemy_stats.fight * ambush_power / 200, enemy_stats.fight * ambush_power / 100,true);
+        let ambush_deaths = rand(enemy_stats.fight * ambush_power / 200, enemy_stats.fight * ambush_power / 100,true);
         ambush_deaths *= 1 + ((a_effect('blood_thirst')-1) * injuries) //fights harder when facing injured soldiers
         attacked(ambush_deaths, 'ambush');
     }
@@ -4977,8 +4993,8 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     let hp = enemy_stats.health;
     let rounds = 0;
     while(hp > 0 && army > 0 && (real ? 100 : 10)){
-        let rating = armyRating(army, Math.min(army, injuries));
-        let damage = seededRandom(rating * 0.3, rating,true);
+        let rating = armyRating(army, Math.min(army, injuries), 'army');
+        let damage = rand(rating * 0.3, rating,true);
         damage *= t_effect('sappy');
         damage -= a_effect('armored');
         if (rounds === 0){
@@ -5022,7 +5038,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
                     attack_deaths = t_effect('grenadier');
                 }
                 else{
-                    attack_deaths = seededRandom(fight / 3, fight,true);
+                    attack_deaths = rand(fight / 3, fight,true);
                 }
                 attacked(attack_deaths, i === 0 ? 'enemy_attack' : 'grenadier', i === 0);
                 if (aberrant_traits.regenerative && i === 0){
@@ -5062,9 +5078,6 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
                 global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
             }
         }
-    }
-    else{
-        global['warseed'] = stored_seed; //do not update seed in a preview attempt.
     }
     let result = {
         success: hp <= 0,

@@ -1935,6 +1935,20 @@ export function masteryType(universe,detailed,unmodified){
     return detailed ? { g: 0, u: 0, m:0 } : 0;
 }
 
+export function calcDeepPower(type){
+    if (!global.race['deep_power'] || !global.race['deepPowerConfig']?.hasOwnProperty(type)){
+        return 1;
+    }
+    else{
+        let complexity = {global: 0.5, crafting: 0.5, trade: 0.2, combat: 2};
+        let power = global.race['deepPowerConfig'][type];
+        if (power > 50){ //scaling is halved above 50%
+            power = 50 + (power-50) / 2;
+        }
+        return (power / complexity[type] / 100);
+    }
+}
+
 export const calcPillar = (function(){
     var bonus;
     return function(recalc){

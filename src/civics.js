@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery, calcDeepPower } from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars} from './races.js';
 import { defineGovernor, govActive, removeTask } from './governor.js';
@@ -2460,9 +2460,10 @@ export function armyRating(val,type,wound,analysis){
         data.push({ k: 'trait_grenadier_name', v: grenadier });
     }
     if (global.race['deep_power']){
-        let power = (traits.deep_power.vars()[1] * calc_mastery() / 10000);
-        army *= 1 + power;
-        data.push({ k: 'trait_deep_power_name', v: power });
+        let mastery = calc_mastery() / 100;
+        mastery *= calcDeepPower('combat');
+        army *= 1 + mastery;
+        data.push({ k: 'mastery', v: mastery });
     }
     if (global.underground['hunting_lodge_perk']){
         let hunter = (global.underground['hunting_lodge_perk'].count * 0.02);

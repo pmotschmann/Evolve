@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
@@ -1337,6 +1337,7 @@ function fastLoop(){
     }
     if (global.genes['challenge'] && global.genes.challenge >= 2){
         let mastery = calc_mastery();
+        mastery *= calcDeepPower('global');
         breakdown.p['Global'][loc('mastery')] = mastery + '%';
         global_multiplier *= 1 + (mastery / 100);
     }
@@ -2138,6 +2139,7 @@ function fastLoop(){
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
+                    mastery *= calcDeepPower('trade');
                     imprt_vol *= 1 + (mastery / 100);
                 }
                 if (global.stats.achieve.hasOwnProperty('trade')){
@@ -12752,7 +12754,7 @@ function midLoop(){
         if(global.underground['mineshaft']){ //ice age mineshaft mechanics
             let mineshaft = actions.underground.cave['mineshaft'];
             let dig_rate = mineshaft.dig_rate();
-            let ice_break = Math.min(dig_rate, global.underground['mineshaft'].ice / 2);
+            let ice_break = Math.min(dig_rate, global.underground['mineshaft'].ice);
             dig_rate -= ice_break;
             global.underground['mineshaft'].ice -= ice_break;
 
@@ -14900,7 +14902,8 @@ function healSoldiers(astroSign){
         hc += geneVars('fibroblast')[0] * global.race['fibroblast'];
     }
     if (global.race['deep_power']){
-        let power = (traits.deep_power.vars()[1] * calc_mastery() / 10000);
+        let mastery = calc_mastery();
+        mastery *= calcDeepPower('combat'); //can only have an effect if deep power setting is above 0
         hc *= 1 + power;
     }
     if (global.underground['hunting_lodge_perk']){

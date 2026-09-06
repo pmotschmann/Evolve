@@ -50,7 +50,8 @@ function initPage(){
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
-                { key: 'hell' }                
+                { key: 'hell' },
+                { key: 'iceage' }
             ]
         },
         {
@@ -131,6 +132,25 @@ function initPage(){
                 { key: 'tauceti' },
                 { key: 'matrioshka' },
                 { key: 'shadow_war' },
+            ]
+        },
+        {
+            key: 'ice_structures',
+            submenu: [
+                { key: 'prehistoric' },
+                { key: 'underground' },
+                { key: 'surface' }
+            ]
+        },
+        {
+            key: 'ice_tech',
+            submenu: [
+                { key: 'primitive' },
+                { key: 'civilized' },
+                { key: 'discovery' },
+                { key: 'industrialized' },
+                { key: 'globalized' },
+                { key: 'glacial' }
             ]
         },
         {
@@ -277,6 +297,16 @@ async function menuDispatch(main,sub,frag){
 
         case 'arpa':
             arpaPage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'ice_structures':
+            renderStructurePage(sub,'iceage');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'ice_tech':
+            renderTechPage(sub, 'iceage');
             setWindowHash(main,sub,frag);
             break;
 

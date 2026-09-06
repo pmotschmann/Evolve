@@ -1349,7 +1349,7 @@ const techs = {
     mushroom_farm: {
         id: 'tech-mushroom_farm',
         title(){ return loc('tech_mushroom_farm', [actions.underground.cave.mushroom_farm.mushroom_type()]); },
-        desc(){ return loc('tech_mushroom_farm_desc', [actions.underground.cave.mushroom_farm.mushroom_type()]); },
+        desc(){ return this.title(); },
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3, water: 1 },

@@ -3,7 +3,7 @@ import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, 
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
@@ -4872,7 +4872,7 @@ export const traits = {
             }
         }
     },
-    deep_power: { //increased mastery, mastery applies to soldier hunting, combat rating and healing
+    deep_power: { //increased mastery, mastery effects can be distributed along the different stats they provide
         name(){ return loc('trait_deep_power_name'); },
         desc(v){ return loc('trait_deep_power',v); },
         type: 'genus',
@@ -4880,22 +4880,22 @@ export const traits = {
         taxonomy: 'combat',
         val: 9,
         vars(r){
-            // [mastery increase, percentage of mastery as bonus to hunting, combat rating and healing]
+            // [mastery increase multiplier]
             switch (r || traitRank('deep_power') || 1){
                 case 0.1:
-                    return [8, 10];
+                    return [8];
                 case 0.25:
-                    return [10, 20];
+                    return [10];
                 case 0.5:
-                    return [15, 20];
+                    return [15];
                 case 1:
-                    return [18, 30];
+                    return [18];
                 case 2:
-                    return [20, 35];
+                    return [20];
                 case 3:
-                    return [20, 45];
+                    return [20];
                 case 4:
-                    return [25, 45];
+                    return [25];
             }
         }
     },
@@ -8511,6 +8511,16 @@ export function cleanAddTrait(trait){
             };
             renderSupernatural();
             break;
+        case 'deep_power':
+            global.settings.showWish = true;
+            global.race['deepPowerConfig'] = {
+                global: 50,
+                crafting: 50,
+                trade: 20,
+                combat: 0
+            }
+            renderSupernatural();
+            break;
         case 'ooze':
             if (!global.tech['high_tech'] && global.race.species !== 'custom' && (global.race.species !== 'sludge' || global.race.species !== 'ultra_sludge')){
                 global.race['gross_enabled'] = 1;
@@ -8747,7 +8757,7 @@ export function cleanRemoveTrait(trait,rank){
             global.settings.showPsychic = false;
             break;
         case 'wish':
-            if (!global.race['ocular_power']){
+            if (!global.race['ocular_power'] && !global.race['deep_power']){
                 global.settings.showWish = false;
             }
             if (global.race['wishStats'] && global.race.wishStats.strong){
@@ -8756,7 +8766,12 @@ export function cleanRemoveTrait(trait,rank){
             }
             break;
         case 'ocular_power':
-            if (!global.tech['wish']){
+            if (!global.tech['wish'] && !global.race['deep_power']){
+                global.settings.showWish = false;
+            }
+            break;
+        case 'deep_power':
+            if (!global.tech['wish'] && !global.race['ocular_power']){
                 global.settings.showWish = false;
             }
             break;
@@ -9308,6 +9323,10 @@ export function renderSupernatural(){
 
     if (global.race['ocular_power']){
         ocularPower(parent);
+    }
+
+    if (global.race['deep_power']){
+        deepPower(parent);
     }
 }
 
@@ -10724,6 +10743,116 @@ function psychicCapture(parent){
             elm: '#psychicCapture > div > button'
         }
     );
+}
+
+
+function deepPower(parent){
+    let container = $(`<div id="deepPower" class="industry"></div>`);
+    parent.append(container);
+    container.append($(`<div class="header has-text-advanced" :thingy="update()">${loc('deep_power_modal')}</div>`));
+
+    container.append($(`<div>${loc('deep_power_production')} {{ effect('global') }}% <span v-bind:class="{ 'has-text-warning': global > 50 }">({{ global }}%)</span></div>`));
+    let globalMult = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('global')" aria-label="Increase Global Production">&laquo;</span>
+        <b-slider v-model="global" @change="lastUsed('global')" @dragging="lastUsed('global')" format="percent"></b-slider>
+        <span class="add" role="button" @click="add('global')" aria-label="Decrease Global Production">&raquo;</span></div>`);
+    container.append(globalMult);
+
+    container.append($(`<div>${loc('deep_power_crafting')} {{ effect('crafting') }}% <span v-bind:class="{ 'has-text-warning': crafting > 50 }">({{ crafting }}%)</span></div>`));
+    let crafting = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('crafting')" aria-label="Increase Crafting">&laquo;</span>
+        <b-slider v-model="crafting" @change="lastUsed('crafting')" @dragging="lastUsed('crafting')" format="percent"></b-slider>
+        <span class="add" role="button" @click="add('crafting')" aria-label="Decrease Crafting">&raquo;</span></div>`);
+    container.append(crafting);
+
+    if (global.genes['trader']){
+        container.append($(`<div>${loc('deep_power_trade')} {{ effect('trade') }}% <span v-bind:class="{ 'has-text-warning': trade > 50 }">({{ trade }}%)</span></div>`));
+        let trade = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('trade')" aria-label="Increase Trade">&laquo;</span>
+            <b-slider v-model="trade" @change="lastUsed('trade')" @dragging="lastUsed('trade')" format="percent"></b-slider>
+            <span class="add" role="button" @click="add('trade')" aria-label="Decrease Trade">&raquo;</span></div>`);
+        container.append(trade);
+    }
+
+    container.append($(`<div>${loc('deep_power_combat')} {{ effect('combat') }}% <span v-bind:class="{ 'has-text-warning': combat > 50 }">({{ combat }}%)</span></div>`));
+    let combat = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('combat')" aria-label="Increase Combat">&laquo;</span>
+        <b-slider v-model="combat" @change="lastUsed('combat')" @dragging="lastUsed('combat')" format="percent"></b-slider>
+        <span class="add" role="button" @click="add('combat')" aria-label="Decrease Combat">&raquo;</span></div>`);
+    container.append(combat);
+
+    let order = ['global', 'crafting', 'trade', 'combat']; //set order in case deep power values are somehow re-sorted
+    const cap = () => 100 + (global.genes['trader'] ? 20 : 0); //potential issue: this is the only place where this cap is enforced
+    let lastUsed = '';
+    vBind({
+        el: '#deepPower',
+        data: global.race['deepPowerConfig'],
+        methods: {
+            sub(r){
+                let keyMult = keyMultiplier();
+                if (global.race['deepPowerConfig'][r] > 0){
+                    global.race['deepPowerConfig'][r] -= keyMult;
+                    if (global.race['deepPowerConfig'][r] < 0){
+                        global.race['deepPowerConfig'][r] = 0;
+                    }
+                    this.lastUsed(r);
+                    this.update();
+                }
+            },
+            add(r){
+                let keyMult = keyMultiplier();
+                if (global.race['deepPowerConfig'][r] < 100){
+                    global.race['deepPowerConfig'][r] += keyMult;
+                    if (global.race['deepPowerConfig'][r] > 100){
+                        global.race['deepPowerConfig'][r] = 100;
+                    }
+                    this.lastUsed(r);
+                    this.update();
+                }
+            },
+            lastUsed(r){
+                lastUsed = r;
+            },
+            update(){
+                //console.log(lastUsed);
+                let totalPoints = 0;
+                order.forEach(function (tab){
+                    totalPoints += global.race['deepPowerConfig'][tab];
+                });
+                let difference = Math.abs(cap() - totalPoints);
+                if (totalPoints > cap()){ //slider went higher
+                    //always take from highest option first then move down.
+                    for (let i=0;i<order.length; i++){
+                        if(lastUsed === order[i]){ //skip updated option
+                            continue;
+                        }
+                        let reduce = Math.min(difference, global.race['deepPowerConfig'][order[i]]);
+                        //console.log('decreasing', order[i], reduce, r);
+                        global.race['deepPowerConfig'][order[i]] -= reduce;
+                        difference -= reduce;
+                        if(difference <= 0){
+                            break;
+                        }
+                    }
+                }
+                else if(totalPoints < cap()){ //slider went lower (or same?)
+                    for (let i=0;i<order.length; i++){
+                        if(lastUsed === order[i]){
+                            continue;
+                        }
+                        let increase = Math.min(difference, 100 - global.race['deepPowerConfig'][order[i]]);
+                        //console.log('increasing', order[i], increase, r);
+                        global.race['deepPowerConfig'][order[i]] += increase;
+                        difference -= increase;
+                        if(difference <= 0){
+                            break;
+                        }
+                    }
+                }
+            },
+            effect(r){
+                let mastery = calc_mastery();
+                mastery *= calcDeepPower(r);
+                return +mastery.toFixed(1);
+            }
+        }
+    });
 }
 
 export function blubberFill(v){
