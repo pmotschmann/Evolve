@@ -1375,6 +1375,7 @@ export function blast_away(){
         global.race['start_iceage'] = 1;
         global.race['iceage'] = 1;
     }
+    logPrestigeGains('thruster', gains); // log after all achievements are checked
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
@@ -1416,6 +1417,7 @@ export function living_extinction(){
 
     let gains = calcPrestige('living_extinction');
     checkAchievements();
+    logPrestigeGains('living_extinction', gains);
 
     global.stats.lextinct++;
     updateResetStats();

@@ -2552,6 +2552,12 @@ export function logPrestigeGains(reset, gains) {
             case 'talens':
                 resourceName = loc(resCount === 1 ? 'prestige_report_singular_TALEN' : 'resource_TALENs_name');
                 break;
+            case 'exons':
+                resourceName = loc(resCount === 1 ? 'prestige_report_singular_Exon' : 'resource_Exons_name');
+                break;
+            case 'fossil':
+                resourceName = loc(resCount === 1 ? 'resource_Spent_Fossil_name' : 'resource_Fossil_name');
+                break;
             default:
                 resourceName = res; // fallback if an unhandled resource is added
                 break;
