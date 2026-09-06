@@ -18627,8 +18627,9 @@ export function swissKnife(cheeseOnly,cheeseList){
 }
 
 export const techPath = {
-    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'glacial', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional','existential'],
-    truepath: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'glacial', 'early_space', 'deep_space', 'solar', 'tauceti'],
+    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional','existential'],
+    truepath: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'solar', 'tauceti'],
+    iceage: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'glacial']
 };
 
 export function techList(path){

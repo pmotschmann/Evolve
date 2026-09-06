@@ -6122,7 +6122,13 @@ export function checkCityRequirements(action){
 }
 
 function checkTechPath(tech){
-    let path = global.race['truepath'] ? 'truepath' : 'standard';
+    let path = 'standard';
+    if (global.race['truepath']){
+        path = 'truepath';
+    }
+    else if (global.race['iceage']){
+        path = 'iceage';
+    }
     if ((!techPath[path].includes(techEra(actions.tech[tech])) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
         return false;
     }

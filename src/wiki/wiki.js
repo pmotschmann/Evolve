@@ -134,6 +134,25 @@ function initPage(){
             ]
         },
         {
+            key: 'ice_structures',
+            submenu: [
+                { key: 'prehistoric' },
+                { key: 'underground' },
+                { key: 'surface' }
+            ]
+        },
+        {
+            key: 'ice_tech',
+            submenu: [
+                { key: 'primitive' },
+                { key: 'civilized' },
+                { key: 'discovery' },
+                { key: 'industrialized' },
+                { key: 'globalized' },
+                { key: 'glacial' }
+            ]
+        },
+        {
             key: 'arpa',
             submenu: [
                 { key: 'projects' },
@@ -272,6 +291,16 @@ async function menuDispatch(main,sub,frag){
 
         case 'tp_tech':
             renderTechPage(sub,'truepath');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'ice_structures':
+            renderStructurePage(sub,'iceage');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'ice_tech':
+            renderTechPage(sub,'iceage');
             setWindowHash(main,sub,frag);
             break;
 

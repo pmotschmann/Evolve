@@ -35,6 +35,12 @@ export function renderStructurePage(zone,path){
         case 'tauceti':
             taucetiPage(content);
             break;
+        case 'underground':
+            undergroundPage(content);
+            break;
+        case 'surface':
+            surfacePage(content);
+            break;
     }
 }
 
@@ -213,7 +219,8 @@ function addCalcInputs(parent,key,section,region,path){
         creepVis: false,
         extra: {
             isWiki: true,
-            truepath: path === 'truepath'
+            truepath: path === 'truepath',
+            iceage: path === 'iceage'
         }
     });
     // Reactive: updateCosts mutates this in place, and a plain object would leave the rendered
@@ -258,6 +265,14 @@ function addCalcInputs(parent,key,section,region,path){
             action = actions.tauceti[region][key];
             inputs.real_owned = global.tauceti[key] ? global.tauceti[key].count : 0;
             break;
+        case 'underground':
+            action = actions.underground[region][key];
+            inputs.real_owned = global.underground[key] ? global.underground[key].count : 0;
+            break;
+        case 'surface':
+            action = actions.surface[region][key];
+            inputs.real_owned = global.surface[key] ? global.surface[key].count : 0;
+            break;
     }
     if (calcInfo.count[section] && calcInfo.count[section][key]){
         inputs.real_owned = calcInfo.count[section][key];
@@ -274,6 +289,9 @@ function addCalcInputs(parent,key,section,region,path){
                     switch (inp){
                         case 'truepath':
                             insert[inp] = path === 'truepath';
+                            break;
+                        case 'iceage':
+                            insert[inp] = path === 'iceage';
                             break;
                     }
                 });
@@ -402,8 +420,19 @@ function addCalcInputs(parent,key,section,region,path){
     });
 }
 
+function getAffix(path){
+    let affix = 'structures';
+    if (path === 'truepath'){
+        affix = 'tp_structures';
+    }
+    else if (path === 'iceage'){
+        affix = 'ice_structures';
+    }
+    return affix;
+}
+
 function prehistoricPage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
     Object.keys(actions.evolution).forEach(function (action){
         if (actions.evolution[action].hasOwnProperty('title') && (action !== 'custom' || global.hasOwnProperty('custom')) && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let id = actions.evolution[action].id.split('-');
@@ -418,7 +447,7 @@ function prehistoricPage(content,path){
 }
 
 function planetaryPage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
     Object.keys(actions.city).forEach(function (action){
         if ((!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki) &&
             (!actions.city[action].hasOwnProperty('path') || actions.city[action].path.includes(path)) ){
@@ -434,7 +463,7 @@ function planetaryPage(content,path){
 }
 
 function spacePage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
 
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();
@@ -567,6 +596,46 @@ function taucetiPage(content){
                 addCalcInputs(info,struct,'tauceti',region);
                 sideMenu('add',`tauceti-structures`,id[1],typeof actions.tauceti[region][struct].title === 'function' ? actions.tauceti[region][struct].title() : actions.tauceti[region][struct].title);
                 popover(`pop${actions.tauceti[region][struct].id}`,$(`<div>${desc}</div>`));
+            }
+        });
+    });
+}
+
+function undergroundPage(content){
+    Object.keys(actions.underground).forEach(function (region){        
+        let name = typeof actions.underground[region].info.name === 'string' ? actions.underground[region].info.name : actions.underground[region].info.name();
+        let desc = typeof actions.underground[region].info.desc === 'string' ? actions.underground[region].info.desc : actions.underground[region].info.desc();
+
+        Object.keys(actions.underground[region]).forEach(function (struct){
+            if (struct !== 'info' && (!actions.underground[region][struct].hasOwnProperty('wiki') || actions.underground[region][struct].wiki)){
+                let id = actions.underground[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.underground[region][struct], { extended: `<span id="pop${actions.underground[region][struct].id}">${name}</span>`, isStruct: true });
+                addInfomration(info,'underground',struct);
+                addCalcInputs(info,struct,'underground',region);
+                sideMenu('add',`underground-structures`,id[1],typeof actions.underground[region][struct].title === 'function' ? actions.underground[region][struct].title() : actions.underground[region][struct].title);
+                popover(`pop${actions.underground[region][struct].id}`,$(`<div>${desc}</div>`));
+            }
+        });
+    });
+}
+
+function surfacePage(content){
+    Object.keys(actions.surface).forEach(function (region){        
+        let name = typeof actions.surface[region].info.name === 'string' ? actions.surface[region].info.name : actions.surface[region].info.name();
+        let desc = typeof actions.surface[region].info.desc === 'string' ? actions.surface[region].info.desc : actions.surface[region].info.desc();
+
+        Object.keys(actions.surface[region]).forEach(function (struct){
+            if (struct !== 'info' && (!actions.surface[region][struct].hasOwnProperty('wiki') || actions.surface[region][struct].wiki)){
+                let id = actions.surface[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.surface[region][struct], { extended: `<span id="pop${actions.surface[region][struct].id}">${name}</span>`, isStruct: true });
+                addInfomration(info,'surface',struct);
+                addCalcInputs(info,struct,'surface',region);
+                sideMenu('add',`surface-structures`,id[1],typeof actions.surface[region][struct].title === 'function' ? actions.surface[region][struct].title() : actions.surface[region][struct].title);
+                popover(`pop${actions.surface[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });
