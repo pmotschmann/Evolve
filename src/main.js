@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
@@ -13229,6 +13229,8 @@ function midLoop(){
 
     const costLists = document.querySelectorAll(`.costList`);
     for (let c=0; c<costLists.length; c++){
+        // Read costs from the list's paying world when provided.
+        const pool = costLists[c].getAttribute(`data-pool`) || false;
         const kids = costLists[c].children;
         for (let k=0; k<kids.length; k++){
             const elm = kids[k];
@@ -13238,9 +13240,10 @@ function midLoop(){
                 let res = classes[n].split(`-`)[1];
                 if (!global.resource.hasOwnProperty(res)){ continue; }
                 let res_val = elm.getAttribute(`data-${res}`);
-                let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
+                const stock = poolStock(res, pool);
+                let fail_max = stock.max >= 0 && res_val > stock.max ? true : false;
                 let avail = elm.getAttribute(`data-ok`) ? elm.getAttribute(`data-ok`) : 'has-text-dark';
-                if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
+                if (stock.have + stock.diff < res_val || fail_max){
                     if (elm.classList.contains(avail)){
                         elm.classList.remove(avail);
                         elm.classList.add('has-text-danger');

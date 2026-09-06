@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue } from './functions.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld } from './functions.js';
 import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
@@ -1301,7 +1301,9 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
 
     $(`#res${name}`).on('mouseover',function(){
         $(`.res-${name}`).each(function(){
-            if (global.resource[name].amount >= $(this).attr(`data-${name}`)){
+            // Highlight costs against the paying world's stores.
+            let pool = $(this).attr(`data-pool`) || $(this).closest(`[data-pool]`).attr(`data-pool`) || false;
+            if (poolHeld(name, pool) >= $(this).attr(`data-${name}`)){
                 $(this).addClass('hl-ca');
             }
             else {

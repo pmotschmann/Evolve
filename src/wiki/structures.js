@@ -256,7 +256,8 @@ function addCalcInputs(parent,key,section,region,path){
         creepVis: false,
         extra: {
             isWiki: true,
-            truepath: path === 'truepath'
+            truepath: path === 'truepath',
+            iceage: path === 'iceage'
         }
     });
     // Reactive: updateCosts mutates this in place, and a plain object would leave the rendered
@@ -325,6 +326,9 @@ function addCalcInputs(parent,key,section,region,path){
                     switch (inp){
                         case 'truepath':
                             insert[inp] = path === 'truepath';
+                            break;
+                        case 'iceage':
+                            insert[inp] = path === 'iceage';
                             break;
                     }
                 });
@@ -453,8 +457,19 @@ function addCalcInputs(parent,key,section,region,path){
     });
 }
 
+function getAffix(path){
+    let affix = 'structures';
+    if (path === 'truepath'){
+        affix = 'tp_structures';
+    }
+    else if (path === 'iceage'){
+        affix = 'ice_structures';
+    }
+    return affix;
+}
+
 function prehistoricPage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
     Object.keys(actions.evolution).forEach(function (action){
         if (actions.evolution[action].hasOwnProperty('title') && (action !== 'custom' || global.hasOwnProperty('custom')) && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let id = actions.evolution[action].id.split('-');
@@ -469,7 +484,7 @@ function prehistoricPage(content,path){
 }
 
 function planetaryPage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
     Object.keys(actions.city).forEach(function (action){
         if ((!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki) &&
             (!actions.city[action].hasOwnProperty('path') || actions.city[action].path.includes(path)) ){
@@ -485,7 +500,7 @@ function planetaryPage(content,path){
 }
 
 function spacePage(content,path){
-    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+    let affix = getAffix(path);
 
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();

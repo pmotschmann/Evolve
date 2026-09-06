@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker, battle_log } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
@@ -7441,15 +7441,19 @@ export function TPShipDesc(parent,obj){
 
     desc.append(shipPattern);
 
-    var cost = $('<div class="costList"></div>');
+    // Charge hull costs to the active shipyard world.
+    let payer = { id: 'tp-ship', cost: costs, doNotAdjustCost: true, supply(){ return shipyardZone(); } };
+    let pool = actionPool(payer);
+
+    var cost = $(`<div class="costList"${pool ? ` data-pool="${pool}"` : ``}></div>`);
     desc.append(cost);
 
-    let tc = timeCheck({ id: ship.name , cost: costs, doNotAdjustCost: true }, false, true);
+    let tc = timeCheck(payer, false, true);
     Object.keys(costs).forEach(function (res){
         if (costs[res]() > 0){
             var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
-            var color = global.resource[res].amount >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
-            cost.append($(`<div class="${color}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
+            var color = poolHeld(res, pool) >= costs[res]() ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
+            cost.append($(`<div class="${color} res-${res}" data-${res}="${costs[res]()}">${label}${sizeApproximation(costs[res](),2)}</div>`));
         }
     });
 
@@ -7716,12 +7720,18 @@ function updateCosts(){
     let costs = shipCosts(global.space.shipyard.blueprint);
     clearElement($(`#shipYardCosts`));
 
+    // Read blueprint costs from the active shipyard world.
+    let pool = actionPool(shipyardPayer());
+    if (pool){ $(`#shipYardCosts`).attr(`data-pool`,pool); }
+    else { $(`#shipYardCosts`).removeAttr(`data-pool`); }
+
     Object.keys(costs).forEach(function(k){
+        let color = poolHeld(k, pool) >= costs[k] ? `has-text-success` : `has-text-danger`;
         if (k === 'Money'){
-            $(`#shipYardCosts`).append(`<span class="res-${k} has-text-success" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name}${sizeApproximation(costs[k])}</span>`);
+            $(`#shipYardCosts`).append(`<span class="res-${k} ${color}" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name}${sizeApproximation(costs[k])}</span>`);
         }
         else {
-            $(`#shipYardCosts`).append(`<span> | </span><span class="res-${k} has-text-success" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name} ${sizeApproximation(costs[k])}</span>`);
+            $(`#shipYardCosts`).append(`<span> | </span><span class="res-${k} ${color}" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name} ${sizeApproximation(costs[k])}</span>`);
         }
     });
 }
@@ -8018,7 +8028,7 @@ export function shipAttackPower(ship){
     }
 }
 
-export const FREIGHTER_CAPACITY = 500000;
+export const FREIGHTER_CAPACITY = 1000000;
 export function freightCapacity(ship){
     return ship && ship.class === 'freighter' && shipSpecial(ship) === 'extra_cargo'
         ? Math.round(FREIGHTER_CAPACITY * 1.5) : FREIGHTER_CAPACITY;
@@ -8043,7 +8053,7 @@ export function freightWeight(ship){
 }
 export function freightSpeedPenalty(ship){
     if (!ship || ship.class !== 'freighter'){ return 0; }
-    const penalty = Math.floor(freightWeight(ship) / 750000);
+    const penalty = Math.floor(freightWeight(ship) / 1750000);
     return shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty;
 }
 
@@ -11294,7 +11304,9 @@ function shipRefitModal(id, modal){
 
         // Render refit costs using standard resource affordability styling.
         let costs = refitCosts(ship, plan);
-        let bill = $(`<div class="costList refitCost"></div>`);
+        // Charge refits to the ship's docked shipyard world.
+        let pool = actionPool({ id: 'tp-refit', supply(){ return ship.location.name; } });
+        let bill = $(`<div class="costList refitCost"${pool ? ` data-pool="${pool}"` : ``}></div>`);
         let res_list = Object.keys(costs).sort(function(a,b){
             return a === 'Money' ? -1 : b === 'Money' ? 1 : 0;
         });
@@ -11303,7 +11315,7 @@ function shipRefitModal(id, modal){
         }
         res_list.forEach(function(res,idx){
             if (idx > 0){ bill.append(`<span> | </span>`); }
-            let color = global.resource[res].amount >= costs[res] ? `has-text-success` : `has-text-danger`;
+            let color = poolHeld(res, pool) >= costs[res] ? `has-text-success` : `has-text-danger`;
             bill.append(`<span class="res-${res} ${color}" data-${res}="${costs[res]}" data-ok="has-text-success">${global.resource[res].name} ${sizeApproximation(costs[res])}</span>`);
         });
         bay.append(bill);

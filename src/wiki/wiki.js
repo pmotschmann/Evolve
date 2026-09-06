@@ -295,6 +295,16 @@ async function menuDispatch(main,sub,frag){
             setWindowHash(main,sub,frag);
             break;
 
+        case 'ice_structures':
+            renderStructurePage(sub,'iceage');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'ice_tech':
+            renderTechPage(sub,'iceage');
+            setWindowHash(main,sub,frag);
+            break;
+
         case 'arpa':
             arpaPage(sub);
             setWindowHash(main,sub,frag);

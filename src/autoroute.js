@@ -5,7 +5,7 @@ import { spaceSectors } from './space.js';
 import { atomic_mass } from './resources.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, regAmount, regMax, regDiff } from './supply.js';
 import { shipFleet, startFreightRoute, stopFreightRoute, dispatchFreighter, canAutoRefuelAt,
-         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals } from './truepath.js';
+         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals, shipCosts, shipyardZone } from './truepath.js';
 
 // Freighter routes planned by the governor.
 
@@ -168,8 +168,7 @@ export function findShortages(horizon = HORIZON){
     return shortages;
 }
 
-// The action behind a queued item, resolved the way the build queue itself resolves it. Only proper
-// structures are of interest: a project, a hull or a mech is not built out of one world's store.
+// Resolve queued building actions; hull costs are handled by queuedBill().
 function queuedAction(item){
     if (!item || !item.action || !item.type || typeof item.type !== 'string'){ return false; }
     if (['arpa','tp-ship','hell-mech'].includes(item.action)){ return false; }
@@ -182,26 +181,42 @@ function queuedAction(item){
     return actions[item.action] ? actions[item.action][item.type] : false;
 }
 
-// Materials a queued building needs that the world it is going up on has not got.
+// What one queued item costs, as plain amounts, and the world that has to find them.
+function queuedBill(item){
+    // Charge queued hulls to the active shipyard world.
+    if (item && item.action === 'tp-ship' && item.type){
+        let costs;
+        try { costs = shipCosts(item.type); }
+        catch (e){ return false; }
+        return { zone: supplyPool(shipyardZone()), costs };
+    }
+    const c_action = queuedAction(item);
+    if (!c_action || !c_action.cost){ return false; }
+    let costs;
+    try { costs = adjustCosts(c_action); }
+    catch (e){ return false; }
+    const bill = {};
+    for (const res in costs){
+        try { bill[res] = Number(costs[res]()) || 0; }
+        catch (e){ /* Ignore unpriceable costs. */ }
+    }
+    // Convert queue ids to supply-zone ids.
+    return { zone: supplyPool(supplyZone(String(item.id || '').replace('-', ':'))), costs: bill };
+}
+
+// Materials a queued building or hull needs that the world it is going up on has not got.
 export function findBuildNeeds(){
     const queue = global.queue && Array.isArray(global.queue.queue) ? global.queue.queue : [];
     const wanted = {};
     for (const item of queue){
-        const c_action = queuedAction(item);
-        if (!c_action || !c_action.cost){ continue; }
-        // The id is `<category>-<structure>`, which is exactly what the zone lookup reads.
-        const zone = supplyPool(supplyZone(String(item.id || '').replace('-', ':')));
-        let costs;
-        try { costs = adjustCosts(c_action); }
-        catch (e){ continue; }
-        for (const res in costs){
+        const bill = queuedBill(item);
+        if (!bill){ continue; }
+        for (const res in bill.costs){
             if (!atomic_mass[res] || !global.resource[res]){ continue; }
-            let price = 0;
-            try { price = Number(costs[res]()) || 0; }
-            catch (e){ continue; }
-            if (price <= 0){ continue; }
-            if (!wanted[zone]){ wanted[zone] = {}; }
-            wanted[zone][res] = Math.max(wanted[zone][res] || 0, price);
+            const price = bill.costs[res];
+            if (!(price > 0)){ continue; }
+            if (!wanted[bill.zone]){ wanted[bill.zone] = {}; }
+            wanted[bill.zone][res] = Math.max(wanted[bill.zone][res] || 0, price);
         }
     }
     const spokenFor = claimed();
@@ -243,7 +258,7 @@ export function findOverflow(group){
     // A pile already being carried away by another fleet is not a pile that needs moving.
     const beingMoved = new Set();
     for (const { route } of activeRoutes()){
-        if (route.auto !== 'balance'){ continue; }
+        // Do not plan a second pickup for any active route.
         for (const stop of route.stops){
             for (const res of stop.pickups || []){ beingMoved.add(`${stop.zone}:${res}`); }
         }
@@ -357,8 +372,8 @@ const RANK = { relief: 3, build: 2, balance: 1 };
 function availableFor(group, wanting){
     const route = group[0].tradeRoute;
     if (!route){ return true; }
-    if (!route.auto){ return false; }
-    return RANK[wanting] > RANK[route.auto];
+    // Untagged routes have the lowest interruption priority.
+    return RANK[wanting] > (RANK[route.auto] || 0);
 }
 
 // Put a fleet onto a planned route.
