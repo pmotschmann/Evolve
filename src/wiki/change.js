@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import {} from './../vars.js';
 import { clearElement } from './../functions.js';
 
@@ -9,6 +10,7 @@ export const changeList = [
             `Extended Truepath content on Isolation path.`,
             `Genetics 2.0, complete redesign of minor trait system.`,
             `New Mobile UI`,
+            `New Ice Age Scenario by CondoSlime.`,
             `Added new "Offline Time" feature, replaces "Accelerated Time"`,
             `Added option to Save or Load game from Google Drive.`,
             `Shrunk save file sizes`,

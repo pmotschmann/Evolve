@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { loc } from './../locale.js';
 import { clearElement } from './../functions.js';
 import { faqPage } from './faq.js';
@@ -240,7 +241,8 @@ export function search(){
         `
     );
     let input = $("#searchInput");
-    input.parent().on('input', ':text', _ => processSearch(input));
+    // :text is a jQuery-only selector; this is the CSS-parseable equivalent.
+    input.parent().on('input', 'input[type="text"]', _ => processSearch(input));
     indexWiki();
     for(const k of Object.keys(sections)){
         content.append(`<div class="infoBox"><h1 style="padding-bottom: 5px">${loc('wiki_menu_' + k)}</h1><div id="${"searchResult-" + k}"></div></div>`);

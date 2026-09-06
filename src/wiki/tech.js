@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { universeAffix } from './../achieve.js';

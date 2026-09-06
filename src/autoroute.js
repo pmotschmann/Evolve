@@ -12,8 +12,8 @@ import { shipFleet, startFreightRoute, stopFreightRoute, dispatchFreighter, canA
 // --- Tuning ---------------------------------------------------------------------------------------
 
 // Nothing starves and nothing stops moving: food first, then the fuels that keep reactors and ships
-// running, then everything else in the order the shortage bites.
-const PRIORITY = ['Food','Oil','Helium_3','Elerium','Coal'];
+// running, then everything else in shortage order. Shared with the Market Trader.
+export const PRIORITY = ['Food','Oil','Helium_3','Elerium','Coal'];
 
 // One game day is five seconds of production — the long loop runs on a 5000ms timer against
 // per-second rates. Every reckoning below is in days, so this is how a rate becomes one.

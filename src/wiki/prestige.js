@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { clearElement } from './../functions.js';
 import { crisprPage } from './crispr.js';
 import { bloodPage } from './blood.js';

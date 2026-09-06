@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on, writeBackup } from './vars.js';
 import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, 
          calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, 
@@ -1340,7 +1341,7 @@ export const bloodPool = {
         grant: ['spire',1],
         cost: { Blood_Stone(){ return 10; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1354,7 +1355,7 @@ export const bloodPool = {
         grant: ['spire',2],
         cost: { Blood_Stone(){ return 25; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1372,7 +1373,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1390,7 +1391,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1408,7 +1409,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1429,7 +1430,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1447,7 +1448,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1468,7 +1469,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1486,7 +1487,7 @@ export const bloodPool = {
         },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1503,7 +1504,7 @@ export const bloodPool = {
         },
         cost: { Blood_Stone(){ return 50; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1523,7 +1524,7 @@ export const bloodPool = {
         },
         cost: { Blood_Stone(){ return 75; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1543,7 +1544,7 @@ export const bloodPool = {
             Artifact(){ return 1; }
         },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1557,7 +1558,7 @@ export const bloodPool = {
         grant: ['unbound',1],
         cost: { Blood_Stone(){ return 50; }, },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1571,7 +1572,7 @@ export const bloodPool = {
         grant: ['unbound',2],
         cost: { Blood_Stone(){ return 100; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1591,7 +1592,7 @@ export const bloodPool = {
             Artifact(){ return 2; }
         },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1608,7 +1609,7 @@ export const bloodPool = {
         },
         cost: { Blood_Stone(){ return 500; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1625,7 +1626,7 @@ export const bloodPool = {
         },
         cost: { Blood_Stone(){ return 10; } },
         action(){
-            if (payBloodPrice($(this)[0].cost)){
+            if (payBloodPrice(this.cost)){
                 return true;
             }
             return false;
@@ -1995,7 +1996,8 @@ function genetics(){
 
                         let trick = trickOrTreat(8,12,false);
                         if (trick.length > 0){
-                            $(`#arpaSequence > div:first`).append(trick);
+                            // :first is a jQuery-only selector; .first() is the CSS-parseable form.
+                            $(`#arpaSequence > div`).first().append(trick);
                         }
                     }
                 },

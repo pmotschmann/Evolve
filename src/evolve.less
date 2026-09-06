@@ -1063,7 +1063,7 @@ Misc ---------> Main template
             }
 
             .divide-line {
-                border-top: rgba(128,128,128,.45) solid .0625rem;
+                border-top: @secondary-border solid .0625rem;
             }
         }
 
@@ -1224,7 +1224,7 @@ Misc ---------> Main template
 
         // .basic-button
         .basic-button {
-            border: rgba(128,128,128,.45) solid .0625rem;
+            border: @primary-border solid .0625rem;
         }
 
         .basic-button:hover {
@@ -1276,7 +1276,7 @@ Misc ---------> Main template
         // Trade
         .add,
         .sub {
-            border: rgba(128,128,128,.45) solid .0625rem;
+            border: @primary-border solid .0625rem;
             transition: all 200ms ease;
         }
 
@@ -1287,11 +1287,11 @@ Misc ---------> Main template
         }
 
         .current {
-            border-top: rgba(128,128,128,.45) solid .0625rem;
-            border-bottom: rgba(128,128,128,.45) solid .0625rem;
+            border-top: @primary-border solid .0625rem;
+            border-bottom: @primary-border solid .0625rem;
         }
         .current.infoOnly {
-            border: rgba(128,128,128,.45) solid .0625rem;
+            border: @primary-border solid .0625rem;
         }
 
         // UI Bars
@@ -1600,7 +1600,7 @@ Misc ---------> Main template
         }
 
         .gridHeader {
-            border-top: rgba(128,128,128,.45) solid .0625rem;
+            border-top: @secondary-border solid .0625rem;
             margin: .25rem 0 .25rem 1rem;
             padding-top: .25rem;
         }
@@ -1635,7 +1635,7 @@ Misc ---------> Main template
         // .market-item
         .market-item {
             .order {
-                border: rgba(128,128,128,.45) solid .0625rem;
+                border: @primary-border solid .0625rem;
                 transition: all 200ms ease;
             }
 
@@ -1703,19 +1703,19 @@ Misc ---------> Main template
             background: @modalBox-background;
 
             p {
-                border-bottom: rgba(128,128,128,.45) solid .0625rem;
+                border-bottom: @secondary-border solid .0625rem;
             }
 
             .market-item {
-                border-top: rgba(128,128,128,.45) solid .0625rem;
+                border-top: @secondary-border solid .0625rem;
             }
 
             .divide {
-                border-top: rgba(128,128,128,.45) solid .0625rem;
+                border-top: @secondary-border solid .0625rem;
             }
 
             .smelting {
-                border-top: rgba(128,128,128,.45) solid .0625rem;
+                border-top: @secondary-border solid .0625rem;
             }
         }
 
@@ -1723,7 +1723,7 @@ Misc ---------> Main template
             background: none;
 
             .header {
-                border-bottom: rgba(128,128,128,.45) solid .0625rem;
+                border-bottom: @secondary-border solid .0625rem;
             }
 
             .avail {
@@ -2194,15 +2194,15 @@ html.gruvboxDark {
 
     .add,
     .sub {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .current {
-        border-top: rgba(128,128,128,.45) solid .0625rem;
-        border-bottom: rgba(128,128,128,.45) solid .0625rem;
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
     }
     .current.infoOnly {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .popper {
@@ -2238,15 +2238,15 @@ html.gruvboxDarkRG {
 
     .add,
     .sub {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .current {
-        border-top: rgba(128,128,128,.45) solid .0625rem;
-        border-bottom: rgba(128,128,128,.45) solid .0625rem;
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
     }
     .current.infoOnly {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .popper {
@@ -2325,15 +2325,15 @@ html.dracula {
 
     .add,
     .sub {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .current {
-        border-top: rgba(128,128,128,.45) solid .0625rem;
-        border-bottom: rgba(128,128,128,.45) solid .0625rem;
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
     }
     .current.infoOnly {
-        border: rgba(128,128,128,.45) solid .0625rem;
+        border: @secondary-border solid .0625rem;
     }
 
     .popper {
@@ -4416,6 +4416,11 @@ a {
         text-align: center;
         font-variant-numeric: tabular-nums;
     }
+}
+
+// Show crate/container labels when the desktop legend is hidden.
+.stackLabel {
+    display: none;
 }
 
 .regionMode {
@@ -7149,6 +7154,93 @@ div.bigbang {
 
             .storage-crate-control { grid-area: crate; }
             .storage-container-control { grid-area: container; }
+        }
+
+        // Stack regional rows into a header and controls on mobile.
+        .market-item.stacked {
+            margin-left: 0;
+        }
+
+        // The stacked layout labels values inline instead of with a legend.
+        .stackLegend {
+            display: none;
+        }
+
+        .stackHead {
+            grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+            column-gap: .5rem;
+            row-gap: .15rem;
+            padding: .45rem 0;
+
+            // Span both rows and provide a larger expander tap target.
+            .expander {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+                align-self: center;
+                padding: .5rem .25rem;
+            }
+
+            .res    { grid-column: 2; grid-row: 1; width: auto; margin: 0; }
+            .stored { grid-column: 3; grid-row: 1; }
+
+            // Place crate and container totals on the second row.
+            .stackTotal {
+                text-align: left;
+                white-space: nowrap;
+            }
+
+            // Label totals without the desktop legend.
+            .stackLabel {
+                display: inline;
+                margin-right: .3rem;
+                opacity: .7;
+            }
+        }
+
+        .stackZones {
+            margin-left: .5rem;
+            padding-left: .5rem;
+        }
+
+        .stackZone {
+            grid-template-columns: minmax(0, 1fr) auto;
+            column-gap: .5rem;
+            row-gap: .15rem;
+            padding: .35rem 0;
+
+            // The parent zone rule supplies this row's indent.
+            .zoneName { grid-column: 1; grid-row: 1; padding-left: 0; }
+            .stored   { grid-column: 2; grid-row: 1; }
+
+            // Keep labeled crate and container controls aligned on the second row.
+            .adjust {
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                align-items: stretch;
+
+                .stackLabel {
+                    display: inline;
+                    align-self: center;
+                    margin-right: .3rem;
+                    opacity: .7;
+                    white-space: nowrap;
+                }
+
+                // Set vertical padding without overriding shared horizontal padding.
+                .sub, .add {
+                    display: flex;
+                    align-items: center;
+                    padding-top: .35rem;
+                    padding-bottom: .35rem;
+                }
+
+                // Match the count display to the button height.
+                .current {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
         }
 
         #crateTotal {

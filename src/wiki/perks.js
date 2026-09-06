@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { perkList } from './../achieve.js';
 import { sideMenu } from './functions.js';
 

@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { clearElement } from './../functions.js';
 import { basicsPage } from './basics.js';
 import { mechanicsPage } from './mechanics.js';

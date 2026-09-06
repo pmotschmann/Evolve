@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
@@ -6620,7 +6621,6 @@ export const races = {
     raptors: {
         name: loc('race_raptors'),
         desc(){ return raptorPlumage() ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
-        desc: loc('race_raptors_desc'),
         type: 'primordial',
         home: loc('race_raptors_home'),
         entity: loc('race_raptors_entity'),

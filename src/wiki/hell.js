@@ -1,3 +1,4 @@
+import { $ } from '../dom.js';
 import { loc } from './../locale.js';
 import { infoBoxBuilder, sideMenu } from './functions.js';
 import { calcPillar } from './../functions.js';

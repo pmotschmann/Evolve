@@ -1,3 +1,4 @@
+import { $ } from './dom.js';
 import { encodeSaveString, decodeSaveString } from './save.js';
 
 export var save = window.localStorage;
@@ -1654,11 +1655,11 @@ if (convertVersion(global['version']) <= 105000){
         global.race.geneSlots = slots;
         global.race.geneBreak = rebuilt;
     }
-}
 
-if(convertVersion(global['version']) && true){
-    global.underground = global.underground || {};
-    global.surface = global.surface || {};
+    if (!global.hasOwnProperty('underground')){
+        global.underground = global.underground || {};
+        global.surface = global.surface || {};
+    }
 }
 
 if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnProperty('battles')){
@@ -1667,7 +1668,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 42;
+global['beta'] = 43;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2426,6 +2427,9 @@ if (global.city['foundry'] && !global.city.foundry['Aerographene']){
 }
 if (global.city['foundry'] && !global.city.foundry['Super_Fuel']){
     global.city.foundry['Super_Fuel'] = 0;
+}
+if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Super')){
+    global.city.smelter['Super'] = 0;
 }
 
 if (!global.settings['arpa']){
