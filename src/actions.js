@@ -7699,7 +7699,9 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
         let empty = true;
-        var cost = $('<div class="costList"></div>');
+        // Store the paying world on the cost list.
+        const pool = actionPool(c_action);
+        var cost = $(`<div class="costList"${pool ? ` data-pool="${pool}"` : ``}></div>`);
 
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action) : c_action.cost;
         Object.keys(costs).forEach(function (res){
@@ -7835,7 +7837,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         let color = 'has-text-dark';
                         let aria = '';
                         // Against the store this building would actually be paid from.
-                        if (poolHeld(f_res, actionPool(c_action)) < res_cost){
+                        if (poolHeld(f_res, pool) < res_cost){
                             if (tc.r === f_res){
                                 color = 'has-text-danger';
                                 aria = ' <span class="is-sr-only">(blocking resource)</span>';

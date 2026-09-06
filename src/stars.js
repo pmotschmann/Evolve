@@ -6455,7 +6455,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
             }
         })
         .on("wheel", (e) => {
-            if(e.originalEvent.deltaY < 0) {
+            if(e.deltaY < 0) {
                 mapScale /= 0.8;
 
                 if (starLockOn) {
@@ -6466,7 +6466,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
                 else {
                     // Zoom wrt cursor position, moving center of screen as needed
                     let rect = document.getElementById("mapCanvas").getBoundingClientRect();
-                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
+                    let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
 
                     //temporarily shift to cursor location
                     mapShift.x += (canvasOffset.x - cx);
@@ -6494,7 +6494,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
                 else {
                     // Zoom wrt cursor position, moving center of screen as needed
                     let rect = document.getElementById("mapCanvas").getBoundingClientRect();
-                    let cx = e.originalEvent.clientX - rect.left, cy = e.originalEvent.clientY - rect.top;
+                    let cx = e.clientX - rect.left, cy = e.clientY - rect.top;
 
                     //temporarily shift to cursor location
                     mapShift.x += (canvasOffset.x - cx);
@@ -6515,7 +6515,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
         })
         .on("touchstart", (e) => {
             if (!touchMap()){ return; }
-            let t = e.originalEvent.touches;
+            let t = e.touches;
             if (t.length === 1){
                 touching = 'pan';
                 tap = { x: t[0].clientX, y: t[0].clientY, moved: false };
@@ -6533,7 +6533,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
         })
         .on("touchmove", (e) => {
             if (!touchMap()){ return; }
-            let t = e.originalEvent.touches;
+            let t = e.touches;
             if (touching === 'pan' && t.length === 1){
                 if (tap && (Math.abs(t[0].clientX - tap.x) > CLICK_SLOP_PX || Math.abs(t[0].clientY - tap.y) > CLICK_SLOP_PX)){
                     tap.moved = true;
@@ -6565,7 +6565,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
         // A finger that lifts without having really moved is a tap, and does what a click does.
         .on("touchend touchcancel", (e) => {
             if (!touchMap()){ return; }
-            let lifted = e.originalEvent.changedTouches;
+            let lifted = e.changedTouches;
             if (touching === 'pan' && tap && !tap.moved && lifted && lifted.length){
                 let hit = starAt(lifted[0]) || bodyAt(lifted[0]);
                 if (hit){
@@ -6579,7 +6579,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
             }
             // Lifting one of two fingers leaves the other one panning rather than stranding the map
             // mid-gesture, so the pan is re-seated from where that finger actually is.
-            let left = e.originalEvent.touches;
+            let left = e.touches;
             if (left && left.length === 1){
                 touching = 'pan';
                 tap = false;

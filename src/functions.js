@@ -14,7 +14,7 @@ import { highPopAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
-import { shipCosts, TPShipDesc, freightArrivals } from './truepath.js';
+import { shipCosts, TPShipDesc, freightArrivals, shipyardZone } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
 import { big_bang } from './resets.js';
 
@@ -600,7 +600,8 @@ export function buildQueue(){
                         Object.keys(raw).forEach(function(res){
                             costs[res] = function(){ return raw[res]; }
                         });
-                        c_action = { cost: costs };
+                        // Charge hulls to the active shipyard world.
+                        c_action = { id: 'tp-ship', cost: costs, supply(){ return shipyardZone(); } };
                     }
                     else if (segments[0] === 'hell' && segments[1].substring(0,4) === 'mech'){
                         let costs = mechCost(global.queue.queue[index].type.size,global.queue.queue[index].type.infernal,true);
@@ -626,6 +627,12 @@ export function buildQueue(){
                                 final_costs[`${prefix}-${res}`] = cost;
                             }
                         });
+                    }
+
+                    // Include the paying world for resource highlighting.
+                    if (prefix === 'data'){
+                        const pool = actionPool(c_action);
+                        if (pool){ final_costs['data-pool'] = pool; }
                     }
 
                     return final_costs;
@@ -1131,7 +1138,7 @@ function waitForStock(res, pool, need, have, rate, cap){
     const arrivals = pool ? freightArrivals(res, pool) : [];
     if (!arrivals.length){ return rate > 0 ? (need - have) / rate : -1; }
     const day = gameDaySeconds();
-    let at = 0, stock = have;
+    let at = 0, stock = have, brought = 0;
     for (const drop of arrivals){
         const when = drop.at * day;
         if (when < at){ continue; }
@@ -1141,11 +1148,15 @@ function waitForStock(res, pool, need, have, rate, cap){
             if (alone <= when){ return alone; }
         }
         stock += rate * (when - at) + drop.amount;
+        brought += drop.amount;
         if (cap >= 0 && stock > cap){ stock = cap; }
         at = when;
         if (stock >= need){ return when; }
     }
-    return rate > 0 ? at + (need - stock) / rate : -1;
+    if (rate > 0){ return at + (need - stock) / rate; }
+    // Project recurring deliveries from their observed delivery rate.
+    const ferried = at > 0 ? brought / at : 0;
+    return ferried > 0 ? at + (need - stock) / ferried : -1;
 }
 
 export function timeCheck(c_action,track,detailed,reqMet){
