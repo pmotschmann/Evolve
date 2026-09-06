@@ -8030,8 +8030,12 @@ export function shipAttackPower(ship){
 
 export const FREIGHTER_CAPACITY = 1000000;
 export function freightCapacity(ship){
-    return ship && ship.class === 'freighter' && shipSpecial(ship) === 'extra_cargo'
+    let cap = ship && ship.class === 'freighter' && shipSpecial(ship) === 'extra_cargo'
         ? Math.round(FREIGHTER_CAPACITY * 1.5) : FREIGHTER_CAPACITY;
+    if (global.race['pack_rat']){
+        cap *= 1 + (traits.pack_rat.vars()[1] / 100);
+    }
+    return cap;
 }
 export function freightCargo(ship){
     if (!ship || ship.class !== 'freighter'){ return {}; }

@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, popover, getEaster, getHalloween, getTraitDesc } from './../functions.js';
-import { races, traits, genus_def, traitSkin } from './../races.js';
+import { races, traits, genus_def, traitSkin, genes } from './../races.js';
 import { ascendLab } from './../space.js';
 import { actions } from './../actions.js';
 import { sideMenu } from './functions.js';
@@ -18,8 +18,11 @@ export function speciesPage(zone){
         case 'races':
             racesPage(content);
             break;
-        case 'traits':
-            traitsPage(content);
+        case 'major_traits':
+            majorTraitsPage(content);
+            break;
+        case 'minor_traits':
+            minorTraitsPage(content);
             break;
         case 'custom':
             customPage(content);
@@ -185,17 +188,38 @@ function extraTraitList(race){
     }
 }
 
-export function traitsPage(content){
+// Trait groups displayed on each wiki trait page.
+const traitPages = {
+    major_traits: [['genus','major'],['special']],
+    minor_traits: [['minor'],['special']]
+};
+
+export function majorTraitsPage(content){
+    traitsPage(content,'major_traits');
+}
+
+export function minorTraitsPage(content){
+    traitsPage(content,'minor_traits');
+}
+
+// Return a trait's wiki page; earned special genes are minor traits.
+export function traitPageOf(trait){
+    if (genes.gene_specials.includes(trait)){ return 'minor_traits'; }
+    return traits[trait] && traits[trait].type === 'minor' ? 'minor_traits' : 'major_traits';
+}
+
+export function traitsPage(content,page){
+    page = traitPages.hasOwnProperty(page) ? page : 'major_traits';
     content = sideMenu('create',content);
 
-    let types = [['genus','major'],['minor'],['special']];
+    let types = traitPages[page];
     for (let i=0; i<types.length; i++){
         Object.keys(traits).sort( (a,b) => traitSkin('name',a).localeCompare(traitSkin('name',b)) ).forEach(function (trait){
-            if (types[i].includes(traits[trait].type)){
+            if (types[i].includes(traits[trait].type) && traitPageOf(trait) === page){
                 let info = $(`<div id="${traits[trait].type}_${trait}" class="infoBox"></div>`);
                 content.append(info);
                 getTraitDesc(info, trait, { tpage: true, wiki: true });
-                sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traitSkin('name',trait));
+                sideMenu('add',`${page}-species`,`${traits[trait].type}_${trait}`,traitSkin('name',trait));
             }
         });
     }
