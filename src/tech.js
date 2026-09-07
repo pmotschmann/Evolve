@@ -16,7 +16,7 @@ import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
-import { ecoGainMajorTrait } from './iceage.js';
+import { ecoGainMajorTrait, drawPerkUnderground } from './iceage.js';
 import { activeSupplyRegions } from './supply.js';
 
 const techs = {
@@ -28,7 +28,7 @@ const techs = {
         era: 'primitive',
         reqs: {},
         grant: ['primitive',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Lumber(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : 5; },
             Stone(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 5 : 0; }
@@ -49,7 +49,7 @@ const techs = {
         era: 'primitive',
         reqs: {},
         grant: ['primitive',2],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {},
         action(){
             if (payCosts(this)){
@@ -68,6 +68,7 @@ const techs = {
         era: 'primitive',
         reqs: { primitive: 1 },
         grant: ['primitive',2],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['soul_eater'] && !global.race['evil'] ? false : true;
         },
@@ -98,6 +99,7 @@ const techs = {
         era: 'primitive',
         reqs: { primitive: 1 },
         grant: ['primitive',2],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['soul_eater'] && !global.race['evil'] ? true : false;
         },
@@ -124,6 +126,7 @@ const techs = {
         reqs: { primitive: 2 },
         condition(){ return !global.race['gravity_well'] || (global.race['gravity_well'] && global.tech['transport']) ? true : false; },
         grant: ['primitive',3],
+        path: ['standard', 'truepath'],
         cost: {
             Lumber(){ return 8; },
             Stone(){ return 10; }
@@ -160,19 +163,19 @@ const techs = {
             }
         }
     },
-    track_temperature: {
-        id: 'tech-track_temperature',
-        title(){ return loc('tech_track_temperature'); },
-        desc(){ return loc('tech_track_temperature_desc'); },
+    track_days: {
+        id: 'tech-track_days',
+        title(){ return loc('tech_track_days'); },
+        desc(){ return loc('tech_track_days_desc'); },
         category: 'science',
         era: 'primitive',
         reqs: { primitive: 2 },
-        condition(){ return global.race['iceage']; },
+        path: ['iceage'],
         grant: ['primitive',3],
         cost: {
             Stone(){ return 10; }
         },
-        effect(){ return loc('tech_track_temperature_effect'); },
+        effect(){ return loc('tech_track_days_effect'); },
         action(){
             if (payCosts(this)){
                 global.resource.Knowledge.display = true;
@@ -451,7 +454,8 @@ const techs = {
         category: 'housing',
         era: 'discovery',
         reqs: { housing: 2, smelting: 2 },
-        not_trait: ['cataclysm','lone_survivor','iceage'],
+        not_trait: ['cataclysm','lone_survivor'],
+        path: ['standard', 'truepath'],
         grant: ['housing_reduction',1],
         cost: {
             Knowledge(){ return 11250; },
@@ -550,7 +554,8 @@ const techs = {
         era: 'civilized',
         reqs: { housing: 2 },
         grant: ['reproduction',1],
-        not_trait: ['artifical', 'iceage'],
+        not_trait: ['artifical'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 4500; }
         },
@@ -1027,7 +1032,8 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
         trait: ['carnivore'],
-        not_trait: ['cataclysm','artifical','soul_eater','herbivore','lone_survivor','iceage'],
+        not_trait: ['cataclysm','artifical','soul_eater','herbivore','lone_survivor'],
+        path: ['standard', 'truepath'],
         grant: ['hunting',1],
         cost: {
             Knowledge(){ return 80; }
@@ -1054,7 +1060,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         condition(){ return global.tech['s_lodge'] ? false : true; },
         grant: ['hunting',2],
         cost: {
@@ -1077,7 +1083,7 @@ const techs = {
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 1, currency: 1 },
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         grant: ['s_lodge',1],
         condition(){
             return (((global.race.species === 'wendigo' || global.race['detritivore']) && !global.race['carnivore'] && !global.race['herbivore'])
@@ -1103,7 +1109,8 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['soul_eater'],
-        not_trait: ['cataclysm','artifical','lone_survivor','iceage'],
+        not_trait: ['cataclysm','artifical','lone_survivor'],
+        path: ['standard', 'truepath'],
         grant: ['soul_eater',1],
         cost: {
             Knowledge(){ return 10; }
@@ -1125,7 +1132,8 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['detritivore'],
-        not_trait: ['cataclysm','artifical','lone_survivor','iceage'],
+        not_trait: ['cataclysm','artifical','lone_survivor'],
+        path: ['standard', 'truepath'],
         grant: ['compost',1],
         cost: {
             Knowledge(){ return 10; }
@@ -1148,6 +1156,7 @@ const techs = {
         reqs: { compost: 1 },
         trait: ['detritivore'],
         grant: ['compost',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 100; }
         },
@@ -1167,6 +1176,7 @@ const techs = {
         era: 'civilized',
         reqs: { compost: 2, mining: 3 },
         trait: ['detritivore'],
+        path: ['standard', 'truepath'],
         grant: ['compost',3],
         cost: {
             Knowledge(){ return 3200; }
@@ -1187,6 +1197,7 @@ const techs = {
         era: 'discovery',
         reqs: { compost: 3, high_tech: 2 },
         trait: ['detritivore'],
+        path: ['standard', 'truepath'],
         grant: ['compost',4],
         cost: {
             Knowledge(){ return 16000; }
@@ -1209,7 +1220,8 @@ const techs = {
         condition(){
             return (global.race['herbivore'] || (!global.race['carnivore'] && !global.race['detritivore'] && !global.race['soul_eater'])) ? true : false;
         },
-        not_trait: ['cataclysm','artifical','lone_survivor','unfathomable','forager','iceage'],
+        not_trait: ['cataclysm','artifical','lone_survivor','unfathomable','forager'],
+        path: ['standard', 'truepath'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }
@@ -1230,7 +1242,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['water',1],
         cost: {
             Knowledge(){ return 150; }
@@ -1251,6 +1263,7 @@ const techs = {
         desc(){ return loc('tech_fluid_bladders'); },
         category: 'agriculture',
         era: 'civilized',
+        path: ['iceage'],
         reqs: { military: 1, water: 1 },
         grant: ['water',2],
         cost: {
@@ -1271,6 +1284,7 @@ const techs = {
         desc(){ return loc('tech_steel_casks'); },
         category: 'agriculture',
         era: 'civilized',
+        path: ['iceage'],
         reqs: { water: 2 },
         grant: ['water',3],
         cost: {
@@ -1291,6 +1305,7 @@ const techs = {
         desc(){ return loc('tech_water_pumps'); },
         category: 'agriculture',
         era: 'industrialized',
+        path: ['iceage'],
         reqs: { water: 3, high_tech: 3 },
         grant: ['water',4],
         cost: {
@@ -1312,6 +1327,7 @@ const techs = {
         desc(){ return loc('tech_mythril_valves'); },
         category: 'agriculture',
         era: 'globalized',
+        path: ['iceage'],
         reqs: { water: 4, core: 3 },
         grant: ['water',5],
         cost: {
@@ -1332,6 +1348,7 @@ const techs = {
         desc(){ return loc('tech_reinforced_piping'); },
         category: 'agriculture',
         era: 'glacial',
+        path: ['iceage'],
         reqs: { water: 5, crater: 4 },
         grant: ['water',6],
         cost: {
@@ -1353,7 +1370,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3, water: 1 },
-        trait: ['iceage'],
+        path: ['iceage'],
         not_trait: ['artifical', 'eldritch'],
         grant: ['agriculture',1],
         cost: {
@@ -1377,7 +1394,8 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3, water: 1 },
-        trait: ['iceage','artifical'],
+        path: ['iceage'],
+        trait: ['artifical'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 400; }
@@ -1399,7 +1417,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 1, housing: 1, currency: 1 },
         grant: ['farm',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Money(){ return 50; },
             Knowledge(){ return 180; }
@@ -1420,7 +1438,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 1 },
         grant: ['agriculture',2],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 55; }
         },
@@ -1440,7 +1458,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
         grant: ['agriculture',3],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 80; }
         },
@@ -1461,6 +1479,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 3, mining: 3 },
         grant: ['agriculture',4],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 5400; }
         },
@@ -1481,6 +1500,7 @@ const techs = {
         era: 'discovery',
         reqs: { agriculture: 4, high_tech: 1 },
         grant: ['agriculture',5],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 16200; }
         },
@@ -1500,6 +1520,7 @@ const techs = {
         era: 'globalized',
         reqs: { agriculture: 5, high_tech: 4 },
         grant: ['agriculture',6],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 66000; }
         },
@@ -1521,7 +1542,8 @@ const techs = {
         condition(){
             return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || global.race['unfathomable'] || global.race['forager']) ? true : false;
         },
-        not_trait: ['herbivore', 'iceage'],
+        not_trait: ['herbivore'],
+        path: ['standard', 'truepath'],
         grant: ['wind_plant',1],
         cost: {
             Knowledge(){ return 66000; }
@@ -1543,6 +1565,7 @@ const techs = {
         era: 'globalized',
         reqs: { agriculture: 6, genetics: 1 },
         grant: ['agriculture',7],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 95000; }
         },
@@ -1628,6 +1651,7 @@ const techs = {
         reqs: { foundry: 3, saw: 1 },
         grant: ['foundry',4],
         not_trait: ['evil'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 5200; }
         },
@@ -1645,10 +1669,10 @@ const techs = {
         desc(){ return loc('tech_master_craftsman'); },
         category: 'crafting',
         era: 'discovery',
-        wiki: global.race['evil'] ? true : false,
+        wiki: global.race['evil'] || global.race['iceage'] ? true : false,
         reqs: { foundry: 3 },
         grant: ['foundry',5],
-        trait: ['evil'],
+        condition(){ return global.race['evil'] || global.race['iceage'] },
         cost: {
             Knowledge(){ return 12000; }
         },
@@ -1666,10 +1690,11 @@ const techs = {
         desc(){ return loc('tech_master_craftsman'); },
         category: 'crafting',
         era: 'discovery',
-        wiki: global.race['evil'] ? false : true,
+        wiki: global.race['evil'] || global.race['iceage'] ? false : true,
         reqs: { foundry: 4 },
         grant: ['foundry',5],
         not_trait: ['evil'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 12000; }
         },
@@ -1746,6 +1771,7 @@ const techs = {
         era: 'industrialized',
         reqs: { foundry: 1, high_tech: 3 },
         grant: ['v_train',1],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 30000; }
         },
@@ -1828,7 +1854,8 @@ const techs = {
         title(){ return loc('tech_automation'); },
         desc(){ return loc('tech_automation'); },
         category: 'crafting',
-        era: 'early_space',
+        era: ['early_space','glacial'],
+        era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
         reqs: { high_tech: 8, factory: 1},
         grant: ['factory',2],
         cost: {
@@ -1915,7 +1942,8 @@ const techs = {
         era: 'civilized',
         reqs: { housing: 1, currency: 1, cement: 1 },
         grant: ['theatre',1],
-        not_trait: ['joyless', 'iceage'],
+        not_trait: ['joyless'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 750; }
         },
@@ -1937,7 +1965,7 @@ const techs = {
         reqs: { cement: 1, mineshaft_depth: 1 },
         grant: ['theatre',1],
         not_trait: ['joyless'],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 3400; },
             Water(){ return 6500; },
@@ -2043,7 +2071,7 @@ const techs = {
         era: 'discovery',
         reqs: { theatre: 3, high_tech: 2 },
         grant: ['broadcast',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 16200; }
         },
@@ -2063,6 +2091,7 @@ const techs = {
         era: 'globalized',
         reqs: { broadcast: 1, high_tech: 4 },
         grant: ['broadcast',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 67500; }
         },
@@ -2279,7 +2308,7 @@ const techs = {
         era: 'civilized',
         reqs: { smelting: 2 },
         grant: ['alumina',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 4500; }
         },
@@ -2567,11 +2596,12 @@ const techs = {
         }
     },
     iridium_smelting_iceage: {
-        id: 'tech-iridium_smelting_perk',
+        id: 'tech-iridium_smelting_perk_iceage',
         title(){ return loc('tech_iridium_smelting'); },
         desc(){ return loc('tech_iridium_smelting'); },
         category: 'mining',
         era: 'globalized',
+        path: ['iceage'],
         reqs: { core: 1 },
         condition(){ return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 3 ? true : false; },
         grant: ['irid_smelting',1],
@@ -2740,7 +2770,7 @@ const techs = {
         era: 'discovery',
         reqs: { storage: 2, smelting: 2, alumina: 1 },
         grant: ['storage',3],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 15750; },
             Aluminium(){ return 3000; },
@@ -2764,6 +2794,7 @@ const techs = {
         category: 'storage',
         era: 'industrialized',
         reqs: { storage: 3, high_tech: 3, smelting: 2 },
+        path: ['standard', 'truepath'],
         grant: ['storage',4],
         cost: {
             Knowledge(){ return 40500; },
@@ -2787,7 +2818,7 @@ const techs = {
         category: 'storage',
         era: 'discovery',
         reqs: { storage: 2, smelting: 2, alumina: 1, high_tech: 2 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['storage',4],
         cost: {
             Knowledge(){ return 28000; },
@@ -2830,7 +2861,7 @@ const techs = {
         category: 'storage',
         era: ['early_space', 'glacial'],
         era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
-        path: ['standard'],
+        path: ['standard', 'iceage'],
         reqs: { particles: 1, storage: 5 },
         grant: ['storage',6],
         cost: {
@@ -2931,7 +2962,7 @@ const techs = {
         era: 'discovery',
         reqs: { container: 2, high_tech: 2 },
         grant: ['container',3],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 18000; },
             Copper(){ return 1000; },
@@ -2952,7 +2983,7 @@ const techs = {
         category: 'storage',
         era: 'industrialized',
         reqs: { storage:4, container: 2, steel_container: 1 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['container',3],
         cost: {
             Knowledge(){ return 65000; },
@@ -3138,7 +3169,7 @@ const techs = {
         era: 'discovery',
         reqs: { steel_container: 1, high_tech: 2 },
         grant: ['steel_container',2],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 22500; },
             Steel(){ return 5000; }
@@ -3937,7 +3968,8 @@ const techs = {
         category: 'market',
         era: 'industrialized',
         reqs: { trade: 2, high_tech: 3 },
-        not_trait: ['terrifying', 'iceage'],
+        not_trait: ['terrifying'],
+        path: ['standard', 'truepath'],
         grant: ['trade',3],
         cost: {
             Knowledge(){ return 37800; }
@@ -3962,7 +3994,8 @@ const techs = {
         category: 'market',
         era: 'industrialized',
         reqs: { trade: 1, high_tech: 3, oil: 1 },
-        not_trait: ['thalassophobia', 'iceage'],
+        not_trait: ['thalassophobia'],
+        path: ['standard', 'truepath'],
         grant: ['wharf',1],
         cost: {
             Knowledge(){ return 44000; }
@@ -4456,7 +4489,8 @@ const techs = {
         category: 'banking',
         era: 'early_space',
         reqs: { monuments: 2, monument: 1 },
-        not_trait: ['cataclysm','lone_survivor','iceage'],
+        not_trait: ['cataclysm','lone_survivor'],
+        path: ['standard', 'truepath'],
         grant: ['monument',2],
         cost: {
             Knowledge(){ return 150000; }
@@ -4523,7 +4557,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 1, cement: 1 },
         grant: ['science',2],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',720); }
         },
@@ -4544,7 +4578,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 1 },
         grant: ['science',2],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',720); },
             Stone(){ return 450; }
@@ -4565,7 +4599,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 2 },
         grant: ['science',3],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',1125); }
         },
@@ -4585,7 +4619,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 2 },
         grant: ['science',3],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',1400); }
         },
@@ -4605,7 +4639,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 3 },
         grant: ['science',4],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',3240); }
         },
@@ -4625,7 +4659,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 3 },
         grant: ['science',4],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',4500); }
         },
@@ -4645,6 +4679,7 @@ const techs = {
         era: 'industrialized',
         reqs: { science: 4, high_tech: 3 },
         grant: ['science',5],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',27000); }
         },
@@ -4664,7 +4699,7 @@ const techs = {
         era: 'civilized',
         reqs: { science: 4 },
         grant: ['science',5],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',12000); }
         },
@@ -4764,7 +4799,7 @@ const techs = {
         era: 'glacial',
         reqs: { science: 8, ecosystem_genetics: 1 },
         grant: ['science',9],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',300000); }
         },
@@ -5177,8 +5212,8 @@ const techs = {
         title(){ return loc('tech_giant_thrusters'); },
         desc(){ return loc('tech_giant_thrusters'); },
         category: 'science',
-        era: ['intergalactic','glacial'],
-        era_a(){ return !global.race['iceage'] ? 'intergalactic' : 'glacial'; },
+        era: ['dimensional','glacial'],
+        era_a(){ return !global.race['iceage'] ? 'dimensional' : 'glacial'; },
         reqs: { thrusters: 1 },
         grant: ['thrusters',2],
         cost: {
@@ -5210,7 +5245,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 3 },
         grant: ['support_beams',1],
-        trait: ['iceage'],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 1600; },
             Iron(){ return 400; }
@@ -5232,6 +5267,7 @@ const techs = {
         era: 'civilized',
         reqs: { support_beams: 1, smelting: 2 },
         grant: ['support_beams',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 8400; },
             Steel(){ return 6500; }
@@ -5256,6 +5292,7 @@ const techs = {
         era: 'industrialized',
         reqs: { support_beams: 2, titanium: 1 },
         grant: ['support_beams',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 54000; },
             Titanium(){ return 4000; }
@@ -5279,6 +5316,7 @@ const techs = {
         era: 'civilized',
         reqs: { support_beams: 1 },
         grant: ['mineshaft',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 2400; },
             Iron(){ return 600; }
@@ -5300,6 +5338,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 4, mineshaft: 1 },
         grant: ['mineshaft',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 7800; },
             Steel(){ return 5000; },
@@ -5321,6 +5360,7 @@ const techs = {
         era: 'globalized',
         reqs: { alloy: 1, mineshaft: 2 },
         grant: ['mineshaft',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 75000; },
             Steel(){ return 55000; },
@@ -5343,6 +5383,7 @@ const techs = {
         era: 'globalized',
         reqs: { mineshaft_depth: 3, mineshaft: 4 },
         grant: ['core',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 120000; }
         },
@@ -5363,6 +5404,7 @@ const techs = {
         era: 'globalized',
         reqs: { core: 1, mineshaft: 4 },
         grant: ['mineshaft',5],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 140000; }
         },
@@ -5382,6 +5424,7 @@ const techs = {
         era: 'globalized',
         reqs: { core: 1 },
         grant: ['core',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 130000; },
             Iridium(){ return 1000; }
@@ -5403,6 +5446,7 @@ const techs = {
         era: 'globalized',
         reqs: { core: 2 },
         grant: ['core',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 150000; },
             Iridium(){ return 4000; }
@@ -5425,7 +5469,7 @@ const techs = {
         category: 'progress',
         era: 'civilized',
         reqs: { mining: 1 },
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         condition(){ return global.stats.achieve['back_on_track'] && global.stats.achieve.back_on_track.l >= 1 ? true : false; },
         grant: ['perk_underground',1],
         cost: {
@@ -5440,7 +5484,7 @@ const techs = {
             return false;
         },
         post(){
-            defineIndustry();
+            drawPerkUnderground();
         }
     },
     bioscience: {
@@ -5792,7 +5836,7 @@ const techs = {
         category: 'progress',
         era: 'globalized',
         reqs: { high_tech: 4, uranium: 1 },
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         grant: ['high_tech',5],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',77400); },
@@ -5843,7 +5887,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 6 },
         grant: ['high_tech',7],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',112500); },
             Oil(){ return global.city.ptrait.includes('dense') ? 8000 : 6800; }
@@ -5870,7 +5914,7 @@ const techs = {
         category: 'progress',
         era: 'globalized',
         reqs: { high_tech: 6, core: 1 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['high_tech',7],
         cost: {
             Knowledge(){ return traitCostMod('stubborn',160000); },
@@ -5900,6 +5944,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 1 },
         grant: ['surface',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 180000; }
         },
@@ -5921,6 +5966,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 2 },
         grant: ['surface',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 185000; }
         },
@@ -5941,6 +5987,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 3, wastes: 1 },
         grant: ['surface',4],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 210000; }
         },
@@ -5966,6 +6013,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 4 },
         grant: ['bonfires',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 3500; },
             Lumber() { return 5000; }
@@ -5987,6 +6035,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 4, housing: 3 },
         grant: ['housing',4],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 225000; },
             Lumber() { return 2500; }
@@ -6008,6 +6057,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 9 },
         grant: ['agriculture',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 230000; }
         },
@@ -6036,6 +6086,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 9 },
         grant: ['zoo',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 240000; },
             Lumber(){ return 25000; }
@@ -6057,6 +6108,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 9 },
         grant: ['surface',10],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 280000; },
             Lumber(){ return 24000; },
@@ -6079,6 +6131,7 @@ const techs = {
         era: 'glacial',
         reqs: { crater: 1 },
         grant: ['crater',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 200000; },
         },
@@ -6100,6 +6153,7 @@ const techs = {
         era: 'glacial',
         reqs: { crater: 2 },
         grant: ['crater',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 340000; },
             Uranium(){ return 150; }
@@ -6121,6 +6175,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface_uranium: 1 },
         grant: ['surface_uranium',2],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 320000; },
             Uranium(){ return 100; }
@@ -6142,6 +6197,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface_uranium: 2 },
         grant: ['surface_uranium',3],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 360000; },
             Uranium(){ return 500; }
@@ -6162,6 +6218,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface_uranium: 3 },
         grant: ['surface_uranium',4],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 400000; },
             Uranium(){ return 2000; }
@@ -6183,6 +6240,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface_uranium: 2, crater: 3 },
         grant: ['crater',4],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 500000; }
         },
@@ -6203,6 +6261,7 @@ const techs = {
         era: 'glacial',
         reqs: { crater: 5 },
         grant: ['crater',6],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 580000; }
         },
@@ -6222,6 +6281,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 4 },
         grant: ['surface',5],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 200000; },
             Lumber() { return 1000; }
@@ -6245,6 +6305,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 6 },
         grant: ['surface',7],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 220000; },
             Lumber() { return 3000; }
@@ -6267,6 +6328,7 @@ const techs = {
         era: 'glacial',
         reqs: { surface: 7 },
         grant: ['surface',8],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 250000; },
             Lumber() { return 10000; }
@@ -6315,6 +6377,7 @@ const techs = {
         era: 'glacial',
         reqs: { crater: 5, ecosystem_genetics: 1 },
         grant: ['ecosystem_genetics',2],
+        path: ['iceage'],
         cost: { },
         effect: loc('tech_plant_odd_seed_effect'),
         action(){
@@ -6334,6 +6397,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 5 },
         grant: ['ecosystem_genetics',6],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 600000; },
             Power_Bones() { return 10; }
@@ -6354,6 +6418,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 6 },
         grant: ['ecosystem_genetics',7],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 750000; },
             Power_Bones() { return 100; }
@@ -6377,6 +6442,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 5 },
         grant: ['bone_storage',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 880000; }
         },
@@ -6397,6 +6463,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 6, military: 6 },
         grant: ['military',7],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 920000; },
             Power_Bones() { return 100; }
@@ -6418,6 +6485,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 6, armor: 3 },
         grant: ['armor',4],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 1000000; },
             Power_Bones() { return 200; }
@@ -6431,7 +6499,7 @@ const techs = {
         },
         flair(){ return `<div>${loc('tech_bone_armor_flair1')}</div><div>${loc('tech_bone_armor_flair2')}</div>`; }
     },
-    bone_chainsaw: {
+    bone_chainsaws: {
         id: 'tech-bone_chainsaw',
         title(){ return loc('tech_bone_chainsaw'); },
         desc(){ return loc('tech_bone_chainsaw'); },
@@ -6440,6 +6508,7 @@ const techs = {
         reqs: { ecosystem_genetics: 6, axe: 5 },
         not_trait: ['living_tool'],
         grant: ['axe',6],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 105000; },
             Power_Bones() { return 300; }
@@ -6459,9 +6528,10 @@ const techs = {
         desc(){ return loc('tech_bone_hammer'); },
         category: 'stone_gathering',
         era: 'glacial',
-        reqs: { ecosystem_genetics: 6, hammer: 4 },
+        reqs: { ecosystem_genetics: 6, hammer: 4, pickaxe: 5 },
         not_trait: ['living_tool','tusk'],
         grant: ['hammer',5],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 110000; },
             Power_Bones() { return 500; }
@@ -6484,6 +6554,7 @@ const techs = {
         era: 'glacial',
         reqs: { ecosystem_genetics: 6 },
         grant: ['thrusters',1],
+        path: ['iceage'],
         cost: {
             Knowledge(){ return 1250000; },
             Power_Bones() { return 350; }
@@ -6507,7 +6578,7 @@ const techs = {
         category: 'power_generation',
         era: 'glacial',
         reqs: { thrusters: 1 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['super_fuel',1],
         cost: {
             Knowledge(){ return 1800000; },
@@ -6529,7 +6600,7 @@ const techs = {
         category: 'power_generation',
         era: 'glacial',
         reqs: { super_fuel: 1 },
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['super_fuel',2],
         cost: {
             Knowledge(){ return 2500000; },
@@ -7527,7 +7598,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         grant: ['uranium',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 72000; }
         },
@@ -7573,7 +7644,7 @@ const techs = {
         desc(){ return loc('tech_uranium_ash'); },
         category: 'power_generation',
         era: 'globalized',
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         reqs: { uranium: 2 },
         grant: ['uranium',3],
         cost: {
@@ -8051,7 +8122,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         grant: ['reclaimer',1],
-        not_trait: ['iceage'],
+        path: ['standard', 'truepath'],
         trait: ['evil'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
@@ -8081,6 +8152,7 @@ const techs = {
         grant: ['reclaimer',2],
         trait: ['evil'],
         not_trait: ['living_tool'],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -8106,6 +8178,7 @@ const techs = {
         grant: ['reclaimer',3],
         trait: ['evil'],
         not_trait: ['living_tool'],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -8131,6 +8204,7 @@ const techs = {
         grant: ['reclaimer',4],
         trait: ['evil'],
         not_trait: ['living_tool'],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -8156,6 +8230,7 @@ const techs = {
         grant: ['reclaimer',5],
         trait: ['evil'],
         not_trait: ['living_tool'],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -8181,6 +8256,7 @@ const techs = {
         grant: ['reclaimer',6],
         trait: ['evil'],
         not_trait: ['living_tool'],
+        path: ['standard', 'truepath'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -8254,7 +8330,8 @@ const techs = {
         reqs: { primitive: 3 },
         era: 'civilized',
         grant: ['axe',1],
-        not_trait: ['kindling_kindred','smoldering','evil','cataclysm','iceage'],
+        not_trait: ['kindling_kindred','smoldering','evil','cataclysm'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 45; },
             Lumber(){ return 20; },
@@ -8282,6 +8359,7 @@ const techs = {
         reqs: { axe: 1, mining: 2 },
         not_trait: ['living_tool'],
         grant: ['axe',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 540; },
             Copper(){ return 25; }
@@ -8302,7 +8380,8 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
-        not_trait: ['lone_survivor','warlord','iceage'],
+        not_trait: ['lone_survivor','warlord'],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }
@@ -8324,6 +8403,7 @@ const techs = {
         era: 'discovery',
         reqs: { smelting: 2, saw: 1 },
         grant: ['saw',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 10800; },
             Steel(){ return 400; }
@@ -8345,6 +8425,7 @@ const techs = {
         reqs: { axe: 2, mining: 3 },
         not_trait: ['living_tool'],
         grant: ['axe',3],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
             Iron(){ return 250; }
@@ -8366,6 +8447,7 @@ const techs = {
         reqs: { axe: 3, smelting: 2 },
         not_trait: ['living_tool'],
         grant: ['axe',4],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 9000; },
             Steel(){ return 250; }
@@ -8387,6 +8469,7 @@ const techs = {
         reqs: { axe: 4, high_tech: 3 },
         not_trait: ['living_tool'],
         grant: ['axe',5],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 38000; },
             Titanium(){ return 350; }
@@ -8408,6 +8491,7 @@ const techs = {
         reqs: { axe: 5, alpha: 2 },
         not_trait: ['living_tool'],
         grant: ['axe',6],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 560000; },
             Oil(){ return 10000; },
@@ -9525,7 +9609,8 @@ const techs = {
         category: 'military',
         era: 'civilized',
         reqs: { military: 1 },
-        not_trait: ['apex_predator', 'iceage'],
+        not_trait: ['apex_predator'],
+        path: ['standard', 'truepath'],
         grant: ['armor',1],
         cost: {
             Money(){ return 250; },
@@ -9548,6 +9633,7 @@ const techs = {
         era: 'civilized',
         reqs: { armor: 1, mining: 3 },
         grant: ['armor',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 3400; },
             Iron(){ return 600; },
@@ -9568,7 +9654,7 @@ const techs = {
         era: 'civilized',
         reqs: { military: 1 },
         not_trait: ['apex_predator'],
-        trait: ['iceage'],
+        path: ['iceage'],
         grant: ['armor',2],
         cost: {
             Money(){ return 8500; },
@@ -9763,8 +9849,9 @@ const techs = {
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
-        not_trait: ['cataclysm','lone_survivor','warlord','iceage'],
+        not_trait: ['cataclysm','lone_survivor','warlord'],
         grant: ['mad',1],
+        path: ['standard', 'truepath'],
         condition(){
             if (global.race['sludge'] || global.race['ultra_sludge']){ return false; }
             return global.race['truepath'] ? (global.tech['world_control'] ? true : false ) : true;
@@ -9796,7 +9883,8 @@ const techs = {
         category: 'cement',
         era: 'civilized',
         reqs: { mining: 1, storage: 1, science: 1 },
-        not_trait: ['flier','iceage'],
+        not_trait: ['flier'],
+        path: ['standard', 'truepath'],
         grant: ['cement',1],
         cost: {
             Knowledge(){ return 500; }
@@ -10067,7 +10155,7 @@ const techs = {
         category: 'science',
         era: ['early_space', 'glacial'],
         era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
-        path: ['standard'],
+        path: ['standard', 'iceage'],
         reqs: { particles: 2, supercollider: 2 },
         grant: ['particles',3],
         cost: {
@@ -11328,7 +11416,7 @@ const techs = {
         category: 'special',
         era: ['early_space', 'glacial'],
         era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
-        path: ['standard'],
+        path: ['standard', 'iceage'],
         reqs(r){ return r.era === 'early_space' ? { mars: 2 } : { surface: 1 }; },
         grant: ['unify',1],
         cost: {
@@ -11349,7 +11437,7 @@ const techs = {
         category: 'special',
         era: ['early_space', 'glacial'],
         era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
-        path: ['standard'],
+        path: ['standard', 'iceage'],
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
@@ -11555,7 +11643,8 @@ const techs = {
         title(){ return loc('tech_genetic_decay'); },
         desc(){ return loc('tech_genetic_decay'); },
         category: 'genes',
-        era: 'early_space',
+        era: ['early_space','glacial'],
+        era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
         reqs: { decay: 1 },
         grant: ['decay',2],
         cost: {
@@ -13071,6 +13160,9 @@ const techs = {
                 else if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     initStruct(actions.space.spc_red.pylon);
                 }
+                else if (global.race['iceage']){
+                    initStruct(actions.underground.cave.pylon);
+                }
                 else {
                     initStruct(actions.city.pylon);
                 }
@@ -14058,8 +14150,9 @@ const techs = {
         title(){ return loc('tech_higgs_boson'); },
         desc(){ return loc('tech_higgs_boson'); },
         category: 'science',
-        era: 'early_space',
-        path: ['truepath'],
+        era: ['early_space', 'glacial'],
+        era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
+        path: ['truepath', 'iceage'],
         reqs: { supercollider: 2 },
         grant: ['tp_particles',1],
         cost: {

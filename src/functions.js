@@ -2713,16 +2713,16 @@ function nexusAdjust(costs, c_action, args){
     return costs;
 }
 
-export function undergroundTradeAdjust(costs, offset, wiki){
+export function undergroundTradeAdjust(costs, c_action, args){
     if(global.underground['trade']){
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             let adjustRate = (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
             if (['Money'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+                newCosts[res] = function(){ return costs[res](args) * adjustRate; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;

@@ -4258,7 +4258,10 @@ export function loadAlchemy(name,color,basic){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 4)){
         return;
     }
-    else if (global.race['artifical'] && name === 'Food'){
+    else if ((global.race['artifical'] || global.race['iceage']) && name === 'Food'){
+        return;
+    }
+    else if (global.race['iceage'] && name === 'Lumber'){
         return;
     }
     if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){

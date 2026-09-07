@@ -310,16 +310,6 @@ async function menuDispatch(main,sub,frag){
             setWindowHash(main,sub,frag);
             break;
 
-        case 'ice_structures':
-            renderStructurePage(sub,'iceage');
-            setWindowHash(main,sub,frag);
-            break;
-
-        case 'ice_tech':
-            renderTechPage(sub, 'iceage');
-            setWindowHash(main,sub,frag);
-            break;
-
         case 'achievements':
             switch (sub){
                 case 'tracker':

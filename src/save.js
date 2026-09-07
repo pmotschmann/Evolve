@@ -160,7 +160,7 @@ export function decodeSaveString(data){
 export function encodeExportString(state){
     const json = JSON.stringify(pruneState(state));
     const f = codec();
-    if (!f || true){
+    if (!f){
         const lz = legacy();
         if (!lz){ throw new Error('No save codec available (fflate and LZString both missing)'); }
         return lz.compressToBase64(JSON.stringify(state));

@@ -3411,7 +3411,7 @@ export const actions = {
                 if (global.city.ptrait.includes('permafrost')){
                     base += planetTraits.permafrost.vars()[1];
                 }
-                if (global.tech['science'] >= 4){
+                if (global.tech['science'] >= 4 && global.city.library){
                     multiplier += global.city.library.count * 0.02;
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){

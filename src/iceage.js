@@ -580,7 +580,7 @@ const iceAgeModules = {
                     let gain = +(this.knowVal(wiki)).toFixed(0);
                     let desc = `<div>${loc('city_university_effect',[jobScale(1)])}</div>
                         <div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
-                    if (global.tech['science'] >= 5){
+                    if (global.tech['science'] >= 5 && global.underground['stone_slab']){
                         desc += `<div>${loc('underground_stone_slab_effect2',[global.underground['stone_slab'].breakthrough, 0.5])}</div>`
                     }
                     desc += `<div class="has-text-special">${loc('underground_stone_slab_effect1')}</div>`;
@@ -954,7 +954,7 @@ const iceAgeModules = {
                     if (p_on['mineshaft_vator']){
                         return global.underground['mineshaft'].ice / -1000;
                     }
-                    let rate = Math.max(0, Math.min(global.underground['mineshaft']?.depth, 200000) - global.underground['mineshaft'].ice) / 1000;
+                    let rate = Math.min(this.full_depth(), 200000) / 1000;
                     if (global.tech['mineshaft'] >= 2){
                         rate *= 0.75;
                     }
@@ -1615,7 +1615,7 @@ const iceAgeModules = {
             },
             depths_support_beams: {
                 id: 'underground-depths_support_beams',
-                title(){ return loc('underground_support_beams'); },
+                title(){ return loc('underground_depths_support_beams'); },
                 desc(){ return loc('underground_support_beams_desc'); },
                 type: 'utility',
                 spared: true,
@@ -2068,7 +2068,7 @@ const iceAgeModules = {
             },
             industrial_support_beams: {
                 id: 'underground-industrial_support_beams',
-                title(){ return loc('underground_support_beams'); },
+                title(){ return loc('underground_industry_support_beams'); },
                 desc(){ return loc('underground_support_beams_desc'); },
                 type: 'utility',
                 spared: true,
@@ -2352,7 +2352,7 @@ const iceAgeModules = {
             },
             core_support_beams: {
                 id: 'underground-core_support_beams',
-                title(){ return loc('underground_support_beams'); },
+                title(){ return loc('underground_core_support_beams'); },
                 desc(){ return loc('underground_support_beams_desc'); },
                 type: 'utility',
                 spared: true,
@@ -2416,7 +2416,7 @@ const iceAgeModules = {
             },
             stone_slab_perk: {
                 id: 'underground-stone_slab_perk',
-                title(){ return loc('underground_stone_slab'); },
+                title(){ return loc('underground_stone_slab_perk'); },
                 desc(){ return loc('underground_stone_slab_desc'); },
                 type: 'science',
                 reqs: { science: 1, perk_underground: 1 },
@@ -2451,6 +2451,7 @@ const iceAgeModules = {
                 desc(){ return loc('city_lodge_desc_alt'); },
                 type: 'science',
                 reqs: { science: 1, housing: 1 },
+                not_trait: ['lone_survivor'],
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('apartment_perk', r.offset, 250, 4); },
                     Furs(r={}){ return undergroundCostMultiplier('apartment_perk', r.offset, 160, 4); },
@@ -2487,7 +2488,7 @@ const iceAgeModules = {
             },
             hunting_lodge_perk: {
                 id: 'underground-hunting_lodge_perk',
-                title(){ return loc('underground_hunting_lodge'); },
+                title(){ return loc('underground_hunting_lodge_perk'); },
                 desc(){ return loc('underground_hunting_lodge_desc'); },
                 type: 'military',
                 reqs: { military: 1, perk_underground: 1 },
@@ -2530,7 +2531,7 @@ const iceAgeModules = {
             },
             storage_space_perk: {
                 id: 'underground-storage_space_perk',
-                title(){ return loc('underground_storage_space'); },
+                title(){ return loc('underground_storage_space_perk'); },
                 desc(){ return loc('underground_storage_space_desc'); },
                 type: 'storage',
                 reqs: { perk_underground: 1 },
@@ -2558,7 +2559,7 @@ const iceAgeModules = {
             },
             smelter_perk: {
                 id: 'underground-smelter_perk',
-                title(){ return loc('city_smelter'); },
+                title(){ return loc('underground_smelter_perk'); },
                 desc(){ return loc('city_smelter_desc'); },
                 type: 'industry',
                 special: true,
@@ -2606,7 +2607,7 @@ const iceAgeModules = {
             },
             blacksmith_perk: {
                 id: 'underground-blacksmith_perk',
-                title(){ return loc('underground_core_blacksmith'); },
+                title(){ return loc('underground_blacksmith_perk'); },
                 desc(){ return loc('underground_core_blacksmith'); },
                 type: 'industry',
                 reqs: { foundry: 1, perk_underground: 1 },
@@ -2671,7 +2672,7 @@ const iceAgeModules = {
                     Spent_Fossil(r={}){ return ((r.offset || 0) + (global.underground.arena?.count || 0)) < 1 ? 0 : undergroundCostMultiplier('arena', r.offset, 1, 1.5); }
                 },
                 effect(wiki){
-                    let desc = `<div>${loc('cave_arena_effect1', [1])}</div>`;
+                    let desc = `<div>${loc('cave_arena_effect1')}</div>`;
                     desc += `<div>${loc('cave_arena_effect2', [+((this.trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.arena?.herbivores_trophy || 0])}</div>`;
                     desc += `<div>${loc('cave_arena_effect3', [+((this.trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.arena?.carnivores_trophy || 0])}</div>`;
                     desc += `<div>${loc('cave_arena_effect4', [+((this.trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.arena?.scavengers_trophy || 0])}</div>`;
@@ -3749,17 +3750,6 @@ const iceAgeModules = {
                 spared: true,
                 condition(){ return global.aberrants.herbivores.count || global.aberrants.herbivores.slain},
                 effect(){
-                    let wins = 0;
-                    for (let i=0;i<18;i++){
-                        if (aberrant_fight('herbivores', false, global['warseed'] + (i * 1000)).success){
-                            wins++;
-                        }
-                    }
-                    wins += seededRandom(-2,2,false, global['warseed']);
-                    if (wins < 0){
-                        wins = 0;
-                    }
-                    let calc_odds = (wins * 10 - 100).toFixed(0);
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
                     let stats = aberrant_stats('herbivores');
                     if (global.tech['ecoMutate']){
@@ -3773,6 +3763,17 @@ const iceAgeModules = {
                         desc += `<div>${loc('surface_aberrant_effect4', [Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')])}</div>`;
                     }
                     if (global.tech['ecoMutate']){
+                        let wins = 0;
+                        for (let i=0;i<18;i++){
+                            if (aberrant_fight('herbivores', false, global['warseed'] + (i * 1000)).success){
+                                wins++;
+                            }
+                        }
+                        wins += seededRandom(-2,2,false, global['warseed']);
+                        if (wins < 0){
+                            wins = 0;
+                        }
+                        let calc_odds = (wins * 10 - 100).toFixed(0);
                         desc += `<div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
                     }
                     return desc;
@@ -3835,17 +3836,6 @@ const iceAgeModules = {
                 spared: true,
                 condition(){ return global.aberrants.carnivores.count || global.aberrants.carnivores.slain},
                 effect(){
-                    let wins = 0;
-                    for (let i=0;i<18;i++){
-                        if (aberrant_fight('carnivores', false, global['warseed'] + (i * 1000)).success){
-                            wins++;
-                        }
-                    }
-                    wins += seededRandom(-2,2,false, global['warseed']);
-                    if (wins < 0){
-                        wins = 0;
-                    }
-                    let calc_odds = (wins * 10 - 100).toFixed(0);
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
                     let stats = aberrant_stats('carnivores');
                     if (global.tech['ecoMutate']){
@@ -3859,6 +3849,17 @@ const iceAgeModules = {
                         desc += `<div>${loc('surface_aberrant_effect4', [Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')])}</div>`;
                     }
                     if (global.tech['ecoMutate']){
+                        let wins = 0;
+                        for (let i=0;i<18;i++){
+                            if (aberrant_fight('carnivores', false, global['warseed'] + (i * 1000)).success){
+                                wins++;
+                            }
+                        }
+                        wins += seededRandom(-2,2,false, global['warseed']);
+                        if (wins < 0){
+                            wins = 0;
+                        }
+                        let calc_odds = (wins * 10 - 100).toFixed(0);
                         desc += `<div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
                     }
                     return desc;
@@ -3921,17 +3922,6 @@ const iceAgeModules = {
                 spared: true,
                 condition(){ return global.aberrants.scavengers.count || global.aberrants.scavengers.slain},
                 effect(){
-                    let wins = 0;
-                    for (let i=0;i<18;i++){
-                        if (aberrant_fight('scavengers', false, global['warseed'] + (i * 1000)).success){
-                            wins++;
-                        }
-                    }
-                    wins += seededRandom(-2,2,false, global['warseed']);
-                    if (wins < 0){
-                        wins = 0;
-                    }
-                    let calc_odds = (wins * 10 - 100).toFixed(0);
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
                     let stats = aberrant_stats('scavengers');
                     if (global.tech['ecoMutate']){
@@ -3945,6 +3935,17 @@ const iceAgeModules = {
                         desc += `<div>${loc('surface_aberrant_effect4', [Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')])}</div>`;
                     }
                     if (global.tech['ecoMutate']){
+                        let wins = 0;
+                        for (let i=0;i<18;i++){
+                            if (aberrant_fight('scavengers', false, global['warseed'] + (i * 1000)).success){
+                                wins++;
+                            }
+                        }
+                        wins += seededRandom(-2,2,false, global['warseed']);
+                        if (wins < 0){
+                            wins = 0;
+                        }
+                        let calc_odds = (wins * 10 - 100).toFixed(0);
                         desc += `<div>${loc(calc_odds >= 0 ? 'civics_garrison_advantage' : 'civics_garrison_disadvantage', [Math.abs(calc_odds)])}</div>`;
                     }
                     return desc;
@@ -4761,9 +4762,9 @@ function cave_fight(real=false, seed=global['warseed']){
     if (global.race['ocular_power'] && global.race['ocularPowerConfig'] && global.race.ocularPowerConfig.f){
         ambushing_max -= Math.round(3 * traits.ocular_power.vars()[1] / 100);
     }
-    let ambushing = rand(ambushing_max / 5, ambushing_max,true) / 500 * creatures; //by default, between 2.8% and 14% of creatures ambush
+    let ambushing = Math.floor(rand(ambushing_max / 5, ambushing_max,true) / 1400 * creatures); //by default, between 1% and 5% of creatures ambush
+    let deaths = ambushing;
     let pierce = actions.underground.depths.cave_creatures.elites();
-    let deaths = Math.floor(ambushing / 3); //1 soldier dies per 3 ambushing creatures
     let guaranteed = Math.floor(deaths * pierce);
     let armor = armorCalc(deaths - guaranteed, army); //can be more than deaths
     let armor_reduce = Math.floor(Math.min(deaths, armor, army-injuries));
@@ -5165,18 +5166,19 @@ export const ecosystemInfo = {
         empowered: { //empowered is a special trait. It is required for other major traits to show up, can't be removed and spreads through other empowered lifeforms
             name(){ return loc('trait_empowered_name'); },
             desc(){ return global.race['iceage'] ? loc('ecotrait_empowered_desc') : loc('ecotrait_empowered_desc_env'); },
-            effect(s, r){
+            showUp: ['trees','herbivores','carnivores','scavengers'], //override for wiki page detailing which lifeforms can get this trait
+            effect(s, r, wiki){
                 let trait_mods = this.trait_effect(1);
                 let desc = `<div>`;
-                if (global.surface[s]?.empowered){
-                    desc += `<div>${loc('ecotrait_empowered_effect1', [+((trait_mods.minor_traits - 1) * 100).toFixed(1), loc(`surface_${s}_single`)])}</div>`;
+                if (global.surface[s]?.empowered || wiki){
+                    desc += `<div>${loc('ecotrait_empowered_effect1', [+((trait_mods.minor_traits - 1) * 100).toFixed(1), loc(wiki ? `surface_life_general` : `surface_${s}_single`)])}</div>`;
                 }
-                if ((global.tech['ecosystem_genetics'] >= 4 || global.tech['ecoMutate'])){
+                if (global.tech['ecosystem_genetics'] >= 4 || global.tech['ecoMutate'] || wiki){
                     if (s === 'trees'){
                         desc += `<div>${loc('ecotrait_empowered_effect3', [+((trait_mods.tree_traits - 1) * 100).toFixed(1)])}</div>`;
                     }
                     else{
-                        desc += `<div>${loc('ecotrait_empowered_effect2', [+((trait_mods.major_traits - 1) * 100).toFixed(1), loc(`surface_${s}_single`)])}</div>`;
+                        desc += `<div>${loc('ecotrait_empowered_effect2', [+((trait_mods.major_traits - 1) * 100).toFixed(1), loc(wiki ? `surface_life_general` : `surface_${s}_single`)])}</div>`;
                     }
                 }
                 else if (s !== 'trees'){
@@ -5283,21 +5285,10 @@ export const ecosystemInfo = {
             desc(){ return global.race['iceage'] ? loc('ecotrait_fiery_desc') : loc('ecotrait_fiery_desc_env'); },
             effect(s, r){
                 let trait_mods = this.trait_effect(r);
-                return `<div>${loc('ecotrait_fiery_effect', [+((1 - trait_mods.effect) * 100).toFixed(1)])} ${loc('ecotrait_greedy_effect1', [+((trait_mods.loot - 1) * 100).toFixed(1)])}</div>`;
+                return `<div>${loc('ecotrait_fiery_effect', [+(trait_mods.effect * 100).toFixed(1)])} ${loc('ecotrait_greedy_effect1', [+((trait_mods.loot - 1) * 100).toFixed(1)])}</div>`;
             },
             trait_effect(r=0){
                 return {effect:1 - (0.95 ** r), loot:1 + (0.05 * r)};
-            }
-        },
-        greedy: { //higher reward at no downside
-            name(){ return loc('trait_greedy_name'); },
-            desc(){ return loc('ecotrait_greedy_desc'); },
-            effect(s, r){
-                let trait_mods = this.trait_effect(r);
-                return `<div>${loc('ecotrait_greedy_effect1', [+((trait_mods.loot - 1) * 100).toFixed(1)])}</div>`;
-            },
-            trait_effect(r=0){
-                return {loot:1 + (0.02 * r)};
             }
         },
         grenadier: { //attacks soldiers after each turn for each battle
@@ -5309,6 +5300,17 @@ export const ecosystemInfo = {
             },
             trait_effect(r=0){
                 return {effect:2 * r, loot:1 + (0.06 * r)};
+            }
+        },
+        greedy: { //higher reward at no downside
+            name(){ return loc('trait_greedy_name'); },
+            desc(){ return loc('ecotrait_greedy_desc'); },
+            effect(s, r){
+                let trait_mods = this.trait_effect(r);
+                return `<div>${loc('ecotrait_greedy_effect1', [+((trait_mods.loot - 1) * 100).toFixed(1)])}</div>`;
+            },
+            trait_effect(r=0){
+                return {loot:1 + (0.02 * r)};
             }
         },
         aggressive: { //razes ecosystem/surface buildings if left alone
@@ -5550,8 +5552,12 @@ export const ecosystemInfo = {
         hivemind: { //tree danger trait. Triggers a reset when removed if you have all. Hivemind is always safe to remove just in case.
             name(){ return `<span class="has-text-danger">${loc('trait_hivemind_name')}</span>`; },
             desc(){ return global.aberrants.carnivores.traits.intelligent ? loc('ecotrait_hivemind_desc') : loc('ecotrait_hivemind_desc_default'); },
-            effect(s, r){
+            showUp: ['trees'],
+            effect(s, r, wiki){
                 let desc = ``;
+                if (wiki){
+                    return `<div>${loc('ecotrait_hivemind_desc_wiki')}</div>`;
+                }
                 if (global.aberrants.scavengers.traits.infiltrator){
                     desc += `<div>${loc('ecotrait_hivemind_effect_infiltrator')}</div>`;
                 }
@@ -5571,8 +5577,12 @@ export const ecosystemInfo = {
         shapeshifter: { //herbivore danger trait. Fake +20% loot on all danger traits
             name(){ return `<span class="has-text-danger">${loc('trait_shapeshifter_name')}</span>`; },
             desc(){ return global.aberrants.carnivores.traits.intelligent ? loc('ecotrait_shapeshifter_desc') : loc('ecotrait_hivemind_desc_default'); },
-            effect(s, r){
+            showUp: ['herbivores'],
+            effect(s, r, wiki){
                 let desc = ``;
+                if (wiki){
+                    return `<div>${loc('ecotrait_shapeshifter_desc_wiki')}</div>`;
+                }
                 if (global.aberrants.scavengers.traits.infiltrator){
                     desc += `<div>${loc('ecotrait_hivemind_effect_infiltrator')}</div>`;
                 }
@@ -5592,8 +5602,12 @@ export const ecosystemInfo = {
         intelligent: { //carnivore danger trait. Description of danger traits updates from ??? to something more descriptive
             name(){ return `<span class="has-text-danger">${loc('trait_intelligent_name')}</span>`; },
             desc(){ return global.aberrants.carnivores.traits.intelligent ? loc('ecotrait_intelligent_desc') : loc('ecotrait_hivemind_desc_default'); },
-            effect(s, r){
+            showUp: ['carnivores'],
+            effect(s, r, wiki){
                 let desc = ``;
+                if (wiki){
+                    return `<div>${loc('ecotrait_intelligent_desc_wiki')}</div>`;
+                }
                 if (global.aberrants.scavengers.traits.infiltrator){
                     desc += `<div>${loc('ecotrait_hivemind_effect_infiltrator')}</div>`;
                 }
@@ -5613,8 +5627,12 @@ export const ecosystemInfo = {
         infiltrator: { //scavenger danger trait. Researchers suggest keeping danger traits instead of removing
             name(){ return `<span class="has-text-danger">${loc('trait_infiltrator_name')}</span>`; },
             desc(){ return global.aberrants.carnivores.traits.intelligent ? loc('ecotrait_infiltrator_desc') : loc('ecotrait_hivemind_desc_default'); },
-            effect(s, r){
+            showUp: ['scavengers'],
+            effect(s, r, wiki){
                 let desc = ``;
+                if (wiki){
+                    return `<div>${loc('ecotrait_infiltrator_desc_wiki')}</div>`;
+                }
                 if (global.aberrants.scavengers.traits.infiltrator){
                     desc += `<div>${loc('ecotrait_hivemind_effect_infiltrator')}</div>`;
                 }
@@ -5884,7 +5902,7 @@ function growth_cycle(lifeform){
         if (self.count > 0 && global.tech['ecosystem_genetics'] >= 2){
             let empowered_ratio = self.empowered / self.count;
             results.empowered += results.total_gain * empowered_ratio * 1.1; //empowered spreads to newly created lifeforms and more
-            results.empowered += self.empowered * 0.001 * 1 / Math.max(0.05, empowered_ratio); //empowered slowly spreads on its own but spreads faster if there are more lifeforms
+            results.empowered += self.empowered * 0.001 * 1 / Math.max(0.1, empowered_ratio); //empowered slowly spreads on its own but spreads faster if there are more lifeforms
 
             if (global.aberrants[lifeform].traits.empowered){
                 if (self.empowered < 1){ //empowered trait required to get an empowered lifeform. Gets re-created if it dies.
@@ -6241,7 +6259,6 @@ function iceAgeStorage(cost, region){
 
 export function drawPerkUnderground(){
     clearElement($('#perkUnderground'));
-    let underground = $('#perkUnderground');
     if (global.tech['perk_underground']){
         $(`<div id="underground-dist-perkUnderground" class="space"><div id="srperkUnderground"><h3 class="name has-text-warning">${loc('underground_cave')}</h3>
          <span class="name has-text-advanced fossils">${loc('underground_perk_fossils')}</span><span>{{ fossil_avail() }}/{{ fossil_count() }}</span></div></div>`)

@@ -7034,7 +7034,10 @@ function fastLoop(){
                 collectors *= racialTrait(collectors, 'water');
                 collectors *= job_data.water_collector.impact(); //0.5
                 if(global.tech['water'] >= 2){
-                    collectors *= 1 + (global.tech['water'] - 1) * 0.3;
+                    collectors *= 1.3;
+                    if(global.tech['water'] >= 3){
+                        collectors *= 1.3;
+                    }
                 }
                 let ice_collectors = 1 + ((global.underground['ice_collector']?.count || 0) * 0.04);
                 let delta = collectors * global_multiplier * ice_collectors * production('psychic_boost','Water'); //important for food, not affected by hunger
@@ -14906,8 +14909,11 @@ function healSoldiers(astroSign){
     }
     if (global.race['deep_power']){
         let mastery = calc_mastery();
-        mastery *= calcDeepPower('combat'); //can only have an effect if deep power setting is above 0
-        hc *= 1 + power;
+        mastery *= calcDeepPower('combat');
+        hc *= 1 + mastery;
+    }
+    if (global.underground['arena']){
+        hc *= actions.underground.cave_perk.arena.trophy_effect('carnivores');
     }
     if (global.underground['hunting_lodge_perk']){
         hc *= 1 + (global.underground['hunting_lodge_perk'].count * 0.02);
