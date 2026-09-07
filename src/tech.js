@@ -18609,6 +18609,51 @@ const techs = {
             return false;
         }
     },
+    syndicate_tactics: {
+        id: 'tech-syndicate_tactics',
+        title(){ return loc('tech_syndicate_tactics'); },
+        desc(){ return loc('tech_syndicate_tactics'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 7 },
+        grant: ['shadow',8],
+        cost: {
+            Knowledge(){ return 22500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_syndicate_tactics_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                messageQueue(loc('tech_syndicate_tactics_msg',[loc(`outer_shipyard_class_corsair`),loc(`outer_shipyard_class_destroyer`),loc(`outer_shipyard_class_cruiser`)]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    threat_detection: {
+        id: 'tech-threat_detection',
+        title(){ return loc('tech_threat_detection'); },
+        desc(){ return loc('tech_threat_detection'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 8 },
+        grant: ['planet_defense',1],
+        cost: {
+            Knowledge(){ return 23000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_threat_detection_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function uniteEffect(){

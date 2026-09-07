@@ -8,7 +8,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1540,6 +1540,7 @@ const spaceProjects = {
         },
         bonfire: buildTemplate(`bonfire`,'space'),
         horseshoe: buildTemplate(`horseshoe`,'space'),
+        detector_red: detectorTemplate('spc_red'),
     },
     spc_hell: {
         info: {
@@ -1899,6 +1900,7 @@ const spaceProjects = {
             }
         },
         firework: buildTemplate(`firework`,'space'),
+        detector_hell: detectorTemplate('spc_hell'),
     },
     spc_sun_gate: {
         info: {
@@ -3202,6 +3204,7 @@ const spaceProjects = {
                 };
             }
         },
+        detector_dwarf: detectorTemplate('spc_dwarf'),
     },
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,

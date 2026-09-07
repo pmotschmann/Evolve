@@ -383,6 +383,13 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }
+    else if (achievement === 'shadow_war'){
+        // List implemented Shadow War tasks.
+        let checklist = `<div class="list">`;
+        checklist = checklist + `<div class="has-text-${global.stats.shadow_war.s1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_shadow_war1`)}${srNoteCompleted(global.stats.shadow_war.s1[uAffix])}</div>`;
+        checklist = checklist + `</div>`;
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
+    }
     else if (achievement === 'pathfinder'){
         let path = `<div class="flexed">`;
         ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){

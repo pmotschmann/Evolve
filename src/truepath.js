@@ -6,7 +6,7 @@ import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js'
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals, setPowerGrid } from './industry.js';
@@ -14,7 +14,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
-import { zombieGenociderTask } from './achieve.js';
+import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap } from './stars.js';
 import { loc } from './locale.js';
 import { supplyRegionName, supplyPool, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
@@ -6857,9 +6857,10 @@ const corsairRounds = 5;            // Maximum combat rounds before retreating.
 const corsairEvade = 20;            // Reference scan range for escort evasion.
 const corsairChaseDays = 5;         // Patrol pursuit duration.
 const corsairChaseSpeed = 1.1;      // Patrol speed multiplier while pursuing.
+const shadowEngagements = 5;        // Engagements required to advance Shadow War.
 
 // Every corsair is the same hull: the syndicate found one design that works and stopped looking.
-const corsairFit = { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'lidar', special: 'none' };
+const corsairFit = { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'quantum', special: 'none' };
 
 // The raiding arc, which picks up exactly where syndicateActive() leaves off: that one switches itself
 // off at shadow 5, and this one begins after it.
@@ -6963,17 +6964,19 @@ function corsairHunt(corsair){
     if (!trip){ return false; }
     initializeShipTrip(corsair,target,trip);
     corsair.od = false;
+    corsair.home = false;
     return true;
 }
 
 // Home, to sell the cargo or to lick its wounds.
 function corsairGoHome(corsair){
     corsair.od = false;
+    // Mark the corsair as returning before plotting its route.
+    corsair.home = true;
     if (!corsair.inTransit && corsair.location.name === corsair.syn){ return true; }
     const trip = planShipTrip(corsair,corsair.syn);
     if (!trip){ return false; }
     initializeShipTrip(corsair,corsair.syn,trip);
-    corsair.home = true;
     return true;
 }
 
@@ -7036,7 +7039,17 @@ function corsairFight(corsair,group,where,ambush){
     zBattleLog(where,group,[corsair],dealt,taken,lost.length,downed.length);
     lost.forEach(function(ship){ destroyPlayerShip(ship,where); });
     if (lost.length > 0){ drawShips(); }
+    corsairEngaged();
     return corsair.damage < 100;
+}
+
+// Count corsair engagements and advance Shadow War when the threshold is reached.
+function corsairEngaged(){
+    global.race['sy_fights'] = (global.race['sy_fights'] || 0) + 1;
+    if (global.tech['shadow'] === 6 && global.race.sy_fights >= shadowEngagements){
+        global.tech['shadow'] = 7;
+        drawTech();
+    }
 }
 
 // The corsair is lost: the base that built it goes quiet for a while.
@@ -7228,7 +7241,11 @@ function patrolStrike(){
             const guns = group.filter(s => s.damage < 100);
             if (guns.length === 0){ break; }
             if (corsairFight(corsair,guns,where,false)){ corsairGoHome(corsair); }
-            else { corsairLost(corsair,where); }
+            else {
+                corsairLost(corsair,where);
+                // Award the task only for patrol-destroyed corsairs.
+                shadowWarTask('s1');
+            }
             setPatrolChase(group,false);
             if (!lead.inTransit){ advancePatrol(group); }
             break;
@@ -8901,10 +8918,11 @@ export function tradeLegDays(group, from, to){
     if (from === to){ return 0; }
     const now = Date.now();
     if (now - legCache.at > 2000){ legCache.at = now; legCache.map.clear(); }
-    const pace = paceAt(group, from);
-    // Cache legs by departure speed and endpoints.
-    const key = `${from}|${to}|${pace ? shipSpeed(pace) : 0}`;
+    // Cache route legs by fleet speed and endpoints.
+    const lead = fleetPace(group);
+    const key = `${from}|${to}|${lead ? shipSpeed(lead) : 0}`;
     if (legCache.map.has(key)){ return legCache.map.get(key); }
+    const pace = paceAt(group, from);
     const trip = pace ? planShipTrip(pace, to) : false;
     const days = trip ? trip.totalTime : Infinity;
     legCache.map.set(key, days);
@@ -9641,10 +9659,21 @@ function queueTPShip(design){
     return true;
 }
 
-// A copy of an existing hull is a new ship, not the same one, so it gets its own registry name.
+// Copy a ship design without its runtime state or cargo.
 function copyShipDesign(ship){
     let design = deepClone(ship);
-    ['location','destination','origin','transit','inTransit','timeToNextStep','path','damage','fid','flag','ret','crew'].forEach(function(runtime){
+    [
+        // Position and transit state.
+        'location','destination','origin','transit','inTransit','timeToNextStep','path','damage','crew','ret',
+        // Fleet membership.
+        'fid','flag',
+        // Assigned patrol or freight route.
+        'patrol','tradeRoute',
+        // Cargo resources.
+        'cargo',
+        // Starter-freighter assignment flags.
+        'supplyGrant','supplyRouteStarter','supplyDockFixed'
+    ].forEach(function(runtime){
         delete design[runtime];
     });
     if (!shipSpecialAllowed(design.special,design.class)){ design.special = 'none'; }
@@ -10497,10 +10526,10 @@ export function sensorRangeAU(ship){
     return (sensorRange(ship) || 0) / GM_PER_AU;
 }
 
-// Whether an enemy hull is currently detected.
+// Whether an enemy hull is currently detected, by anything of yours that can see it.
 export function foeDetected(foe){
     if (!foe || !foe.location || !foe.location.position){ return false; }
-    return sensorContact(foe);
+    return sensorContact(foe) || detectorContact(foe);
 }
 
 // Anything of yours with the point inside its sensor bubble. A hull built to be hard to see shrinks
@@ -10512,6 +10541,105 @@ function sensorContact(foe){
         if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * (foe.stealth || 1)){ return true; }
     }
     return false;
+}
+
+// --- Detectors -----------------------------------------------------------------------------------
+// Ground detector structures and detection helpers.
+
+const detectorSegments = 10;
+const detectorRange = 1;            // Detection radius in AU.
+const detectorStealthRange = 0.5;   // Detection radius for stealth hulls in AU.
+
+// Detector site definitions and map anchors.
+export function detectorSites(){
+    return {
+        city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
+        spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
+        spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
+        spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
+    };
+}
+
+// Return whether a completed detector is powered.
+function detectorOn(at){
+    const struct = global[at.region] ? global[at.region][at.key] : false;
+    return struct && struct.count >= detectorSegments && p_on[at.key] > 0 ? true : false;
+}
+
+// Detect hulls within the active detector radius.
+function detectorContact(foe){
+    const reach = (foe.stealth || 1) < 1 ? detectorStealthRange : detectorRange;
+    const sites = detectorSites();
+    for (const site of Object.keys(sites)){
+        if (!detectorOn(sites[site])){ continue; }
+        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= reach){ return true; }
+    }
+    return false;
+}
+
+// Build the Detector action for one site.
+export function detectorTemplate(site){
+    const at = detectorSites()[site];
+    const region = at.region, key = at.key;
+    // Completed detector segments.
+    const built = function(){ return global[region].hasOwnProperty(key) ? global[region][key].count : 0; };
+    const priced = function(r){ return ((r.offset || 0) + built()) < detectorSegments; };
+    return {
+        id: `${region}-${key}`,
+        title(){ return loc('detector_title'); },
+        desc(wiki){
+            let head = `<div>${loc('detector_desc',[planetName()[at.world]])}</div>`;
+            if (built() < detectorSegments || wiki){
+                return head + `<div class="has-text-special">${loc('requires_segments',[detectorSegments])}</div>`;
+            }
+            return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
+        },
+        type: 'megaproject',
+        category: 'military',
+        reqs: { planet_defense: 1 },
+        path: ['truepath'],
+        queue_size: 5,
+        queue_complete(){ return detectorSegments - built(); },
+        cost: {
+            Money(r={}){ return priced(r) ? 30000000 : 0; },
+            Adamantite(r={}){ return priced(r) ? 1200000 : 0; },
+            Stanene(r={}){ return priced(r) ? 1800000 : 0; },
+            Bolognium(r={}){ return priced(r) ? 750000 : 0; },
+            Elerium(r={}){ return priced(r) ? 350 : 0; }
+        },
+        effect(wiki){
+            let count = (wiki?.count ?? 0) + built();
+            let desc = `<div>${loc('detector_effect',[detectorRange,planetName()[at.world],detectorStealthRange])}</div>`;
+            if (count < detectorSegments){
+                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments - count])}</div>`;
+            }
+            return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+        },
+        powered(){ return powerCostMod(10); },
+        // Enable power controls after all segments are complete.
+        switchable(){ return built() >= detectorSegments; },
+        on_cap(){ return built() >= detectorSegments ? 1 : 0; },
+        action(){
+            if (built() >= detectorSegments){ return false; }
+            if (payCosts(this)){
+                incrementStruct(this);
+                if (global[region][key].count >= detectorSegments){
+                    global[region][key].on = 1;
+                    if (region === 'city'){ drawCity(); }
+                    else { renderSpace(); }
+                    clearPopper();
+                }
+                return true;
+            }
+            return false;
+        },
+        struct(){
+            return {
+                d: { count: 0, on: 0 },
+                p: [key,region]
+            };
+        }
+    };
 }
 
 export function tritonWar(){

@@ -11,7 +11,7 @@ import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, for
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements, planetName } from './space.js';
 import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
-import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
+import { tauCetiTech, renderTauCeti, loneSurvivor, detectorTemplate } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -2012,6 +2012,7 @@ export const actions = {
                 };
             },
         },
+        detector: detectorTemplate('city'),
         shed: {
             id: 'city-shed',
             title(){

@@ -30,13 +30,14 @@ export function mechanicsPage(content){
     }
 
     { // Offline Time
-        infoBoxBuilder(mainContent,{ name: 'offline', template: 'mechanics', label: loc('wiki_mechanics_offline'), paragraphs: 6, break: [4,6], h_level: 2,
+        infoBoxBuilder(mainContent,{ name: 'offline', template: 'mechanics', label: loc('wiki_mechanics_offline'), paragraphs: 9, break: [4,6,8], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_offline')],
                 2: [2,loc('wiki_mechanics_offline')],
-                4: [loc('wiki_mechanics_offline')],
-                5: [loc('wiki_mechanics_offline'),7],
-                6: [loc('wiki_mechanics_offline')]
+                4: [1],
+                5: [25,4],
+                6: [loc('wiki_mechanics_offline')],
+                7: [loc('wiki_mechanics_offline'),7]
             }
         });
         sideMenu('add',`mechanics-gameplay`,`offline`,loc('wiki_mechanics_offline'));

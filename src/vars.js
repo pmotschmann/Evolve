@@ -2073,6 +2073,15 @@ export function setupStats(){
             }
         });
     }
+    if (!global.stats.hasOwnProperty('shadow_war')){
+        global.stats['shadow_war'] = {
+            s1: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s2: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s3: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s4: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
     if (!global.stats.hasOwnProperty('endless_hunger')){
         global.stats['endless_hunger'] = {
             b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 

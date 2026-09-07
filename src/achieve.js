@@ -47,7 +47,7 @@ const achieve_list = {
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
         'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
-        'back_on_track','living_extinction','zombie_genocider','brainless'
+        'back_on_track','living_extinction','zombie_genocider','shadow_war','brainless'
     ],
 };
 
@@ -56,13 +56,25 @@ const achieve_list = {
 const zombieGenociderKills = 53594;
 export const zombieGenociderTasks = ['z1','z2','z3','z4','z5'];
 
-// Mark one of the tasks complete. Called from wherever the objective actually happens; the rank is recounted by checkAchievements. 
+// Mark one of the tasks complete. Called from wherever the objective actually happens; the rank is recounted by checkAchievements.
 export function zombieGenociderTask(task){
     if (!global.stats.hasOwnProperty('zombie_genocider') || !global.stats.zombie_genocider.hasOwnProperty(task)){ return; }
     let affix = universeAffix();
     global.stats.zombie_genocider[task][affix] = true;
     if (affix !== 'm' && affix !== 'l'){
         global.stats.zombie_genocider[task].l = true;
+    }
+}
+
+// Shadow War checklist task identifiers.
+export const shadowWarTasks = ['s1','s2','s3','s4','s5'];
+
+export function shadowWarTask(task){
+    if (!global.stats.hasOwnProperty('shadow_war') || !global.stats.shadow_war.hasOwnProperty(task)){ return; }
+    let affix = universeAffix();
+    global.stats.shadow_war[task][affix] = true;
+    if (affix !== 'm' && affix !== 'l'){
+        global.stats.shadow_war[task].l = true;
     }
 }
 
@@ -919,6 +931,27 @@ export function checkAchievements(){
         }
         if (ulist > 0 && affix !== 'l'){
             unlockAchieve('zombie_genocider',false,ulist,affix);
+        }
+    }
+
+    // Count completed Shadow War tasks.
+    {
+        let affix = universeAffix();
+        let slist = 0;
+        let ulist = 0;
+        shadowWarTasks.forEach(function(s){
+            if (global.stats.shadow_war[s].l){
+                slist++;
+            }
+            if (affix !== 'l' && global.stats.shadow_war[s][affix]){
+                ulist++;
+            }
+        });
+        if (slist > 0){
+            unlockAchieve('shadow_war',false,slist,'l');
+        }
+        if (ulist > 0 && affix !== 'l'){
+            unlockAchieve('shadow_war',false,ulist,affix);
         }
     }
 

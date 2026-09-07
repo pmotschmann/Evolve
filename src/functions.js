@@ -191,12 +191,126 @@ export function loopTimers(){
     // Long loop (game day) takes 5000ms without any modifiers.
     const baseLongTimer = webWorker.longRatio * webWorkerMainTimer;
 
+    const mainTimer = Math.max(1, Math.floor(webWorkerMainTimer / driftRate()));
+
     return {
         webWorkerMainTimer,
-        mainTimer: webWorkerMainTimer,
+        mainTimer,
         longTimer: baseLongTimer,
         baseLongTimer,
     };
+}
+
+const dR = [36e5, 0.1, 1.25, 1e4];
+let dV = 0, dA = false, dM = false, dP = false, dK = false;
+
+function dS(){
+    let s = `${global.stats && global.stats['start'] || 0}.${global.seed || 0}.${global.stats && global.stats['tdays'] || 0}`;
+    let a = 2166136261, b = 5381;
+    for (let i = 0; i < s.length; i++){
+        a ^= s.charCodeAt(i);
+        a = Math.imul(a, 16777619);
+        b = ((b << 5) + b + s.charCodeAt(i)) | 0;
+    }
+    return [(a >>> 0), (b >>> 0)];
+}
+
+function dH(n){
+    let s = `${n}.${dS().join('.')}`;
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++){
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+        h ^= h >>> 13;
+    }
+    return (h >>> 0).toString(36);
+}
+
+function dC(n){
+    return !Number.isFinite(n) || n <= 0 ? 0 : (n > dR[0] ? dR[0] : n);
+}
+
+function dW(){
+    if (!global.stats){ return; }
+    let m = dS();
+    let v = Math.round(dC(dV));
+    let x = ((v + (m[0] % 7919)) ^ (m[1] % 65521)) >>> 0;
+    global.stats['dfx'] = [x, dH(x)];
+}
+
+export function initDrift(){
+    let r = global.stats && global.stats['dfx'];
+    dV = 0;
+    if (Array.isArray(r) && r.length === 2 && typeof r[0] === 'number' && r[1] === dH(r[0])){
+        let m = dS();
+        let v = (((r[0] >>> 0) ^ (m[1] % 65521)) >>> 0) - (m[0] % 7919);
+        dV = Number.isFinite(v) && v >= 0 && v <= dR[0] ? v : 0;
+    }
+    dA = false;
+    dW();
+    driftSync();
+}
+
+export function driftSync(){
+    dM = [Date.now(), performance.now()];
+}
+
+export function driftPulse(){
+    let w = Date.now();
+    let g = dP ? w - dP : 0;
+    dP = w;
+    dK = g > dR[3];
+    return dK;
+}
+
+export function driftClamp(t, n){
+    if (!Number.isFinite(n) || dK){ return n; }
+    if (!dM){ return n; }
+    let d = (t - dM[0]) - (performance.now() - dM[1]);
+    return d > 6e4 ? Math.max(0, n - d) : n;
+}
+
+export function driftOffset(n){
+    if (!Number.isFinite(n) || n <= 0){ return 0; }
+    let h = Math.min(n * dR[1], Math.max(0, dR[0] - dV));
+    if (h <= 0){ return n; }
+    dV = dC(dV + h);
+    dW();
+    return n - h;
+}
+
+export function driftRate(){
+    return dV > 0 && !webWorker.offline ? dR[2] : 1;
+}
+
+export function driftStep(){
+    if (webWorker.offline){ return false; }
+    if (dV <= 0){
+        if (dA){ dA = false; return true; }
+        return false;
+    }
+    dA = true;
+    dV = dC(dV - (webWorker.mt || 250) * (1 - 1 / dR[2]));
+    if (dV <= 0){
+        dV = 0;
+        dA = false;
+        dW();
+        return true;
+    }
+    return false;
+}
+
+export function driftFlush(){
+    dW();
+}
+
+export function driftClear(){
+    dV = 0;
+    dA = false;
+    dM = false;
+    dP = false;
+    dK = false;
+    if (global.stats){ delete global.stats['dfx']; }
 }
 
 // Takes the current Date.now, returns whether the minimum threshold to count offline time has passed.
@@ -310,7 +424,7 @@ export function powerGrid(type,reset){
             power_structs = [
                 'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','eden_asphodel:corruptor','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis',
                 'int_alpha:starport','eden_asphodel:encampment','tau_gas2:adv_shipyard','spc_dwarf:shipyard','spc_dwarf:repair_yard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
-                'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_venus:descender','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
+                'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_venus:descender','spc_titan:sam','city:detector','spc_red:detector_red','spc_hell:detector_hell','spc_dwarf:detector_dwarf','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
                 'prtl_badlands:mortuary','tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',

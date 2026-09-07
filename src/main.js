@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, poolStock } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
@@ -974,6 +974,7 @@ export function execGameLoops(periods = 1, offline = false){
 
     while (webWorker.s && periods--){
         ++loopTick;
+        if (driftStep()){ gameLoop('start'); }
         const doMid = (loopTick % webWorker.midRatio) === 0;
         const doLong = (loopTick % webWorker.longRatio) === 0;
 
@@ -998,7 +999,7 @@ function processOfflineTime(){
     if (!global.stats.hasOwnProperty('current')){ return; }
 
     const now = Date.now();
-    let elapsed = now - global.stats.current;
+    let elapsed = driftClamp(now, now - global.stats.current);
 
     const minThreshold = 120000;    // 2 minutes - ignore brief closes/reloads
     const weekCap = 604800000;      // cap credited offline time at 1 week of real time
@@ -1008,9 +1009,16 @@ function processOfflineTime(){
     const evoCap = 43200000;        // 12 hours
     if (global.race.species === 'protoplasm' && elapsed > evoCap){ elapsed = evoCap; }
 
+    const gross = elapsed;
+    elapsed = driftOffset(elapsed);
+    const heldBack = gross - elapsed;
+
     const longMs = loopTimers().baseLongTimer;      // real ms per long loop (one game day)
     const missedLong = Math.floor(elapsed / longMs);
-    if (missedLong < 1){ return; }
+    if (missedLong < 1){
+        if (heldBack > 0){ global.stats.current = now; }
+        return;
+    }
 
     // Cap the number of simulated steps so catch-up stays fast (well under a minute) no matter
     // how long the player was away. Each step is time-compressed to cover daysPerStep game days.
@@ -1022,10 +1030,12 @@ function processOfflineTime(){
     // Advance the stored timestamp so this elapsed time is never counted twice.
     global.stats.current = now;
 
-    runOfflineCatchup(steps, daysPerStep, creditedMinutes);
+    if (heldBack > 0){ gameLoop('start'); }
+
+    runOfflineCatchup(steps, daysPerStep, creditedMinutes, heldBack);
 }
 
-function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
+function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes, heldMs){
     // Settle whatever the frames were drawing past the last step, before the clock changes scale.
     advanceSolarMap(mapAhead());
     webWorker.offline = true;
@@ -1055,7 +1065,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
             closeOfflineModal(overlay);
         }
         else {
-            finishOfflineModal(overlay, creditedMinutes);
+            finishOfflineModal(overlay, creditedMinutes, heldMs);
         }
     };
 
@@ -1127,6 +1137,12 @@ function formatOfflineTime(totalMinutes){
     return parts.join(', ');
 }
 
+function formatShortTime(ms){
+    const seconds = Math.round(ms / 1000);
+    if (seconds < 60){ return `${seconds} ${loc(seconds === 1 ? 'offline_time_second' : 'offline_time_seconds')}`; }
+    return formatOfflineTime(Math.floor(ms / 60000));
+}
+
 // Close the active offline modal and remove its event handlers.
 function closeOfflineModal(overlay){
     clearPopper();
@@ -1135,10 +1151,14 @@ function closeOfflineModal(overlay){
     $(document).off('keydown.offlineModal');
 }
 
-function finishOfflineModal(overlay, minutes){
+function finishOfflineModal(overlay, minutes, heldMs){
+    let banked = heldMs >= 1000
+        ? `<p class="offlineMsg has-text-success">${loc('offline_time_banked',[formatShortTime(heldMs)])}</p>`
+        : ``;
     overlay.find('.offlineBox').html(
         `<p class="offlineTitle has-text-warning">${loc('offline_time_title')}</p>`
         + `<p class="offlineMsg">${loc('offline_time_msg',[formatOfflineTime(minutes)])}</p>`
+        + banked
         + `<button id="offlineClose" class="button">${loc('offline_time_close')}</button>`
     );
     // Support both click and touch close events from the modal button.
@@ -1161,20 +1181,20 @@ if (window.Worker){
         const data = e.data;
         switch (data.loop) {
             case 'main':
-                // Ignore live ticks while offline time is being simulated.
-                if (webWorker.offline){ break; }
-                execGameLoops(data.periods);
+                {
+                    const woke = driftPulse();
+                    if (webWorker.offline){ break; }
+                    if (woke){ processOfflineTime(); break; }
+                    execGameLoops(data.periods);
+                }
                 break;
         }
     }, false);
 }
-// Don't start the loop while paused: a running longLoop would advance global.stats.current
-// to now and erase the offline gap before the player unpauses. Unpausing starts the loop
-// (and runs offline catch-up) via the unpause handler.
+initDrift();
 if (!global.settings.pause){
     gameLoop('start');
 }
-// Let index.js's unpause handler trigger offline catch-up without importing main.js.
 registerOfflineHandler(processOfflineTime);
 processOfflineTime();
 
@@ -14867,6 +14887,8 @@ function longLoop(){
     // performance; runOfflineCatchup() performs a single save once the catch-up finishes.
     global.stats['current'] = currentTimestamp;
     if (!webWorker.offline && !global.race.hasOwnProperty('geck')){
+        driftSync();
+        driftFlush();
         writeSave();
     }
 
