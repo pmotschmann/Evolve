@@ -10586,7 +10586,7 @@ export function detectorTemplate(site){
     const priced = function(r){ return ((r.offset || 0) + built()) < detectorSegments; };
     return {
         id: `${region}-${key}`,
-        title(){ return loc('detector_title'); },
+        title(){ return loc('detector_title',[planetName()[at.world]]); },
         desc(wiki){
             let head = `<div>${loc('detector_desc',[planetName()[at.world]])}</div>`;
             if (built() < detectorSegments || wiki){

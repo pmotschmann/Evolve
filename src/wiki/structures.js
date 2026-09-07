@@ -104,7 +104,8 @@ const calcInfo = {
             s_alter: 1,
             banquet: 5,
             wonder_lighthouse: 1,
-            wonder_pyramid: 1
+            wonder_pyramid: 1,
+            detector: 10
         },
         space: {
             star_dock: 1,
@@ -115,7 +116,10 @@ const calcInfo = {
             fob: 1,
             ai_core: 100,
             jump_gate: 100,
-            descender: 100
+            descender: 100,
+            detector_red: 10,
+            detector_hell: 10,
+            detector_dwarf: 10,
         },
         starDock: {
             seeder: 100

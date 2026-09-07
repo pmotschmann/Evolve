@@ -3452,7 +3452,7 @@
   "tech_ship_patrols_effect": "Develop the control systems to coordinate and deploy patrol ships in order to monitor and protect your shipping lanes.",
   "tech_threat_detection": "Threat Detection",
   "tech_threat_detection_effect": "Ships watch only the sky they are flying through. Design a ground based early warning array that watches a whole world's approaches, and unlock the Detector.",
-  "detector_title": "Detector",
+  "detector_title": "%0 Detector",
   "detector_desc": "Early warning array on %0",
   "detector_effect": "Detects enemy ships within %0 AU of %1, and stealthed ships within %2 AU",
   "supply_split": "Your stockpiles have been divided between your worlds, each taking the share of every resource that its own storage was holding. Crates and containers have been distributed evenly. From now on a world spends what it has, and only worlds you connect can draw on each other.",
