@@ -6,7 +6,7 @@ import {} from './init.js';
 import {} from './../achieve.js';
 import { vBind, clearElement, tagEvent } from './../functions.js';
 import { faqPage } from './faq.js';
-import { speciesPage } from './species.js';
+import { speciesPage, traitPageOf } from './species.js';
 import { planetsPage } from './planets.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
@@ -77,7 +77,8 @@ function initPage(){
             key: 'species',
             submenu: [
                 { key: 'races' },
-                { key: 'traits' },
+                { key: 'major_traits' },
+                { key: 'minor_traits' },
                 { key: 'custom' }
             ]
         },
@@ -268,6 +269,13 @@ async function menuDispatch(main,sub,frag){
                 case 'planets':
                     planetsPage();
                     break;
+                case 'traits': {
+                    // Redirect legacy trait links to their current page.
+                    let named = typeof frag === 'string' ? frag.replace(/^(genus|major|minor|special)_/,'') : '';
+                    sub = named ? traitPageOf(named) : 'major_traits';
+                    speciesPage(sub);
+                    break;
+                }
                 default:
                     speciesPage(sub);
                     break;

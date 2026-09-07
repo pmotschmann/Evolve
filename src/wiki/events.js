@@ -956,7 +956,7 @@ export function minorEventsPage(content){
                 1: [loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`),loc(`trait_detritivore_name`),loc(`trait_artifical_name`)]
             },
             data_link: {
-                1: ['wiki.html#traits-species-genus_carnivore','wiki.html#traits-species-special_soul_eater','wiki.html#traits-species-genus_detritivore','wiki.html#traits-species-genus_artifical']
+                1: ['wiki.html#major_traits-species-genus_carnivore','wiki.html#major_traits-species-special_soul_eater','wiki.html#major_traits-species-genus_detritivore','wiki.html#major_traits-species-genus_artifical']
             }
         }, section);
         infoBoxBuilder(mainContent, { name: 'llama_examples', template: 'events', label: loc('wiki_events_llama'), h_level: 2, 

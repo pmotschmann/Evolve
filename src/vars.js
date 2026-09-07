@@ -1668,7 +1668,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 43;
+global['beta'] = 44;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2072,6 +2072,15 @@ export function setupStats(){
                 delete global.stats.zombie_genocider['b' + n];
             }
         });
+    }
+    if (!global.stats.hasOwnProperty('shadow_war')){
+        global.stats['shadow_war'] = {
+            s1: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s2: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s3: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s4: { l: false, h: false, a: false, e: false, m: false, mg: false },
+            s5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
     }
     if (!global.stats.hasOwnProperty('endless_hunger')){
         global.stats['endless_hunger'] = {

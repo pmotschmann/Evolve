@@ -8,7 +8,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1540,6 +1540,7 @@ const spaceProjects = {
         },
         bonfire: buildTemplate(`bonfire`,'space'),
         horseshoe: buildTemplate(`horseshoe`,'space'),
+        detector_red: detectorTemplate('spc_red'),
     },
     spc_hell: {
         info: {
@@ -1787,7 +1788,119 @@ const spaceProjects = {
                 return false;
             }
         },
+        m_warehouse: {
+            id: 'space-m_warehouse',
+            title(){ return loc('city_shed_title3'); },
+            desc(){ return loc('city_shed_title3'); },
+            type: 'storage',
+            reqs: { shadow: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 175000, 1.28, 'space'); },
+                Lumber(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 100000, 1.28, 'space'); },
+                Aluminium(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 120000, 1.28, 'space'); },
+                Cement(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 45000, 1.28, 'space'); }
+            },
+            res(){
+                let r_list = [
+                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
+                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
+                    'Graphene','Stanene','Bolognium','Orichalcum',
+                ];
+                if (global.resource.Tungsten.display){
+                    r_list.push('Tungsten');
+                }
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 750;
+                    case 'Stone':
+                        return 750;
+                    case 'Chrysotile':
+                        return 750;
+                    case 'Furs':
+                        return 425;
+                    case 'Copper':
+                        return 380;
+                    case 'Iron':
+                        return 350;
+                    case 'Aluminium':
+                        return 320;
+                    case 'Cement':
+                        return 280;
+                    case 'Coal':
+                        return 120;
+                    case 'Steel':
+                        return 60;
+                    case 'Titanium':
+                        return 40;
+                    case 'Nano_Tube':
+                        return 30;
+                    case 'Neutronium':
+                        return 8;
+                    case 'Adamantite':
+                        return 18;
+                    case 'Crystal':
+                        return 50;
+                    case 'Alloy':
+                        return 45;
+                    case 'Polymer':
+                        return 40;
+                    case 'Iridium':
+                        return 35;
+                    case 'Graphene':
+                        return 30;
+                    case 'Stanene':
+                        return 25;
+                    case 'Bolognium':
+                        return 20;
+                    case 'Orichalcum':
+                        return 15;
+                    case 'Unobtainium':
+                        return 10;
+                    case 'Tungsten':
+                        return 35;
+                    default:
+                        return 0;
+                }
+            },
+            wide: true,
+            effect(wiki){
+                let storage = '<div class="aTable">';
+                let multiplier = storageMultipler(1, wiki);
+                for (const res of this.res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage = storage + '</div>';
+                return storage;
+            },
+            action(args){
+                if (payCosts(this)){
+                    incrementStruct('m_warehouse','space');
+                    let multiplier = storageMultipler();
+                    for (const res of this.res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['m_warehouse','space']
+                };
+            }
+        },
         firework: buildTemplate(`firework`,'space'),
+        detector_hell: detectorTemplate('spc_hell'),
     },
     spc_sun_gate: {
         info: {
@@ -2594,7 +2707,12 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = spatialReasoning(100);
-                return `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                let desc = `<div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
+                if (global.tech['shadow'] && global.resource.Positronium.display){
+                    let pos = spatialReasoning(1);
+                    desc += `<div>${loc('plus_max_resource',[pos,global.resource.Positronium.name])}</div>`;
+                }
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             powered(){ return powerCostMod(6); },
             action(args){
@@ -2975,6 +3093,118 @@ const spaceProjects = {
                 return false;
             }
         },
+        c_warehouse: {
+            id: 'space-c_warehouse',
+            title(){ return loc('city_shed_title3'); },
+            desc(){ return loc('city_shed_title3'); },
+            type: 'storage',
+            reqs: { shadow: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 175000, 1.28, 'space'); },
+                Lumber(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 100000, 1.28, 'space'); },
+                Aluminium(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 120000, 1.28, 'space'); },
+                Cement(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 45000, 1.28, 'space'); }
+            },
+            res(){
+                let r_list = [
+                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
+                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
+                    'Graphene','Stanene','Bolognium','Orichalcum',
+                ];
+                if (global.resource.Tungsten.display){
+                    r_list.push('Tungsten');
+                }
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 750;
+                    case 'Stone':
+                        return 750;
+                    case 'Chrysotile':
+                        return 750;
+                    case 'Furs':
+                        return 425;
+                    case 'Copper':
+                        return 380;
+                    case 'Iron':
+                        return 350;
+                    case 'Aluminium':
+                        return 320;
+                    case 'Cement':
+                        return 280;
+                    case 'Coal':
+                        return 120;
+                    case 'Steel':
+                        return 60;
+                    case 'Titanium':
+                        return 250;
+                    case 'Nano_Tube':
+                        return 30;
+                    case 'Neutronium':
+                        return 8;
+                    case 'Adamantite':
+                        return 18;
+                    case 'Crystal':
+                        return 50;
+                    case 'Alloy':
+                        return 45;
+                    case 'Polymer':
+                        return 40;
+                    case 'Iridium':
+                        return 35;
+                    case 'Graphene':
+                        return 30;
+                    case 'Stanene':
+                        return 25;
+                    case 'Bolognium':
+                        return 20;
+                    case 'Orichalcum':
+                        return 15;
+                    case 'Unobtainium':
+                        return 10;
+                    case 'Tungsten':
+                        return 35;
+                    default:
+                        return 0;
+                }
+            },
+            wide: true,
+            effect(wiki){
+                let storage = '<div class="aTable">';
+                let multiplier = storageMultipler(1, wiki);
+                for (const res of this.res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
+                storage = storage + '</div>';
+                return storage;
+            },
+            action(args){
+                if (payCosts(this)){
+                    incrementStruct('c_warehouse','space');
+                    let multiplier = storageMultipler();
+                    for (const res of this.res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['c_warehouse','space']
+                };
+            }
+        },
+        detector_dwarf: detectorTemplate('spc_dwarf'),
     },
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,

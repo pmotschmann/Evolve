@@ -112,7 +112,8 @@ const calcInfo = {
             wonder_lighthouse: 1,
             wonder_pyramid: 1,
             giant_thrusters: 100,
-            thruster_fuel: 500
+            thruster_fuel: 500,
+            detector: 10
         },
         space: {
             star_dock: 1,
@@ -123,7 +124,10 @@ const calcInfo = {
             fob: 1,
             ai_core: 100,
             jump_gate: 100,
-            descender: 100
+            descender: 100,
+            detector_red: 10,
+            detector_hell: 10,
+            detector_dwarf: 10,
         },
         starDock: {
             seeder: 100
@@ -309,7 +313,7 @@ function addCalcInputs(parent,key,section,region,path){
             action = actions.surface[region][key];
             inputs.real_owned = global.surface[key] ? global.surface[key].count : 0;
             break;
-    }
+            }
     if (calcInfo.count[section] && calcInfo.count[section][key]){
         inputs.real_owned = calcInfo.count[section][key];
     }

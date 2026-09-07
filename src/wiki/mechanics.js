@@ -30,13 +30,14 @@ export function mechanicsPage(content){
     }
 
     { // Offline Time
-        infoBoxBuilder(mainContent,{ name: 'offline', template: 'mechanics', label: loc('wiki_mechanics_offline'), paragraphs: 6, break: [4,6], h_level: 2,
+        infoBoxBuilder(mainContent,{ name: 'offline', template: 'mechanics', label: loc('wiki_mechanics_offline'), paragraphs: 9, break: [4,6,8], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_offline')],
                 2: [2,loc('wiki_mechanics_offline')],
-                4: [loc('wiki_mechanics_offline')],
-                5: [loc('wiki_mechanics_offline'),7],
-                6: [loc('wiki_mechanics_offline')]
+                4: [1],
+                5: [25,4],
+                6: [loc('wiki_mechanics_offline')],
+                7: [loc('wiki_mechanics_offline'),7]
             }
         });
         sideMenu('add',`mechanics-gameplay`,`offline`,loc('wiki_mechanics_offline'));
@@ -74,9 +75,9 @@ export function mechanicsPage(content){
                 7: [loc('civics_garrison_annex')]
             },
             data_link: {
-                2: [false,'wiki.html#traits-species-minor_content'],
-                4: ['wiki.html#traits-species-major_freespirit','wiki.html#traits-species-minor_content','wiki.html#planets-gameplay-mellow'],
-                6: ['wiki.html#traits-species-major_optimistic','wiki.html#traits-species-major_pessimistic']
+                2: [false,'wiki.html#major_traits-species-special_content'],
+                4: ['wiki.html#major_traits-species-major_freespirit','wiki.html#major_traits-species-special_content','wiki.html#planets-gameplay-mellow'],
+                6: ['wiki.html#major_traits-species-major_optimistic','wiki.html#major_traits-species-major_pessimistic']
             }
         });
         let subSection = createCalcSection(stress,'mechanics','job_stress',loc('wiki_mechanics_job_stress'));
@@ -110,8 +111,8 @@ export function mechanicsPage(content){
             },
             data_link: {
                 3: ['wiki.html#projects-arpa'],
-                5: ['wiki.html#discovery-tech-steel_beams','wiki.html#traits-species-genus_large',false,'wiki.html#crispr-prestige-genetic_memory'],
-                6: ['wiki.html#traits-species-major_creative']
+                5: ['wiki.html#discovery-tech-steel_beams','wiki.html#major_traits-species-genus_large',false,'wiki.html#crispr-prestige-genetic_memory'],
+                6: ['wiki.html#major_traits-species-major_creative']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`cost_creep`,loc('wiki_mechanics_cost_creep'));
@@ -224,7 +225,7 @@ export function mechanicsPage(content){
             },
             data_link: {
                 1: ['wiki.html#planetary-structures-bank','wiki.html#interstellar-structures-exchange','wiki.html#hell-structures-arcology',false,false,'wiki.html#space-structures-spaceport','wiki.html#challenges-gameplay-scenarios_cataclysm'],
-                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-major_paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
+                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#major_traits-species-major_paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
@@ -254,8 +255,8 @@ export function mechanicsPage(content){
                 8: [`log2(${loc('wiki_calc_warmonger_fatigue')} + ${loc('wiki_calc_warmonger_protest')})`]
             },
             data_link: {
-                2: ['wiki.html#traits-species-genus_immoral'],
-                3: ['wiki.html#government-gameplay-autocracy','wiki.html#traits-species-major_blood_thirst']
+                2: ['wiki.html#major_traits-species-genus_immoral'],
+                3: ['wiki.html#government-gameplay-autocracy','wiki.html#major_traits-species-major_blood_thirst']
             }
         });
         let subSection = createCalcSection(warmonger,'mechanics','warmonger',loc('wiki_mechanics_warmonger'));
@@ -433,7 +434,7 @@ export function mechanicsPage(content){
                 4: [loc('tech_genetic_decay'),loc('trait_fortify_name'),loc('wiki_mechanics_genome_decay'),loc('resource_Plasmid_name'),'+0%']
             },
             data_link: {
-                4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#traits-species-special_fortify']
+                4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#minor_traits-species-special_fortify']
             }
         });
         let subSection = createCalcSection(genome_decay,'mechanics','g_decay',loc('wiki_mechanics_genome_decay'));
@@ -451,7 +452,7 @@ export function mechanicsPage(content){
             },
             data_link: {
                 1: [false,'wiki.html#crispr-prestige-mutation','wiki.html#resources-prestige-plasmids'],
-                4: [false,'wiki.html#traits-species'],
+                4: [false,'wiki.html#major_traits-species'],
                 5: ['wiki.html#custom-species','wiki.html#races-species-sludge']
             }
         });
@@ -1074,7 +1075,7 @@ export function mechanicsPage(content){
             },
             data_link: {
                 7: ['wiki.html#prehistoric-structures-sentience'],
-                8: ['wiki.html#combat-gameplay','wiki.html#traits-species-major_revive','wiki.html#traits-species-major_infectious'],
+                8: ['wiki.html#combat-gameplay','wiki.html#major_traits-species-major_revive','wiki.html#major_traits-species-major_infectious'],
                 10: ['wiki.html#major-events','wiki.html#minor-events'],
                 11: [false,(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify',false,'wiki.html#crispr-prestige-recombination'],
                 12: ['wiki.html#governor-gameplay'],
@@ -1152,7 +1153,7 @@ export function mechanicsPage(content){
                 8: [1],
             },
             data_link: {
-                1: ['wiki.html#traits-species-genus_unfathomable'],
+                1: ['wiki.html#major_traits-species-genus_unfathomable'],
             }
         });
 
@@ -1292,7 +1293,7 @@ export function mechanicsPage(content){
                 ]
             },
             data_link: {
-                2: ['wiki.html#traits-species-genus_strong',null],
+                2: ['wiki.html#major_traits-species-genus_strong',null],
             }
         });
 

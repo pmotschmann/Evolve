@@ -16,7 +16,7 @@ import { hellPage } from './hell.js';
 import { pResPage } from './p_res.js';
 import { perksPage } from './perks.js';
 import { mainEventsPage, minorEventsPage, progressEventsPage, specialEventsPage} from './events.js';
-import { racesPage, traitsPage } from './species.js';
+import { racesPage, majorTraitsPage, minorTraitsPage } from './species.js';
 import { structuresIndex } from './structuresIndex.js';
 import { renderTechPage } from './tech.js';
 import { projectsPage } from './projects.js';
@@ -48,7 +48,8 @@ const pages = [
     [progressEventsPage, true, "events", "progress"],
     [specialEventsPage, true, "events", "special"],
     [racesPage, true, "species", "races"],
-    [traitsPage, true, "species", "traits"],
+    [majorTraitsPage, true, "species", "major_traits"],
+    [minorTraitsPage, true, "species", "minor_traits"],
     [structuresIndex, false, "structures", "prehistoric"],
     [structuresIndex, false, "structures", "planetary"],
     [structuresIndex, false, "structures", "space"],

@@ -9,6 +9,7 @@ import { races, traits } from './../races.js';
 import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
+import { traitPageOf } from './species.js';
 import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
 
 const isHalloween = getHalloween();
@@ -2909,12 +2910,12 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_evil_name`)]),
                     color: global.race['evil'] ? true : false,
-                    link: 'wiki.html#traits-species-genus_evil'
+                    link: 'wiki.html#major_traits-species-genus_evil'
                 },
                 {
                     title: loc(`wiki_tech_special_trait_not`,[loc(`trait_soul_eater_name`)]),
                     color: !global.race['soul_eater'],
-                    link: 'wiki.html#traits-species-special_soul_eater'
+                    link: 'wiki.html#major_traits-species-special_soul_eater'
                 }
             ]
         }
@@ -2970,7 +2971,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
                     color: global.race['detritivore'] ? true : false,
-                    link: 'wiki.html#traits-species-genus_detritivore'
+                    link: 'wiki.html#major_traits-species-genus_detritivore'
                 }
             ]
         }
@@ -3200,7 +3201,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
                     color: global.race['terrifying'] ? true : false,
-                    link: 'wiki.html#traits-species-major_terrifying'
+                    link: 'wiki.html#major_traits-species-major_terrifying'
                 }
             ]
         }
@@ -3217,7 +3218,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
                     color: global.race['terrifying'] ? true : false,
-                    link: 'wiki.html#traits-species-major_terrifying'
+                    link: 'wiki.html#major_traits-species-major_terrifying'
                 }
             ]
         }
@@ -4905,7 +4906,7 @@ function addRequirements(parent,key,keyName,path,pageEra){
                         break;
                     case 'trait':
                         subText = loc(`trait_${subreq.name}_name`);
-                        link = `wiki.html#traits-species-${traits[subreq.name].type}_${subreq.name}`;
+                        link = `wiki.html#${traitPageOf(subreq.name)}-species-${traits[subreq.name].type}_${subreq.name}`;
                         color = global.race[subreq.name];
                         break;
                     case 'tech':

@@ -1,5 +1,5 @@
 import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates, writeSave, writeBackup } from './vars.js';
-import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
+import { tagEvent, calcPrestige, updateResetStats, driftClear } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
 import { thrusterOrbitProjection } from './iceage.js';
@@ -1546,6 +1546,7 @@ function resetCommon(args){
     global.new = true;
     global.seed = Math.rand(0,10000);
     global.starseed = Math.rand(0,10000);
+    driftClear();
 }
 
 function trackWomling(){

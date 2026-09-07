@@ -48,10 +48,15 @@ const achieveDescData = {
     geneticist: [geneticistGenes]
 };
 
-export function achievePage(universe, filter){
+// Sort listings by declaration order or localized name.
+function sortListing(list, names, sort){
+    return sort === 'alpha' ? list.slice().sort((a,b) => names[a].name.localeCompare(names[b].name)) : list;
+}
+
+export function achievePage(universe, filter, sort){
     let content = $(`#content`);
     clearElement(content);
-    
+
     let filtering = `
     <div id="filtering" class="b-tabs">
         <nav class="tabs">
@@ -74,19 +79,28 @@ export function achievePage(universe, filter){
                 <li class="${universe && universe === 'magic' ? 'is-active' : ''}"><a @click="universeSwap('magic')">${loc('universe_magic')}</a></li>
             </ul>
         </nav>
+        <nav class="tabs">
+            <ul>
+                <li class="${sort ? '' : 'is-active'}"><a @click="sortSwap()">${loc('wiki_achievements_sort_default')}</a></li>
+                <li class="${sort && sort === 'alpha' ? 'is-active' : ''}"><a @click="sortSwap('alpha')">${loc('wiki_achievements_sort_alpha')}</a></li>
+            </ul>
+        </nav>
     </div>
     `;
-    
+
     content.append(filtering);
-    
+
     vBind({
         el: `#filtering`,
         methods: {
             universeSwap(universe) {
-                achievePage(universe, filter);
+                achievePage(universe, filter, sort);
             },
             filterSwap(filter) {
-                achievePage(universe, filter);
+                achievePage(universe, filter, sort);
+            },
+            sortSwap(sort) {
+                achievePage(universe, filter, sort);
             }
         }
     });
@@ -123,7 +137,7 @@ export function achievePage(universe, filter){
         let list = $(`<div class="achieveList"></div>`);
         content.append(list);
 
-        types[type].forEach(function(achievement){
+        sortListing(types[type], achievements, sort).forEach(function(achievement){
             let achieve = $(`<div class="achievement"></div>`);
             list.append(achieve);
 
@@ -152,14 +166,34 @@ export function achievePage(universe, filter){
     });
 }
 
-export function featPage(){
+export function featPage(sort){
     let content = $(`#content`);
     clearElement(content);
+
+    content.append(`
+    <div id="filtering" class="b-tabs">
+        <nav class="tabs">
+            <ul>
+                <li class="${sort ? '' : 'is-active'}"><a @click="sortSwap()">${loc('wiki_achievements_sort_default')}</a></li>
+                <li class="${sort && sort === 'alpha' ? 'is-active' : ''}"><a @click="sortSwap('alpha')">${loc('wiki_achievements_sort_alpha')}</a></li>
+            </ul>
+        </nav>
+    </div>
+    `);
+
+    vBind({
+        el: `#filtering`,
+        methods: {
+            sortSwap(sort) {
+                featPage(sort);
+            }
+        }
+    });
 
     let list = $(`<div class="achieveList"></div>`);
     content.append(list);
 
-    Object.keys(feats).forEach(function (feat){
+    sortListing(Object.keys(feats), feats, sort).forEach(function (feat){
         // A secret feat is left off entirely until it has been earned. Listing it greyed out would
         // give away both that it exists and what it is called, which is the whole of the secret.
         if (feats[feat].secret && !global.stats.feat[feat]){ return; }
@@ -346,6 +380,13 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z3[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider3`)}${srNoteCompleted(global.stats.zombie_genocider.z3[uAffix])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z4[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider4`)}${srNoteCompleted(global.stats.zombie_genocider.z4[uAffix])}</div>`;
         checklist = checklist + `<div class="has-text-${global.stats.zombie_genocider.z5[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_zombie_genocider5`)}${srNoteCompleted(global.stats.zombie_genocider.z5[uAffix])}</div>`;
+        checklist = checklist + `</div>`;
+        content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
+    }
+    else if (achievement === 'shadow_war'){
+        // List implemented Shadow War tasks.
+        let checklist = `<div class="list">`;
+        checklist = checklist + `<div class="has-text-${global.stats.shadow_war.s1[uAffix] ? `success` : `danger`}">${loc(`wiki_achieve_shadow_war1`)}${srNoteCompleted(global.stats.shadow_war.s1[uAffix])}</div>`;
         checklist = checklist + `</div>`;
         content = $(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`);
     }

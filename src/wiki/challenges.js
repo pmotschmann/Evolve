@@ -109,7 +109,7 @@ export function challengesPage(content){
             crispr.append(traits);
             let comma = false;
             neg_roll_traits.forEach(function (trait){
-                traits.append(`${comma ? ', ' : ''}<a href="wiki.html#traits-species-major_${trait}" target="_blank" class="has-text-warning">${loc('trait_'+ trait + '_name')}</a>`);
+                traits.append(`${comma ? ', ' : ''}<a href="wiki.html#major_traits-species-major_${trait}" target="_blank" class="has-text-warning">${loc('trait_'+ trait + '_name')}</a>`);
                 comma = true;
             });
             subSideMenu('add',`challenges-gameplay`,'genes_crispr',loc('wiki_challenges_genes_crispr'));
@@ -310,7 +310,7 @@ export function challengesPage(content){
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-sludge'],
-                    3: [false,false,'wiki.html#traits-species-major_ooze'],
+                    3: [false,false,'wiki.html#major_traits-species-major_ooze'],
                     5: [false,'wiki.html#resets-prestige-mad']
                 }
             });
@@ -358,7 +358,7 @@ export function challengesPage(content){
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-ultra_sludge'],
-                    3: [false,false,'wiki.html#traits-species-major_ooze'],
+                    3: [false,false,'wiki.html#major_traits-species-major_ooze'],
                     5: [false,'wiki.html#resets-prestige-mad']
                 }
             });
@@ -514,7 +514,7 @@ export function challengesPage(content){
                     1: [false,false,'wiki.html#resets-prestige-cataclysm'],
                     2: [false,'wiki.html#space-structures-spc_casino'],
                     5: [false,'wiki.html#early_space-tech-unification2'],
-                    7: ['wiki.html#traits-species-major_parasite'],
+                    7: ['wiki.html#major_traits-species-major_parasite'],
                     8: ['wiki.html#resources-prestige-plasmids','wiki.html#resources-prestige-antiplasmids',false,false,'wiki.html#resources-prestige-phage'],
                     9: [false,'wiki.html#resets-prestige-bioseed']
                 }
