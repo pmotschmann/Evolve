@@ -17,7 +17,7 @@ import { loadTab } from './index.js';
 import { zombieGenociderTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap } from './stars.js';
 import { loc } from './locale.js';
-import { supplyRegionName, supplyPool, supplyMode, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
+import { supplyRegionName, supplyPool, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
 
 const outerTruth = {
     spc_titan: {
@@ -332,6 +332,13 @@ const outerTruth = {
                 if (global.resource.Water.display && global.tech['resettle']){
                     res.push('Water');
                 }
+                if (global.tech['shadow']){
+                    res.push('Graphene');
+                    res.push('Stanene');
+                    res.push('Bolognium');
+                    res.push('Orichalcum');
+                    res.push('Unobtainium');
+                }
                 return res;
             },
             heavy(res){
@@ -377,6 +384,16 @@ const outerTruth = {
                         return 72;
                     case 'Water':
                         return 2;
+                    case 'Graphene':
+                        return 500;
+                    case 'Stanene':
+                        return 500;
+                    case 'Bolognium':
+                        return 250;
+                    case 'Orichalcum':
+                        return 250;
+                    case 'Unobtainium':
+                        return 75;
                     default:
                         return 0;
                 }
@@ -3521,7 +3538,12 @@ const tauCetiModules = {
                     res.push('Helium_3');
                     res.push('Uranium');
                     res.push('Water');
-                    //res.push('Elerium');
+                }
+                if (global.tech['shadow']){
+                    res.push('Graphene');
+                    res.push('Stanene');
+                    res.push('Bolognium');
+                    res.push('Orichalcum');
                 }
                 if (global.resource.Tungsten.display){
                     res.push('Tungsten');
@@ -3580,6 +3602,14 @@ const tauCetiModules = {
                         return 15;
                     case 'Elerium':
                         return 3;
+                    case 'Graphene':
+                        return 1000;
+                    case 'Stanene':
+                        return 1000;
+                    case 'Bolognium':
+                        return 750;
+                    case 'Orichalcum':
+                        return 750;
                     default:
                         return 0;
                 }
@@ -6154,12 +6184,14 @@ function armorDesc(armor){
     return notes.length ? `${desc} ${notes.join(' ')}` : desc;
 }
 
-// Share of a hit each hull size takes, smallest to largest.
+// Share of a hit each hull size takes, smallest to largest. The corsair is a destroyer in every
+// respect but this one: it is built around a cruiser's frame and soaks like one.
 const shipClassSoak = {
     corvette: 1,
     frigate: 0.85,
     destroyer: 0.7,
     cruiser: 0.55,
+    corsair: 0.55,
     battlecruiser: 0.4,
     dreadnought: 0.3
 };
@@ -6224,7 +6256,8 @@ const zOvermindDamage = 10;
 // Firepower turned into hull damage.
 function combatDamage(attacker,defender){
     let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
-    if (attacker.enemy && zEndless()){ raw *= zOvermindDamage; }
+    // Apply corsair weapons independently from horde weapon bonuses.
+    if (attacker.enemy && !attacker.syn && zEndless()){ raw *= zOvermindDamage; }
     return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender) * (1 - fleetDamageSoak(defender))));
 }
 
@@ -6270,8 +6303,10 @@ function zBattleRoster(ships){
     return roster;
 }
 
+// Also the guard for reading an engagement back: a row written with a figure that was never a number
+// is a row that would otherwise print as NaN for the rest of the run.
 function zBattleHull(damage){
-    return Math.round(damage * 10) / 10;
+    return Number.isFinite(damage) ? Math.round(damage * 10) / 10 : 0;
 }
 
 // Written the moment the volleys are resolved, before the wrecks are cleared away.
@@ -6477,6 +6512,8 @@ export function moveShips(step){
         }
     }
     advanceTradeRoutes(step);
+    advancePatrols();
+    syndicateMove(step);
     if (global.race['zfleet'] && global.race.zfleet['s']){
         for (let ship of global.race.zfleet.s){
             if (ship.inTransit){ advanceShip(ship, step); }
@@ -6805,6 +6842,420 @@ function zBlockadeDay(fleet){
     }
 }
 
+// --- The syndicate corsairs ---------------------------------------------------------------------
+
+const syndicateWatchDays = 25;      // Days before corsairs appear after prerequisites.
+const corsairLostMin = 25;          // Minimum respawn delay after a loss.
+const corsairLostMax = 50;          // Maximum respawn delay after a loss.
+const corsairRepair = 4;            // Hull repair per day.
+const corsairHaulRepair = 10;       // Hull repair per day after a successful haul.
+const corsairOverdriveAU = 0.25;    // Distance that enables overdrive.
+const corsairCatchAU = 0.05;        // Interception distance.
+const corsairStealth = 0.25;        // Sensor-range multiplier against corsairs.
+const corsairOverdrive = 2;         // Speed multiplier while pursuing a target.
+const corsairRounds = 5;            // Maximum combat rounds before retreating.
+const corsairEvade = 20;            // Reference scan range for escort evasion.
+const corsairChaseDays = 5;         // Patrol pursuit duration.
+const corsairChaseSpeed = 1.1;      // Patrol speed multiplier while pursuing.
+
+// Every corsair is the same hull: the syndicate found one design that works and stopped looking.
+const corsairFit = { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'lidar', special: 'none' };
+
+// The raiding arc, which picks up exactly where syndicateActive() leaves off: that one switches itself
+// off at shadow 5, and this one begins after it.
+export function corsairsActive(){
+    return global.race['sy_base'] && global.race.sy_base['home'] ? true : false;
+}
+
+// The two bases: Venus, and whichever cold rock the syndicate made its home.
+export function syndicateBases(){
+    return corsairsActive() ? ['spc_venus', global.race.sy_base.home] : [];
+}
+
+// Every corsair currently off its dock, for the map and for anything hunting them.
+export function syndicateShips(){
+    return syndicateBases()
+        .map(region => global.race.sy_base[region] && global.race.sy_base[region].ship)
+        .filter(ship => ship && ship.damage < 100);
+}
+
+// The countdown that opens the arc. Both prerequisites have to hold together, and holding them for
+// syndicateWatchDays is what tips the syndicate's hand.
+function syndicateWatch(){
+    if (corsairsActive()){ return; }
+    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){
+        delete global.race['sy_watch'];
+        return;
+    }
+    // Advance corsair timers using game days.
+    if (typeof global.race['sy_watch'] !== 'number'){ global.race['sy_watch'] = global.stats.days; }
+    if (global.stats.days - global.race.sy_watch < syndicateWatchDays){ return; }
+
+    delete global.race['sy_watch'];
+    global.tech['shadow'] = 6;
+    // Choose each corsair base from seeded world data.
+    let home = seededRandom(0,2) < 1 ? 'spc_pluto' : 'spc_haumea';
+    global.race['sy_base'] = { home: home };
+    // Initialize revealed bases with prebuilt corsairs.
+    [ 'spc_venus', home ].forEach(function(region){
+        global.race.sy_base[region] = {
+            ship: false,                                    // Active corsair, if any.
+            ready: global.stats.days,                       // Next launch day.
+            day: global.stats.days,                         // Last processed game day.
+            launched: 0,                                    // Corsairs launched.
+            lost: 0,                                        // Corsairs lost.
+            taken: 0,                                       // Freighters robbed.
+            sunk: 0,                                        // Freighters destroyed.
+            haul: 0                                         // Cargo returned to base.
+        };
+    });
+    messageQueue(loc('syndicate_corsairs_msg'),'danger',false,['combat','progress']);
+    drawTech();
+}
+
+function corsairHull(region){
+    let ship = Object.assign({},corsairFit);
+    ship.name = loc('syndicate_corsair_name',[Math.floor(seededRandom(100,10000,true))]);
+    ship.damage = 0;
+    ship.fueled = true;
+    ship.enemy = true;      // Use enemy movement and fuel rules.
+    ship.syn = region;      // Source corsair base.
+    ship.stealth = corsairStealth;
+    ship.haul = 0;
+    TPShipInitTransit(ship, region);
+    return ship;
+}
+
+// Where a ship is on the map, in transit or not.
+function shipPoint(ship){
+    return ship && ship.location && ship.location.position ? ship.location.position : false;
+}
+
+// The name to file an engagement under: a fight in open space is logged against wherever the ship
+// being jumped was headed, which is the only place name either party would recognise.
+function encounterWhere(ship){
+    return ship.inTransit && ship.destination && ship.destination.name ? ship.destination.name : ship.location.name;
+}
+
+// Freighters of yours that are worth a corsair's time.
+function corsairPrey(corsair){
+    const ships = global.space.shipyard?.ships || [];
+    const from = shipPoint(corsair);
+    let best = false, near = Infinity;
+    for (const ship of ships){
+        if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
+        const at = shipPoint(ship);
+        if (!at || !from){ continue; }
+        const away = dist3(from,at);
+        if (away < near){ best = ship; near = away; }
+    }
+    return best;
+}
+
+// Put a corsair on course for its prey. A ship under way is met where it is going rather than chased
+// across open space — the syndicate reads your lanes, and that is the whole of its advantage.
+function corsairHunt(corsair){
+    const prey = corsairPrey(corsair);
+    if (!prey){ return false; }
+    const target = encounterWhere(prey);
+    if (!corsair.inTransit && corsair.location.name === target){ return false; }
+    const trip = planShipTrip(corsair,target);
+    if (!trip){ return false; }
+    initializeShipTrip(corsair,target,trip);
+    corsair.od = false;
+    return true;
+}
+
+// Home, to sell the cargo or to lick its wounds.
+function corsairGoHome(corsair){
+    corsair.od = false;
+    if (!corsair.inTransit && corsair.location.name === corsair.syn){ return true; }
+    const trip = planShipTrip(corsair,corsair.syn);
+    if (!trip){ return false; }
+    initializeShipTrip(corsair,corsair.syn,trip);
+    corsair.home = true;
+    return true;
+}
+
+// The drive opens up once it has a firing solution, and the rest of the crossing is flown at twice the
+// speed. The trip is already plotted, so what doubles is what is left of it.
+function corsairEngageDrive(corsair){
+    if (corsair.od){ return; }
+    corsair.od = true;
+    corsair.timeToNextStep /= corsairOverdrive;
+    corsair.totalTime /= corsairOverdrive;
+    if (Array.isArray(corsair.path)){
+        corsair.path.forEach(function(leg){ leg.totalTime /= corsairOverdrive; });
+    }
+}
+
+// The escort's chance of seeing one coming.
+function corsairSpotted(group){
+    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * corsairStealth;
+    if (scan <= 0){ return false; }
+    return seededRandom(0,1,true) < scan / (scan + corsairEvade);
+}
+
+// A corsair against a group of yours. `ambush` gives it one free shot
+function corsairFight(corsair,group,where,ambush){
+    let dealt = 0, taken = 0;
+    const lost = [], downed = [];
+    const mark = function(){
+        const live = group.filter(s => s.damage < 100);
+        return live.length ? live[Math.floor(seededRandom(0,live.length,true))] : false;
+    };
+    const shootAt = function(ship){
+        const hit = combatDamage(corsair,ship);
+        ship.damage += hit;
+        taken += hit;
+        if (ship.damage >= 100){ ship.damage = 100; lost.push(ship); }
+    };
+
+    if (ambush){
+        const surprised = mark();
+        if (surprised){ shootAt(surprised); }
+    }
+
+    for (let round = 0; round < corsairRounds && corsair.damage < 100; round++){
+        // Apply corsair stealth to defender sensor range.
+        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * corsairStealth;
+        group.forEach(function(ship){
+            if (ship.damage >= 100 || corsair.damage >= 100){ return; }
+            if (seededRandom(0,1,true) >= playerAccuracy(scan,corsair)){ return; }
+            const hit = combatDamage(ship,corsair);
+            corsair.damage += hit;
+            dealt += hit;
+            if (corsair.damage >= 100){ corsair.damage = 100; downed.push(corsair); }
+        });
+        if (corsair.damage >= 100){ break; }
+        const target = mark();
+        if (!target){ break; }
+        if (seededRandom(0,1,true) < foeAccuracy(corsair,where)){ shootAt(target); }
+    }
+
+    zBattleLog(where,group,[corsair],dealt,taken,lost.length,downed.length);
+    lost.forEach(function(ship){ destroyPlayerShip(ship,where); });
+    if (lost.length > 0){ drawShips(); }
+    return corsair.damage < 100;
+}
+
+// The corsair is lost: the base that built it goes quiet for a while.
+function corsairLost(corsair,where){
+    const base = global.race.sy_base[corsair.syn];
+    if (base){
+        base.ship = false;
+        base.lost++;
+        base.ready = global.stats.days + Math.round(seededRandom(corsairLostMin,corsairLostMax,true));
+    }
+    zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success');
+}
+
+// A freighter caught on its own. Cargo is stolen, if freighter is empty it is instead destroyed.
+function corsairRaid(corsair,freighter){
+    const where = encounterWhere(freighter);
+    const base = global.race.sy_base[corsair.syn];
+    const load = freightLoad(freighter);
+    if (load > 0){
+        Object.keys(freightCargo(freighter)).forEach(function(res){ delete freighter.cargo[res]; });
+        corsair.haul = load;
+        if (base){ base.taken++; base.haul += load; }
+        zMessage(loc('syndicate_cargo_taken',[freighter.name,regionName(where),load.toLocaleString()]),'danger');
+        corsairGoHome(corsair);
+    }
+    else {
+        if (base){ base.sunk++; }
+        destroyPlayerShip(freighter,where);
+        drawShips();
+        zMessage(loc('syndicate_freighter_lost',[freighter.name,regionName(where)]),'danger');
+        corsairHunt(corsair);
+    }
+}
+
+// A freighter caught with escorts. The escort fights; the corsair breaks off after five combat rounds.
+function corsairAmbush(corsair,escort,freighter){
+    const where = encounterWhere(freighter);
+    const seen = corsairSpotted(escort);
+    zMessage(loc(seen ? 'syndicate_escort_spotted' : 'syndicate_escort_ambushed',[regionName(where)]),seen ? 'warning' : 'danger');
+    if (corsairFight(corsair,escort,where,!seen)){
+        corsairGoHome(corsair);
+    }
+    else {
+        corsairLost(corsair,where);
+    }
+}
+
+// One corsair, one tick of the clock: close, lock on, and take whatever is in front of it.
+function corsairStalk(corsair){
+    if (!corsair.inTransit || corsair.home){ return; }
+    const from = shipPoint(corsair);
+    if (!from){ return; }
+
+    const ships = global.space.shipyard?.ships || [];
+    let quarry = false, near = Infinity;
+    for (const ship of ships){
+        if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
+        const at = shipPoint(ship);
+        if (!at){ continue; }
+        const away = dist3(from,at);
+        if (away < near){ quarry = ship; near = away; }
+    }
+    if (!quarry){ return; }
+
+    if (near <= corsairOverdriveAU && !corsair.od){
+        corsairEngageDrive(corsair);
+        zMessage(loc('syndicate_corsair_lock',[quarry.name]),'warning');
+    }
+    if (near > corsairCatchAU){ return; }
+
+    // Resolve interception as a robbery or escort fight.
+    const company = shipFleet(quarry).filter(s => s.class !== 'freighter' && s.damage < 100);
+    if (company.length > 0){ corsairAmbush(corsair,company,quarry); }
+    else { corsairRaid(corsair,quarry); }
+}
+
+// Pirate base ship daily routine
+function corsairBaseDay(region){
+    const base = global.race.sy_base[region];
+    if (!base){ return; }
+    // Initialize missing base timers for older saves.
+    if (typeof base.day !== 'number'){ base.day = global.stats.days; }
+    if (typeof base.ready !== 'number'){ base.ready = global.stats.days; }
+    const elapsed = Math.max(0,global.stats.days - base.day);
+    base.day = global.stats.days;
+
+    if (!base.ship){
+        if (global.stats.days < base.ready){ return; }
+        base.ship = corsairHull(region);
+        base.launched++;
+        corsairHunt(base.ship);
+        return;
+    }
+
+    const corsair = base.ship;
+    if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
+    if (corsair.inTransit){ return; }
+
+    // Repair and relaunch corsairs at their base.
+    if (corsair.location.name === region){
+        corsair.home = false;
+        if (corsair.damage > 0){
+            corsair.damage = Math.max(0,corsair.damage - (corsair.haul > 0 ? corsairHaulRepair : corsairRepair) * Math.max(1,elapsed));
+            if (corsair.damage > 0){ return; }
+        }
+        corsair.haul = 0;
+        corsairHunt(corsair);
+        return;
+    }
+
+    // Resume hunting when a corsair has no active route.
+    if (!corsairHunt(corsair)){ corsairGoHome(corsair); }
+}
+
+// --- Your patrols hunting for enemies --------------------------------------------------------------
+
+// A patrolling fleet that sees a corsair goes after it.
+function patrolHunt(){
+    const ships = global.space.shipyard?.ships || [];
+    const corsairs = syndicateShips().filter(c => c.inTransit && shipPoint(c));
+    if (corsairs.length === 0){ return; }
+
+    const seen = new Set();
+    for (const ship of ships){
+        if (seen.has(ship) || !shipPatrol(ship)){ continue; }
+        const group = tradeFleet(ship);
+        group.forEach(member => seen.add(member));
+        const lead = tradeLeader(group);
+        const patrol = shipPatrol(lead);
+        const at = shipPoint(lead);
+        if (!at){ continue; }
+
+        // End pursuits that exceed the chase limit.
+        if (patrol.chase){
+            if (global.stats.days - patrol.chase >= corsairChaseDays){
+                setPatrolChase(group,false);
+                if (!lead.inTransit){ advancePatrol(group); }
+            }
+            continue;
+        }
+
+        let quarry = false, near = Infinity;
+        for (const corsair of corsairs){
+            const away = dist3(at,shipPoint(corsair));
+            if (away <= sensorRangeAU(lead) * corsairStealth && away < near){ quarry = corsair; near = away; }
+        }
+        if (!quarry){ continue; }
+
+        const target = encounterWhere(quarry);
+        const id = global.space.shipyard.ships.indexOf(lead);
+        if (id < 0 || !sendShipTo(id,target,true)){ continue; }
+        // Apply the patrol pursuit speed multiplier.
+        group.forEach(function(member){
+            member.timeToNextStep /= corsairChaseSpeed;
+            member.totalTime /= corsairChaseSpeed;
+            if (Array.isArray(member.path)){ member.path.forEach(function(leg){ leg.totalTime /= corsairChaseSpeed; }); }
+        });
+        setPatrolChase(group,global.stats.days);
+        zMessage(loc('syndicate_patrol_chase',[regionName(target)]),'warning');
+    }
+}
+
+function setPatrolChase(group,day){
+    group.forEach(function(ship){
+        if (!ship.patrol){ return; }
+        if (day === false){ delete ship.patrol.chase; }
+        else { ship.patrol.chase = day; }
+    });
+}
+
+// A patrol that catches an enemy ship engages it in combat.
+function patrolStrike(){
+    const ships = global.space.shipyard?.ships || [];
+    const corsairs = syndicateShips().filter(c => shipPoint(c));
+    if (corsairs.length === 0){ return; }
+
+    const seen = new Set();
+    for (const ship of ships){
+        if (seen.has(ship) || !shipPatrol(ship) || !shipPatrol(ship).chase){ continue; }
+        const group = tradeFleet(ship);
+        group.forEach(member => seen.add(member));
+        const lead = tradeLeader(group);
+        const at = shipPoint(lead);
+        if (!at){ continue; }
+
+        for (const corsair of corsairs){
+            if (dist3(at,shipPoint(corsair)) > corsairCatchAU){ continue; }
+            const where = encounterWhere(lead);
+            const guns = group.filter(s => s.damage < 100);
+            if (guns.length === 0){ break; }
+            if (corsairFight(corsair,guns,where,false)){ corsairGoHome(corsair); }
+            else { corsairLost(corsair,where); }
+            setPatrolChase(group,false);
+            if (!lead.inTransit){ advancePatrol(group); }
+            break;
+        }
+    }
+}
+
+// --- The day, and the tick ---------------------------------------------------------------------------
+
+// Once a day: the countdown, the bases, and your patrols deciding whether to go and do something about it.
+export function syndicateDay(){
+    syndicateWatch();
+    if (!corsairsActive()){ return; }
+    syndicateBases().forEach(corsairBaseDay);
+    patrolHunt();
+}
+
+// Every movement step: corsairs closing on freight, and patrols closing on corsairs.
+export function syndicateMove(step){
+    if (!corsairsActive()){ return; }
+    syndicateShips().forEach(function(corsair){
+        if (corsair.inTransit){ advanceShip(corsair,step); }
+    });
+    syndicateShips().forEach(corsairStalk);
+    patrolStrike();
+}
+
 // One day of fighting in a single infested region: the fleet in orbit kills what it can, then whatever horde is
 // left goes looking for something to tear down.
 function infestationCombat(region){
@@ -6918,10 +7369,20 @@ function razeStructures(region,razings){
 
 // Region and structure labels come off the action definitions, where `name`/`title` may be either a
 // plain string or a function depending on the entry.
+// Bodies the map draws as scenery have no action of their own, but they are still places things
+// happen — the syndicate keeps a base on one of them — so they are named the way the map names them.
+const sceneryNames = { spc_pluto: 'pluto', spc_haumea: 'haumea' };
+
 function regionName(region){
     let cat = razeTargets.hasOwnProperty(region) && razeTargets[region].c === 'tauceti' ? 'tauceti' : 'space';
     let info = actions[cat]?.[region]?.info;
-    if (!info || !info.name){ return region; }
+    if (!info || !info.name){
+        if (sceneryNames[region]){
+            let named = planetName()[sceneryNames[region]];
+            if (named){ return named; }
+        }
+        return region;
+    }
     return typeof info.name === 'function' ? info.name() : info.name;
 }
 
@@ -7743,6 +8204,7 @@ export function shipCrewSize(ship){
         case 'frigate':
             return global.race['grenadier'] ? jobScale(2) : jobScale(3);
         case 'destroyer':
+        case 'corsair':
             return global.race['grenadier'] ? jobScale(3) : jobScale(4);
         case 'cruiser':
             return global.race['grenadier'] ? jobScale(4) : jobScale(6);
@@ -8014,6 +8476,7 @@ export function shipAttackPower(ship){
         case 'frigate':
             return Math.round(rating * 1.5);
         case 'destroyer':
+        case 'corsair':
             return Math.round(rating * 2.75);
         case 'cruiser':
             return Math.round(rating * 5.5);
@@ -8079,6 +8542,7 @@ export function shipSpeed(ship){
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1.12 : 1.1) : ship.armor === 'neutronium' ? 1.35 : 1.25;
             break;
         case 'destroyer':
+        case 'corsair':
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1.25 : 1.2) : ship.armor === 'neutronium' ? 1.95 : 1.8;
             break;
         case 'cruiser':
@@ -8161,6 +8625,7 @@ export function shipFuelUse(ship){
             burn *= 1.25;
             break;
         case 'destroyer':
+        case 'corsair':
             burn *= 1.5;
             break;
         case 'cruiser':
@@ -8223,18 +8688,20 @@ export function shipFuelAmount(ship){ return ensureShipFuel(ship); }
 
 function fuelAtLocation(res, location){
     if (!global.resource[res]){ return 0; }
-    return supplyMode() === 'global' ? global.resource[res].amount : regAmount(res, supplyPool(location));
+    // Use global stock for fuels without regional storage.
+    return partitioned(res) ? regAmount(res, supplyPool(location)) : global.resource[res].amount;
 }
 
 function locationProducesFuelAt(ship, location){
     const fuel = shipFuelUse(ship);
     if (!fuel.res || !location){ return false; }
-    if (supplyMode() === 'global'){
-        const body = starData[location];
-        return !!body && !body.startype && !globalRefuelExceptions.includes(location)
-            && !(global.tech?.resettle && location === 'spc_home');
+    if (partitioned(fuel.res)){
+        return (regDiff(fuel.res)[supplyPool(location)] || 0) > 0;
     }
-    return (regDiff(fuel.res)[supplyPool(location)] || 0) > 0;
+    // Any valid dock can refuel globally stored fuel.
+    const body = starData[location];
+    return !!body && !body.startype && !globalRefuelExceptions.includes(location)
+        && !(global.tech?.resettle && location === 'spc_home');
 }
 
 function locationProducesFuel(ship){
@@ -8324,12 +8791,108 @@ function tradeLeader(group){
     return best;
 }
 
+// --- Patrol routes ---------------------------------------------------------------------------------
+// A patrol is a standing order to tour a list of worlds in turn, for ever. It carries nothing and
+// trades nothing — the freight routes above are the machinery for that — so a patrol is no more than
+// the stops and how far along them the fleet has got. Like a trade route it lives on every ship of
+// the fleet, so any row of the shipyard can be asked about it.
+
+export function patrolsUnlocked(){
+    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 3 ? true : false;
+}
+
+export function shipPatrol(ship){
+    return ship && ship.patrol && Array.isArray(ship.patrol.stops) && ship.patrol.stops.length > 0 ? ship.patrol : false;
+}
+
+function setPatrol(group, patrol){ group.forEach(ship => { ship.patrol = deepClone(patrol); }); }
+function clearPatrol(group){ group.forEach(ship => { delete ship.patrol; }); }
+function setPatrolIndex(group, index){ group.forEach(ship => { if (ship.patrol){ ship.patrol.index = index; } }); }
+
+// Send a patrolling fleet on to its next stop. A leg the fleet cannot afford right now is not
+// skipped: it stays docked, refuelling, and the next tick tries the same leg again.
+function advancePatrol(group){
+    const lead = tradeLeader(group);
+    const patrol = shipPatrol(lead);
+    if (!patrol || group.some(s => s.inTransit)){ return false; }
+    // Pause patrol movement while pursuing a corsair.
+    if (patrol.chase){ return false; }
+    // Wait at repair yards until every patrol ship is repaired.
+    if (atShipyard(lead) && group.some(s => s.damage > 0)){ return false; }
+    const id = global.space.shipyard.ships.indexOf(lead);
+    if (id < 0){ return false; }
+
+    const stops = patrol.stops;
+    let at = typeof patrol.index === 'number' ? patrol.index : -1;
+    for (let i=0; i<stops.length; i++){
+        const next = (at + 1) % stops.length;
+        // Continue from the route stop matching the current location.
+        if (stops[next] === lead.location.name){
+            at = next;
+            setPatrolIndex(group, next);
+            continue;
+        }
+        if (!sendShipTo(id, stops[next], true)){ return false; }
+        setPatrolIndex(group, next);
+        return true;
+    }
+    return false;
+}
+
+// Put a fleet onto a patrol and send it to its next stop. The stops are the whole loop, the fleet's
+// own position included — it is a stop like any other, and the tour comes back round to it.
+export function startPatrol(ship, stops){
+    if (!patrolsUnlocked() || !ship || !Array.isArray(stops) || stops.length === 0){ return false; }
+    const group = tradeFleet(ship);
+    // Replace freight routing with patrol routing.
+    clearTradeRoute(group);
+    setPatrol(group, { stops: stops.slice(), index: -1 });
+    // Start immediately unless the fleet is already in transit.
+    if (group.some(s => s.inTransit)){ return true; }
+    if (!advancePatrol(group)){
+        clearPatrol(group);
+        return false;
+    }
+    return true;
+}
+
+export function stopPatrol(ship){
+    const group = tradeFleet(ship);
+    if (!group.some(shipPatrol)){ return false; }
+    clearPatrol(group);
+    drawShips();
+    return true;
+}
+
+// One pass per tick: every patrolling fleet sitting at a stop moves off to the next one.
+function advancePatrols(){
+    const ships = global.space.shipyard?.ships || [];
+    const seen = new Set();
+    for (const ship of ships){
+        if (seen.has(ship) || !shipPatrol(ship)){ continue; }
+        const group = tradeFleet(ship);
+        group.forEach(member => seen.add(member));
+        if (group.some(member => member.inTransit)){ continue; }
+        advancePatrol(group);
+    }
+}
+
+// The fleet's slowest hull as it would stand at `from`, ready to launch. A mass relay only pushes
+// what leaves from it, and shipSpeed reads that off the ship's own location, so a leg is timed from
+// where it starts rather than from wherever the fleet happens to be sitting when the question is asked.
+function paceAt(group, from){
+    const pace = fleetPace(group);
+    if (!pace){ return false; }
+    const at = deepClone(pace);
+    at.inTransit = false;
+    at.location = { name: from, position: genXYZcoord(from) };
+    at.origin = { name: '', position: genXYZcoord(from) };
+    return at;
+}
+
 function tradeTrip(group, from, to){
-    const pace = deepClone(fleetPace(group));
-    pace.inTransit = false;
-    pace.location = { name: from, position: genXYZcoord(from) };
-    pace.origin = { name: '', position: genXYZcoord(from) };
-    return planShipTrip(pace, to);
+    const pace = paceAt(group, from);
+    return pace ? planShipTrip(pace, to) : false;
 }
 
 // Return fleet travel time for one route leg, or Infinity if unreachable.
@@ -8338,10 +8901,11 @@ export function tradeLegDays(group, from, to){
     if (from === to){ return 0; }
     const now = Date.now();
     if (now - legCache.at > 2000){ legCache.at = now; legCache.map.clear(); }
-    const pace = fleetPace(group);
+    const pace = paceAt(group, from);
+    // Cache legs by departure speed and endpoints.
     const key = `${from}|${to}|${pace ? shipSpeed(pace) : 0}`;
     if (legCache.map.has(key)){ return legCache.map.get(key); }
-    const trip = tradeTrip(group, from, to);
+    const trip = pace ? planShipTrip(pace, to) : false;
     const days = trip ? trip.totalTime : Infinity;
     legCache.map.set(key, days);
     return days;
@@ -9273,6 +9837,7 @@ function drawShipRow(list,i,ship,regionNames){
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
             row3.append(`<span v-show="retShow(${i})" class="shipReturn has-text-info"><span v-html="retText(${i})"></span> <a class="retCancel" @click="retCancel(${i})" role="button">${loc(`outer_shipyard_return_cancel`)}</a></span>`);
+            row3.append(`<span v-show="patrolShow(${i})" class="shipPatrolTag has-text-info"><span v-html="patrolText(${i})"></span> <a class="patrolCancel" @click="patrolCancel(${i})" role="button">${loc(`outer_shipyard_patrol_stop`)}</a></span>`);
 
             desc.append(row1);
             desc.append(row2);
@@ -9297,6 +9862,7 @@ function drawShipRow(list,i,ship,regionNames){
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
             row3.append(`<span v-show="retShow(${i})" class="shipReturn has-text-info"><span v-html="retText(${i})"></span> <a class="retCancel" @click="retCancel(${i})" role="button">${loc(`outer_shipyard_return_cancel`)}</a></span>`);
+            row3.append(`<span v-show="patrolShow(${i})" class="shipPatrolTag has-text-info"><span v-html="patrolText(${i})"></span> <a class="patrolCancel" @click="patrolCancel(${i})" role="button">${loc(`outer_shipyard_patrol_stop`)}</a></span>`);
 
             desc.append(row1);
             desc.append(row3);
@@ -9590,6 +10156,17 @@ function drawShipRow(list,i,ship,regionNames){
                         if (s['rfid']){ delete s.rfid; }
                         drawShips();
                     }
+                },
+                // Display and cancel active patrols from the fleet row.
+                patrolShow(id){
+                    return shipPatrol(global.space.shipyard.ships[id]) ? true : false;
+                },
+                patrolText(id){
+                    let patrol = shipPatrol(global.space.shipyard.ships[id]);
+                    return patrol ? loc('outer_shipyard_patrol_on',[patrol.stops.length]) : '';
+                },
+                patrolCancel(id){
+                    stopPatrol(global.space.shipyard.ships[id]);
                 }
             }
         });
@@ -9887,6 +10464,7 @@ export function sensorRange(s){
             break;
         case 'destroyer':
         case 'cruiser':
+        case 'corsair':
             hf = 1.5;
             break;
         case 'explorer':
@@ -9925,12 +10503,13 @@ export function foeDetected(foe){
     return sensorContact(foe);
 }
 
-// Anything of yours with the point inside its sensor bubble.
+// Anything of yours with the point inside its sensor bubble. A hull built to be hard to see shrinks
+// that bubble rather than hiding outright: `stealth` is what is left of a set's reach against it.
 function sensorContact(foe){
     if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
     for (let ship of global.space.shipyard.ships){
         if (!ship.location || !ship.location.position){ continue; }
-        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship)){ return true; }
+        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * (foe.stealth || 1)){ return true; }
     }
     return false;
 }
@@ -11166,6 +11745,12 @@ function shipDispatchModal(id, modal){
         let showSystem = global.tech['resettle'] && global.tech.resettle >= 3 || global.tech['shadow'] && global.tech.shadow >= 4;
         // Somewhere a battered hull can actually be put back together is worth picking out of the list.
         let yards = activeRepairYards();
+        // Track patrol planning state for destination buttons.
+        let planning = false;
+        let plan = [];
+        let addStop = function(){};
+        let destButtons = [];
+
         dests.forEach(function(d){
             let trip = planShipTrip(slowest, d.region);
             if (!trip)
@@ -11176,14 +11761,160 @@ function shipDispatchModal(id, modal){
             let sysName = showSystem ? locSystemName(d.region) : '';
             let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
             let yard = yards.includes(d.region) ? `<span class="dispatchYard" title="${loc('outer_shipyard_repair_yard')}" aria-label="${loc('outer_shipyard_repair_yard')}">🛠️</span>` : ``;
-            $(`<button class="button is-info ${d.region}" ${fuelReady ? '' : 'disabled'}><span class="dispatchName">${d.name}${yard}</span>${sys}<span class="dispatchDays has-text-caution">${fuelReady ? loc('transit_time',[days]) : loc('outer_shipyard_fuel_insufficient')}</span></button>`)
+            let button = $(`<button class="button is-info ${d.region}" ${fuelReady ? '' : 'disabled'}><span class="dispatchName">${d.name}${yard}</span>${sys}<span class="dispatchDays has-text-caution">${fuelReady ? loc('transit_time',[days]) : loc('outer_shipyard_fuel_insufficient')}</span></button>`)
                 .on('click', function(){
+                    // Add destinations as patrol stops while planning.
+                    if (planning){ addStop(d.region); return; }
                     if (!fuelReady){ return; }
                     sendShipTo(id, d.region);
                     if (modal && modal.close){ modal.close(); }
                 })
                 .appendTo(list);
+            destButtons.push({ region: d.region, el: button, days: days, fuelReady: fuelReady });
         });
+
+        // Show patrol-route controls after Ship Patrols is researched.
+        if (patrolsUnlocked()){
+            $('#modalBox').append(`<hr class="patrolDivider">`);
+            let box = $(`<div class="shipPatrol"></div>`);
+            $('#modalBox').append(box);
+
+            // Return leg duration, or false when unreachable.
+            let legDays = function(from, to){
+                let days = tradeLegDays(group, from, to);
+                return isFinite(days) ? Math.round(days) : false;
+            };
+            let legText = function(from, to){
+                let days = legDays(from, to);
+                return days === false
+                    ? `<span class="has-text-danger">${loc('outer_shipyard_patrol_unreachable')}</span>`
+                    : `<span class="has-text-caution">${loc('transit_time',[days])}</span>`;
+            };
+
+            // Anchor the route at the fleet's current or destination region.
+            let anchor = group[0].inTransit ? group[0].destination.name : group[0].location.name;
+
+            // Reprice destinations from the current planned stop.
+            let refreshDests = function(){
+                let from = planning ? (plan.length ? plan[plan.length - 1] : anchor) : false;
+                destButtons.forEach(function(dest){
+                    let text, ok;
+                    if (!planning){
+                        ok = dest.fuelReady;
+                        text = ok ? loc('transit_time',[dest.days]) : loc('outer_shipyard_fuel_insufficient');
+                    }
+                    else if (dest.region === from){
+                        // Do not add the current route stop twice.
+                        ok = false;
+                        text = loc('outer_shipyard_patrol_last');
+                    }
+                    else {
+                        let days = legDays(from, dest.region);
+                        ok = days !== false;
+                        text = ok ? loc('transit_time',[days]) : loc('outer_shipyard_patrol_unreachable');
+                    }
+                    dest.el.find('.dispatchDays').html(text);
+                    if (ok){ dest.el.removeAttr('disabled'); }
+                    else { dest.el.attr('disabled','disabled'); }
+                });
+            };
+
+            let renderPatrol = function(){
+                refreshDests();
+                clearElement(box);
+                box.append(`<div class="patrolTitle has-text-warning">${loc('outer_shipyard_patrol_title')}</div>`);
+
+                // Include the anchor before planned stops.
+                let route = planning ? [anchor].concat(plan) : (shipPatrol(group[0]) ? shipPatrol(group[0]).stops : []);
+                if (planning){
+                    box.append(`<div class="patrolHint has-text-caution">${loc('outer_shipyard_patrol_hint')}</div>`);
+                }
+
+                if (route.length === 0){
+                    box.append(`<div class="patrolStops has-text-caution">${loc('outer_shipyard_patrol_empty')}</div>`);
+                }
+                else {
+                    // Display each stop's inbound leg duration.
+                    let stops = $(`<div class="patrolStops"></div>`);
+                    route.forEach(function(region, idx){
+                        let prev = route[(idx + route.length - 1) % route.length];
+                        let stop = $(`<div class="patrolStop"><span class="patrolNum has-text-info">${idx + 1}.</span> <span>${regionName(region)}</span> ${region === anchor
+                            ? `<span class="patrolHere has-text-caution">${loc('outer_shipyard_patrol_here')}</span>`
+                            : legText(prev, region)}</div>`);
+                        // Allow removal of planned stops, but not the anchor.
+                        if (planning && idx > 0){
+                            $(`<a class="patrolDrop has-text-danger" role="button" aria-label="${loc('outer_shipyard_patrol_remove',[regionName(region)])}">✖</a>`)
+                                .on('click', function(){
+                                    plan.splice(idx - 1, 1);
+                                    renderPatrol();
+                                })
+                                .appendTo(stop);
+                        }
+                        stops.append(stop);
+                    });
+                    box.append(stops);
+
+                    if (route.length > 1){
+                        let total = 0, whole = true;
+                        for (let i=0; i<route.length; i++){
+                            let days = legDays(route[i], route[(i + 1) % route.length]);
+                            if (days === false){ whole = false; break; }
+                            total += days;
+                        }
+                        box.append(`<div class="patrolTotal">${loc('outer_shipyard_patrol_loop')} ${whole
+                            ? `<span class="has-text-caution">${loc('transit_time',[total])}</span>`
+                            : `<span class="has-text-danger">${loc('outer_shipyard_patrol_unreachable')}</span>`}</div>`);
+                    }
+                }
+
+                let controls = $(`<div class="patrolControls"></div>`);
+                box.append(controls);
+
+                $(`<button class="button is-info patrolPlan">${loc(planning ? 'outer_shipyard_patrol_finish' : 'outer_shipyard_patrol_set')}</button>`)
+                    .on('click', function(){
+                        if (!planning){
+                            planning = true;
+                            plan = [];
+                            renderPatrol();
+                            return;
+                        }
+                        planning = false;
+                        if (plan.length > 0 && startPatrol(group[0], [anchor].concat(plan))){
+                            if (modal && modal.close){ modal.close(); }
+                            return;
+                        }
+                        // Reset an empty or invalid plan.
+                        plan = [];
+                        renderPatrol();
+                    })
+                    .appendTo(controls);
+
+                if (planning){
+                    $(`<button class="button is-danger patrolReset" ${plan.length ? '' : 'disabled'}>${loc('outer_shipyard_patrol_reset')}</button>`)
+                        .on('click', function(){
+                            if (!plan.length){ return; }
+                            plan = [];
+                            renderPatrol();
+                        })
+                        .appendTo(controls);
+                }
+                else if (shipPatrol(group[0])){
+                    $(`<button class="button is-danger patrolClear">${loc('outer_shipyard_patrol_clear')}</button>`)
+                        .on('click', function(){
+                            stopPatrol(group[0]);
+                            renderPatrol();
+                        })
+                        .appendTo(controls);
+                }
+            };
+
+            addStop = function(region){
+                plan.push(region);
+                renderPatrol();
+            };
+
+            renderPatrol();
+        }
     }
 }
 
@@ -11202,8 +11933,9 @@ export function battleLogModal(){
     }
 
     // A hull tally rendered as "2 Corvettes, 1 Destroyer", using the same class names the shipyard uses.
+    // Include enemy-only hulls in battle rosters.
     let roster = function(tally){
-        let parts = shipClassSizes.concat(['explorer']).filter(c => tally[c] > 0).map(function(c){
+        let parts = shipClassSizes.concat(['explorer','corsair']).filter(c => tally[c] > 0).map(function(c){
             return `${tally[c]} ${loc(`outer_shipyard_class_${c}`)}`;
         });
         return parts.length ? parts.join(`, `) : loc('battle_log_unknown');
@@ -11890,7 +12622,7 @@ function sendShipTo(id, locationName, keepRoute=false){
     if (!group.length){ group = [ship]; }
 
     // A direct player order replaces any repeating logistics instruction.
-    if (!keepRoute){ clearTradeRoute(group); }
+    if (!keepRoute){ clearTradeRoute(group); clearPatrol(group); }
 
     // Nothing leaves dry dock on a badly damaged hull
     if (group.some(s => !shipCanLaunch(s))){ return false; }

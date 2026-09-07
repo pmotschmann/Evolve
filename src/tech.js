@@ -15338,6 +15338,28 @@ const techs = {
             drawShipYard();
         }
     },
+    ship_patrols: {
+        id: 'tech-ship_patrols',
+        title(){ return loc('tech_ship_patrols'); },
+        desc(){ return loc('tech_ship_patrols'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 5, syard_fleet: 2 },
+        grant: ['syard_fleet',3],
+        cost: {
+            Knowledge(){ return 21250000; }
+        },
+        effect(){
+            return `<div>${loc('tech_ship_patrols_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
     alien_outpost: {
         id: 'tech-alien_outpost',
         title(){ return loc('tech_alien_outpost'); },
@@ -15795,7 +15817,8 @@ const techs = {
         title(){ return loc('tech_womling_brigade'); },
         desc(){ return loc('tech_womling_brigade'); },
         category: 'womling',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
         reqs: { womling_tech: 9, resettle: 2 },
         grant: ['womling_military',1],
@@ -15816,9 +15839,10 @@ const techs = {
         title(){ return loc('tech_antimatter_reactor'); },
         desc(){ return loc('tech_antimatter_reactor'); },
         category: 'womling',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { womling_tech: 10, m_ignite: 3 },
+        reqs(r){ return r.era === 'matrioshka' ? { womling_tech: 10, m_ignite: 3 } : { womling_tech: 10, shadow: 4 }; },
         grant: ['womling_energy',1],
         cost: {
             Knowledge(){ return 19500000; }
@@ -15838,9 +15862,10 @@ const techs = {
         title(){ return loc('tech_womling_land_use_planning'); },
         desc(){ return loc('tech_womling_land_use_planning'); },
         category: 'womling',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { womling_tech: 11, resettle: 9, womling_pop: 2, womling_logistics: 2 },
+        reqs(r){ return r.era === 'matrioshka' ? { womling_tech: 11, resettle: 9, womling_pop: 2, womling_logistics: 2 } : { womling_tech: 11, shadow: 4, womling_pop: 2, womling_logistics: 2 }; },
         grant: ['womling_pop',3],
         cost: {
             Knowledge(){ return 21000000; }
@@ -15858,9 +15883,10 @@ const techs = {
         title(){ return loc('tech_womling_artisans'); },
         desc(){ return loc('tech_womling_artisans'); },
         category: 'womling',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { womling_tech: 12, womling_technicians: 1, resettle: 13 },
+        reqs(r){ return r.era === 'matrioshka' ? { womling_tech: 12, womling_technicians: 1, resettle: 13 } : { womling_tech: 12, womling_technicians: 1, shadow: 5 }; },
         grant: ['womling_technicians',2],
         cost: {
             Knowledge(){ return 22500000; }
@@ -18573,6 +18599,8 @@ const techs = {
         },
         action(){
             if (payCosts(this)){
+                initStruct(actions.space.spc_dwarf.c_warehouse);
+                initStruct(actions.space.spc_hell.m_warehouse);
                 global.settings.showSupplyZones = true;
                 grantSupplyFreighters(activeSupplyRegions());
                 messageQueue(loc('tech_syndicate_threat_analysis_msg'),'info',false,['progress']);

@@ -13,7 +13,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -10555,6 +10555,28 @@ function midLoop(){
             };
         }
 
+        if (global.space['m_warehouse']){
+            var multiplier = storageMultipler();
+            let label = planetName().hell;
+            for (const res of actions.space.spc_hell.m_warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.space.m_warehouse.count * spatialReasoning(actions.space.spc_hell.m_warehouse.val(res) * multiplier);
+                    addCap(res, gain, 'space:m_warehouse', label);
+                }
+            };
+        }
+
+        if (global.space['c_warehouse']){
+            var multiplier = storageMultipler();
+            let label = planetName().dwarf;
+            for (const res of actions.space.spc_dwarf.c_warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.space.c_warehouse.count * spatialReasoning(actions.space.spc_dwarf.c_warehouse.val(res) * multiplier);
+                    addCap(res, gain, 'space:c_warehouse', label);
+                }
+            };
+        }
+
         if (global.eden['warehouse']){
             var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
             if (global.race['warlord'] && global.eden['corruptor']){
@@ -11953,9 +11975,16 @@ function midLoop(){
         // storage per 1000 maximum Knowledge (rounded down). The Knowledge cap is finalized just above.
         if (global.resource.Positronium.display && (global.tech['tau_roid'] && global.tech.tau_roid >= 6)){
             if ((global.tech['shadow'] && p_on['server_farm']) || (global.tech['m_ignite'] && global.tech.m_ignite >= 2)){
-                let store = Math.floor(caps['Knowledge'] / 1000);
-                caps['Positronium'] += store;
-                breakdown.c.Positronium[global.tech['shadow'] ? loc('tau_star_server_farm') : loc('tech_matrioshka_brain')] = store+'v';
+                let pos = Math.floor(caps['Knowledge'] / 1000);
+                let building = global.tech['shadow'] ? 'server_farm' : 'matrioshka_brain';
+                addCap('Positronium', pos, building, loc(global.tech['shadow'] ? 'tau_star_server_farm' : 'tech_matrioshka_brain'));
+            }
+        }
+
+        if (global.resource.Positronium.display && global.tech['shadow']){
+            if (p_on['elerium_contain']){
+                let pos = spatialReasoning(p_on['elerium_contain'] || 0);
+                addCap('Positronium', pos, 'elerium_contain', loc('space_dwarf_elerium_contain_title'));
             }
         }
 
@@ -14500,6 +14529,11 @@ function longLoop(){
         }
         else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
             global.tech['plague'] = 5;
+        }
+
+        // Run syndicate raids independently of infestation tracking.
+        if (global.race['truepath'] && global.space['shipyard']){
+            syndicateDay();
         }
 
         if (global.space['shipyard'] && global.tech['resettle'] && global.tech.resettle >= 3){
