@@ -285,7 +285,7 @@ function addCalcInputs(parent,key,section,region,path){
     //Function to update function-based effects with # of building owned.
     let updateEffect = function(){
         if (action.hasOwnProperty('effect') && typeof action.effect !== 'string'){
-            let effect = $(`.effect`, `#${key}`);
+            let effect = $(`#${key} .effect`);
             clearElement(effect);
             let insert = { isWiki: true, count: inputs.owned - inputs.real_owned };
             if (effectInputs[key]){
