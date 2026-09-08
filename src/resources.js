@@ -1,11 +1,11 @@
 import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld } from './functions.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
-import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter, startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes } from './truepath.js';
+import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter, startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes, deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip } from './truepath.js';
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
@@ -1175,6 +1175,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                         // Modal closed
                     }
                 });
+                modalCloseButton();
                 
                 var checkExist = setInterval(function(){
                    if ($('#modalBox').length > 0) {
@@ -3819,6 +3820,7 @@ function unloadFreightGroup(ships, res, amount){
 function freightSolarMapModal(buefy, ship){
     if (!ship?.location?.position){ return; }
     buefy.modal.open({ hasModalCard: false, wide: true, customClass: 'evolve-modal', content: '<div id="modalBox" class="modalBox"></div>' });
+    // The star map provides its own close control.
     const checkExist = setInterval(function(){
         if (!$('#modalBox').length){ return; }
         clearInterval(checkExist);
@@ -3829,6 +3831,7 @@ function freightSolarMapModal(buefy, ship){
 
 function freightRoutePickupModal(buefy, stop, resources, refresh){
     const modal = buefy.modal.open({ hasModalCard: false, wide: true, customClass: 'evolve-modal', content: '<div id="modalBox" class="modalBox supplyLoadModal"></div>' });
+    modalCloseButton();
     const checkExist = setInterval(function(){
         if (!$('#modalBox').length){ return; }
         clearInterval(checkExist);
@@ -3851,6 +3854,7 @@ function freightLoadModal(buefy, ships, pool, resources){
         customClass: 'evolve-modal',
         content: '<div id="modalBox" class="modalBox supplyLoadModal"></div>'
     });
+    modalCloseButton();
     const checkExist = setInterval(function(){
         if (!$('#modalBox').length){ return; }
         clearInterval(checkExist);
@@ -3904,6 +3908,31 @@ export function initSupplyZones(){
         const incoming = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && ship.inTransit && ship.destination && supplyPool(ship.destination.name) === pool);
         const card = $(`<section id="supplyZone${index}" class="market-item supplyZone"><header class="supplyZoneHead"><div><h3 class="res has-text-warning">${supplyRegionName(pool)}</h3><div class="supplyZoneMeta"><span>${loc('supply_zone_primary',[supplyRegionName(pool)])}</span><span>${loc('supply_zone_linked',[members.map(member => supplyRegionName(member, true)).join(', ')])}</span></div></div><span class="supplyZoneCount">${docked.length + incoming.length}</span></header></section>`);
         host.append(card);
+
+        // Show deployed and deployable Supply Ships before freighter details.
+        {
+            const deployed = deployedSupplyCount(pool);
+            const ready = deployableSupply(pool);
+            if (deployed > 0 || ready.length > 0){
+                const box = $(`<div class="supplyZoneShips"></div>`);
+                box.append(`<div class="supplyZoneShipStatus has-text-caution">${loc('supply_zone_supply_ships',[deployed])}</div>`);
+                const actions = $(`<div class="supplyZoneShipActions"></div>`);
+                box.append(actions);
+                if (ready.length > 0){
+                    $(`<button class="button is-small is-success supplyZoneDeploy">${loc('supply_zone_deploy',[ready.length])}</button>`)
+                        .on('click', function(){ if (deploySupplyShip(ready[0])){ initSupplyZones(); } })
+                        .appendTo(actions);
+                }
+                if (deployed > 0){
+                    $(`<button class="button is-small is-danger supplyZoneUndeploy">${loc('supply_zone_undeploy')}</button>`)
+                        .on('click', function(){ if (undeploySupplyShip(pool)){ initSupplyZones(); } })
+                        .appendTo(actions);
+                    box.append(`<span class="supplyZoneWarn has-text-danger">${loc('supply_zone_undeploy_warn')}</span>`);
+                }
+                card.append(box);
+            }
+        }
+
         if (!docked.length && !incoming.length){ card.append(`<div class="supplyZoneEmpty has-text-caution">${loc('supply_zone_no_freighters')}</div>`); return; }
         if (incoming.length){
             const arrivals = $('<div class="supplyFreighterList supplyInboundList"></div>');

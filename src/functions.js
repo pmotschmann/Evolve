@@ -148,6 +148,33 @@ export function clearPopper(id){
     clearElement($(`#popper`),true);
 }
 
+// Shared corner-close button styling for modal content.
+const MODAL_CLOSE_STYLE = 'position: absolute; z-index: 2; pointer-events: auto; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 24px; line-height: 1; cursor: pointer;';
+
+// Attach a corner close button after opening a modal.
+export function modalCloseButton(){
+    let waited = 0;
+    const attach = setInterval(function(){
+        const box = $('#modalBox');
+        // Stop waiting when no modal content is created.
+        if (!box.length){ if ((waited += 50) > 3000){ clearInterval(attach); } return; }
+        clearInterval(attach);
+        // Place the button inside the visible modal panel.
+        const modal = box.closest('.modal');
+        // Preserve existing modal and map close controls.
+        if (modal.find('.modalClose').length || modal.find('.mapRightControls').length){ return; }
+        // Anchor the close button to the modal panel.
+        box.css('position','relative');
+        // Hide Buefy's control while retaining its close handler.
+        box.closest('.animation-content').addClass('cornerClose');
+        $(`<input type="button" class="modalClose" value="×" title="${loc('close')}" aria-label="${loc('close')}" style="${MODAL_CLOSE_STYLE}">`)
+            .on('click', function(){
+                $(this).closest('.modal').find('.modal-close').trigger('click');
+            })
+            .appendTo(box);
+    }, 50);
+}
+
 export function gameLoop(act){
     switch(act){
         case 'stop':

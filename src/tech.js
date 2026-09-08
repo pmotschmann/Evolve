@@ -10,7 +10,7 @@ import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied } from './truepath.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
@@ -18646,6 +18646,53 @@ const techs = {
         },
         effect(){
             return `<div>${loc('tech_threat_detection_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    supply_ship: {
+        id: 'tech-supply_ship',
+        title(){ return loc('tech_supply_ship'); },
+        desc(){ return loc('tech_supply_ship'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 4 },
+        grant: ['syard_supply',1],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_supply_ship_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                drawShipYard();
+                return true;
+            }
+            return false;
+        }
+    },
+    stealth_detection: {
+        id: 'tech-stealth_detection',
+        title(){ return loc('tech_stealth_detection'); },
+        desc(){ return loc('tech_stealth_detection'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 9 },
+        grant: ['shadow',10],
+        // Require corsair study before revealing Stealth Detection.
+        condition(){ return stealthStudied(); },
+        cost: {
+            Knowledge(){ return 23500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_stealth_detection_effect')}</div>`;
         },
         action(){
             if (payCosts(this)){

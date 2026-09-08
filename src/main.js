@@ -13,7 +13,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -10586,6 +10586,29 @@ function midLoop(){
             };
         }
 
+        // Apply storage supplied by deployed Supply Ships.
+        {
+            const deployed = global.race['supply_deployed'];
+            if (deployed){
+                var multiplier = storageMultipler();
+                const label = loc('outer_shipyard_class_supply_ship');
+                Object.keys(deployed).forEach(function(pool){
+                    const count = Array.isArray(deployed[pool]) ? deployed[pool].length : 0;
+                    if (count <= 0){ return; }
+                    for (const res of actions.space.spc_hell.m_warehouse.res()){
+                        if (global.resource[res].display){
+                            let gain = count * spatialReasoning(actions.space.spc_hell.m_warehouse.val(res) * multiplier);
+                            addCap(res, gain, pool, label);
+                        }
+                    }
+                    if (global.resource['Elerium'] && global.resource.Elerium.display){
+                        let gain = count * spatialReasoning(supplyShipElerium);
+                        addCap('Elerium', gain, pool, label);
+                    }
+                });
+            }
+        }
+
         if (global.space['c_warehouse']){
             var multiplier = storageMultipler();
             let label = planetName().dwarf;
@@ -13631,6 +13654,10 @@ function longLoop(){
                     syndicateWithdrawal();
                 }
             }
+            else if (global.tech.shadow === 8 && detectorNetwork()){
+                global.tech.shadow = 9;
+                drawTech();
+            }
         }
 
         if (global.race['pet']){
@@ -14077,12 +14104,16 @@ function longLoop(){
                 let day_step = dayStep();
                 let fieldDays = Math.floor(global.stats.days / 2) - Math.floor((global.stats.days - day_step) / 2);
 
+                // Refill ships from docked tankers before movement.
+                tankerRefuel();
+
                 // Ships under way are advanced by moveShips (see truepath.js)
                 global.space.shipyard.ships.forEach(function(ship){
                     if (!ship.inTransit){
                         ship.location.position = genXYZcoord(ship.location.name);
                     }
-                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'])){
+                    // Repair ships provide docked hull repair.
+                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || (!ship.inTransit && repairShipYards().includes(ship.location.name)))){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
                         // anywhere else it is patched up every other day (see the cadence above).
                         ship.damage -= atShipyard(ship) ? yardRepair * day_step : fieldRepair * fieldDays;

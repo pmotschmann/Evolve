@@ -4586,6 +4586,11 @@ a {
         display: none;
     }
 
+    // Hide Buefy close controls when a modal has a corner close button.
+    .animation-content.cornerClose .modal-close {
+        display: none;
+    }
+
     .genus_selection {
         > section {
             display: flex;
@@ -7986,6 +7991,44 @@ div.bigbang {
     opacity: .75;
 }
 
+.supplyZoneShips {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .5rem .75rem;
+    align-items: center;
+    margin-top: .7rem;
+    padding: .6rem .7rem;
+    border: rgba(128,128,128,.45) solid .0625rem;
+    border-radius: .3rem;
+    background: rgba(128,128,128,.08);
+}
+
+.supplyZoneShipStatus {
+    min-width: 0;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.supplyZoneShipActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .45rem;
+}
+
+.supplyZoneDeploy,
+.supplyZoneUndeploy {
+    min-width: 9rem;
+    font-weight: 700;
+}
+
+.supplyZoneWarn {
+    grid-column: 1 / -1;
+    padding-top: .5rem;
+    border-top: rgba(128,128,128,.35) solid .0625rem;
+    font-size: .8rem;
+}
+
 .supplyFreighterList {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
@@ -8222,6 +8265,18 @@ div.bigbang {
     .supplyZoneHead,
     .supplyFreighterHead {
         gap: .4rem;
+    }
+
+    .supplyZoneShips {
+        grid-template-columns: 1fr;
+    }
+
+    .supplyZoneShipActions {
+        justify-content: stretch;
+
+        .button {
+            flex: 1 1 100%;
+        }
     }
 
     .supplyFreighterStats {

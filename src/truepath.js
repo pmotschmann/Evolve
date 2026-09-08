@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker, battle_log } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
@@ -15,9 +15,9 @@ import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
-import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap } from './stars.js';
+import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
 import { loc } from './locale.js';
-import { supplyRegionName, supplyPool, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
+import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
 
 const outerTruth = {
     spc_titan: {
@@ -6494,7 +6494,8 @@ function advanceShip(ship, step){
             TPShipInitTransit(ship, ship.destination.name);
             break;
         }
-        if (ship.enemy) { zEngage(leg.destination.name, [ship]); }
+        // Do not trigger encounters at route waypoints.
+        if (ship.enemy && !leg.wp) { zEngage(leg.destination.name, [ship]); }
         ship.origin = { name: leg.destination.name, position: leg.destination.position };
         ship.totalTime -= leg.totalTime;
         ship.path.shift();
@@ -7050,6 +7051,32 @@ function corsairEngaged(){
         global.tech['shadow'] = 7;
         drawTech();
     }
+    // Refresh technology when corsair study reaches its threshold.
+    if (global.race.sy_fights === stealthStudyFights){
+        drawTech();
+    }
+}
+
+// Corsairs this run has traded fire with, and corsairs it has actually put down. Both live on
+// global.race, so both reset with the run.
+export function corsairsFought(){
+    return global.race['sy_fights'] || 0;
+}
+
+export function corsairsDestroyed(){
+    const bases = global.race['sy_base'];
+    if (!bases){ return 0; }
+    // Ignore the home-region alias when counting destroyed corsairs.
+    return Object.keys(bases).reduce((total,region) => total + (bases[region] && bases[region].lost ? bases[region].lost : 0), 0);
+}
+
+// What it takes to work out how a corsair hides. A wreck to take apart is worth any amount of
+// watching one get away, so either will do.
+const stealthStudyFights = 250;
+const stealthStudyKills = 1;
+
+export function stealthStudied(){
+    return corsairsFought() >= stealthStudyFights || corsairsDestroyed() >= stealthStudyKills ? true : false;
 }
 
 // The corsair is lost: the base that built it goes quiet for a while.
@@ -7191,10 +7218,12 @@ function patrolHunt(){
             continue;
         }
 
+        // Pursue the nearest corsair detected by fleet or ground sensors.
         let quarry = false, near = Infinity;
         for (const corsair of corsairs){
             const away = dist3(at,shipPoint(corsair));
-            if (away <= sensorRangeAU(lead) * corsairStealth && away < near){ quarry = corsair; near = away; }
+            if (away >= near){ continue; }
+            if (away <= sensorRangeAU(lead) * corsairStealth || detectorCue(at,corsair)){ quarry = corsair; near = away; }
         }
         if (!quarry){ continue; }
 
@@ -7661,7 +7690,7 @@ export function drawShipYard(){
         // A blueprint saved before the special slot existed has no entry for it.
         global.space.shipyard.blueprint.special = shipSpecial(global.space.shipyard.blueprint);
         if (!shipSpecialAllowed(global.space.shipyard.blueprint.special,global.space.shipyard.blueprint.class)){
-            global.space.shipyard.blueprint.special = 'none';
+            global.space.shipyard.blueprint.special = shipDefaultSpecial(global.space.shipyard.blueprint.class);
         }
         if (global.space.shipyard.blueprint.class === 'freighter' && global.space.shipyard.blueprint.special === 'none'){
             global.space.shipyard.blueprint.special = 'extra_fuel';
@@ -7782,7 +7811,14 @@ export function drawShipYard(){
                     }
                     // Remove special if not allowed on ship class
                     if (b === 'class' && !shipSpecialAllowed(global.space.shipyard.blueprint.special,v)){
-                        global.space.shipyard.blueprint.special = 'none';
+                        global.space.shipyard.blueprint.special = shipDefaultSpecial(v);
+                    }
+                    // Supply Ships have no weapon mount.
+                    if (b === 'class' && v === 'supply_ship'){
+                        global.space.shipyard.blueprint.weapon = 'none';
+                    }
+                    else if (b === 'class' && global.space.shipyard.blueprint.class === 'supply_ship' && global.space.shipyard.blueprint.weapon === 'none'){
+                        global.space.shipyard.blueprint.weapon = 'railgun';
                     }
                     global.space.shipyard.blueprint[b] = v;
                     updateCosts();
@@ -7792,13 +7828,6 @@ export function drawShipYard(){
                     return shipSlotOpen(k,global.space.shipyard.blueprint.class);
                 },
                 avail(k,i,v){
-                    // Class availability is handled by the shipyard.
-                    if (k === 'class'){
-                        if (explorerRetired() && v === 'explorer'){ return false; }
-                        if (v === 'freighter'){ return global.tech['shadow'] >= 5; }
-                        if (global.tech['tauceti'] && v === 'explorer'){ return true; }
-                        return global.tech['syard_class'] > i ? true : false;
-                    }
                     return shipPartAvailable(k,i,v,global.space.shipyard.blueprint.class);
                 },
                 crewText(){
@@ -7861,6 +7890,7 @@ export function drawShipYard(){
                         hasModalCard: false,
                         content: '<div id="modalBox" class="modalBox"></div>'
                     });
+                    // The star map provides its own close control.
 
                     let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
@@ -7882,7 +7912,10 @@ export function drawShipYard(){
             for (let i=0; i<$(`#shipPlans .${type}`).length; i++){
                 popover(`shipPlans${type}${i}`, function(obj){
                     let val = $(obj.this).attr(`data-val`);
-                    return type === 'armor' ? armorDesc(val) : loc(`outer_shipyard_${type}_${val}_desc`);
+                    if (type === 'armor'){ return armorDesc(val); }
+                    if (val === 'fuel_tanker'){ return loc(`outer_shipyard_special_fuel_tanker_desc`,[tankerFuelRange]); }
+                    if (val === 'mobile_storage'){ return loc(`outer_shipyard_special_mobile_storage_desc`); }
+                    return loc(`outer_shipyard_${type}_${val}_desc`);
                 },
                 {
                     elm: `#shipPlans .${type}.a${i}`,
@@ -8232,6 +8265,8 @@ export function shipCrewSize(ship){
         case 'explorer':
             return global.race['grenadier'] ? jobScale(6) : jobScale(10);
         case 'freighter':
+        // Supply Ships use light crew requirements.
+        case 'supply_ship':
             return jobScale(1);
     }
 }
@@ -8279,6 +8314,11 @@ export function shipPower(ship, wiki){
             break;
         case 'explorer':
             out_inflate = 6;
+            use_inflate = 2;
+            break;
+        // Supply Ship power use.
+        case 'supply_ship':
+            out_inflate = 2.25;
             use_inflate = 2;
             break;
     }
@@ -8330,7 +8370,7 @@ export function shipPower(ship, wiki){
             break;
     }
 
-    watts -= Math.round(shipSpecialPower[shipSpecial(ship)] * use_inflate);
+    watts -= Math.round((shipSpecialPower[shipSpecial(ship)] || 0) * use_inflate);
 
     switch (ship.engine){
         case 'ion':
@@ -8382,21 +8422,33 @@ function explorerRetired(){
 }
 
 // --- The special slot ---------------------------------------------------------------------------
-const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster'];
+const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster','mobile_storage','fuel_tanker','repair_ship'];
 const freighterSpecials = ['extra_fuel','extra_cargo','extra_thruster'];
+// A Supply Ship is nothing but the fit it carries, so its slot is never empty. Mobile Storage leads
+// the list because it is what an unconfigured hull is built as.
+export const supplyShipSpecials = ['mobile_storage','fuel_tanker','repair_ship'];
 
 // Ships allowed to carry mass drivers
 const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
 export function shipSpecialAllowed(special,shipClass){
+    if (supplyShipSpecials.includes(special)){ return shipClass === 'supply_ship'; }
+    // Supply Ships require a supported fit.
+    if (shipClass === 'supply_ship'){ return false; }
     if (special === 'massdriver'){ return massDriverHulls.includes(shipClass); }
     if (freighterSpecials.includes(special)){ return shipClass === 'freighter'; }
     return special === 'none';
 }
 
+// What a hull falls back to when its current special does not fit it — a class change in the yard, or
+// a copied design whose fit the new class cannot carry.
+export function shipDefaultSpecial(shipClass){
+    return shipClass === 'supply_ship' ? 'mobile_storage' : 'none';
+}
+
 // --- Hull slots ---------------------------------------------------------------------------------
 // Ship parts in shipyard unlock order; refits use the same definitions.
 const shipParts = {
-    class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','freighter','explorer'],
+    class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','freighter','explorer','supply_ship'],
     power: ['solar','diesel','fission','fusion','elerium','antimatter'],
     weapon: shipWeapons,
     armor : ['steel','alloy','neutronium','aerographene'],
@@ -8411,7 +8463,18 @@ const refitParts = ['power','weapon','armor','engine','sensor','special'];
 // Return whether a part is currently available for this hull class.
 function shipPartAvailable(part, idx, value, shipClass){
     if (explorerRetired() && value === 'emdrive'){ return false; }
+    // Check shipyard availability for each hull class.
+    if (part === 'class'){
+        if (explorerRetired() && value === 'explorer'){ return false; }
+        if (value === 'freighter'){ return global.tech['shadow'] >= 5; }
+        // Supply Ships use their dedicated technology unlock.
+        if (value === 'supply_ship'){ return global.tech['syard_supply'] ? true : false; }
+        if (global.tech['tauceti'] && value === 'explorer'){ return true; }
+        return global.tech['syard_class'] > idx ? true : false;
+    }
     if (part === 'special'){
+        // Supply Ship fits do not require special-slot technology.
+        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value); }
         if (shipClass === 'freighter'){ return freighterSpecials.includes(value); }
         // Do not offer specials unsupported by this hull.
         if (!shipSpecialAllowed(value,shipClass)){ return false; }
@@ -8428,8 +8491,9 @@ function shipPartAvailable(part, idx, value, shipClass){
 
 // Return whether this hull exposes the requested refit slot.
 function shipSlotOpen(part, shipClass){
-    if (part === 'weapon'){ return shipClass !== 'freighter'; }
-    if (part === 'special'){ return shipClass === 'freighter' || global.tech['syard_special'] ? true : false; }
+    // Freighters and Supply Ships have no weapon slot.
+    if (part === 'weapon'){ return shipClass !== 'freighter' && shipClass !== 'supply_ship'; }
+    if (part === 'special'){ return shipClass === 'freighter' || shipClass === 'supply_ship' || global.tech['syard_special'] ? true : false; }
     return true;
 }
 
@@ -8438,8 +8502,13 @@ export function shipSpecial(ship){
     return ship && ship.special && shipSpecials.includes(ship.special) ? ship.special : 'none';
 }
 
-// Power a special mount draws
-const shipSpecialPower = { none: 0, massdriver: 325, extra_fuel: 0, extra_cargo: 0, extra_thruster: 0 };
+// Power a special mount draws. A fit missing from here would take the whole readout to NaN, so the
+// lookup below defaults rather than trusting this to stay complete.
+const shipSpecialPower = {
+    none: 0, massdriver: 325,
+    extra_fuel: 0, extra_cargo: 0, extra_thruster: 0,
+    mobile_storage: 0, fuel_tanker: 0, repair_ship: 0
+};
 
 // --- Orbital bombardment ------------------------------------------------------------------------
 const shipBombardRating = { cruiser: 500, battlecruiser: 900, dreadnought: 2000 };
@@ -8503,8 +8572,13 @@ export function shipAttackPower(ship){
             return Math.round(rating * 22);
         case 'explorer':
             return Math.round(rating * 1.2);
+        // Return zero firepower for unarmed hulls.
         case 'freighter':
+        case 'supply_ship':
             return 0;
+        // Rate unlisted hulls from their equipped weapon.
+        default:
+            return rating;
     }
 }
 
@@ -8567,6 +8641,10 @@ export function shipSpeed(ship){
             break;
         case 'battlecruiser':
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 2.4 : 2) : ship.armor === 'neutronium' ? 4.8 : 4;
+            break;
+        // Supply Ship mass class.
+        case 'supply_ship':
+            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 2.05 : 1.75) : ship.armor === 'neutronium' ? 4.15 : 3.5;
             break;
         case 'dreadnought':
             mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 3.5 : 3) : (ship.armor === 'neutronium' ? 7.5 : 6);
@@ -8660,6 +8738,9 @@ export function shipFuelUse(ship){
         case 'freighter':
             burn *= 1.25;
             break;
+        case 'supply_ship':
+            burn *= 2.5;
+            break;
     }
 
     return {
@@ -8671,17 +8752,151 @@ export function shipFuelUse(ship){
 // Ships consume onboard fuel only while traveling.
 const shipFuelRange = 250;
 const explorerFuelRange = 800000;
+// A Fuel Tanker is mostly tank: twice the legs of anything else, and a store on top of that.
+const tankerFuelRange = 500;
+// The reserve it carries for everyone else, in AU of its own burn per fuel type.
+const tankerStoreRange = 1000;
 const solarRanges = { M: 50, K: 75, G: 100, F: 125, A: 150, B: 200, O: 250 };
 const globalRefuelExceptions = ['spc_eris', 'spc_triton', 'spc_trition', 'spc_sun'];
+
+// Whether a hull is a Supply Ship carrying a given fit.
+export function supplyShipMode(ship, mode){
+    return ship && ship.class === 'supply_ship' && shipSpecial(ship) === mode ? true : false;
+}
 
 export function shipFuelTank(ship){
     const fuel = shipFuelUse(ship);
     if (!fuel.res || fuel.burn <= 0){ return 0; }
     const auPerDay = shipSpeed(ship) / 225;
-    const range = ship.class === 'explorer' ? explorerFuelRange : shipFuelRange;
+    const range = ship.class === 'explorer' ? explorerFuelRange
+        : (supplyShipMode(ship,'fuel_tanker') ? tankerFuelRange : shipFuelRange);
     const stock = auPerDay > 0 ? fuel.burn * range / auPerDay : 0;
     // Freighters trade half their stock tank for cargo space unless fitted with Extra Fuel.
     return Math.round(ship.class === 'freighter' && shipSpecial(ship) !== 'extra_fuel' ? stock / 2 : stock);
+}
+
+// --- Mobile Storage -----------------------------------------------------------------------------
+// Base Elerium storage per deployed Supply Ship.
+export const supplyShipElerium = 100;
+
+// Deployed Supply Ships provide storage to their supply pool.
+
+// Deployed hulls, keyed by supply pool.
+export function deployedSupply(pool){
+    if (!global.race['supply_deployed']){ global.race['supply_deployed'] = {}; }
+    if (pool === undefined){ return global.race.supply_deployed; }
+    if (!Array.isArray(global.race.supply_deployed[pool])){ global.race.supply_deployed[pool] = []; }
+    return global.race.supply_deployed[pool];
+}
+
+export function deployedSupplyCount(pool){
+    return deployedSupply(pool).length;
+}
+
+// Ships sitting at a world in this pool that could be put to work here.
+export function deployableSupply(pool){
+    const ships = global.space.shipyard?.ships || [];
+    return ships.filter(s => supplyShipMode(s,'mobile_storage') && !s.inTransit && s.location && s.location.name && supplyPool(s.location.name) === pool);
+}
+
+// Take one out of service and add it to the zone.
+export function deploySupplyShip(ship){
+    if (!supplyShipMode(ship,'mobile_storage') || ship.inTransit || !ship.location || !ship.location.name){ return false; }
+    const idx = global.space.shipyard.ships.indexOf(ship);
+    if (idx < 0){ return false; }
+    const pool = supplyPool(ship.location.name);
+    // Remove deployed ships from their fleet and crew roster.
+    leaveFleet(ship);
+    if (!shipManned(ship)){
+        global.civic.garrison.crew -= shipCrewSize(ship);
+        if (global.civic.garrison.crew < 0){ global.civic.garrison.crew = 0; }
+    }
+    global.space.shipyard.ships.splice(idx,1);
+    deployedSupply(pool).push(deepClone(ship));
+    drawShips();
+    return true;
+}
+
+// Put one back on the roster. Whatever the zone can no longer hold is gone: the stores were on the
+// ship, and taking the ship away takes them with it.
+export function undeploySupplyShip(pool){
+    const parked = deployedSupply(pool);
+    if (!parked.length){ return false; }
+    const ship = parked.pop();
+    // Return undeployed ships to their pool homeworld.
+    TPShipInitTransit(ship, supplyPoolHome(pool));
+    ship.damage = ship.damage || 0;
+    if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
+    global.space.shipyard.ships.push(ship);
+    drawShips();
+    return true;
+}
+
+// Return the homeworld for an undeployed supply pool.
+function supplyPoolHome(pool){
+    if (starData[pool]){ return pool; }
+    const regions = supplyRegions().filter(region => supplyPool(region) === pool && starData[region]);
+    return regions.length ? regions[0] : 'spc_home';
+}
+
+// --- Fuel Tankers -------------------------------------------------------------------------------
+// The reserve a tanker carries for other ships, one figure per fuel type. Each is what tankerStoreRange
+// AU of flying costs a hull burning that fuel at the tanker's own rate, so the store grows with the
+// engine tech the same way a tank does. This is separate from the tanker's own fuel, which is what it
+// flies on and which nothing else may touch.
+const tankerFuels = ['Oil','Uranium','Helium_3','Elerium','Positronium'];
+const tankerPlants = { Oil: 'diesel', Uranium: 'fission', Helium_3: 'fusion', Elerium: 'elerium', Positronium: 'antimatter' };
+
+export function tankerStoreMax(ship, res){
+    if (!supplyShipMode(ship,'fuel_tanker') || !tankerPlants[res]){ return 0; }
+    const auPerDay = shipSpeed(ship) / 225;
+    if (!(auPerDay > 0)){ return 0; }
+    // Calculate tanker reserves from the specified fuel type.
+    const burn = shipFuelUse({ class: 'supply_ship', power: tankerPlants[res] }).burn;
+    return Math.round(burn * tankerStoreRange / auPerDay);
+}
+
+// The reserve itself, created on demand and trimmed to whatever the current maxima are.
+export function tankerStore(ship){
+    if (!supplyShipMode(ship,'fuel_tanker')){ return false; }
+    if (!ship.tanker || typeof ship.tanker !== 'object'){ ship.tanker = {}; }
+    tankerFuels.forEach(function(res){
+        const cap = tankerStoreMax(ship, res);
+        const held = Number(ship.tanker[res]);
+        // Initialize a new tanker reserve at capacity.
+        ship.tanker[res] = Math.max(0, Math.min(cap, Number.isFinite(held) ? held : cap));
+    });
+    return ship.tanker;
+}
+
+// Every tanker parked at a world, for the ships sitting there with it.
+function tankersAt(locationName){
+    const ships = global.space.shipyard?.ships || [];
+    return ships.filter(s => supplyShipMode(s,'fuel_tanker') && !s.inTransit && s.location && s.location.name === locationName);
+}
+
+// One day's work for every tanker: top up what is docked alongside it, out of its reserve. A tanker
+// never fuels itself or another tanker from the same pool — the reserve is for the fleet.
+export function tankerRefuel(){
+    const ships = global.space.shipyard?.ships || [];
+    for (const ship of ships){
+        if (ship.inTransit || !ship.location){ continue; }
+        if (supplyShipMode(ship,'fuel_tanker')){ continue; }
+        const fuel = shipFuelUse(ship);
+        if (!fuel.res || !tankerPlants[fuel.res]){ continue; }
+        let want = shipFuelTank(ship) - shipFuelAmount(ship);
+        if (want <= 0){ continue; }
+        for (const tanker of tankersAt(ship.location.name)){
+            if (want <= 0){ break; }
+            const store = tankerStore(tanker);
+            const give = Math.min(want, store[fuel.res] || 0);
+            if (give <= 0){ continue; }
+            store[fuel.res] -= give;
+            ship.fuel += give;
+            ship.fueled = ship.fuel > 0;
+            want -= give;
+        }
+    }
 }
 
 function ensureShipFuel(ship){
@@ -9195,6 +9410,13 @@ export function shipCosts(bp){
             h_inflate = 1.45;
             p_inflate = 1;
             break;
+        // Supply Ship construction costs.
+        case 'supply_ship':
+            costs['Money'] = 85000000;
+            costs['Adamantite'] = 1800000;
+            h_inflate = 1.32;
+            p_inflate = 1.27;
+            break;
     }
 
     switch (bp.armor){
@@ -9562,6 +9784,7 @@ const shipyardRanks = {
         dreadnought: 6,
         explorer: 7,
         freighter: 8,
+        supply_ship: 9,
     },
     engine: {
         ion: 1,
@@ -9676,7 +9899,9 @@ function copyShipDesign(ship){
     ].forEach(function(runtime){
         delete design[runtime];
     });
-    if (!shipSpecialAllowed(design.special,design.class)){ design.special = 'none'; }
+    if (!shipSpecialAllowed(design.special,design.class)){ design.special = shipDefaultSpecial(design.class); }
+    // Exclude tanker reserves from copied ship designs.
+    delete design.tanker;
     design.name = getRandomShipName();
     return design;
 }
@@ -9856,7 +10081,7 @@ function drawShipRow(list,i,ship,regionNames){
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span></span><wbr>`);
-            row2.append(`<span class="shipStat" v-show="!isFreighter(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
@@ -9881,7 +10106,7 @@ function drawShipRow(list,i,ship,regionNames){
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
             row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
-            row1.append(`<span class="shipStat" v-show="!isFreighter(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
@@ -9923,6 +10148,7 @@ function drawShipRow(list,i,ship,regionNames){
                         hasModalCard: false,
                         content: '<div id="modalBox" class="modalBox"></div>'
                     });
+                    modalCloseButton();
 
                     let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
@@ -9947,8 +10173,8 @@ function drawShipRow(list,i,ship,regionNames){
                     });
                     // A special the copied class cannot carry falls back exactly the way the class
                     // dropdown makes it fall back.
-                    bp.special = s['special'] !== undefined ? s.special : 'none';
-                    if (!shipSpecialAllowed(bp.special,bp.class)){ bp.special = 'none'; }
+                    bp.special = s['special'] !== undefined ? s.special : shipDefaultSpecial(bp.class);
+                    if (!shipSpecialAllowed(bp.special,bp.class)){ bp.special = shipDefaultSpecial(bp.class); }
                 },
                 // The same copy, plus a hull on the queue for it. The yard is loaded as well so the
                 // design is sitting there to adjust if the next one wants to differ.
@@ -10059,6 +10285,7 @@ function drawShipRow(list,i,ship,regionNames){
                         hasModalCard: false,
                         content: '<div id="modalBox" class="modalBox"></div>'
                     });
+                    modalCloseButton();
 
                     let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
@@ -10072,6 +10299,7 @@ function drawShipRow(list,i,ship,regionNames){
                         hasModalCard: false,
                         content: '<div id="modalBox" class="modalBox"></div>'
                     });
+                    modalCloseButton();
 
                     let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
@@ -10080,9 +10308,10 @@ function drawShipRow(list,i,ship,regionNames){
                         }
                     }, 50);
                 },
-                isFreighter(id){
+                // Hide firepower for unarmed hulls.
+                isUnarmed(id){
                     let ship = global.space.shipyard.ships[id];
-                    return ship && ship.class === 'freighter';
+                    return ship && (ship.class === 'freighter' || ship.class === 'supply_ship');
                 },
                 cargoText(id){
                     let ship = global.space.shipyard.ships[id];
@@ -10305,6 +10534,10 @@ function bodyPointAt(locationName, days){
 // Passes used to settle a moon intercept, and how close in days counts as settled.
 const MOON_INTERCEPT_STEPS = 8;
 const MOON_INTERCEPT_TOL = 1e-4;
+
+// The same, for settling an intercept against the delay a bend around a star adds to the leg.
+const STAR_DETOUR_STEPS = 8;
+const STAR_DETOUR_TOL = 1e-4;
 
 // Where to aim a ship so it meets `planet` rather than where it used to be.
 function calcLandingPoint(startingPosition, planet, speed, elapsed) {
@@ -10560,19 +10793,56 @@ export function detectorSites(){
     };
 }
 
+// Return whether a site's array is fully assembled.
+function detectorBuilt(at){
+    const struct = global[at.region] ? global[at.region][at.key] : false;
+    return struct && struct.count >= detectorSegments ? true : false;
+}
+
 // Return whether a completed detector is powered.
 function detectorOn(at){
-    const struct = global[at.region] ? global[at.region][at.key] : false;
-    return struct && struct.count >= detectorSegments && p_on[at.key] > 0 ? true : false;
+    return detectorBuilt(at) && p_on[at.key] > 0 ? true : false;
+}
+
+// Every world has its array. A network is only a network once the last of them is finished; power
+// does not come into it, since a switched-off array is still built.
+export function detectorNetwork(){
+    const sites = detectorSites();
+    return Object.keys(sites).every(site => detectorBuilt(sites[site]));
+}
+
+// Detection radius against a stealth hull. Halved, until Stealth Detection teaches the arrays what
+// a corsair looks like and they read one as far as they read anything else.
+export function detectorStealthAU(){
+    return global.tech['shadow'] && global.tech.shadow >= 10 ? detectorRange : detectorStealthRange;
+}
+
+// Detection radius against one hull.
+function detectorReach(ship){
+    return (ship.stealth || 1) < 1 ? detectorStealthAU() : detectorRange;
 }
 
 // Detect hulls within the active detector radius.
 function detectorContact(foe){
-    const reach = (foe.stealth || 1) < 1 ? detectorStealthRange : detectorRange;
+    const reach = detectorReach(foe);
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
         if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= reach){ return true; }
+    }
+    return false;
+}
+
+// Whether one active detector holds both a fleet and a corsair, and can hand the contact over. An
+// array only talks to what it can reach, so a corsair picked up over Ceres is no use to a fleet out
+// past Pluto — both have to be inside the same bubble.
+function detectorCue(at, foe){
+    const reach = detectorReach(foe);
+    const sites = detectorSites();
+    for (const site of Object.keys(sites)){
+        if (!detectorOn(sites[site])){ continue; }
+        const post = genXYZcoord(sites[site].map);
+        if (dist3(post, foe.location.position) <= reach && dist3(post, at) <= detectorRange){ return true; }
     }
     return false;
 }
@@ -10609,7 +10879,7 @@ export function detectorTemplate(site){
         },
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
-            let desc = `<div>${loc('detector_effect',[detectorRange,planetName()[at.world],detectorStealthRange])}</div>`;
+            let desc = `<div>${loc('detector_effect',[detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
             if (count < detectorSegments){
                 return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments - count])}</div>`;
             }
@@ -11023,6 +11293,38 @@ function planShipTrip(ship, locationName){
             currentSpeed *= wormholeSpeedMult;
 
         let nextPosition = calcLandingPoint(currentPosition, step.location, currentSpeed, currentTime);
+
+        // Skip stellar detours for wormhole legs.
+        let waypoint = step.inGate ? false : starDetour(currentPosition, nextPosition);
+        if (waypoint){
+            // Recalculate the intercept after adding a stellar detour.
+            let delay = 0;
+            for (let i = 0; i < STAR_DETOUR_STEPS && waypoint; i++){
+                let bent = (dist3(currentPosition, waypoint) + dist3(waypoint, nextPosition) - dist3(currentPosition, nextPosition)) / currentSpeed;
+                let settled = Math.abs(bent - delay) < STAR_DETOUR_TOL;
+                delay = bent;
+                if (settled){ break; }
+                nextPosition = calcLandingPoint(currentPosition, step.location, currentSpeed, currentTime + delay);
+                waypoint = starDetour(currentPosition, nextPosition);
+            }
+        }
+
+        // Include stellar-detour distance in travel time and fuel use.
+        if (waypoint){
+            let legTime = dist3(currentPosition, waypoint) / currentSpeed;
+            path.push({
+                destination: {
+                    name: '',
+                    position: waypoint
+                },
+                totalTime: legTime,
+                inGate: false,
+                wp: true
+            });
+            currentPosition = waypoint;
+            currentTime += legTime;
+        }
+
         let time = dist3(currentPosition, nextPosition) / currentSpeed;
 
         path.push({
@@ -11033,7 +11335,7 @@ function planShipTrip(ship, locationName){
             totalTime: time,
             inGate: step.inGate ? true : false
         });
-        
+
         currentPosition = nextPosition;
         currentTime += time;
     });
@@ -12267,7 +12569,9 @@ const fleetHulls = {
     cruiser:       { cmd: 10, cost: 5,  buff: 0.1,  soak: 0.2, speed: 0 },
     battlecruiser: { cmd: 15, cost: 8,  buff: 0.1,  soak: 0.2, speed: 0 },
     dreadnought:   { cmd: 20, cost: 12, buff: 0.1,  soak: 0.2, speed: 0 },
-    freighter:      { cmd: 0,  cost: 1,  buff: 0,    soak: 0,   speed: 0 }
+    freighter:      { cmd: 0,  cost: 1,  buff: 0,    soak: 0,   speed: 0 },
+    // Supply Ships cannot lead battle groups.
+    supply_ship:    { cmd: 0,  cost: 2,  buff: 0,    soak: 0,   speed: 0 }
 };
 
 // The command table, so the wiki documents the live numbers rather than repeating them. Read-only by
@@ -12434,13 +12738,29 @@ const repairStations = {
 // or not its condition passes right now.
 const shipyardLocations = Object.keys(repairStations);
 
+// Worlds a Repair Ship is currently keeping station over. It has to be parked at a body — a tender
+// holding position in open space has nothing to work alongside — and it adds nothing at a world that
+// already has a yard of its own.
+export function repairShipYards(){
+    const ships = global.space.shipyard?.ships || [];
+    const yards = [];
+    for (const ship of ships){
+        if (!supplyShipMode(ship,'repair_ship') || ship.inTransit || !ship.location){ continue; }
+        const at = ship.location.name;
+        // Repair Ships require a named celestial location.
+        if (!at || !starData[at] || shipyardLocations.includes(at) || yards.includes(at)){ continue; }
+        yards.push(at);
+    }
+    return yards;
+}
+
 // The yards that could take a ship in right now. Read fresh every time rather than cached: a station's
 // condition turns on whether it has been built, and that changes as the campaign runs.
 function activeRepairYards(){
     return shipyardLocations.filter(function(yard){
         try { return repairStations[yard].avail() ? true : false; }
         catch (e){ return false; }
-    });
+    }).concat(repairShipYards());
 }
 // Hull percentage a ship must have before it is cleared to leave for another destination.
 const minHullToLaunch = 75;
@@ -12451,7 +12771,9 @@ export function atShipyard(ship){
     if (!ship)
         return false;
 
-    return !ship.inTransit && shipyardLocations.includes(ship.location.name);
+    if (ship.inTransit){ return false; }
+    // Treat parked Repair Ships as repair yards, not shipbuilding yards.
+    return shipyardLocations.includes(ship.location.name) || repairShipYards().includes(ship.location.name);
 }
 
 // A hull below minHullToLaunch% is not spaceworthy — the threshold the yard and the standing orders

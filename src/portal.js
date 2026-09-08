@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap, webWorker } from './vars.js';
-import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck } from './functions.js';
+import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck, modalCloseButton } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
@@ -8229,6 +8229,7 @@ function drawHellAnalysis(){
                         // Modal closed
                     }
                 });
+                modalCloseButton();
 
                 let checkExist = setInterval(function(){
                     if ($('#modalBox').length > 0){

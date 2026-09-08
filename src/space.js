@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
@@ -8662,6 +8662,7 @@ export function ascendLab(hybrid,wiki){
                         // Modal closed
                     }
                 });
+                modalCloseButton();
             
                 var checkExist = setInterval(function() {
                     if ($('#modalBox').length > 0) {
@@ -8700,6 +8701,7 @@ export function ascendLab(hybrid,wiki){
                         // Modal closed
                     }
                 });
+                modalCloseButton();
             
                 var checkExist = setInterval(function() {
                     if ($('#modalBox').length > 0) {

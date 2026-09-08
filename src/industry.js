@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, binary_limit_test } from './functions.js';
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, binary_limit_test, modalCloseButton } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
@@ -1983,6 +1983,7 @@ function loadReplicator(parent,bind){
                         hasModalCard: false,
                         content: '<div id="modalBox" class="modalBox"></div>'
                     });
+                    modalCloseButton();
 
                     let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0){

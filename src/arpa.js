@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, keyMultiplier, sizeApproximation, srSpeak, p_on, support_on, writeBackup } from './vars.js';
 import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, 
          calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, 
-         removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+         removeFromQueue, arpaTimeCheck, deepClone, modalCloseButton } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
          geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
@@ -2562,6 +2562,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                     hasModalCard: false,
                     content: '<div id="modalBox" class="modalBox"></div>'
                 });
+                modalCloseButton();
                 let checkExist = setInterval(function(){
                     if (document.getElementById('modalBox')){
                         clearInterval(checkExist);

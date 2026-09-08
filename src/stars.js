@@ -168,6 +168,13 @@ const starConstants = {
     // Ship markers are drawn at a constant size on screen, in pixels.
     SHIP_DOT_PX: 3,
     SHIP_LABEL_PX: 5,
+    // Minimum world size for detailed ship art.
+    SHIP_ART_WORLD_PX: 12,
+    // Base half-length for detailed ship art.
+    SHIP_ART_PX: 7,
+    // Maximum detailed hulls and spacing per fleet.
+    SHIP_FLEET_MAX: 5,
+    SHIP_FLEET_GAP: 1.15,
     // Unanswered distress signals, also sized in screen pixels: they are points in space with no radius
     // to draw, and the pulse is what tells a live signal apart from the scenery around it.
     BEACON_DOT_PX: 3,
@@ -3265,6 +3272,78 @@ export function nearestStar(pt){
     return best;
 }
 
+// --- Keeping clear of stars ---------------------------------------------------------------------
+// A leg is a straight line between two points, and nothing about that line stops it running through
+// the middle of a star. Courses bend around one instead.
+
+// The clearance a course holds from a star's centre, in AU. It has to stay under the Sun Gate's
+// 0.3 AU orbit, or the nearest thing a ship can be sent to would sit inside the sphere it is
+// supposed to keep out of.
+const STAR_CLEARANCE_AU = 0.2;
+// A waypoint sitting exactly on the clearance sphere still lets each half of the bend cut inside it,
+// so the corner is pushed out in steps until both halves run clear.
+const STAR_WIDEN_STEPS = 6;
+const STAR_WIDEN_STEP = 0.25;
+
+// Closest approach of the segment pq to the point c.
+function segmentMiss(p, q, c){
+    const d = { x: q.x - p.x, y: q.y - p.y, z: q.z - p.z };
+    const len2 = d.x * d.x + d.y * d.y + d.z * d.z;
+    if (!(len2 > 0)){ return dist3(p, c); }
+    let t = ((c.x - p.x) * d.x + (c.y - p.y) * d.y + (c.z - p.z) * d.z) / len2;
+    t = Math.max(0, Math.min(1, t));
+    return dist3({ x: p.x + d.x * t, y: p.y + d.y * t, z: p.z + d.z * t }, c);
+}
+
+// Any unit vector at right angles to v, for a course aimed straight down a star's throat — there is
+// no closest approach to step aside from, so either way round is as good as the other.
+function perpendicular(v){
+    const axis = Math.abs(v.x) < Math.abs(v.z) ? { x: 1, y: 0, z: 0 } : { x: 0, y: 0, z: 1 };
+    const c = { x: v.y * axis.z - v.z * axis.y, y: v.z * axis.x - v.x * axis.z, z: v.x * axis.y - v.y * axis.x };
+    const len = Math.hypot(c.x, c.y, c.z);
+    return len > 0 ? { x: c.x / len, y: c.y / len, z: c.z / len } : { x: 0, y: 0, z: 1 };
+}
+
+// The point to route through so a leg keeps its clearance from one star, or false when it already
+// does. The bend is made straight out from the star through the leg's closest approach, which is the
+// shortest way round.
+function clearOf(a, b, centre){
+    if (segmentMiss(a, b, centre) >= STAR_CLEARANCE_AU){ return false; }
+    const ab = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+    const len2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z;
+    if (!(len2 > 0)){ return false; }
+    let t = ((centre.x - a.x) * ab.x + (centre.y - a.y) * ab.y + (centre.z - a.z) * ab.z) / len2;
+    t = Math.max(0, Math.min(1, t));
+    const near = { x: a.x + ab.x * t, y: a.y + ab.y * t, z: a.z + ab.z * t };
+    const miss = dist3(near, centre);
+    const out = miss > 1e-9
+        ? { x: (near.x - centre.x) / miss, y: (near.y - centre.y) / miss, z: (near.z - centre.z) / miss }
+        : perpendicular(ab);
+    let wp = false;
+    for (let i = 1; i <= STAR_WIDEN_STEPS; i++){
+        const r = STAR_CLEARANCE_AU * (1 + i * STAR_WIDEN_STEP);
+        wp = { x: centre.x + out.x * r, y: centre.y + out.y * r, z: centre.z + out.z * r };
+        if (segmentMiss(a, wp, centre) >= STAR_CLEARANCE_AU && segmentMiss(wp, b, centre) >= STAR_CLEARANCE_AU){ return wp; }
+    }
+    // Use the widest tested star-clear waypoint.
+    return wp;
+}
+
+// Where to bend a course that would otherwise pass through a star, or false when it runs clear. A
+// leg that starts or ends inside the clearance is left alone: a run to the Sun itself has nothing to
+// route around, and neither has one launching from there.
+export function starDetour(a, b){
+    if (!a || !b){ return false; }
+    for (const id of starIndex()){
+        const body = starData[id];
+        const centre = { x: body.x, y: body.y, z: body.z };
+        if (dist3(a, centre) <= STAR_CLEARANCE_AU || dist3(b, centre) <= STAR_CLEARANCE_AU){ continue; }
+        const wp = clearOf(a, b, centre);
+        if (wp){ return wp; }
+    }
+    return false;
+}
+
 // --- Orbital shape ------------------------------------------------------------------------------
 // Heliocentric orbits are real ellipses with the Sun at a focus, built from each body's own eccentricity (the `ecc` field). 
 
@@ -5117,6 +5196,72 @@ function drawGlyph(ctx, x, y, r, glyph){
     ctx.restore();
 }
 
+// --- ship hulls ---------------------------------------------------------------------------------
+// A hull outline per class, as a closed polygon in a unit frame: nose at +x, tail at -x, and the
+// whole thing about two units long. `size` is what that unit is worth against SHIP_ART_PX, so the
+// classes read in the right order — a corvette is a speck beside a dreadnought, as it should be.
+const shipHulls = {
+    corvette:      { size: 0.60, hull: [[1,0],[-0.5,0.42],[-0.25,0],[-0.5,-0.42]] },
+    frigate:       { size: 0.72, hull: [[1,0],[0.1,0.26],[-0.5,0.56],[-0.3,0],[-0.5,-0.56],[0.1,-0.26]] },
+    destroyer:     { size: 0.88, hull: [[1,0],[0.35,0.30],[-0.55,0.44],[-0.8,0.20],[-0.8,-0.20],[-0.55,-0.44],[0.35,-0.30]] },
+    cruiser:       { size: 1.02, hull: [[1,0],[0.40,0.38],[-0.30,0.50],[-0.85,0.32],[-0.68,0],[-0.85,-0.32],[-0.30,-0.50],[0.40,-0.38]] },
+    battlecruiser: { size: 1.18, hull: [[1,0],[0.45,0.30],[0.10,0.62],[-0.55,0.62],[-0.90,0.28],[-0.90,-0.28],[-0.55,-0.62],[0.10,-0.62],[0.45,-0.30]] },
+    dreadnought:   { size: 1.38, hull: [[1,0],[0.60,0.40],[-0.20,0.72],[-0.95,0.56],[-0.78,0],[-0.95,-0.56],[-0.20,-0.72],[0.60,-0.40]] },
+    // Explorer hull silhouette.
+    explorer:      { size: 0.95, hull: [[1,0.26],[1,-0.26],[0.28,-0.10],[-0.90,-0.34],[-0.72,0],[-0.90,0.34],[0.28,0.10]] },
+    // Freighter hull silhouette.
+    freighter:     { size: 1.00, hull: [[0.92,0.30],[0.92,-0.30],[-0.88,-0.56],[-0.88,0.56]] },
+    // Supply Ship hull silhouette.
+    supply_ship:   { size: 1.10, hull: [[0.95,0.22],[0.95,-0.22],[0.25,-0.34],[-0.25,-0.62],[-0.90,-0.48],[-0.72,0],[-0.90,0.48],[-0.25,0.62],[0.25,0.34]] },
+    // Corsair hull silhouette.
+    corsair:       { size: 0.88, hull: [[1,0],[-0.10,0.28],[-0.78,0.72],[-0.48,0],[-0.78,-0.72],[-0.10,-0.28]] }
+};
+
+// The zoom at which hulls take over from markers, worked back from how big Earth is drawn: a fixed
+// glyph only stops looking oversized once the worlds around it have real discs of their own.
+function shipArtScale(){
+    return starConstants.SHIP_ART_WORLD_PX / planetRadiusAU(starConstants.EARTH_SIZE);
+}
+
+// Whether this frame draws hulls rather than markers. High textures only, as with body surfaces, and
+// not while the camera is swinging — a glyph that small cannot be read mid-move anyway.
+function shipArtOn(){
+    return mapView().texture === 'high' && !mapCameraMoving && mapScale >= shipArtScale();
+}
+
+// One hull, in screen pixels, nose along +x. The caller has already put the origin where the ship is
+// and turned the frame to its heading.
+function drawShipHull(ctx, cls, px){
+    const spec = shipHulls[cls] || shipHulls.corvette;
+    const s = px * spec.size;
+    ctx.beginPath();
+    ctx.moveTo(spec.hull[0][0] * s, spec.hull[0][1] * s);
+    for (let i = 1; i < spec.hull.length; i++){
+        ctx.lineTo(spec.hull[i][0] * s, spec.hull[i][1] * s);
+    }
+    ctx.closePath();
+    ctx.fill();
+    // Outline hulls against bright backgrounds.
+    ctx.stroke();
+}
+
+// Which way a hull points: along the leg it is flying, in screen space so the arrow agrees with the
+// trail drawn under it whatever the camera is doing.
+function shipHeading(ship, ref, here){
+    if (!ship.path || !ship.path.length){ return 0; }
+    const to = rel(ship.path[0].destination.position, ref);
+    const dx = pX(to) - pX(here), dy = pY(to) - pY(here);
+    return dx || dy ? Math.atan2(dy, dx) : 0;
+}
+
+// Where each hull of a fleet sits, in hull lengths behind and to the side of the flagship: a shallow
+// V, so a group reads as a formation rather than as one smeared mark.
+function fleetSlot(i){
+    if (i === 0){ return { x: 0, y: 0 }; }
+    const rank = Math.ceil(i / 2), side = i % 2 ? 1 : -1;
+    return { x: -rank * starConstants.SHIP_FLEET_GAP, y: side * rank * starConstants.SHIP_FLEET_GAP * 0.8 };
+}
+
 // Danger warning at location
 function dangerAt(id){
     return id === 'spc_venus' && venusBlockade() > 0;
@@ -5681,12 +5826,14 @@ function drawMapFrame() {
                 let key = `${ship.fid}`;
                 if (fleets[key]){
                     fleets[key].count++;
+                    fleets[key].classes.push(ship.class);
                     if (ship.class === 'freighter'){ fleets[key].cargo = true; }
                     // The flagship is the one worth labelling the group with.
                     if (ship.flag){ fleets[key].ship = ship; }
                     continue;
                 }
-                fleets[key] = { ship, count: 1, cargo: ship.class === 'freighter' };
+                // Retain fleet hull classes for map rendering.
+                fleets[key] = { ship, count: 1, cargo: ship.class === 'freighter', classes: [ship.class] };
                 shipMarks.push(fleets[key]);
             }
             else {
@@ -5909,19 +6056,45 @@ function drawMapFrame() {
         }
     }
 
-    // Ships
-    for (let { ship, foe } of shipMarks) {
-        ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
-        ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
-        let ref = shipRefStar(ship);
-        let here = rel(shipPointAhead(ship, drawAhead), ref);
-        ctx.save();
-        ctx.translate(pX(ref), pY(ref));
-        ctx.beginPath();
-        // A marker, not a body: sized in screen pixels rather than AU.
-        ctx.arc(pX(here), pY(here), starConstants.SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
-        ctx.fill();
-        ctx.restore();
+    // Render ships as markers or detailed hulls.
+    {
+        const art = shipArtOn();
+        for (let mark of shipMarks) {
+            const { ship, foe } = mark;
+            ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
+            ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
+            let ref = shipRefStar(ship);
+            let here = rel(shipPointAhead(ship, drawAhead), ref);
+            ctx.save();
+            ctx.translate(pX(ref), pY(ref));
+            if (!art){
+                ctx.beginPath();
+                // Draw distant ships as screen-sized markers.
+                ctx.arc(pX(here), pY(here), starConstants.SHIP_DOT_PX / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.restore();
+                continue;
+            }
+            // Draw detailed hulls in screen pixels.
+            ctx.scale(1 / mapScale, 1 / mapScale);
+            ctx.translate(pX(here) * mapScale, pY(here) * mapScale);
+            ctx.rotate(shipHeading(ship, ref, here));
+            ctx.strokeStyle = foe ? "#7a0000" : "#00004d";
+            ctx.lineWidth = 1;
+            // Draw fleet hull classes in formation.
+            let classes = (mark.classes && mark.classes.length ? mark.classes : [ship.class]).slice();
+            let lead = classes.indexOf(ship.class);
+            if (lead > 0){ classes.splice(lead, 1); classes.unshift(ship.class); }
+            classes = classes.slice(0, starConstants.SHIP_FLEET_MAX);
+            for (let i = 0; i < classes.length; i++){
+                const slot = fleetSlot(i);
+                ctx.save();
+                ctx.translate(slot.x * starConstants.SHIP_ART_PX, slot.y * starConstants.SHIP_ART_PX);
+                drawShipHull(ctx, classes[i], starConstants.SHIP_ART_PX);
+                ctx.restore();
+            }
+            ctx.restore();
+        }
     }
 
     ctx.shadowOffsetX = 2;
@@ -6811,7 +6984,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
         .appendTo(mapRightControls);
 
     // Map-owned close control for mobile.
-    $(`<input type="button" value="×" title="${loc('solar_map_close')}" aria-label="${loc('solar_map_close')}" style="position: absolute; z-index: 2; pointer-events: auto; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 24px; line-height: 1;">`)
+    $(`<input type="button" value="×" title="${loc('solar_map_close')}" aria-label="${loc('solar_map_close')}" style="position: absolute; z-index: 2; pointer-events: auto; width: 30px; height: 30px; top: 2px; right: 2px; padding: 0; font-size: 24px; line-height: 1; cursor: pointer;">`)
         .on("click", function(){
             $(this).closest('.modal').find('.modal-close').trigger('click');
         })

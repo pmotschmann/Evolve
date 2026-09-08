@@ -3013,6 +3013,10 @@ export function drawStats(){
     if (global.stats.zkills > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zombie_kills")}</span> {{ format(s.zkills) }}</div>`);
     }
+    // Show corsair engagements from the current run.
+    if (global.race['sy_fights'] > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_corsairs_fought")}</span> {{ format(g.sy_fights) }}</div>`);
+    }
     if (global.aberrants){
         if(global.aberrants.herbivores.slain){
             stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_herbivores_slain")}</span> {{ format(s.zkills) }}</div>`);
