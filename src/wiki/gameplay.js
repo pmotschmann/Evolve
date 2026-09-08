@@ -11,6 +11,7 @@ import { resetsPage } from './resets.js';
 import { planetsPage } from './planets.js';
 import { universePage } from './universes.js';
 import { hellPage } from './hell.js';
+import { iceagePage } from './iceage.js';
 
 export function gamePlayPage(zone){
     let content = $(`#content`);
@@ -49,6 +50,9 @@ export function gamePlayPage(zone){
             break;
         case 'hell':
             hellPage(content);
-            break;        
+            break;
+        case 'iceage':
+            iceagePage(content);
+            break;
     }
 }

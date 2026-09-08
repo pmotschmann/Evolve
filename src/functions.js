@@ -2087,6 +2087,20 @@ export function masteryType(universe,detailed,unmodified){
     return detailed ? { g: 0, u: 0, m:0 } : 0;
 }
 
+export function calcDeepPower(type){
+    if (!global.race['deep_power'] || !global.race['deepPowerConfig']?.hasOwnProperty(type)){
+        return 1;
+    }
+    else{
+        let complexity = {global: 0.5, crafting: 0.5, trade: 0.2, combat: 2};
+        let power = global.race['deepPowerConfig'][type];
+        if (power > 50){ //scaling is halved above 50%
+            power = 50 + (power-50) / 2;
+        }
+        return (power / complexity[type] / 100);
+    }
+}
+
 export const calcPillar = (function(){
     var bonus;
     return function(recalc){
@@ -2840,16 +2854,16 @@ function nexusAdjust(costs, c_action, args){
     return costs;
 }
 
-export function undergroundTradeAdjust(costs, offset, wiki){
+export function undergroundTradeAdjust(costs, c_action, args){
     if(global.underground['trade']){
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             let adjustRate = (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
             if (['Money'].includes(res)){
-                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+                newCosts[res] = function(){ return costs[res](args) * adjustRate; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](offset, wiki); }
+                newCosts[res] = function(){ return costs[res](args); }
             }
         });
         return newCosts;

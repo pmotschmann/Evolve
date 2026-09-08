@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
@@ -646,8 +646,8 @@ export const craftingRatio = (function(){
             if (global.genes['challenge'] && global.genes['challenge'] >= 2){
                 crafting.general.multi.push({
                     name: loc(`mastery`),
-                    manual: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100)),
-                    auto: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100))
+                    manual: 1 + (calc_mastery() * calcDeepPower('crafting') / (global.race['weak_mastery'] ? 50 : 100)),
+                    auto: 1 + (calc_mastery() * calcDeepPower('crafting') / (global.race['weak_mastery'] ? 50 : 100))
                 });
             }
             if (global.race['gravity_well']){
@@ -1823,7 +1823,7 @@ export function tradeVolumeBonus(){
         rate *= 1 - (traits.devious.vars()[0] / 100);
     }
     if (global.genes['trader']){
-        rate *= 1 + (calc_mastery() / 100);
+        rate *= 1 + (calc_mastery() * calcDeepPower('trade') / 100);
         if (global.genes.trader >= 2){
             const coiled = global.prestige.Supercoiled.count;
             rate *= 1 + (coiled / (coiled + 500));
@@ -2026,6 +2026,7 @@ export function marketItem(mount,market_item,name,color,full){
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
+                    mastery *= calcDeepPower('trade');
                     rate *= 1 + (mastery / 100);
                 }
                 if (global.stats.achieve.hasOwnProperty('trade')){
@@ -2356,6 +2357,7 @@ export function galacticTrade(modal){
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
+                    mastery *= calcDeepPower('trade')
                     buy_vol *= 1 + (mastery / 100);
                 }
                 if (global.stats.achieve.hasOwnProperty('trade')){
@@ -4285,7 +4287,10 @@ export function loadAlchemy(name,color,basic){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 4)){
         return;
     }
-    else if (global.race['artifical'] && name === 'Food'){
+    else if ((global.race['artifical'] || global.race['iceage']) && name === 'Food'){
+        return;
+    }
+    else if (global.race['iceage'] && name === 'Lumber'){
         return;
     }
     if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){

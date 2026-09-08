@@ -596,7 +596,7 @@ export function loadTab(tab){
                                         }
                                         break;
                                     case 8:
-                                        if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']) && global.race.species !== 'protoplasm'){
+                                        if (((global.race['wish'] && global.tech['wish']) || global.race['ocular_power'] || global.race['deep_power']) && global.race.species !== 'protoplasm'){
                                             renderSupernatural();
                                         }
                                         break;
@@ -636,7 +636,7 @@ export function loadTab(tab){
                     if (global.race['psychic'] && global.tech['psychic']){
                         renderPsychicPowers();
                     }
-                    if ((global.race['wish'] && global.tech['wish']) || global.race['ocular_power']){
+                    if ((global.race['wish'] && global.tech['wish']) || global.race['ocular_power'] || global.race['deep_power']){
                         renderSupernatural();
                     }
                 }

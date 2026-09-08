@@ -35,12 +35,18 @@ const extraInformation = {
         loc(`wiki_tech_bone_tools`),
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Stone_name`)])
     ],
+    rock: [
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Stone_name`)])
+    ],
     sundial: [
         loc(`wiki_tech_sundial1`),
         loc(`wiki_tech_sundial2`),
         loc(`wiki_tech_sundial3`),
         loc(`wiki_tech_sundial4`),
         loc(`wiki_tech_sundial5`)
+    ],
+    track_days: [
+        loc(`wiki_tech_sundial1`)
     ],
     housing: [
         loc(`wiki_tech_building_unlock`,[housingLabel('small')])
@@ -131,6 +137,38 @@ const extraInformation = {
     agriculture: [
         loc(`wiki_tech_building_unlock`,[loc(`city_farm`)])
     ],
+    mushroom_farm: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_mushroom_farm`, [loc('underground_mushroom')])])
+    ],
+    mushroom_farm_alt: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_transmitter`)])
+    ],
+    color_garden: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_color_garden`)])
+    ],
+    soldier_armor: [
+        loc(`wiki_tech_armor`,[2])
+    ],
+    water_collection: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_ice_collector`)])
+    ],
+    fluid_bladders: [
+        loc(`wiki_tech_fluid_bladders`)
+    ],
+    steel_casks: [
+        loc(`wiki_tech_steel_casks1`),
+        loc(`wiki_tech_steel_casks2`),
+    ],
+    water_pumps: [
+        loc(`wiki_tech_building_unlock`, ['underground_water_pump'])
+    ],
+    mythril_valves: [
+        loc(`wiki_tech_mythril_valves1`),
+        loc(`wiki_tech_mythril_valves2`),
+    ],
+    reinforced_piping: [
+        loc(`wiki_tech_reinforced_piping`)
+    ],
     farm_house: [
         loc(`wiki_tech_farm_house`)
     ],
@@ -215,10 +253,14 @@ const extraInformation = {
     theatre: [
         loc(`wiki_tech_building_unlock`,[loc(`city_amphitheatre`)])
     ],
-    playwright: [
+    playwright: global.race['iceage'] ? [
+        loc(`wiki_tech_gardener`,[2])
+    ] : [
         loc(`wiki_tech_entertain1`,[2])
     ],
-    magic: [
+    magic: global.race['iceage'] ? [
+        loc(`wiki_tech_gardener`,[3])
+    ] :  [
         loc(`wiki_tech_entertain1`,[3])
     ],
     superstars: [
@@ -338,6 +380,12 @@ const extraInformation = {
     ],
     cranes: [
         loc(`wiki_tech_cranes`,[loc(`city_storage_yard`),loc(`resource_Crates_name`)])
+    ],
+    forklift: [
+        loc(`wiki_tech_forklift`,[loc(`underground_storage_space`)])
+    ],
+    mechanical_storage: [
+        loc(`wiki_tech_mechanical_storage`,[loc(`underground_storage_space`)])
     ],
     titanium_crates: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),750,500])
@@ -553,14 +601,26 @@ const extraInformation = {
     library: [
         loc(`wiki_tech_building_unlock`,[loc(`city_library`)])
     ],
+    carving_tools: [
+        loc(`wiki_tech_carving_tools`)
+    ],
     thesis: [
         loc(`wiki_tech_thesis`)
+    ],
+    carving_training: [
+        loc(`wiki_tech_carving_training`)
     ],
     research_grant: [
         loc(`wiki_tech_research_grant`)
     ],
+    optimize_language: [
+        loc(`wiki_tech_optimize_language`)
+    ],
     scientific_journal: [
         loc(`wiki_tech_scientific_journal`)
+    ],
+    stone_breakthrough: [
+        loc(`wiki_tech_stone_breakthrough`)
     ],
     adjunct_professor: [
         loc(`wiki_tech_adjunct_professor`)
@@ -899,6 +959,9 @@ const extraInformation = {
     chainsaws: [
         loc(`wiki_tech_copper_axes`,[175])
     ],
+    bone_chainsaws: [
+        loc(`wiki_tech_copper_axes`,[175])
+    ],
     copper_sledgehammer: [
         loc(`wiki_tech_copper_sledgehammer`,[40])
     ],
@@ -910,6 +973,11 @@ const extraInformation = {
     ],
     titanium_sledgehammer: [
         loc(`wiki_tech_copper_sledgehammer`,[160])
+    ],
+    bone_hammer: [
+        loc(`wiki_tech_copper_sledgehammer`,[200]),
+        loc(`wiki_tech_copper_pickaxe1`,[90]),
+        loc(`wiki_tech_copper_pickaxe2`,[72])
     ],
     copper_pickaxe: [
         loc(`wiki_tech_copper_pickaxe1`,[15]),
@@ -1011,6 +1079,9 @@ const extraInformation = {
     laser_rifles: [
         loc(`wiki_tech_bows`,[500])
     ],
+    bone_weaponry: [
+        loc(`wiki_tech_bows`,[500])
+    ],
     plasma_rifles: [
         loc(`wiki_tech_bows`,[600])
     ],
@@ -1049,6 +1120,9 @@ const extraInformation = {
         loc(`wiki_tech_armor`,[3])
     ],
     nanoweave_vest: [
+        loc(`wiki_tech_armor`,[4])
+    ],
+    bone_armor: [
         loc(`wiki_tech_armor`,[4])
     ],
     laser_turret: [
@@ -2147,6 +2221,138 @@ const extraInformation = {
     ],
     ultimate_corruption: [
         loc(`wiki_tech_ultimate_corruption`)
+    ],
+    support_beams: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)])
+    ],
+    steel_support_beams: [
+        loc(`wiki_tech_steel_support_beams`),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)])
+    ],
+    titanium_support_beams: [
+        loc(`wiki_tech_titanium_support_beams`),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)]),
+    ],
+    mineshaft: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_mineshaft`)])
+    ],
+    coal_lanterns: [
+        loc(`wiki_tech_coal_lanterns`)
+    ],
+    mineshaft_elevator: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_mineshaft_elevator`)])
+    ],
+    core_mine: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_mine`)])
+    ],
+    core_tap: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_tap`)])
+    ],
+    core_forging: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_refinery`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_blacksmith`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_forge`)])
+    ],
+    core_digging: [
+        loc(`wiki_tech_core_digging`)
+    ],
+    surface_breach: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_surface_elevator_title`)])
+    ],
+    sequence_ecosystem: [
+        loc(`wiki_tech_sequence_ecosystem`)
+    ],
+    bonfires: [
+        loc(`wiki_tech_building_unlock`,[loc(`underground_bonfire`)])
+    ],
+    surface_establishment: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_great_heater`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`city_shed_title3`)])
+    ],
+    watch_tower: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_watch_tower`)])
+    ],
+    surface_housing: [
+        loc(`wiki_tech_building_unlock`,[loc(`city_apartment_title1`)])
+    ],
+    surface_farm: [
+        loc(`wiki_tech_building_unlock`,[loc(global.race['artifical'] ? 'server_farm' : 'surface_farm')])
+    ],
+    surface_zoo: [
+        loc(`wiki_tech_building_unlock`,[loc('surface_zoo')])
+    ],
+    advanced_bioscience: [
+        loc(`wiki_tech_advanced_bioscience`,[loc('surface_genetics_lab')])
+    ],
+    surface_expedition: [
+        loc(`wiki_tech_surface_expedition`,[loc('surface_watch_tower')])
+    ],
+    surface_fission: [
+        loc(`wiki_tech_building_unlock`,[loc(`city_fission_power`)])
+    ],
+    crater_industry: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_crater_fabrication`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_crater_factory`)])
+    ],
+    uranium_refinement: [
+        loc(`wiki_tech_uranium_refinement`,[loc('underground_core_refinery')]),
+    ],
+    lumber_cultivation: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_area_heater`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_water_pipe`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_trees`)])
+    ],
+    growth_study: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_genetics_lab`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_herbivores`)])
+    ],
+    carnivore_introduction: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_carnivores`)])
+    ],
+    scavenger_introduction: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_scavengers`)])
+    ],
+    plant_odd_seed: [
+        loc(`wiki_tech_plant_odd_seed`, [loc('trait_empowered_name')])
+    ],
+    crater_survey: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_crater_headquarters`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_crater_drill`)])
+    ],
+    grand_dome: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_grand_dome`)])
+    ],
+    nuclear_heating: [
+        loc(`wiki_tech_nuclear_heating`,[loc('surface_great_heater'), loc('surface_area_heater')]),
+    ],
+    microdomes: [
+        loc(`wiki_tech_microdomes`,[loc(`surface_crater_headquarters`)])
+    ],
+    aberrant_study: [
+        loc(`wiki_tech_aberrant_study1`),
+        loc(`wiki_tech_aberrant_study2`)
+    ],
+    bone_storage: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_bone_storage`)])
+    ],
+    super_binder: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_fuel_refinery`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_refinery_funnel`)])
+    ],
+    rocket_engine: [
+        loc(`wiki_tech_building_unlock`,[loc(`surface_rocket_engine`)])
+    ],
+    rocket_smelting: [
+        loc(`wiki_tech_fuel_unlock`, [loc('resource_Super_Fuel_name')])
+    ],
+    giant_thrusters: global.race['iceage'] ? [
+        loc(`wiki_tech_building_unlock`,[loc(`city_giant_thrusters`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`city_thruster_fuel`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`surface_nuclear_heater`)])
+    ] : [
+        loc(`wiki_tech_building_unlock`,[loc(`city_giant_thrusters`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`city_thruster_fuel`)])
     ],
     plague_inoculation: [
         loc(`wiki_tech_building_unlock`,[loc('tau_shipyard_title')])
@@ -4639,7 +4845,8 @@ function addRequirements(parent,key,keyName,path,pageEra){
                 let isOr = false;
                 let color = false;
                 techReqs[req].forEach(function (subReq){
-                    let subText = `<a href="wiki.html#${reqEra(subReq.era,pageEra)}-${path === 'truepath' ? 'tp_tech' : 'tech'}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
+                    let prefix = path === 'truepath' ? 'tp_tech' : path === 'iceage' ? 'ice_tech' : 'tech';
+                    let subText = `<a href="wiki.html#${reqEra(subReq.era,pageEra)}-${prefix}-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
                     color = subReq.color;
                     if (isOr){
                         reqText = loc('wiki_tech_req_or',[reqText,subText]);
@@ -4746,6 +4953,9 @@ function addRequirements(parent,key,keyName,path,pageEra){
                 if (link && path === 'truepath'){
                     link = link.replace('-tech-','-tp_tech-');
                 }
+                if (link && path === 'iceage'){
+                    link = link.replace('-tech-','-ice_tech-');
+                }
                 totalColor = totalColor || color;
                 if (req.not){
                     color = !color;
@@ -4792,8 +5002,8 @@ export function renderTechPage(era,path){
     let content = sideMenu('create');;
     let techListing = [];
     let otherTechs = [];
-    let techs = path === 'truepath' ? truepath_tech : standard_tech;
-    let prefix = path === 'truepath' ? 'tp_tech' : 'tech';
+    let techs = path === 'truepath' ? truepath_tech : path === 'iceage' ? iceage_tech : standard_tech;
+    let prefix = path === 'truepath' ? 'tp_tech' : path === 'iceage' ? 'ice_tech' : 'tech';
 
     Object.keys(techs).forEach(function (actionName){
         let action = techs[actionName];
