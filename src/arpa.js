@@ -3301,10 +3301,6 @@ export function buildArpa(pro,num,update,queue){
                 if (pro === 'surface_elevator'){
                     global.settings.showSurface = true;
                     global.tech['surface'] = 1;
-                    if (global.race['magnificent']){
-                        initStruct(actions.city.shrine);
-                        initStruct(actions.surface.wastes.shrine);
-                    }
                     clearPopper('popArpasurface_elevator');
                     [1,10,25,100].forEach(function(amount){
                         clearPopper(`popArpasurface_elevator${amount}`);

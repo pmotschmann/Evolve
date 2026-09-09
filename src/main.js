@@ -3799,6 +3799,7 @@ function fastLoop(){
                 if (global.city['wonder_pyramid']){ monuments += 5; }
                 if (global.space['wonder_statue']){ monuments += 5; }
                 if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens'] || global.portal['wonder_gardens']){ monuments += 5; }
+                if (global.underground['wonder_fountain']){ monuments += 5; }
             }
             moraleCap += monuments * mcap;
         }
@@ -3922,7 +3923,7 @@ function fastLoop(){
         }
 
         if (global.race['mourning'] && global.race['mourning_total']){
-            let mourn = 0.99 ** global.race['mourning_total'];
+            let mourn = Math.floor((0.99 ** global.race['mourning_total']) * 1000) / 1000;
             global_multiplier *= mourn;
             breakdown.p['Global'][loc('trait_mourning_name')] = -((1-mourn) * 100) + '%';
         }
@@ -4912,7 +4913,10 @@ function fastLoop(){
             hunters *= weapons / 20;
             scavengers *= weapons / 20;
 
-            let stealable = ['Lumber','Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
+            let stealable = ['Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
+            if (!global.race['iceage']){
+                stealable.push('Lumber');
+            }
             stealable.forEach(function(res){
                 if (global.resource[res].display){
                     let total = 0;
@@ -9119,6 +9123,7 @@ function fastLoop(){
                     if (global.city['wonder_pyramid']){ monuments += 5; }
                     if (global.space['wonder_statue']){ monuments += 5; }
                     if (global.interstellar['wonder_gardens'] || global.space['wonder_gardens']){ monuments += 5; }
+                    if (global.space['wonder_fountain']){ monuments += 5; } //combining fountain with tourism should be impossible
                 }
                 tourism += global.city['tourist_center'].on * monuments * 2 * amp;
             }
@@ -9163,9 +9168,6 @@ function fastLoop(){
             let monuments = global.tech.monuments;
             if (global.race['wish'] && global.race['wishStats']){
                 if (global.portal['wonder_gardens']){
-                    monuments += 5;
-                }
-                if (global.underground['wonder_fountain']){
                     monuments += 5;
                 }
             }
@@ -12876,6 +12878,7 @@ function midLoop(){
                 initStruct(actions.underground.industry.archaeological_dig);
                 messageQueue(loc('tech_mineshaft_depth2'),'info',false,['progress']);
                 global.tech['mineshaft_depth'] = 2;
+                renderUnderground();
             }
             if(depth >= 200000 && global.tech['mineshaft_depth'] === 2 && p_on['mineshaft_vator']){
                 if(global.tech['support_beams'] >= 3){

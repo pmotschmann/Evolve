@@ -10361,7 +10361,7 @@ export function thrusterProjection(){
     }
     else{
         let project = thrusterOrbitProjection();
-        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.fossil,loc('resource_Fossil_plural_name')])}</div>`;
+        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.fossil,loc('resource_Fossil_name')])}</div>`;
         desc += `<div>${loc('city_giant_thrusters_effect2', [project.min, project.max])}</div>`;
     }
     return desc;

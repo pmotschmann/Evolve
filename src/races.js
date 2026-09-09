@@ -4883,19 +4883,19 @@ export const traits = {
             // [mastery increase multiplier]
             switch (r || traitRank('deep_power') || 1){
                 case 0.1:
-                    return [8];
+                    return [0];
                 case 0.25:
-                    return [10];
+                    return [4];
                 case 0.5:
-                    return [15];
+                    return [8];
                 case 1:
-                    return [18];
+                    return [12];
                 case 2:
-                    return [20];
+                    return [15];
                 case 3:
-                    return [20];
+                    return [18];
                 case 4:
-                    return [25];
+                    return [22];
             }
         }
     },

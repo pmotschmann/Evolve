@@ -156,6 +156,19 @@ export function pResPage(content){
         }
     });
     sideMenu('add',`resources-prestige`,'skilled_servants',loc('wiki_p_res_skilled_servants'));
+
+    //Fossils
+    section = infoBoxBuilder(mainContent,{ name: 'fossil', template: 'p_res', paragraphs: 4, h_level: 2, break: [3],
+        para_data: {
+            1: [loc('wiki_iceage_thruster'),loc('wiki_iceage_living_extinction'), loc('evo_challenge_iceage')],
+            2: [loc('achieve_back_on_track_name')],
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-thruster','wiki.html#resets-prestige-living_extinction','#challenges-gameplay-scenarios_iceage'],
+            2: ['wiki.html#perks-prestige-back_on_track'],
+        }
+    });
+    sideMenu('add',`resources-prestige`,'fossil',loc('wiki_p_res_fossil'));
 }
 
 const calcVars = {
@@ -168,6 +181,9 @@ const calcVars = {
     artifact: ['genes', 'floor', 'micro'],
     cores: ['micro'],
     supercoiled: ['genes', 'micro'],
+    fossil: ['micro'],
+    ice_dark_t: ['micro', 'iceage'],
+    ice_dark_l: ['micro']
 }
 
 export function prestigeCalc(info,resource,extraType,resetType){
@@ -189,6 +205,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'matrix':
         case 'retired':
         case 'eden':
+        case 'thruster':
+        case 'living_extinction':
             title += loc('wiki_resets_' + resetType) + " ";
             break;
         case 'bigbang':
@@ -218,6 +236,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'dark':
         case 'vacuum':
+        case 'ice_dark_t':
+        case 'ice_dark_l':
             title += loc('resource_Dark_name');
             break;
         case 'harmony':
@@ -231,6 +251,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'supercoiled':
             title += loc('resource_Supercoiled_name');
+            break;
+        case 'fossil':
+            title += loc('resource_Fossil_name');
             break;
     }
     calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_gains',[title])}</h2>`);
@@ -251,6 +274,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         mana: 0,
         floor: 0,
         genes: 0,
+        scenario: false,
         uni: 'standard'
     };
     
@@ -270,6 +294,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         high_pop: { val: undefined, use: false },
         synth: { val: false, use: false },
         tp: { val: false, use: false, enabled: true },
+        iceage: { val: false, use: false },
         wiki: true // flag to mark this query as coming from wiki
     });
     let universes = {
@@ -293,7 +318,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
         matrix: { use: true },
         retired: { use: true },
         eden: { use: true },
-        apotheosis: { use: true }
+        apotheosis: { use: true },
+        thruster: { use: true },
+        living_extinction: { use: true }
     };
     let showEval = { vis: false };
     let plasExtra = { capVis: false, overflowVis: false, totalVis: false, capVal: undefined, overflow: undefined, rawGains: undefined };
@@ -348,6 +375,14 @@ export function prestigeCalc(info,resource,extraType,resetType){
             inputs.uni.val = 'magic';
             equation += `<span>(log2({{ generic(i.mana.val, 'mana') }}) / 5) * {{ challenge(i.genes.val) }}</span>`;
             break;
+        case 'ice_dark_t':
+            inputs.reset.val = 'thruster';
+            equation += `<span>(<span v-show="!i.micro.val">10</span><span v-show="i.micro.val">4</span><span v-show="i.iceage.val"> * 2.5</span>)`;
+            break;
+        case 'ice_dark_l':
+            inputs.reset.val = 'living_extinction';
+            equation += `<span>(<span v-show="!i.micro.val">10</span><span v-show="i.micro.val">4</span>)`;
+            break;
         case 'harmony':
             inputs.reset.val = 'ascend';
             equation += `<span>(1 + {{ generic(i.genes.val, 'genes') }}) * {{ universe(i.uni.val) }}</span>`;
@@ -363,6 +398,10 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'supercoiled':
             inputs.reset.val = 'apotheosis';
             equation += `({{ generic(i.genes.val, 'genes') }} + 1) ** <span v-show="!i.micro.val">3</span><span v-show="i.micro.val">2</span>`;
+            break;
+        case 'fossil':
+            inputs.reset.val = 'thruster';
+            equation += `<span v-show="!i.micro.val">10</span><span v-show="i.micro.val">4</span>`;
             break;
     }
     if (resource === 'plasmid'){
@@ -466,6 +505,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
             <div class="calcInput" v-show="i.micro.use"><b-checkbox class="patrol" v-model="i.micro.val">${loc('universe_micro')}</b-checkbox></div>
             <div class="calcInput" v-show="i.synth.use"><b-checkbox class="patrol" v-model="i.synth.val">${loc('wiki_calc_synth')}</b-checkbox></div>
             <div class="calcInput" v-show="i.tp.use"><b-checkbox class="patrol" v-model="i.tp.val" :disabled="!i.tp.enabled">${loc('wiki_calc_tp')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.iceage.use"><b-checkbox class="patrol" v-model="i.iceage.val">${loc('wiki_calc_iceage')}</b-checkbox></div>
         </div>
         <div class="calcButton">
             <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>

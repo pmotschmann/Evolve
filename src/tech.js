@@ -2596,7 +2596,7 @@ const techs = {
             defineIndustry();
         }
     },
-    iridium_smelting_iceage: {
+    iridium_smelting_perk_iceage: {
         id: 'tech-iridium_smelting_perk_iceage',
         title(){ return loc('tech_iridium_smelting'); },
         desc(){ return loc('tech_iridium_smelting'); },
@@ -5927,6 +5927,10 @@ const techs = {
                 if (global.race['truepath'] && !global.tech['rival']){
                     global.tech['rival'] = 1;
                     messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]),'info',false,['progress','combat']);
+                }
+                if(global.race['magnificent']){
+                    initStruct(actions.city.shrine);
+                    initStruct(actions.surface.wastes.shrine);
                 }
                 messageQueue(loc('tech_surface_breach_result'),'info',false,['progress']);
                 return true;

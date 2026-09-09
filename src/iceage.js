@@ -1292,7 +1292,7 @@ const iceAgeModules = {
                 type: 'gambling',
                 reqs: { gambling: 1 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 350000, 1.45, 'depths'); },
+                    Money(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 150000, 1.45, 'depths'); },
                     Furs(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 90000, 1.5, 'depths'); },
                     Polymer(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 15000, 1.5, 'depths'); },
                     Brick(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 4000, 1.45, 'depths'); }
@@ -2790,8 +2790,8 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 250000, 1.38, 'wastes', 'surface'); },
                     Mythril(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 3500, 1.38, 'wastes', 'surface'); },
-                    Furs(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 450000, 1.42, 'wastes', 'surface'); },
-                    Horseshoe(){ return global.race['hooved'] ? this.soldiers() : 0; }
+                    Furs(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 350000, 1.42, 'wastes', 'surface'); },
+                    Horseshoe(){ return global.race['hooved'] ? actions.surface.wastes.watch_tower.soldiers() : 0; }
                 },
                 effect(){
                     let bunks = this.soldiers();
@@ -3167,7 +3167,7 @@ const iceAgeModules = {
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
-                        global.city['shrine'].count = global.underground['shrine'].count;
+                        global.city['shrine'].count = global.surface['shrine'].count;
                         if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
                             global.city.shrine.morale++;
                         }
@@ -6037,6 +6037,7 @@ export function thrusterOrbitProjection(){
     max += Math.floor((global.surface.thruster_fuel?.count || 0) / 100);
     if (global.race['truepath']){
         max += 49;
+        min -= 5;
         variance -= 2;
     }
     min -= Math.floor(((global.surface.thruster_fuel?.count || 0) - 500) / 90);
