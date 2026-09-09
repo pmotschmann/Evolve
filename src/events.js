@@ -1,6 +1,6 @@
 import { global, seededRandom, p_on, support_on, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, fathomCheck, blubberFill } from './races.js';
+import { races, traits, fathomCheck, citizenDeath } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { flib, drawPet } from './functions.js';
@@ -112,6 +112,7 @@ export const events = {
             let loss = Math.rand(0,at_risk);
             global.resource[global.race.species].amount -= loss;
             global.civic[global.civic.d_job].workers -= loss;
+            citizenDeath(loss);
             if (global.civic[global.civic.d_job].workers < 0){
                 global.civic[global.civic.d_job].workers = 0;
             }
@@ -540,7 +541,7 @@ export const events = {
         effect(){
             global.resource[global.race.species].amount--;
             global.civic.miner.workers--;
-            blubberFill(1);
+            citizenDeath(1);
             return loc('event_mine_collapse');
         }
     },
@@ -598,7 +599,7 @@ export const events = {
             let type = Math.floor(seededRandom(0,10));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
-            blubberFill(dead);
+            citizenDeath(dead);
             if(type === 7){
                 return loc('event_chicken',[loc(`event_chicken_eaten${type}`,[flib('name')]),dead,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
             }
@@ -611,7 +612,7 @@ export const events = {
             trait: 'aggressive'
         },
         condition(){
-            if (global.resource[global.race.species].amount > 0){
+            if (global.resource[global.race.species].amount > 0 && global.civic.garrison.workers > 0){
                 return true;
             }
             return false;
@@ -687,6 +688,7 @@ export const events = {
                     {
                         global.resource[global.race.species].amount -= 10;
                         global.civic[global.civic.d_job].workers -= 10;
+                        citizenDeath(10);
                         if (global.civic[global.civic.d_job].workers < 0){
                             global.civic[global.civic.d_job].workers = 0;
                         }
@@ -755,7 +757,7 @@ export const events = {
             global.resource[global.race.species].amount--;
             global.civic.scientist.workers--;
             global.civic.scientist.assigned--;
-            blubberFill(1);
+            citizenDeath(1);
             return loc(`witch_hunter_witch_hunt`);
         }
     },
@@ -773,7 +775,7 @@ export const events = {
         type: 'minor',
         effect(){
             global.resource[global.race.species].amount--;
-            blubberFill(1);
+            citizenDeath(1);
             let type = Math.floor(seededRandom(0,10));
             if(type === 7){
                 return loc('event_chicken',[loc(`event_chicken_eaten${type}`,[flib('name')]),1,loc(`event_chicken_seasoning${Math.floor(seededRandom(0,10))}`)]);
@@ -797,7 +799,7 @@ export const events = {
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[1] + 1)));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
             global.resource[global.race.species].amount -= dead;
-            blubberFill(dead);
+            citizenDeath(dead);
             return loc('event_brawl_c',[loc(`event_brawl${Math.floor(seededRandom(0,10))}`),dead]);
         }
     },

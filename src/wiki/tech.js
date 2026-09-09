@@ -86,7 +86,9 @@ const extraInformation = {
             [traits.psychic.vars()[3],
             72 * (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0)])
     ],
-    apartment: [
+    apartment: global.race['iceage'] ? [
+        loc(`wiki_tech_space_heaters`)
+    ] : [
         loc(`wiki_tech_building_unlock`,[housingLabel('large')])
     ],
     arcology: [
@@ -1405,7 +1407,6 @@ const extraInformation = {
     warp_drive: [
         loc(`wiki_tech_subtab_unlock`,[loc(`tab_interstellar`),loc(`tab_civil`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_alpha_name`)]),loc(`interstellar_alpha_name`)])
-        
     ],
     habitat: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_habitat_title`)])
@@ -1602,6 +1603,9 @@ const extraInformation = {
     ],
     clerics: [
         loc(`wiki_tech_clerics`)
+    ],
+    magic_relics: [
+        loc(`wiki_tech_magic_relics`)
     ],
     conjuring: [
         loc(`wiki_tech_conjuring`,isHalloween.active ? [loc(`city_trick`),loc(`city_trick_conjure`)] : [loc(`city_food`),loc(`city_food_conjure`)])
@@ -3178,6 +3182,30 @@ const specialRequirements = {
             ]
         }
     ],
+    mushroom_farm: [
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'artifical'
+                },
+                {
+                    name: 'unfathomable'
+                }
+            ]
+        }
+    ],
+    mushroom_farm_alt: [
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'artifical'
+                }
+            ]
+        }
+    ],
     iridium_smelting_perk: [
         {
             category: 'achieve',
@@ -3708,7 +3736,16 @@ const specialRequirements = {
                     name: 'evil'
                 }
             ]
-        }
+        },
+        {
+            category: 'challenge',
+            not: true,
+            subreqs: [
+                {
+                    name: 'iceage'
+                }
+            ]
+        },
     ],
     copper_axes: [
         {
@@ -3836,6 +3873,9 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'sappy'
+                },
+                {
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3847,6 +3887,9 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'sappy'
+                },
+                {
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3858,6 +3901,9 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'sappy'
+                },
+                {
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3869,6 +3915,20 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'sappy'
+                },
+                {
+                    name: 'living_tool'
+                }
+            ]
+        }
+    ],
+    bone_hammer: [
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3879,13 +3939,7 @@ const specialRequirements = {
             not: true,
             subreqs: [
                 {
-                    name: 'carnivore'
-                },
-                {
-                    name: 'soul_eater'
-                },
-                {
-                    name: 'detritivore'
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3896,13 +3950,7 @@ const specialRequirements = {
             not: true,
             subreqs: [
                 {
-                    name: 'carnivore'
-                },
-                {
-                    name: 'soul_eater'
-                },
-                {
-                    name: 'detritivore'
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3913,13 +3961,7 @@ const specialRequirements = {
             not: true,
             subreqs: [
                 {
-                    name: 'carnivore'
-                },
-                {
-                    name: 'soul_eater'
-                },
-                {
-                    name: 'detritivore'
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3930,13 +3972,7 @@ const specialRequirements = {
             not: true,
             subreqs: [
                 {
-                    name: 'carnivore'
-                },
-                {
-                    name: 'soul_eater'
-                },
-                {
-                    name: 'detritivore'
+                    name: 'living_tool'
                 }
             ]
         }
@@ -3954,6 +3990,9 @@ const specialRequirements = {
                 },
                 {
                     name: 'detritivore'
+                },
+                {
+                    name: 'living_tool'
                 }
             ]
         }
@@ -4141,6 +4180,132 @@ const specialRequirements = {
                     name: 'ancients',
                     tree: 'ancients',
                     val: 1
+                }
+            ]
+        }
+    ],
+    garrison: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    color_garden: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    cottage: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    foundry: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    smelting: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    coal_mining: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    trade: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
+                }
+            ]
+        }
+    ],
+    core_mine: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`underground_mineshaft_depth`, [20000]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#ice-structures-mineshaft'
                 }
             ]
         }

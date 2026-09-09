@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, set_alevel, set_ulevel } from './vars.js';
 import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
-import { races, genus_def, geneSlots, geneCatalog, genePermanent } from './races.js';
+import { races, genus_def, geneSlots, geneCatalog, genePermanent, citizenDeath } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters, towerSize } from './portal.js';
@@ -848,6 +848,7 @@ export function checkAchievements(){
         murder = unlockFeat('friday',global.race.universe === 'micro' ? true : false);
         if (murder){
             global.resource[global.race.species].amount--;
+            citizenDeath(1);
         }
     }
     else if (!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14){
