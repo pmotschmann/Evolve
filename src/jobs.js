@@ -38,7 +38,7 @@ export const job_data = {
                     desc = loc('job_eld_hunter_desc');
                 }
             }
-            if (global.race['artifical']){
+            else if (global.race['artifical']){
                 desc = global.race['soul_eater'] ? loc('job_art_demon_hunter_desc',[global.resource.Furs.name, global.resource.Lumber.name]) : loc('job_art_hunter_desc',[global.resource.Furs.name]);
             }
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
@@ -481,18 +481,12 @@ export const job_data = {
         name(){ return loc('job_gardener'); },
         desc(){
             let morale = global.tech['theatre'];
-            if (global.race['musical']){
-                morale += traits.musical.vars()[0];
-            }
-            if (global.race['emotionless']){
-                morale *= 1 - (traits.emotionless.vars()[0] / 100);
-            }
             if (global.race['high_pop']){
                 morale *= traits.high_pop.vars()[1] / 100;
             }
             morale = +workerScale(morale,'entertainer').toFixed(2);
-            let water = +(morale * 1.5).toFixed(1);
-            return loc('job_gardener_desc_iceage',[water, +(morale).toFixed(2)]);
+            let water = +(morale).toFixed(1);
+            return loc('job_gardener_desc_iceage',[water, +(morale).toFixed(2), +actions.underground.depths.color_garden.mushroom_effect().toFixed(1)]);
         },
         stress(){ return 10; },
         color(){ return 'advanced'; }
@@ -1228,20 +1222,25 @@ export function farmerValue(farm,servant){
     else {
         farming *= 1 + (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0);
     }
-    farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
-    farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
-    farming *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;
-    farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
-    farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
-    farming *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
+    if (global.race['iceage']){
+        farming *= 1.2;
+    }
+    else{
+        farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
+        farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
+        farming *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;
+        farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
+        farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
+        farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
+    }
     if (servant){
         farming *= servantTrait(global.race.servants.jobs.farmer,'farmer');
     }
     else {
         farming *= racialTrait(global.civic.farmer.workers,'farmer');
     }
+    farming *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-    farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
     return farming;
 }
 

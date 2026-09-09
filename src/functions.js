@@ -3923,7 +3923,8 @@ const valAdjust = {
     ghostly: true,
     environmentalist: true,
     catnip: true,
-    anise: true
+    anise: true,
+    musical: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3982,6 +3983,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'catnip' || trait === 'anise'){
             vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
+        }
+        else if (trait === 'musical' && global.race['iceage']){
+            vals = [+(vals[0] / 3).toFixed(1)];
         }
         else if (!valAdjust[trait]){
             vals = [];

@@ -208,7 +208,9 @@ const spaceProjects = {
             effect(){
                 let orbitEffect = '';
                 if (decayPerks() && global.tech['broadcast'] && !global.race['joyless']){
-                    orbitEffect = `<div class="has-text-caution">${loc('space_red_vr_center_effect1',[global.tech['broadcast'] / 2])}</div>`;
+                    let gasVal = govActive('gaslighter',0);
+                    let mVal = ((gasVal || 0) + global.tech.broadcast) / 2;
+                    orbitEffect = `<div class="has-text-caution">${loc('space_red_vr_center_effect1',[mVal])}</div>`;
                 }
                 let effect1 = global.race['orbit_decayed'] ? '' : `<div>${loc('space_home_nav_beacon_effect1')}</div>`;
                 let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_spaceport_effect1',[planetName().red,1])}</div>` : '';
