@@ -8,7 +8,7 @@ import { actions } from './actions.js';
 import { planetName } from './space.js';
 import { unlockFeat } from './achieve.js';
 import { createGLContext, webglSupported } from './glmap.js';
-import { foeDetected, moveShips, moveTempCoordinates, resolveBody, shipPatrol, shipPointAhead, shipRefStar, syndicate, syndicateShips, tempCoord, tempOffset, tempParent, venusBlockade } from './truepath.js';
+import { foeDetected, moveShips, moveTempCoordinates, resolveBody, shipPatrol, shipPointAhead, shipRefStar, syndicate, syndicateGuardHeld, syndicateShips, tempCoord, tempOffset, tempParent, venusBlockade } from './truepath.js';
 import { loc } from './locale.js';
 
 // Every fixed figure the star table and the solar map are tuned by, gathered in one place. Values
@@ -5262,9 +5262,10 @@ function fleetSlot(i){
     return { x: -rank * starConstants.SHIP_FLEET_GAP, y: side * rank * starConstants.SHIP_FLEET_GAP * 0.8 };
 }
 
-// Danger warning at location
+// Return whether Venus currently has a danger warning.
 function dangerAt(id){
-    return id === 'spc_venus' && venusBlockade() > 0;
+    if (id !== 'spc_venus'){ return false; }
+    return venusBlockade() > 0 || syndicateGuardHeld();
 }
 
 // The warning mark itself, struck straight across the world it belongs to. Sized off the body so it overhangs at any zoom.
