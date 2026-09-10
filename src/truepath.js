@@ -6332,31 +6332,26 @@ function zBattleLog(locationName,guards,foes,dealt,taken,lost,downed){
     }
 }
 
-function zEngage(locationName,foes){
-    let guards = guardsAt(locationName);
-    if (guards.length === 0 || foes.length === 0){ return false; }
+// Resolve a single orbital combat volley.
+function zVolley(locationName,guards,foes,tally){
+    let alive = guards.filter(s => s.damage < 100);
+    let scan = alive.reduce((t,s) => t + (sensorRange(s) || 0), 0);
 
-    let scan = guards.reduce((t,s) => t + (sensorRange(s) || 0), 0);
-    let downed = [];
-    let dealt = 0;
-    let taken = 0;
-
-    guards.forEach(function(ship){
+    alive.forEach(function(ship){
         let live = foes.filter(f => f.damage < 100);
         if (live.length === 0){ return; }
         let foe = live[Math.floor(seededRandom(0,live.length,true))];
         if (seededRandom(0,1,true) >= playerAccuracy(scan,foe)){ return; }
         let hit = combatDamage(ship,foe);
         foe.damage += hit;
-        dealt += hit;
+        tally.dealt += hit;
         if (foe.damage >= 100){
             foe.damage = 100;
-            downed.push(foe);
+            tally.downed.push(foe);
         }
     });
 
     // Return fire from everything still flying.
-    let lost = [];
     foes.forEach(function(foe){
         if (foe.damage >= 100){ return; }
         let live = guards.filter(s => s.damage < 100);
@@ -6365,29 +6360,46 @@ function zEngage(locationName,foes){
         if (seededRandom(0,1,true) >= foeAccuracy(foe,locationName)){ return; }
         let hit = combatDamage(foe,ship);
         ship.damage += hit;
-        taken += hit;
+        tally.taken += hit;
         if (ship.damage >= 100){
             ship.damage = 100;
-            lost.push(ship);
+            tally.lost.push(ship);
         }
     });
+}
 
-    zBattleLog(locationName,guards,foes,dealt,taken,lost.length,downed.length);
+// Resolve up to a set number of orbital combat volleys.
+function zBattle(locationName,foes,rounds){
+    let guards = guardsAt(locationName);
+    if (guards.length === 0 || foes.length === 0){ return false; }
+
+    let tally = { dealt: 0, taken: 0, lost: [], downed: [] };
+    for (let round = 0; round < rounds; round++){
+        zVolley(locationName,guards,foes,tally);
+        if (!guards.some(s => s.damage < 100) || !foes.some(f => f.damage < 100)){ break; }
+    }
+
+    zBattleLog(locationName,guards,foes,tally.dealt,tally.taken,tally.lost.length,tally.downed.length);
 
     // Select combat messages from the defeated enemy type.
     zMessage(loc(foes.some(f => f.syn) ? 'syndicate_orbit_engage' : 'zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
-    lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
-    if (lost.length > 0){ drawShips(); }
-    downed.forEach(function(foe){
+    tally.lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
+    if (tally.lost.length > 0){ drawShips(); }
+    tally.downed.forEach(function(foe){
         zMessage(loc(foe.syn ? 'syndicate_orbit_destroyed' : 'zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
     });
 
     // Award the horde task only for destroyed horde enemies.
-    if (downed.some(foe => !foe.syn)){
+    if (tally.downed.some(foe => !foe.syn)){
         zombieGenociderTask('z2');
     }
 
-    return downed.length > 0;
+    return tally.downed.length > 0;
+}
+
+// Resolve a single-volley orbital intercept.
+function zEngage(locationName,foes){
+    return zBattle(locationName,foes,1);
 }
 
 // Strip out raiders that were shot down, so a wreck never reaches its target.
@@ -6882,10 +6894,26 @@ export function syndicateBases(){
     return corsairsActive() ? ['spc_venus', global.race.sy_base.home] : [];
 }
 
+// Return a base's corsair fleet, migrating legacy saves.
+function corsairFleet(base){
+    if (!base){ return []; }
+    if (!Array.isArray(base.ships)){
+        base.ships = base.ship ? [base.ship] : [];
+        delete base.ship;
+    }
+    return base.ships;
+}
+
+// Return a base's concurrent corsair capacity.
+function corsairBerths(region){
+    if (region === syGuardRegion){ return 1; }
+    return global.tech['shadow'] && global.tech.shadow >= 12 ? 2 : 1;
+}
+
 // Every corsair currently off its dock, for the map and for anything hunting them.
 export function syndicateShips(){
     return syndicateBases()
-        .map(region => global.race.sy_base[region] && global.race.sy_base[region].ship)
+        .reduce((all,region) => all.concat(corsairFleet(global.race.sy_base[region])),[])
         .filter(ship => ship && ship.damage < 100);
 }
 
@@ -6909,7 +6937,7 @@ function syndicateWatch(){
     // Initialize revealed bases with prebuilt corsairs.
     [ 'spc_venus', home ].forEach(function(region){
         global.race.sy_base[region] = {
-            ship: false,                                    // Active corsair, if any.
+            ships: [],                                      // Active corsairs.
             ready: global.stats.days,                       // Next launch day.
             day: global.stats.days,                         // Last processed game day.
             launched: 0,                                    // Corsairs launched.
@@ -7152,8 +7180,11 @@ export function stealthStudied(){
 function corsairLost(corsair,where){
     const base = global.race.sy_base[corsair.syn];
     if (base){
-        base.ship = false;
+        const fleet = corsairFleet(base);
+        const at = fleet.indexOf(corsair);
+        if (at >= 0){ fleet.splice(at,1); }
         base.lost++;
+        // Delay all base launches after a loss.
         base.ready = global.stats.days + Math.round(seededRandom(corsairLostMin,corsairLostMax,true));
     }
     zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success');
@@ -7332,21 +7363,30 @@ function corsairStalk(corsair){
 function corsairBaseDay(region){
     const base = global.race.sy_base[region];
     if (!base){ return; }
+    // Skip operations for a destroyed base.
+    if (base.closed){ return; }
     // Initialize missing base timers for older saves.
     if (typeof base.day !== 'number'){ base.day = global.stats.days; }
     if (typeof base.ready !== 'number'){ base.ready = global.stats.days; }
     const elapsed = Math.max(0,global.stats.days - base.day);
     base.day = global.stats.days;
 
-    if (!base.ship){
-        if (global.stats.days < base.ready){ return; }
-        base.ship = corsairHull(region);
+    const fleet = corsairFleet(base);
+
+    // Launch a corsair into an available berth.
+    if (fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
+        const ship = corsairHull(region);
+        fleet.push(ship);
         base.launched++;
-        corsairHunt(base.ship);
-        return;
+        corsairHunt(ship);
     }
 
-    const corsair = base.ship;
+    // Iterate over a copy because processing can remove a corsair.
+    fleet.slice().forEach(corsair => corsairBaseShipDay(corsair,region,elapsed));
+}
+
+// Process one corsair's daily state.
+function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
     if (corsair.inTransit){ return; }
 
@@ -7467,6 +7507,7 @@ const syGuardRegion = 'spc_venus';   // Syndicate guard location.
 const syGuardFights = 50;            // Engagements needed to trace the guard.
 const syGuardFleet = 6;              // Corsairs in the guard fleet.
 const syGuardRepair = 1;             // Guard hull repair per day.
+const syGuardRounds = 50;            // Maximum daily guard combat rounds.
 
 // Venus is reachable after scouting or tracing the guard post.
 function venusReachable(){
@@ -7511,23 +7552,43 @@ function syndicateGuardPost(){
     global.race['sy_guard'] = { s: guard, hit: false };
 }
 
+// Mark the Venus Syndicate base as destroyed.
+function syndicateBaseTaken(){
+    const post = global.race['sy_guard'];
+    post.taken = true;
+    global.tech['shadow'] = 12;
+    const base = global.race.sy_base[syGuardRegion];
+    if (base){ base.closed = true; }
+    messageQueue(loc('syndicate_base_destroyed',[regionName(syGuardRegion)]),'success',false,['combat','progress']);
+    // Refresh the map and tech UI after the base is destroyed.
+    renderSpace();
+    drawTech();
+}
+
 // Resolve daily combat and repairs at the guard post.
 function syndicateGuardDay(){
     const post = global.race['sy_guard'];
-    if (!post || !Array.isArray(post.s) || post.s.length === 0){ return; }
+    if (!post || !Array.isArray(post.s) || post.taken){ return; }
 
-    if (guardsAt(syGuardRegion).length > 0){
+    if (post.s.length > 0 && guardsAt(syGuardRegion).length > 0){
         post.hit = true;
-        zEngage(syGuardRegion,syndicateGuard());
+        // Resolve guard combat before daily repairs.
+        zBattle(syGuardRegion,syndicateGuard(),syGuardRounds);
     }
 
-    // Remove destroyed guards before applying daily repairs.
+    // Remove destroyed guards before checking base status or repairing.
     for (let i = post.s.length - 1; i >= 0; i--){
         if (post.s[i].damage >= 100){ post.s.splice(i,1); }
     }
+
     if (post.s.length === 0){
-        messageQueue(loc('syndicate_base_broken',[regionName(syGuardRegion)]),'success',false,['combat','progress']);
-        renderSpace();
+        // Take the base only if player guards survive the battle.
+        if (guardsAt(syGuardRegion).length > 0){ syndicateBaseTaken(); }
+        else if (!post.broke){
+            post.broke = true;
+            messageQueue(loc('syndicate_base_broken',[regionName(syGuardRegion)]),'success',false,['combat','progress']);
+            renderSpace();
+        }
         return;
     }
 
