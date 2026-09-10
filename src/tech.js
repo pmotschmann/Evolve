@@ -790,7 +790,8 @@ const techs = {
         title(){ return loc('tech_psychic_channeling'); },
         desc(){ return loc('tech_psychic_channeling'); },
         category: 'eldritch',
-        era: 'deep_space',
+        era: ['deep_space','glacial'],
+        era_a(){ return !global.race['iceage'] ? 'deep_space' : 'glacial'; },
         reqs: { psychic: 3, high_tech: 10 },
         trait: ['psychic'],
         grant: ['psychic',4],
@@ -1585,7 +1586,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 2 },
         grant: ['foundry',1],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1;},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1 },
         cost: {
             Knowledge(){ return global.race['iceage'] ? 3900 : 650; }
         },
@@ -1989,8 +1990,8 @@ const techs = {
         reqs: { theatre: 1, science: 2 },
         grant: ['theatre',2],
         cost: {
-            Knowledge(){ return global.race['iceage'] ? 6500 : 1080; },
-            Iron(){ return global.race['iceage'] ? 5800 : 0}
+            Knowledge(){ return global.race['iceage'] ? 5500 : 1080; },
+            Iron(){ return global.race['iceage'] ? 3800 : 0}
         },
         effect(){ return global.race['iceage'] ? loc('tech_watering_can_effect') : global.race.universe === 'evil' ? loc('tech_gladiators_effect',[loc('city_colosseum')]) : loc('tech_playwright_effect'); },
         action(){
@@ -2353,7 +2354,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 3 },
         grant: ['smelting',1],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1; },
         cost: {
             Knowledge(){ return 4050; }
         },
@@ -2595,7 +2596,7 @@ const techs = {
             defineIndustry();
         }
     },
-    iridium_smelting_iceage: {
+    iridium_smelting_perk_iceage: {
         id: 'tech-iridium_smelting_perk_iceage',
         title(){ return loc('tech_iridium_smelting'); },
         desc(){ return loc('tech_iridium_smelting'); },
@@ -2695,7 +2696,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 3 },
         grant: ['mining',4],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1;},
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1; },
         cost: {
             Knowledge(){ return 4320; }
         },
@@ -3921,7 +3922,7 @@ const techs = {
         reqs: { currency: 2, military: 1 },
         not_trait: ['terrifying'],
         grant: ['trade',1],
-        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1; },
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 1 },
         cost: {
             Knowledge(){ return global.race['banana'] ? 1200 : 4500; }
         },
@@ -5295,7 +5296,7 @@ const techs = {
         path: ['iceage'],
         cost: {
             Knowledge(){ return 54000; },
-            Titanium(){ return 4000; }
+            Titanium(){ return 24000; }
         },
         effect(){return loc('tech_titanium_support_beams_effect');},
         action(){
@@ -5927,6 +5928,10 @@ const techs = {
                     global.tech['rival'] = 1;
                     messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]),'info',false,['progress','combat']);
                 }
+                if(global.race['magnificent']){
+                    initStruct(actions.city.shrine);
+                    initStruct(actions.surface.wastes.shrine);
+                }
                 messageQueue(loc('tech_surface_breach_result'),'info',false,['progress']);
                 return true;
             }
@@ -6457,8 +6462,8 @@ const techs = {
     },
     bone_weaponry: {
         id: 'tech-bone_weaponry',
-        title(){ return loc('tech_bone_weaponry'); },
-        desc(){ return loc('tech_bone_weaponry'); },
+        title(){ return global.universe === 'magic' ? loc('tech_bone_weaponry_magic') : loc('tech_bone_weaponry'); },
+        desc(){ return global.universe === 'magic' ? loc('tech_bone_weaponry_magic') : loc('tech_bone_weaponry'); },
         category: 'military',
         era: 'glacial',
         reqs: { ecosystem_genetics: 6, military: 6 },
@@ -6468,7 +6473,7 @@ const techs = {
             Knowledge(){ return 920000; },
             Power_Bones() { return 100; }
         },
-        effect: loc('tech_bone_weaponry_effect'),
+        effect(){ return global.universe === 'magic' ? loc('tech_bone_weaponry_effect_magic') : loc('tech_bone_weaponry_effect'); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -6529,7 +6534,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'glacial',
         reqs: { ecosystem_genetics: 6, hammer: 4, pickaxe: 5 },
-        not_trait: ['living_tool','tusk'],
+        not_trait: ['living_tool'],
         grant: ['hammer',5],
         path: ['iceage'],
         cost: {
@@ -13279,6 +13284,28 @@ const techs = {
             return false;
         }
     },
+    magic_relics: {
+        id: 'tech-magic_relics',
+        title(){ return loc('tech_magic_relics'); },
+        desc(){ return loc('tech_magic_relics_desc'); },
+        category: 'magic',
+        era: 'industrialized',
+        reqs: { cleric: 1 },
+        grant: ['cleric',2],
+        path: ['iceage'],
+        cost: {
+            Mana(){ return 1000; },
+            Knowledge(){ return 32000; },
+            Crystal(){ return 10000; }
+        },
+        effect(){ return loc('tech_magic_relics_effect'); },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
     conjuring: {
         id: 'tech-conjuring',
         title(){ return loc('tech_conjuring'); },
@@ -14155,6 +14182,7 @@ const techs = {
         path: ['truepath', 'iceage'],
         reqs: { supercollider: 2 },
         grant: ['tp_particles',1],
+        condition(){ return !global.race['iceage'] || global.race['truepath']; },
         cost: {
             Knowledge(){ return 125000; }
         },

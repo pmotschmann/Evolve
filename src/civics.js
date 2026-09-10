@@ -1755,7 +1755,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += traits.frail.vars()[0];
         }
-        let armor = armorCalc(death, global.civic.garrison.raid);
+        let armor = armorCalc(death);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -2069,7 +2069,7 @@ function war_campaign(gov){
         if (global.race['frail']){
             death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
-        let armor = armorCalc(death, global.civic.garrison.raid);
+        let armor = armorCalc(death);
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -2126,7 +2126,7 @@ function war_campaign(gov){
     }
 }
 
-export function armorCalc(dead, group=0){
+export function armorCalc(dead){
     let armor = 0;
     if (global.race['scales']){
         armor += traits.scales.vars()[0];
@@ -2136,9 +2136,6 @@ export function armorCalc(dead, group=0){
     }
     if (global.race['high_pop']){
         armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
-    }
-    if (global.race['protective']){
-        armor += Math.floor(group / traits.protective.vars()[0]);
     }
     if (global.race['armored']){
         let armored = traits.armored.vars()[0] / 100;

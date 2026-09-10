@@ -2221,7 +2221,7 @@ export function getResetConstants(type, inputs){
             break;
         case 'ascend':
         case 'terraform':
-        case 'thrusters':
+        case 'thruster':
         case 'living_extinction':
             rc.pop_divisor = 1.15;
             rc.k_inc = 30000;
@@ -2341,7 +2341,7 @@ export function calcPrestige(type,inputs){
         else if (type === 'living_extinction'){
             new_plasmid = 600;
         }
-        if((type === 'living_extinction' || type === 'thrusters') && global.race['iceage']){
+        if((type === 'living_extinction' || type === 'thruster') && global.race['iceage']){
             new_plasmid *= 2.5;
         }
 
@@ -2378,12 +2378,12 @@ export function calcPrestige(type,inputs){
         new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
     }
-    else if(type === 'thrusters' || type === 'living_extinction'){
-        let dark = 10;
-        if(global.race['iceage'] && type !== 'living_extinction'){
+    else if(type === 'thruster' || type === 'living_extinction'){
+        let dark = universe === 'micro' ? 4 : 10;
+        if((inputs.iceage ?? global.race['iceage']) && type !== 'living_extinction'){
             dark *= 2.5;
         }
-        gains.dark = challenge_multiplier(dark,'thrusters',3,inputs);
+        gains.dark = dark;
     }
 
 
@@ -2454,7 +2454,7 @@ export function calcPrestige(type,inputs){
         gains.talens = 1;
     }
 
-    if((type === 'thrusters' || type === 'living_extinction') && global.race['iceage']){
+    if((type === 'thruster' || type === 'living_extinction') && global.race['iceage']){
         gains.fossil = universe === 'micro' ? 4 : 10;
     }
     
@@ -3950,7 +3950,8 @@ const valAdjust = {
     ghostly: true,
     environmentalist: true,
     catnip: true,
-    anise: true
+    anise: true,
+    musical: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -4009,6 +4010,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'catnip' || trait === 'anise'){
             vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
+        }
+        else if (trait === 'musical' && global.race['iceage']){
+            vals = [+(vals[0] / 3).toFixed(1)];
         }
         else if (!valAdjust[trait]){
             vals = [];

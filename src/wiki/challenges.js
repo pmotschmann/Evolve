@@ -777,6 +777,42 @@ export function challengesPage(content){
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_warlord',loc('wiki_challenges_scenarios_warlord'));
         }
+
+        {   // Ice Age
+            let iceage = infoBoxBuilder(scenarios,{ name: 'scenarios_iceage', template: 'challenges', paragraphs: 8, break: [4,6,8], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_iceage`)],
+                    2: [loc(`evo_challenge_iceage`)],
+                    3: [loc(`underground_challenge_nerf`)],
+                    4: [loc(`tech_corrupt_gem_analysis`),loc(`planet_kamikaze`)],
+                    5: [loc(`city_giant_thrusters`),loc(`evo_challenge_iceage`)],
+                    6: [loc(`wiki_iceage_thruster`),loc(`wiki_iceage_living_extinction`)],
+                    7: [loc(`wiki_iceage_thruster`),loc(`wish_greatness`),loc(`planet_kamikaze`)],
+                    8: [loc(`evo_challenge_truepath`)]
+                },
+                data_color: {
+                    3:['danger']
+                },
+                data_link: {
+                    4: ['#dimensional-tech-corrupt_gem_analysis', '#planets-gameplay-kamikaze']
+                }
+            });
+            addAchievements(iceage,false,['gone','back_on_track','living_extinction'],
+                { gone: true });
+            addRequirements(iceage,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: `${loc(`wiki_iceage_thruster`)}`,
+                            color: global.stats?.achieve?.gone?.l > 0 ? true : false,
+                            link: 'wiki.html#resets-prestige-thruster'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_iceage',loc('wiki_challenges_scenarios_iceage'));
+        }
     }
 }
 

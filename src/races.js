@@ -4883,19 +4883,19 @@ export const traits = {
             // [mastery increase multiplier]
             switch (r || traitRank('deep_power') || 1){
                 case 0.1:
-                    return [8];
+                    return [0];
                 case 0.25:
-                    return [10];
+                    return [4];
                 case 0.5:
-                    return [15];
+                    return [8];
                 case 1:
-                    return [18];
+                    return [12];
                 case 2:
-                    return [20];
+                    return [15];
                 case 3:
-                    return [20];
+                    return [18];
                 case 4:
-                    return [25];
+                    return [22];
             }
         }
     },
@@ -5036,30 +5036,30 @@ export const traits = {
             }
         }
     },
-    protective: { //soldiers gain armor when in groups
-        name(){ return loc('trait_protective_name'); },
-        desc(v){ return loc('trait_protective',v); },
+    wooly: { //citizens raise resource caps and trade routes
+        name(){ return loc('trait_wooly_name'); },
+        desc(v){ return loc('trait_wooly',v); },
         type: 'major',
         origin: 'mammuth',
         taxonomy: 'combat',
         val: 5,
         vars(r){
-            // [soldiers needed per point of armor]
-            switch (r || traitRank('protective') || 1){
+            // [percentage of warehouse storage per citizen, citizens needed per trade route]
+            switch (r || traitRank('wooly') || 1){
                 case 0.1:
-                    return [8];
+                    return [0.55, 16];
                 case 0.25:
-                    return [7];
+                    return [0.65, 15];
                 case 0.5:
-                    return [6];
+                    return [0.75, 14];
                 case 1:
-                    return [4];
+                    return [1, 12];
                 case 2:
-                    return [3.5];
+                    return [1.2, 11];
                 case 3:
-                    return [3];
+                    return [1.35, 11];
                 case 4:
-                    return [2.8];
+                    return [1.4, 10];
             }
         }
     },
@@ -5072,7 +5072,7 @@ export const traits = {
         val: -5,
         vars(r){
             // [citizen contribution]
-            switch (r || traitRank('protective') || 1){
+            switch (r || traitRank('mourning') || 1){
                 case 0.1:
                     return [2.5];
                 case 0.25:
@@ -6855,7 +6855,7 @@ export const races = {
         home: loc('race_mammuth_home'),
         entity: loc('race_mammuth_entity'),
         traits: {
-            protective: 1,
+            wooly: 1,
             mourning: 1
         },
         solar: {
@@ -6865,7 +6865,7 @@ export const races = {
             gas_moon: loc('race_mammuth_solar_gas_moon'),
             dwarf: loc('race_mammuth_solar_dwarf'),
         },
-        fanaticism: 'protective',
+        fanaticism: 'wooly',
         basic(){ return false; }
     },
     hellspawn: {
@@ -10489,7 +10489,7 @@ function psychicKill(parent){
                     global.resource.Energy.amount -= cost;
                     global.resource[global.race.species].amount--;
                     global.stats.psykill++;
-                    blubberFill(1);
+                    citizenDeath(1);
                     if (global.race['anthropophagite']){
                         modRes('Food', 10000 * traits.anthropophagite.vars()[0], true);
                     }
@@ -10853,6 +10853,13 @@ function deepPower(parent){
             }
         }
     });
+}
+
+export function citizenDeath(v){
+    blubberFill(v);
+    if (global.race['mourning']){
+        global.race['mourning_total'] = (global.race['mourning_total'] || 0) + v * traits.mourning.vars()[0];
+    }
 }
 
 export function blubberFill(v){

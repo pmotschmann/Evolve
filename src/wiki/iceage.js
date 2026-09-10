@@ -136,7 +136,7 @@ export function iceagePage(content){
 
     infoBoxBuilder(mainContent,{ name: 'aggressive', template: 'iceage', paragraphs: 6, break: [2,3,4,5,6],
         para_data: {
-            6: [loc('resource_Fossil_plural_name')]
+            6: [loc('resource_Fossil_name')]
         }
     });
     sideMenu('add',`iceage-gameplay`,'aggressive',loc('wiki_iceage_aggressive'));
@@ -162,7 +162,7 @@ export function iceagePage(content){
             4: [loc('cave_arena_trophy_plural')],
             5: [loc('surface_herbivores_single')],
             6: [loc('surface_carnivores_single')],
-            7: [loc('surface_scavengers_single'), loc('resource_Fossil_plural_name')]
+            7: [loc('surface_scavengers_single'), loc('resource_Fossil_name')]
         }
     });
     sideMenu('add',`iceage-gameplay`,'arena',loc('wiki_iceage_arena'));

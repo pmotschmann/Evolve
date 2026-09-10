@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, hell_reports, hell_graphs, sizeApproximation, keyMap, webWorker } from './vars.js';
 import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige, get_qlevel, shrineBonusActive, getShrineBonus, buildQueue, timeCheck, modalCloseButton } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus } from './races.js';
+import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus, citizenDeath } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
@@ -4461,9 +4461,6 @@ export function bloodwar(report = true){
                 terminators--;
             }
             let pat_armor = armor;
-            if (global.race['protective']){
-                pat_armor += Math.floor(pat_size / traits.protective.vars()[0]);
-            }
             let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));
 
             let demons = hellRand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
@@ -4627,6 +4624,7 @@ export function bloodwar(report = true){
             messageQueue(loc('fortress_lost'),false,false,['hell']);
             siege_report.surveyors = global.civic.hell_surveyor.workers;
             global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
+            citizenDeath(global.civic.hell_surveyor.workers);
             global.civic.hell_surveyor.workers = 0;
             global.civic.hell_surveyor.assigned = 0;
 
@@ -4711,6 +4709,7 @@ export function bloodwar(report = true){
                 global.civic.hell_surveyor.max -= dead;
                 global.resource[global.race.species].amount -= dead;
                 global.portal.carport.damaged += dead;
+                citizenDeath(dead);
             }
         }
 

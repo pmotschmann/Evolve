@@ -306,6 +306,56 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'eden');
     sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'));
 
+    // Thruster
+    section = infoBoxBuilder(mainContent,{ name: 'thruster', template: 'resets', paragraphs: 7, break: [2,4,7], h_level: 2,
+        para_data: {
+            2: [loc('planet_kamikaze'),loc('evo_challenge_iceage')],
+            3: [loc('city_giant_thrusters')],
+            6: [loc('resource_Fossil_name')],
+            7: [loc('wiki_iceage_thruster'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark'),loc('wiki_p_res_fossil'),loc('evo_challenge_iceage')],
+        },
+        data_color: {
+            7: ['warning','danger','danger','danger','advanced','warning'],
+        },
+        data_link: {
+            2: ['#planets-gameplay-kamikaze','#challenges-gameplay-scenarios_iceage'],
+            3: ['#planetary-structures-giant_thrusters'],
+            6: ['#resources-prestige-fossil'],
+            7: ['#resources-prestige-fossil']
+        }
+    });
+    section = createCalcSection(section,'thruster','gain');
+    prestigeCalc(section,'plasmid',false,'thruster');
+    prestigeCalc(section,'phage',false,'thruster');
+    prestigeCalc(section,'dark','ice_dark_t','thruster');
+    prestigeCalc(section,'fossil',false,'thruster');
+    sideMenu('add',`resets-prestige`,'thruster',loc('wiki_resets_thruster'));
+
+    // Living Extinction
+    section = infoBoxBuilder(mainContent,{ name: 'living_extinction', template: 'resets', paragraphs: 6, break: [2,4,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_iceage')],
+            3: [loc('wiki_iceage_living_extinction_danger')],
+            4: [loc('trait_hivemind_name')],
+            5: [loc('wiki_iceage_living_extinction'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark'),loc('wiki_p_res_fossil')],
+            6: [loc('wiki_iceage_living_extinction')],
+        },
+        data_color: {
+            3: ['danger'],
+            5: ['warning','danger','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['#challenges-gameplay-scenarios_iceage'],
+            5: [false,false,false,false,'#resources-prestige-fossil']
+        }
+    });
+    section = createCalcSection(section,'living_extinction','gain');
+    prestigeCalc(section,'plasmid',false,'living_extinction');
+    prestigeCalc(section,'phage',false,'living_extinction');
+    prestigeCalc(section,'dark','ice_dark_l','living_extinction');
+    prestigeCalc(section,'fossil',false,'living_extinction');
+    sideMenu('add',`resets-prestige`,'living_extinction',loc('wiki_resets_living_extinction'));
+
     // Zombie Appoc
     section = infoBoxBuilder(mainContent,{ name: 'zombie_apocalypse', template: 'resets', paragraphs: 5, break: [2,4,5], h_level: 2,
         para_data: {

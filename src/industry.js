@@ -1350,6 +1350,9 @@ function loadPylon(parent,bind){
     if (!global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical'] && !global.race['unfathomable'] && !global.race['cataclysm'] && !global.race['orbit_decayed']) {
         ritualList.push('farmer');
     }
+    if (global.race['iceage'] && (!global.race['unfathomable'] || global.race['artifical'])){
+        ritualList.push('farmer');
+    }
     if (!global.race['cataclysm']) {
         ritualList.push('miner');
     }

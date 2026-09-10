@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, seededRandom, sizeApproximation, p_on, support_on, writeBackup, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel, thrusterProjection } from './actions.js';
-import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci, deepClone } from './functions.js';
+import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci, deepClone, eventActive } from './functions.js';
 import { addSmelter, defineIndustry, factoryData } from './industry.js';
 import { govActive } from './governor.js';
 import { production, highPopAdjust } from './prod.js';
@@ -57,6 +57,7 @@ const iceAgeModules = {
                 },
                 touchlabel: loc(`collect`)
             },
+            horseshoe: buildTemplate(`horseshoe`,'underground'),
             old_device: {
                 id: 'underground-old_device',
                 title(){ return loc('underground_old_device') },
@@ -81,7 +82,7 @@ const iceAgeModules = {
             assembly: buildTemplate(`assembly`, 'underground'),
             slave_market: buildTemplate(`slave_market`, 'underground')
         },
-        cave: { //todo: add pylon (make it better than usual?) also add nanite factory
+        cave: {
             hollow: {
                 id: 'underground-hollow',
                 title(){ return loc('underground_hollow'); },
@@ -146,7 +147,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){
                         r.offset = r.offset || 0;
-                        if ((global.city['pylon'] ? global.city['pylon'].count : 0) + r.offset >= 2){
+                        if ((global.underground['pylon']?.count || 0) + r.offset >= 2){
                             return undergroundCostMultiplier('pylon', r.offset, 120, 1.3, 'cave');
                         }
                         else {
@@ -158,7 +159,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let max = spatialReasoning(5);
-                    let mana = +(0.01 * darkEffect('magic')).toFixed(3);
+                    let mana = +(0.015 * darkEffect('magic')).toFixed(3);
                     return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
                 },
                 special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
@@ -350,7 +351,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){
                         r.offset = r.offset ?? 0;
-                        if ((global.surface.captive_housing?.count || 0) + r.offset < 1){
+                        if ((global.underground.captive_housing?.count || 0) + r.offset < 1){
                             return 0;
                         }
                         else {
@@ -536,9 +537,9 @@ const iceAgeModules = {
                 type: 'finance',
                 reqs: { banking: 1 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('vault', r.offset, 350, 1.4); },
-                    Stone(r={}){ return undergroundCostMultiplier('vault', r.offset, 300, 1.45); },
-                    Iron(r={}){ return undergroundCostMultiplier('vault', r.offset, 120, 1.45); }
+                    Money(r={}){ return undergroundCostMultiplier('vault', r.offset, traitCostMod('untrustworthy',350), 1.4); },
+                    Stone(r={}){ return undergroundCostMultiplier('vault', r.offset, traitCostMod('untrustworthy',300), 1.45); },
+                    Iron(r={}){ return undergroundCostMultiplier('vault', r.offset, traitCostMod('untrustworthy',120), 1.45); }
                 },
                 effect(){
                     let vault = (this.res_cap('money')).toFixed(0).toLocaleString();
@@ -572,9 +573,9 @@ const iceAgeModules = {
                 type: 'science',
                 reqs: { science: 1 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('stone_slab', r.offset, 800, 1.50, 'cave'); },
-                    Stone(r={}){ return undergroundCostMultiplier('stone_slab', r.offset, 450, 1.55, 'cave'); },
-                    Crystal(r={}){ return global.race.universe === 'magic' ? undergroundCostMultiplier('stone_slab', r.offset, 40, 1.55, 'cave') : 0; }
+                    Money(r={}){ return undergroundCostMultiplier('stone_slab', r.offset, 800, 1.45, 'cave'); },
+                    Stone(r={}){ return undergroundCostMultiplier('stone_slab', r.offset, 450, 1.5, 'cave'); },
+                    Crystal(r={}){ return global.race.universe === 'magic' ? undergroundCostMultiplier('stone_slab', r.offset, 40, 1.5, 'cave') : 0; }
                 },
                 effect(wiki){
                     let gain = +(this.knowVal(wiki)).toFixed(0);
@@ -858,7 +859,7 @@ const iceAgeModules = {
                     },
                     Iron(r={}){ return global.tech['support_beams'] < 2 ? undergroundCostMultiplier('support_beams', r.offset, 350, 2) : 0; },
                     Steel(r={}){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('support_beams', r.offset, 350, 1.8) : 0; },
-                    Titanium(r={}){ return global.tech['support_beams'] >= 3 ? undergroundCostMultiplier('support_beams', r.offset, 150, 1.72) : 0; }
+                    Titanium(r={}){ return global.tech['support_beams'] >= 3 ? undergroundCostMultiplier('support_beams', r.offset, 100, 1.7) : 0; }
                 },
                 effect(){
                     let effect = `<div>${loc('underground_support_beams_effect', [5])}</div>`;
@@ -909,7 +910,7 @@ const iceAgeModules = {
                     return false;
                 },
                 dig_rate(){
-                    let ratio = global.underground['mineshaft']?.ratio || 100;
+                    let ratio = global.underground['mineshaft']?.ratio ?? 100;
                     let miner_base = workerScale(global.civic.miner.workers * ratio / 100,'mineshaft_miner');
                     let trait_mods = racialTrait(miner_base,'miner'); 
                     if (global.race['tough']){
@@ -956,7 +957,7 @@ const iceAgeModules = {
                     }
                     let rate = Math.min(this.full_depth(), 200000) / 1000;
                     if (global.tech['mineshaft'] >= 2){
-                        rate *= 0.75;
+                        rate *= 0.65;
                     }
                     return rate;
                 },
@@ -997,7 +998,7 @@ const iceAgeModules = {
                 queue_complete(){ return 100 - global.underground.mineshaft_elevator.count; },
                 cost: { //costMultiplier used so support beams affect the cost
                     Money(r={}){ return ((r.offset || 0) + (global.underground.mineshaft_elevator?.count || 0)) < 100 ? undergroundCostMultiplier('fake', r.offset, 30000, 1, 'cave') : 0; },
-                    Wrought_Iron(r={}){ return ((r.offset || 0) + (global.underground.mineshaft_elevator?.count || 0)) < 100 ? undergroundCostMultiplier('fake', r.offset, 2000, 1, 'cave') : 0; },
+                    Wrought_Iron(r={}){ return ((r.offset || 0) + (global.underground.mineshaft_elevator?.count || 0)) < 100 ? undergroundCostMultiplier('fake', r.offset, 1800, 1, 'cave') : 0; },
                     Alloy(r={}){ return ((r.offset || 0) + (global.underground.mineshaft_elevator?.count || 0)) < 100 ? undergroundCostMultiplier('fake', r.offset, 700, 1, 'cave') : 0; },
                     Coal(r={}){ return ((r.offset || 0) + (global.underground.mineshaft_elevator?.count || 0)) < 100 ? undergroundCostMultiplier('fake', r.offset, 8000, 1, 'cave') : 0; },
                 },
@@ -1054,7 +1055,7 @@ const iceAgeModules = {
                     return powerCostMod(50);
                 },
                 effect(){
-                    return `<div class='has-text-caution'>${loc('spend_power', [this.consume('oil'), global.resource.Oil.name, this.powered()])}</div>
+                    return `<div class='has-text-caution'>${loc('spend_power', [+ice_fuel_adjust(this.consume('oil')).toFixed(1), global.resource.Oil.name, this.powered()])}</div>
                         <div>${loc('underground_mineshaft_elevator_effect2')}</div>`;
                 },
                 consume(res){
@@ -1088,8 +1089,8 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 7600, 1.45, 'depths'); },
                     Stone(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 8800, 1.5, 'depths'); },
-                    Brick(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 800, 1.45, 'depths'); },
-                    Wrought_Iron(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 600, 1.45, 'depths'); },
+                    Brick(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 600, 1.42, 'depths'); },
+                    Wrought_Iron(r={}){ return undergroundCostMultiplier('stone_house', r.offset, 350, 1.42, 'depths'); },
                     Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
                 },
                 effect(){
@@ -1144,7 +1145,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('hunting_lodge', r.offset, 3200, 1.50, 'depths'); },
                     Iron(r={}){ return undergroundCostMultiplier('hunting_lodge', r.offset, 600, 1.55, 'depths'); },
-                    Horseshoe(){ return global.race['hooved'] ? this.soldiers() : 0; }
+                    Horseshoe(){ return global.race['hooved'] ? actions.underground.depths.hunting_lodge.soldiers() - (global.tech['military'] >= 5 ? 1 : 0) : 0; }
                 },
                 effect(){
                     let bunks = this.soldiers();
@@ -1202,7 +1203,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('boot_camp', r.offset, 16000, 1.45, 'depths'); },
                     Aluminium(r={}){ return undergroundCostMultiplier('boot_camp', r.offset, 8000, 1.5, 'depths'); },
-                    Brick(r={}){ return undergroundCostMultiplier('boot_camp', r.offset, 4000, 1.5, 'depths'); },
+                    Brick(r={}){ return undergroundCostMultiplier('boot_camp', r.offset, 3000, 1.45, 'depths'); },
                 },
                 effect(){
                     let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
@@ -1256,7 +1257,7 @@ const iceAgeModules = {
                 effect(){
                     let medic = global.tech['medic'] >= 1 ? `<div>${loc('underground_color_garden_effect2', [+this.mushroom_effect().toFixed(1)])}`: '';
                     return`<div>${loc('plus_max_resource',[jobScale(1),loc(`job_gardener`)])}</div><div>${loc('city_max_morale',[2])}</div>
-                        <div>${loc('underground_color_garden_effect1',[Math.floor(global.underground['color_garden']?.mushrooms || 0), this.mushroom_effect()])}</div>${medic}`;
+                        <div>${loc('underground_color_garden_effect1',[Math.floor(global.underground['color_garden']?.mushrooms || 0), +this.mushroom_effect().toFixed(1)])}</div>${medic}`;
                 },
                 action(args){
                     if (payCosts(this)){
@@ -1267,7 +1268,14 @@ const iceAgeModules = {
                     return false;
                 },
                 mushroom_effect(){
-                    return 1;
+                    let effect = 1;
+                    if (global.race['emotionless']){
+                        effect *= 1 - (traits.emotionless.vars()[0] / 100);
+                    }
+                    if (global.race['musical']){
+                        effect *= 1 + (traits.musical.vars()[0] / 3);
+                    }
+                    return effect;
                 },
                 struct(){
                     return {
@@ -1284,10 +1292,10 @@ const iceAgeModules = {
                 type: 'gambling',
                 reqs: { gambling: 1 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 350000, 1.45, 'depths'); },
+                    Money(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 150000, 1.45, 'depths'); },
                     Furs(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 90000, 1.5, 'depths'); },
                     Polymer(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 15000, 1.5, 'depths'); },
-                    Brick(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 6000, 1.45, 'depths'); }
+                    Brick(r={}){ return undergroundCostMultiplier('under_casino', r.offset, 4000, 1.45, 'depths'); }
                 },
                 effect(){
                     let desc = casinoEffect();
@@ -1318,10 +1326,10 @@ const iceAgeModules = {
                 type: 'finance',
                 reqs: { trade: 1 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('trade', r.offset, 4500, 1.50, 'depths'); },
-                    Brick(r={}){ return undergroundCostMultiplier('trade', r.offset, 750, 1.45, 'depths'); },
-                    Steel(r={}){ return undergroundCostMultiplier('trade', r.offset, 1300, 1.55, 'depths'); },
-                    Furs(r={}){ return undergroundCostMultiplier('trade', r.offset, 1900, 1.55, 'depths'); }
+                    Money(r={}){ return undergroundCostMultiplier('trade', r.offset, 4500, 1.4, 'depths'); },
+                    Brick(r={}){ return undergroundCostMultiplier('trade', r.offset, 750, 1.4, 'depths'); },
+                    Steel(r={}){ return undergroundCostMultiplier('trade', r.offset, 1300, 1.45, 'depths'); },
+                    Furs(r={}){ return undergroundCostMultiplier('trade', r.offset, 1900, 1.45, 'depths'); }
                 },
                 effect(){
                     return `<div>${loc('underground_trade_effect1',[this.routes()])}</div><div>${loc('underground_trade_effect2',[this.price_reduction()])}</div>`;
@@ -1367,10 +1375,10 @@ const iceAgeModules = {
                 type: 'religion',
                 reqs: { theology: 2 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('statue', r.offset, 2500, 1.55, 'depths'); },
-                    Wrought_Iron(r={}){ return undergroundCostMultiplier('statue', r.offset, 250, 1.55, 'depths'); },
-                    Furs(r={}){ return undergroundCostMultiplier('statue', r.offset, 650, 1.6, 'depths'); },
-                    Cement(r={}){ return undergroundCostMultiplier('statue', r.offset, 700, 1.6, 'depths'); }
+                    Money(r={}){ return undergroundCostMultiplier('statue', r.offset, 2500, 1.45, 'depths'); },
+                    Stone(r={}){ return undergroundCostMultiplier('statue', r.offset, 500, 1.5, 'depths'); },
+                    Furs(r={}){ return undergroundCostMultiplier('statue', r.offset, 650, 1.5, 'depths'); },
+                    Cement(r={}){ return undergroundCostMultiplier('statue', r.offset, 700, 1.5, 'depths'); }
                 },
                 effect(){
                     let desc = templeEffect();
@@ -1469,7 +1477,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('under_coal_mine', r.offset, 3200, 1.4); },
                     Iron(r={}){ return undergroundCostMultiplier('under_coal_mine', r.offset, 1100, 1.45); },
-                    Wrought_Iron(r={}){ return undergroundCostMultiplier('under_coal_mine', r.offset, 320, 1.4); }
+                    Wrought_Iron(r={}){ return undergroundCostMultiplier('under_coal_mine', r.offset, 300, 1.4); }
                 },
                 effect(){
                     let desc = `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)])}</div>`;
@@ -1506,7 +1514,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('smelter', r.offset, 4000, 1.4); },
                     Iron(r={}){ return undergroundCostMultiplier('smelter', r.offset, 1000, 1.45); },
-                    Brick(r={}){ return undergroundCostMultiplier('smelter', r.offset, 200, 1.4); }
+                    Brick(r={}){ return undergroundCostMultiplier('smelter', r.offset, 200, 1.36); }
                 },
                 effect(){
                     var iron_yield = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
@@ -1560,12 +1568,13 @@ const iceAgeModules = {
                 queue_complete(){ return 0; },
                 effect(){
                     let wins = 0;
-                    for (let i=0;i<5;i++){
+                    for (let i=0;i<6;i++){
                         if (cave_fight(false, global['warseed'] + (i * 1000)).success){
                             wins++;
                         }
                     }
-                    wins += seededRandom(-5,5,false, global['warseed']);
+                    wins += seededRandom(-3,3,false, global['warseed']);
+                    wins += Math.floor(seededRandom(-100,101,false, global['warseed']+1)) / 100;
                     if (wins < 0){
                         wins = 0;
                     }
@@ -1623,7 +1632,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('depths_support_beams', r.offset, 700, 1.7); },
                     Steel(r={}){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('depths_support_beams', r.offset, 350, 1.8) : 0; },
-                    Titanium(r={}){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('depths_support_beams', r.offset, 150, 1.72) : 0; },
+                    Titanium(r={}){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('depths_support_beams', r.offset, 100, 1.7) : 0; },
                 },
                 effect(){
                     let effect = `<div>${loc('underground_depths_support_beams_effect', [5])}</div>`;
@@ -1654,9 +1663,9 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('archaeological_dig', r.offset, 26000, 1.4, 'industry'); },
                     Furs(r={}){ return undergroundCostMultiplier('archaeological_dig', r.offset, 25000, 1.45, 'industry'); },
-                    Sheet_Metal(r={}){ return undergroundCostMultiplier('archaeological_dig', r.offset, 2500, 1.4, 'industry'); },
+                    Sheet_Metal(r={}){ return undergroundCostMultiplier('archaeological_dig', r.offset, 1600, 1.4, 'industry'); },
                     Water(r={}){ return undergroundCostMultiplier('archaeological_dig', r.offset, 16000, 1.4, 'industry'); },
-                    Crystal(r={}){ return global.race.universe === 'magic' ? undergroundCostMultiplier('archaeological_dig', r.offset, 3600, 1.5, 'industry') : 0; }
+                    Crystal(r={}){ return global.race.universe === 'magic' ? undergroundCostMultiplier('archaeological_dig', r.offset, 1800, 1.4, 'industry') : 0; }
                 },
                 effect(wiki){
                     let desc = `<div>${loc('portal_archaeology_effect',[jobScale(1)])}</div>${ false ? `<div>${loc('underground_archaeological_dig_effect1',[(100 / this.relic_chance()).toFixed(2)])}</div>` : ''}
@@ -1668,7 +1677,7 @@ const iceAgeModules = {
                     
                 },
                 knowVal(){
-                    let knowledge = 200;
+                    let knowledge = 250;
                     if (p_on['archaeological_dig']){
                         knowledge += 30 * p_on['archaeological_dig'];
                     }
@@ -1682,8 +1691,8 @@ const iceAgeModules = {
                 },
                 power_reqs: { high_tech: 2 },
                 relic_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc. Rolled every midLoop interval (1 time/second)
-                    let base = 20;
-                    base += 15 * (global.underground['archaeological_dig']?.relics || 0);
+                    let base = 30;
+                    base += 20 * (global.underground['archaeological_dig']?.relics || 0);
                     let workers = workerScale(global.civic.archaeologist.workers,'archaeologist');
                     if (global.tech['science'] >= 6){
                         workers *= 1 + (0.02 * highPopAdjust(workerScale(global.civic.professor.workers, 'professor')));
@@ -1790,7 +1799,7 @@ const iceAgeModules = {
                         return { r: 'Water', a: 5 };
                     }
                     else if (global.race.universe === 'magic'){
-                        return { r: 'Mana', a: 0.25 };
+                        return { r: 'Mana', a: 0.2 };
                     }
                     else {
                         return { r: 'Coal', a: 2 };
@@ -1911,7 +1920,7 @@ const iceAgeModules = {
                 reqs: { oil: 1 },
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 35000, 1.4, 'industry'); },
-                    Wrought_Iron(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 2700, 1.4, 'industry'); },
+                    Wrought_Iron(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 2200, 1.4, 'industry'); },
                     Cement(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 26000, 1.45, 'industry'); },
                     Steel(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 21000, 1.45, 'industry'); }
                 },
@@ -1978,7 +1987,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let power = -(this.powered());
-                    return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[this.p_fuel().a])}</span>`;
+                    return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[+ice_fuel_adjust(this.p_fuel().a).toFixed(1)])}</span>`;
                 },
                 powered(wiki){
                     let power = 0;
@@ -2076,7 +2085,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('industrial_support_beams', r.offset, 700, 1.7); },
                     Steel(r={}){ return global.tech['support_beams'] === 2 ? undergroundCostMultiplier('industrial_support_beams', r.offset, 350, 1.8) : 0; },
-                    Titanium(r={}){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('industrial_support_beams', r.offset, 150, 1.72) : 0; },
+                    Titanium(r={}){ return global.tech['support_beams'] === 3 ? undergroundCostMultiplier('industrial_support_beams', r.offset, 100, 1.7) : 0; },
                 },
                 effect(){
                     let effect = `<div>${loc('underground_industrial_support_beams_effect', [5])}</div>`;
@@ -2205,7 +2214,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('core_forge', r.offset, 250000, 1.4, 'core'); },
                     Coal(r={}){ return undergroundCostMultiplier('core_forge', r.offset, 220000, 1.45, 'core'); },
-                    Wrought_Iron(r={}){ return undergroundCostMultiplier('core_forge', r.offset, 15000, 1.4, 'core'); },
+                    Wrought_Iron(r={}){ return undergroundCostMultiplier('core_forge', r.offset, 12000, 1.4, 'core'); },
                     Iridium(r={}){ return undergroundCostMultiplier('core_forge', r.offset, 2000, 1.45, 'core'); },
                 },
                 effect(){
@@ -2260,7 +2269,7 @@ const iceAgeModules = {
                     Money(r={}){ return undergroundCostMultiplier('core_refinery', r.offset, 280000, 1.38, 'core'); },
                     Stone(r={}){ return undergroundCostMultiplier('core_refinery', r.offset, 230000, 1.42, 'core'); },
                     Alloy(r={}){ return undergroundCostMultiplier('core_refinery', r.offset, 28000, 1.42, 'core'); },
-                    Brick(r={}){ return undergroundCostMultiplier('core_refinery', r.offset, 6000, 1.38, 'core'); },
+                    Brick(r={}){ return undergroundCostMultiplier('core_refinery', r.offset, 5500, 1.38, 'core'); },
                 },
                 effect(){
                     let mineshaft_effect = 1 + (actions.underground.cave.mineshaft.full_depth() - 200000) * 0.00003;
@@ -2269,7 +2278,7 @@ const iceAgeModules = {
                     }
                     return `<div>${loc(`underground_core_refinery_effect${global.tech['surface_uranium'] >= 3 ? '2' : '1'}`, [+(5 * mineshaft_effect).toFixed(2)])}</div>
                         <span class="has-text-caution">${loc('spend',[this.consume('water'), global.resource.Water.name])}</span>
-                        <span class="has-text-caution">${loc('spend',[this.consume('oil'), global.resource.Oil.name])}</span>`;
+                        <span class="has-text-caution">${loc('spend',[this.consume('oil'), +ice_fuel_adjust(global.resource.Oil.name).toFixed(1)])}</span>`;
                 },
                 consume(res){
                     switch (res){
@@ -2359,7 +2368,7 @@ const iceAgeModules = {
                 reqs: { support_beams: 3, mineshaft_depth: 3 },
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('core_support_beams', r.offset, 700, 1.7); },
-                    Titanium(r={}){ return undergroundCostMultiplier('core_support_beams', r.offset, 150, 1.72); },
+                    Titanium(r={}){ return undergroundCostMultiplier('core_support_beams', r.offset, 150, 1.7); },
                 },
                 effect(){
                     let effect = `<div>${loc('underground_core_support_beams_effect', [5])}</div>`;
@@ -2743,7 +2752,6 @@ const iceAgeModules = {
                     return desc;
                 },
                 support(){ return global.tech['surface_uranium'] >= 4 ? 3 : 2; },
-                /*support_fuel(){ return { r: 'Oil', a: 2 }; },*/
                 powered(){ return powerCostMod(18); },
                 powerBalancer(){
                     return [{ s: global.surface.great_heater.s_max - global.surface.great_heater.support }];
@@ -2782,8 +2790,8 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 250000, 1.38, 'wastes', 'surface'); },
                     Mythril(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 3500, 1.38, 'wastes', 'surface'); },
-                    Furs(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 450000, 1.42, 'wastes', 'surface'); },
-                    Horseshoe(){ return global.race['hooved'] ? this.soldiers() : 0; }
+                    Furs(r={}){ return undergroundCostMultiplier('watch_tower', r.offset, 350000, 1.42, 'wastes', 'surface'); },
+                    Horseshoe(){ return global.race['hooved'] ? actions.surface.wastes.watch_tower.soldiers() : 0; }
                 },
                 effect(){
                     let bunks = this.soldiers();
@@ -3159,7 +3167,7 @@ const iceAgeModules = {
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
-                        global.city['shrine'].count = global.underground['shrine'].count;
+                        global.city['shrine'].count = global.surface['shrine'].count;
                         if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
                             global.city.shrine.morale++;
                         }
@@ -3502,7 +3510,6 @@ const iceAgeModules = {
                 }
             },
             trees: {
-                //todo, update iron wood wiki to remove mention of bone weave
                 id: 'surface-trees',
                 title(){ return loc('surface_trees'); },
                 desc(){ return loc('surface_trees_desc'); },
@@ -4321,7 +4328,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 5000000, 1.32, 'crater', 'surface'); },
                     Power_Bones(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 25, 1.25, 'crater', 'surface'); },
-                    Oil(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 90000, 1.35, 'crater', 'surface'); },
+                    Oil(r={}){ return ice_fuel_adjust(undergroundCostMultiplier('fuel_refinery', r.offset, 90000, 1.35, 'crater', 'surface')).toFixed(1); },
                     Lumber(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 520000, 1.35, 'crater', 'surface'); },
                     Sheet_Metal(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 160000, 1.32, 'crater', 'surface'); }
                 },
@@ -4512,9 +4519,9 @@ const iceAgeModules = {
                     Super_Fuel(r={}){ 
                         let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
                         if (count < 500){
-                            return count < 500 ? 1000 : 0;
+                            return count < 500 ? +ice_fuel_adjust(1000).toFixed(1) : 0;
                         } else if (count < 5000){
-                            return undergroundCostMultiplier('thruster_fuel', count - 500, 1000, 1.001, 'thruster_site', 'surface');
+                            return +ice_fuel_adjust(undergroundCostMultiplier('thruster_fuel', count - 500, 1000, 1.001, 'thruster_site', 'surface'));
                         } else{ return 0; }
                     },
                     Brick(r={}){
@@ -4763,10 +4770,11 @@ function cave_fight(real=false, seed=global['warseed']){
         ambushing_max -= Math.round(3 * traits.ocular_power.vars()[1] / 100);
     }
     let ambushing = Math.floor(rand(ambushing_max / 5, ambushing_max,true) / 1400 * creatures); //by default, between 1% and 5% of creatures ambush
-    let deaths = ambushing;
-    let pierce = actions.underground.depths.cave_creatures.elites();
+    let deaths = global.race['high_pop'] ? traits.high_pop.vars()[0] * ambushing : ambushing;
+    //let pierce = actions.underground.depths.cave_creatures.elites();
+    let pierce = 0;
     let guaranteed = Math.floor(deaths * pierce);
-    let armor = armorCalc(deaths - guaranteed, army); //can be more than deaths
+    let armor = armorCalc(deaths - guaranteed); //can be more than deaths
     let armor_reduce = Math.floor(Math.min(deaths, armor, army-injuries));
     injuries += armor_reduce;
     deaths -= armor_reduce;
@@ -4786,8 +4794,9 @@ function cave_fight(real=false, seed=global['warseed']){
         creatures -= Math.ceil(rand(rating * 0.3, rating,true));
         if (creatures > 0){
             let new_deaths = Math.ceil(rand(creatures / 15, creatures / 5,true));
+            new_deaths = global.race['high_pop'] ? traits.high_pop.vars()[0] * new_deaths : new_deaths;
             let guaranteed = Math.floor(new_deaths * pierce);
-            let armor = armorCalc(new_deaths - guaranteed, army);
+            let armor = armorCalc(new_deaths - guaranteed);
             let armor_reduce = Math.floor(Math.min(new_deaths, armor, army-injuries));
             injuries += armor_reduce;
             new_deaths -= armor_reduce;
@@ -4888,6 +4897,7 @@ export function aberrant_stats(lifeform){
     fight *= a_effect('weak');
     fight *= aberrant_trait_list.ooze.trait_effect(aberrant_traits.ooze || 0).fight;
     fight *= aberrant_traits.bloated ? 0.75 : 1;
+    fight *= global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
 
     return { health:Math.floor(health), fight:Math.floor(fight), loot_mult:loot_mult };
 }
@@ -4939,7 +4949,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     }
 
     let attacked = (fight, log='enemy_attack', traits_active=true) =>{
-        let armor = traits_active && aberrant_traits.ghostly ? 0 : armorCalc(fight, army);
+        let armor = traits_active && aberrant_traits.ghostly ? 0 : armorCalc(fight);
         let armor_reduce = Math.floor(Math.min(fight, armor, army-injuries));
         injuries += armor_reduce;
         let total_deaths = Math.ceil(Math.min(army, fight - armor_reduce));
@@ -5718,6 +5728,7 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
             let cycle = growth_cycle(creature);
             global.surface[creature].count = Math.max(0, global.surface[creature].count + cycle.total_change);
             global.surface[creature].empowered += cycle.empowered;
+            corpses += cycle.corpse_create - cycle.corpse_consume;
         }
         if (global.surface[creature]?.empowered || global.underground['arena']?.count){
             let aberrant_odds = 0;
@@ -6026,6 +6037,7 @@ export function thrusterOrbitProjection(){
     max += Math.floor((global.surface.thruster_fuel?.count || 0) / 100);
     if (global.race['truepath']){
         max += 49;
+        min -= 5;
         variance -= 2;
     }
     min -= Math.floor(((global.surface.thruster_fuel?.count || 0) - 500) / 90);
@@ -6215,19 +6227,15 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
         base = traitCostMod('untrustworthy',base);
     }
     if (subSector === 'cave' && global.underground['support_beams']){
-        //multiplier -= global.underground['support_beams'].count * 0.005;
         base *= 0.95 ** global.underground['support_beams'].count;
     }
     if (subSector === 'depths' && global.underground['depths_support_beams']){
-        //multiplier -= global.underground['depths_support_beams'].count * 0.005;
         base *= 0.95 ** global.underground['depths_support_beams'].count;
     }
     if (subSector === 'industry' && global.underground['industrial_support_beams']){
-        //multiplier -= global.underground['industrial_support_beams'].count * 0.005;
         base *= 0.95 ** global.underground['industrial_support_beams'].count;
     }
     if (subSector === 'core' && global.underground['core_support_beams']){
-        //multiplier -= global.underground['core_support_beams'].count * 0.005;
         base *= 0.95 ** global.underground['core_support_beams'].count;
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
@@ -6255,6 +6263,31 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
 
 function iceAgeStorage(cost, region){
     return BHStorageMulti(spatialReasoning(cost));
+}
+
+export function ice_fuel_adjust(fuel){
+    if (global.race.universe === 'heavy'){
+        fuel *= 1.25 + (0.5 * darkEffect('heavy'));
+    }
+    if (global.race['truepath']){
+        fuel *= 1.25;
+    }
+    if (global.stats.achieve['heavyweight']){
+        fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
+    }
+    if (global.city.ptrait.includes('dense')){
+        fuel *= planetTraits.dense.vars()[2];
+    }
+    if (global.race['heavy']){
+        fuel *= 1 + (traits.heavy.vars()[0] / 100);
+    }
+    if (global.race['gravity_well']){
+        fuel *= 1.35 + (9.65 * darkEffect('heavy'));
+    }
+    if (eventActive('launch_day')){
+        fuel *= 0.95;
+    }
+    return fuel;
 }
 
 export function drawPerkUnderground(){

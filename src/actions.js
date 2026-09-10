@@ -3,7 +3,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool, modalCloseButton } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, blubberFill, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, citizenDeath, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount, showZoneFor } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
@@ -5042,7 +5042,7 @@ export function buildTemplate(key, region){
                                 global.resource[global.race.species].amount--;
                                 global.civic[global.civic.d_job].workers--;
                                 global.stats.sac++;
-                                blubberFill(1);
+                                citizenDeath(1);
                                 modRes('Food', Math.rand(250,1000), true);
                                 let low = 300;
                                 let high = 600;
@@ -10361,7 +10361,7 @@ export function thrusterProjection(){
     }
     else{
         let project = thrusterOrbitProjection();
-        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.fossil,loc('resource_Fossil_plural_name')])}</div>`;
+        desc += `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.fossil,loc('resource_Fossil_name')])}</div>`;
         desc += `<div>${loc('city_giant_thrusters_effect2', [project.min, project.max])}</div>`;
     }
     return desc;
