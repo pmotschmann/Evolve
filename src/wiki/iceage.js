@@ -9,22 +9,38 @@ import { ecosystemInfo } from '../iceage.js';
 export function iceagePage(content){
     let mainContent = sideMenu('create',content);
 
-    infoBoxBuilder(mainContent,{ name: 'general', template: 'iceage', paragraphs: 5, break: [2,3,4,5],
+    infoBoxBuilder(mainContent,{ name: 'general', template: 'iceage', paragraphs: 4, break: [2,3,4],
         para_data: {
             1: [loc('evo_challenge_iceage')],
             2: [loc('planet_kamikaze'), loc('tech_corrupt_gem_analysis'), loc('tech_giant_thrusters'), loc('city_giant_thrusters'), loc('city_thruster_fuel'), loc('evo_challenge_iceage')],
-            4: [loc('wiki_p_res_servants')],
-            5: [loc('city_shrine'), loc('trait_magnificent_name'), loc('wiki_p_res_servants')],
-            6: [loc('underground_challenge_nerf'), loc('wiki_iceage_mineshaft_rooted')]
+            4: [loc('underground_challenge_nerf'), loc('wiki_iceage_mineshaft_rooted')]
         },
         data_color: {
-            6:['danger','danger']
+            4:['danger','danger']
         },
         data_link: {
             2: [false, '#dimensional-tech-corrupt_gem_analysis', '#dimensional-tech-giant_thrusters', '#planetary-structures-giant_thrusters', '#planetary-structures-thruster_fuel']
         }
     });
     sideMenu('add',`iceage-gameplay`,'general',loc('wiki_iceage_general'));
+
+    
+    infoBoxBuilder(mainContent,{ name: 'environmental_changes', template: 'iceage', paragraphs: 4, break: [2,3,4], h_level: 2});
+    sideMenu('add',`iceage-gameplay`,'environmental_changes',loc('wiki_iceage_environmental_changes'));
+    
+    infoBoxBuilder(mainContent,{ name: 'trait_changes', template: 'iceage', paragraphs: 9, break: [2,3,4,5,6,7,8,9], h_level: 2,
+        para_data: {
+            2: [loc('resource_Stone_name'), loc('trait_sappy_name'), loc('trait_flier_name')],
+            3: [loc('resource_Lumber_name'), loc('trait_kindling_kindred_name'), loc('trait_iron_wood_name'), loc('trait_smoldering_name'), loc('resource_Plywood_name')],
+            4: [loc('resource_Lumber_name'), loc('resource_Uranium_name')],
+            5: [loc('trait_musical_name'), loc('trait_emotionless_name')],
+            6: [loc('trait_parasite_name'), loc('wiki_challenges_scenarios_cataclysm')],
+            7: [loc('trait_elemental_name')],
+            8: [loc('trait_environmentalist_name'), loc('city_hydro_power'), loc('resource_Water_name'), loc('underground_thermal_power'), loc('city_wind_power'), loc('trait_forge_name')],
+            9: [loc('tech_reclaimer'), loc('trait_detritivore_name'), loc('trait_soul_eater_name')],
+        }
+    });
+    sideMenu('add',`iceage-gameplay`,'trait_changes',loc('wiki_iceage_trait_changes'));
 
     infoBoxBuilder(mainContent,{ name: 'mineshaft', template: 'iceage', paragraphs: 8, break: [3,5,6,7,8],
         para_data: {

@@ -4908,7 +4908,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     let enemy_stats = aberrant_stats(lifeform);
     let aberrant_traits = global.aberrants[lifeform].traits;
     let aberrant_trait_list = ecosystemInfo.majorTraits;
-    let fight_log = [];
+    let fight_log = [['start', global.city.calendar.year, global.city.calendar.day]];
     const a_effect = (trait) => {
         return aberrant_trait_list[trait].trait_effect(aberrant_traits[trait]).effect || 1;
     }
@@ -6064,7 +6064,11 @@ export function fightLogModal(lifeform, parent){
         for(let i=0;i<log.length; i++){
             let item = deepClone(log[i]);
             let log_id = item.shift();
-            if (['ambush', 'enemy_attack', 'grenadier', 'unstable'].includes(log_id)){
+            if (['start'].includes(log_id)){
+                let elem = `<div><h3 class="has-text-advanced">${item[0] ? `${loc(`fight_log_${log_id}1`, [item[0]])}, ` : ''}${loc(`fight_log_${log_id}2`, [item[1]])}</h3>`;
+                log_content.append(elem);
+            }
+            else if (['ambush', 'enemy_attack', 'grenadier', 'unstable'].includes(log_id)){
                 let elem = `<div><h3 class="has-text-warning">${loc(`fight_log_${log_id}`)}: </h3>`;
                 elem += `<span>${loc('fight_log_deaths', [`<span class="has-text-danger">${item[0]}</span>`])}, </span>`;
                 elem += `<span>${loc('fight_log_injuries', [`<span class="has-text-warning">${item[1]}</span>`])}</span></div>`;
@@ -6354,7 +6358,7 @@ export function fossilCostMultiplier(base, offset){ //idea: n^2 + t where n is c
     let cost = 0;
     for(let [index, entry] of Object.entries(actions.underground.cave_perk)){
         if (!entry.arena){ //The arena has its own scaling
-            let count = (global.underground[index]?.count || 0); //costs increase by 1 for each other cave building purchased
+            let count = (global.underground[index]?.count || 0) + (global.underground[index]?.razed || 0); //costs increase by 1 for each other cave building purchased
             cost += count;
         }
     }
