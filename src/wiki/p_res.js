@@ -377,11 +377,11 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'ice_dark_t':
             inputs.reset.val = 'thruster';
-            equation += `<span>(<span v-show="!i.micro.val">10</span><span v-show="i.micro.val">4</span><span v-show="i.iceage.val"> * 2.5</span>)`;
+            equation += `<span>(<span v-show="!i.micro.val">20</span><span v-show="i.micro.val">8</span><span v-show="i.iceage.val"> * 2.5</span>)`;
             break;
         case 'ice_dark_l':
             inputs.reset.val = 'living_extinction';
-            equation += `<span>(<span v-show="!i.micro.val">10</span><span v-show="i.micro.val">4</span>)`;
+            equation += `<span>(<span v-show="!i.micro.val">20</span><span v-show="i.micro.val">8</span>)`;
             break;
         case 'harmony':
             inputs.reset.val = 'ascend';

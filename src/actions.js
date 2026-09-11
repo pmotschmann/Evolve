@@ -9364,7 +9364,7 @@ function sentience(){
         }
     }
 
-    if(global.race.species === 'Raptors'){
+    if(global.race.species === 'raptors'){
         global.race['raptor_plumage'] = Math.rand(0, 2);
     }
     
@@ -10352,7 +10352,7 @@ export function start_iceage(){
 }
 
 export function thrusterProjection(){
-    let gains = calcPrestige('thrusters');
+    let gains = calcPrestige('thruster');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     let desc = `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div>
         <div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div>
