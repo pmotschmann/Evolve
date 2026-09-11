@@ -2649,6 +2649,7 @@ const techs = {
         era: 'civilized',
         reqs: { mining: 1 },
         grant: ['mining',2],
+        path: ['standard', 'truepath'],
         cost: {
             Knowledge(){ return 350; }
         },
@@ -4723,7 +4724,7 @@ const techs = {
         cost: {
             Knowledge(){ return traitCostMod('stubborn',36000); }
         },
-        effect(){ return global.race['iceage'] ? loc('tech_adjunct_professor_effect_alt', [job_data.archaeologist.name()]) : loc('tech_adjunct_professor_effect',[wardenLabel(),job_data.scientist.name()]); },
+        effect(){ return global.race['iceage'] ? loc('tech_adjunct_professor_effect_alt', [job_data.archaeologist.name()], 2) : loc('tech_adjunct_professor_effect',[wardenLabel(),job_data.scientist.name()]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -7561,7 +7562,8 @@ const techs = {
         title(){ return loc('tech_quantum_manufacturing'); },
         desc(){ return loc('tech_quantum_manufacturing'); },
         category: 'crafting',
-        era: 'deep_space',
+        era: ['deep_space', 'glacial'],
+        era_a(){ return !global.race['iceage'] ? 'deep_space' : 'glacial'; },
         reqs: { high_tech: 11 },
         grant: ['q_factory',1],
         cost: {

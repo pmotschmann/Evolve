@@ -1065,7 +1065,8 @@ const outerTruth = {
             },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 3 : 4;
-                return jobScale(soldiers);
+                soldiers *= geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             },
             post(){
                 vBind({el: `#spc_enceladussynd`},'update');
@@ -1222,7 +1223,8 @@ const outerTruth = {
             },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 6 : 10;
-                return jobScale(soldiers);
+                soldiers *= geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             },
             post(){
                 drawTech();
@@ -3935,7 +3937,8 @@ const tauCetiModules = {
                 };
             },
             soldiers(){
-                return jobScale(6);
+                let soldiers = 6 * geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             }
         },
     },
@@ -4510,7 +4513,8 @@ const tauCetiModules = {
                 };
             },
             soldiers(){
-                return jobScale(5);
+                let soldiers = 5 * geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             }
         },
         womling_craftworks: {

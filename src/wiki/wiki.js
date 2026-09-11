@@ -91,7 +91,8 @@ function initPage(){
                 { key: 'interstellar' },
                 { key: 'intergalactic' },
                 { key: 'hell' },
-                { key: 'edenic' }
+                { key: 'edenic' },
+                { key: 'underground' }
             ]
         },
         {
@@ -116,7 +117,8 @@ function initPage(){
                 { key: 'prehistoric' },
                 { key: 'planetary' },
                 { key: 'space' },
-                { key: 'tauceti' }
+                { key: 'tauceti' },
+                { key: 'underground' }
             ]
         },
         {
@@ -230,6 +232,8 @@ async function menuDispatch(main,sub,frag){
         try {
             let saveState = decodeSaveString(global_data);
             if (saveState){ setGlobal(saveState); }
+            //todo. Initializing the save file overwrites resource names that were previously initialized.
+            //Which causes resources shown on the wiki to default to their internal names. This is notably relevant for Encrypted Data which turns into Cipher.
         }
         catch (e){
             console.error('Wiki could not read the save:', e);

@@ -1267,7 +1267,7 @@ export function blast_away(){
 
     clearSavedMessages();
 
-    let gains = calcPrestige('thrusters');
+    let gains = calcPrestige('thruster');
 
     global.stats.blastaway++;
     updateResetStats();

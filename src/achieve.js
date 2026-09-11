@@ -1865,32 +1865,6 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`)}</span>`])
         ]
     },
-    living_extinction: {
-        name: loc(`achieve_living_extinction_name`),
-        desc(){
-            return loc("achieve_perks_living_extinction");
-        },
-        active(){
-            return global.stats.achieve['living_extinction'] && global.stats.achieve.living_extinction.l >= 1 ? true : false;
-        },
-        notes: [
-            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_living_extinction_name`)}</span>`]),
-            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_living_extinction_name`)}</span>`])
-        ]
-    },
-    back_on_track: {
-        name: loc(`achieve_back_on_track_name`),
-        desc(){
-            return loc("achieve_perks_back_on_track");
-        },
-        active(){
-            return global.stats.achieve['back_on_track'] && global.stats.achieve.back_on_track.l >= 1 ? true : false;
-        },
-        notes: [
-            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_back_on_track_name`)}</span>`]),
-            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_back_on_track_name`)}</span>`])
-        ]
-    },
     gladiator: {
         name: loc(`achieve_gladiator_name`),
         desc(wiki){
@@ -2039,6 +2013,31 @@ export const perkList = {
             return global.stats.achieve['adam_eve'] && global.stats.achieve.adam_eve.l >= 5 ? true : false;
         },
         notes: []
+    },
+    back_on_track: {
+        name: loc(`achieve_back_on_track_name`),
+        desc(){
+            return loc("achieve_perks_back_on_track");
+        },
+        active(){
+            return global.stats.achieve['back_on_track'] && global.stats.achieve.back_on_track.l >= 5 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_back_on_track_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_back_on_track`,[`<a href="#underground-structures" class="has-text-advanced" target="_blank">${loc(`wiki_perks_achievement_note_back_on_track_link`)}</a>`])
+        ]
+    },
+    living_extinction: {
+        name: loc(`achieve_living_extinction_name`),
+        desc(){
+            return loc("achieve_perks_living_extinction");
+        },
+        active(){
+            return global.stats.achieve['living_extinction'] && global.stats.achieve.living_extinction.l >= 5 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_living_extinction_name`)}</span>`])
+        ]
     },
     creep: {
         name: loc(`wiki_arpa_crispr_creep`),
@@ -3020,13 +3019,13 @@ export function drawStats(){
     }
     if (global.aberrants){
         if(global.aberrants.herbivores.slain){
-            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_herbivores_slain")}</span> {{ format(s.zkills) }}</div>`);
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_herbivores_slain")}</span> {{ format(s.hslain) }}</div>`);
         }
         if(global.aberrants.carnivores.slain){
-            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_carnivores_slain")}</span> {{ format(s.zkills) }}</div>`);
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_carnivores_slain")}</span> {{ format(s.cslain) }}</div>`);
         }
         if(global.aberrants.scavengers.slain){
-            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_scavengers_slain")}</span> {{ format(s.zkills) }}</div>`);
+            stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_scavengers_slain")}</span> {{ format(s.sslain) }}</div>`);
         }
     }
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){

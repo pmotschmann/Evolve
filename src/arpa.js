@@ -2350,6 +2350,7 @@ export function sequenceLabs(){
     if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
     if (global.race['lone_survivor']){ labs += 2; }
     if (p_on['under_biolab']){ labs += p_on['under_biolab']; }
+    if (support_on['genetics_lab']){ labs += support_on['genetics_lab'] * 2; }
     if (labs > 0 && global.city.ptrait.includes('toxic')){
         labs += planetTraits.toxic.vars()[0];
     }

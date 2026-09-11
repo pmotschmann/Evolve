@@ -2339,10 +2339,10 @@ export function calcPrestige(type,inputs){
             new_plasmid += 800;
         }
         else if (type === 'living_extinction'){
-            new_plasmid = 600;
+            new_plasmid = 700;
         }
         if((type === 'living_extinction' || type === 'thruster') && global.race['iceage']){
-            new_plasmid *= 2.5;
+            new_plasmid *= 6;
         }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);
@@ -2379,7 +2379,7 @@ export function calcPrestige(type,inputs){
         gains.dark = new_dark;
     }
     else if(type === 'thruster' || type === 'living_extinction'){
-        let dark = universe === 'micro' ? 4 : 10;
+        let dark = universe === 'micro' ? 8 : 20;
         if((inputs.iceage ?? global.race['iceage']) && type !== 'living_extinction'){
             dark *= 2.5;
         }
