@@ -10,7 +10,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, fleetVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, fleetVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1016,6 +1016,87 @@ export function mechanicsPage(content){
         }
 
         sideMenu('add',`mechanics-gameplay`,`zwar`,loc('wiki_mechanics_zwar'));
+    }
+
+    { // Truepath S-Warfare
+        // Read S-Warfare values from shared gameplay constants.
+        let s = sWarfare;
+        let pct = v => `${+(v * 100).toFixed(1)}%`;
+
+        let swar = infoBoxBuilder(mainContent,{ name: 'swar', template: 'mechanics', label: loc('wiki_mechanics_swar'), paragraphs: 4, break: [3], h_level: 2,
+            para_data: {
+                1: [loc('tech_syndicate_threat_analysis')],
+                2: [s.watchDays,loc('outer_shipyard_class_freighter')],
+                3: [pct(s.stealth),loc('outer_shipyard_sensors')],
+                4: [loc('wiki_mechanics_tp_ships')]
+            },
+            data_link: {
+                1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
+                4: ['wiki.html#mechanics-gameplay-tp_ships']
+            }
+        });
+
+        { // How a raider picks and closes on a target
+            let hunt = infoBoxBuilder(swar,{ name: 'swar_hunt', template: 'mechanics', label: loc('wiki_mechanics_swar_hunt'), paragraphs: 7, break: [3,5,7], h_level: 2,
+                para_data: {
+                    1: [loc('outer_shipyard_class_freighter')],
+                    2: [s.overdriveAU,s.overdrive],
+                    3: [s.catchAU],
+                    6: [s.repair,s.haulRepair],
+                    7: [s.lostMin,s.lostMax]
+                }
+            });
+
+            let fit_reveal = createRevealSection(hunt,'mechanics','swar_hunt_fit',loc('wiki_mechanics_swar_hunt_fit'));
+            ['weapon','armor','sensor','engine','power'].forEach(function(part){
+                if (!s.fit[part]){ return; }
+                fit_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_'+part)}</span>: <span class="has-text-warning">${loc(`outer_shipyard_${part}_${s.fit[part]}`)}</span></div>`);
+            });
+        }
+
+        { // Escorting your freight
+            infoBoxBuilder(swar,{ name: 'swar_escort', template: 'mechanics', label: loc('wiki_mechanics_swar_escort'), paragraphs: 6, break: [3,5], h_level: 2,
+                para_data: {
+                    1: [loc('outer_shipyard_class_freighter')],
+                    2: [loc('outer_shipyard_fleet')],
+                    3: [pct(s.stealth),s.evade],
+                    5: [s.rounds]
+                },
+                data_link: {
+                    2: ['wiki.html#mechanics-gameplay-tp_ships_fleets']
+                }
+            });
+        }
+
+        { // Standing patrols
+            infoBoxBuilder(swar,{ name: 'swar_patrol', template: 'mechanics', label: loc('wiki_mechanics_swar_patrol'), paragraphs: 7, break: [3,5], h_level: 2,
+                para_data: {
+                    1: [loc('tech_ship_patrols')],
+                    3: [pct(s.stealth)],
+                    4: [s.detectorSegments,s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
+                    5: [s.chaseDays,pct(s.chaseSpeed - 1)],
+                    7: [s.rounds]
+                }
+            });
+        }
+
+        { // What a raid takes
+            infoBoxBuilder(swar,{ name: 'swar_loot', template: 'mechanics', label: loc('wiki_mechanics_swar_loot'), paragraphs: 7, break: [3,5], h_level: 2,
+                para_data: {
+                    1: [s.plunder.toLocaleString()],
+                    2: [Math.floor(s.plunder * 0.8).toLocaleString()],
+                    3: [loc('outer_shipyard_class_freighter')],
+                    5: [s.sneak],
+                    6: [loc('wiki_mechanics_supply')],
+                    7: [loc('outer_shipyard_class_freighter')]
+                },
+                data_link: {
+                    6: ['wiki.html#mechanics-gameplay-supply']
+                }
+            });
+        }
+
+        sideMenu('add',`mechanics-gameplay`,`swar`,loc('wiki_mechanics_swar'));
     }
 
     { // Supply Zones
