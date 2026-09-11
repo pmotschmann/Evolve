@@ -6863,25 +6863,39 @@ function zBlockadeDay(fleet){
 
 // --- The syndicate corsairs ---------------------------------------------------------------------
 
-const syndicateWatchDays = 25;      // Days before corsairs appear after prerequisites.
-const corsairLostMin = 25;          // Minimum respawn delay after a loss.
-const corsairLostMax = 50;          // Maximum respawn delay after a loss.
-const corsairRepair = 4;            // Hull repair per day.
-const corsairHaulRepair = 10;       // Hull repair per day after a successful haul.
-const corsairOverdriveAU = 0.25;    // Distance that enables overdrive.
-const corsairCatchAU = 0.05;        // Interception distance.
-const corsairStealth = 0.25;        // Sensor-range multiplier against corsairs.
-const corsairOverdrive = 2;         // Speed multiplier while pursuing a target.
-const corsairRounds = 5;            // Maximum combat rounds before retreating.
-const corsairEvade = 20;            // Reference scan range for escort evasion.
-const corsairChaseDays = 5;         // Patrol pursuit duration.
-const corsairChaseSpeed = 1.1;      // Patrol speed multiplier while pursuing.
-const corsairSneak = 2;             // Opening raid shots.
-const corsairPlunder = 1000000;     // Maximum raid cargo units.
-const shadowEngagements = 5;        // Engagements required to advance Shadow War.
-
-// Every corsair is the same hull: the syndicate found one design that works and stopped looking.
-const corsairFit = { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'quantum', special: 'none' };
+// Shared Syndicate Warfare settings, also used by the wiki.
+export const sWarfare = {
+    watchDays: 25,          // Days before corsairs appear after prerequisites.
+    lostMin: 25,            // Minimum respawn delay after a loss.
+    lostMax: 50,            // Maximum respawn delay after a loss.
+    repair: 4,              // Hull repair per day.
+    haulRepair: 10,         // Hull repair per day after a successful haul.
+    overdriveAU: 0.25,      // Distance that enables overdrive.
+    catchAU: 0.05,          // Interception distance.
+    stealth: 0.25,          // Sensor-range multiplier against corsairs.
+    overdrive: 2,           // Speed multiplier while pursuing a target.
+    rounds: 5,              // Maximum combat rounds before retreating.
+    evade: 20,              // Reference scan range for escort evasion.
+    chaseDays: 5,           // Patrol pursuit duration.
+    chaseSpeed: 1.1,        // Patrol speed multiplier while pursuing.
+    sneak: 2,               // Opening raid shots.
+    plunder: 1000000,       // Maximum raid cargo units.
+    engagements: 5,         // Engagements required to advance Shadow War.
+    studyFights: 250,       // Engagements needed to complete stealth study.
+    studyKills: 1,          // Destroyed corsairs needed to complete stealth study.
+    // Corsair hull loadout.
+    fit: { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'quantum', special: 'none' },
+    // Guard-post location and combat settings.
+    guardRegion: 'spc_venus',
+    guardFights: 50,        // Engagements needed to trace the guard.
+    guardFleet: 6,          // Corsairs in the guard fleet.
+    guardRepair: 1,         // Guard hull repair per day.
+    guardRounds: 50,        // Maximum daily guard combat rounds.
+    // Ground detector settings.
+    detectorSegments: 10,   // Segments to finish one array.
+    detectorRange: 1,       // Detection radius in AU.
+    detectorStealthRange: 0.5   // Detection radius against a stealth hull, until Stealth Detection.
+};
 
 // The raiding arc, which picks up exactly where syndicateActive() leaves off: that one switches itself
 // off at shadow 5, and this one begins after it.
@@ -6906,7 +6920,7 @@ function corsairFleet(base){
 
 // Return a base's concurrent corsair capacity.
 function corsairBerths(region){
-    if (region === syGuardRegion){ return 1; }
+    if (region === sWarfare.guardRegion){ return 1; }
     return global.tech['shadow'] && global.tech.shadow >= 12 ? 2 : 1;
 }
 
@@ -6917,8 +6931,7 @@ export function syndicateShips(){
         .filter(ship => ship && ship.damage < 100);
 }
 
-// The countdown that opens the arc. Both prerequisites have to hold together, and holding them for
-// syndicateWatchDays is what tips the syndicate's hand.
+// Start the corsair watch once its prerequisites are met.
 function syndicateWatch(){
     if (corsairsActive()){ return; }
     if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){
@@ -6927,7 +6940,7 @@ function syndicateWatch(){
     }
     // Advance corsair timers using game days.
     if (typeof global.race['sy_watch'] !== 'number'){ global.race['sy_watch'] = global.stats.days; }
-    if (global.stats.days - global.race.sy_watch < syndicateWatchDays){ return; }
+    if (global.stats.days - global.race.sy_watch < sWarfare.watchDays){ return; }
 
     delete global.race['sy_watch'];
     global.tech['shadow'] = 6;
@@ -6953,13 +6966,13 @@ function syndicateWatch(){
 }
 
 function corsairHull(region){
-    let ship = Object.assign({},corsairFit);
+    let ship = Object.assign({},sWarfare.fit);
     ship.name = loc('syndicate_corsair_name',[Math.floor(seededRandom(100,10000,true))]);
     ship.damage = 0;
     ship.fueled = true;
     ship.enemy = true;      // Use enemy movement and fuel rules.
     ship.syn = region;      // Source corsair base.
-    ship.stealth = corsairStealth;
+    ship.stealth = sWarfare.stealth;
     ship.haul = 0;
     TPShipInitTransit(ship, region);
     return ship;
@@ -7082,18 +7095,18 @@ function corsairGoHome(corsair){
 function corsairEngageDrive(corsair){
     if (corsair.od){ return; }
     corsair.od = true;
-    corsair.timeToNextStep /= corsairOverdrive;
-    corsair.totalTime /= corsairOverdrive;
+    corsair.timeToNextStep /= sWarfare.overdrive;
+    corsair.totalTime /= sWarfare.overdrive;
     if (Array.isArray(corsair.path)){
-        corsair.path.forEach(function(leg){ leg.totalTime /= corsairOverdrive; });
+        corsair.path.forEach(function(leg){ leg.totalTime /= sWarfare.overdrive; });
     }
 }
 
 // The escort's chance of seeing one coming.
 function corsairSpotted(group){
-    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * corsairStealth;
+    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
     if (scan <= 0){ return false; }
-    return seededRandom(0,1,true) < scan / (scan + corsairEvade);
+    return seededRandom(0,1,true) < scan / (scan + sWarfare.evade);
 }
 
 // Resolve corsair combat and return damage totals.
@@ -7117,9 +7130,9 @@ function corsairFight(corsair,group,where,sneak){
         shootAt(surprised);
     }
 
-    for (let round = 0; round < corsairRounds && corsair.damage < 100; round++){
+    for (let round = 0; round < sWarfare.rounds && corsair.damage < 100; round++){
         // Apply corsair stealth to defender sensor range.
-        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * corsairStealth;
+        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
         group.forEach(function(ship){
             if (ship.damage >= 100 || corsair.damage >= 100){ return; }
             if (seededRandom(0,1,true) >= playerAccuracy(scan,corsair)){ return; }
@@ -7144,12 +7157,12 @@ function corsairFight(corsair,group,where,sneak){
 // Count corsair engagements and advance Shadow War when the threshold is reached.
 function corsairEngaged(){
     global.race['sy_fights'] = (global.race['sy_fights'] || 0) + 1;
-    if (global.tech['shadow'] === 6 && global.race.sy_fights >= shadowEngagements){
+    if (global.tech['shadow'] === 6 && global.race.sy_fights >= sWarfare.engagements){
         global.tech['shadow'] = 7;
         drawTech();
     }
     // Refresh technology when corsair study reaches its threshold.
-    if (global.race.sy_fights === stealthStudyFights){
+    if (global.race.sy_fights === sWarfare.studyFights){
         drawTech();
     }
 }
@@ -7169,11 +7182,8 @@ export function corsairsDestroyed(){
 
 // What it takes to work out how a corsair hides. A wreck to take apart is worth any amount of
 // watching one get away, so either will do.
-const stealthStudyFights = 250;
-const stealthStudyKills = 1;
-
 export function stealthStudied(){
-    return corsairsFought() >= stealthStudyFights || corsairsDestroyed() >= stealthStudyKills ? true : false;
+    return corsairsFought() >= sWarfare.studyFights || corsairsDestroyed() >= sWarfare.studyKills ? true : false;
 }
 
 // The corsair is lost: the base that built it goes quiet for a while.
@@ -7185,14 +7195,14 @@ function corsairLost(corsair,where){
         if (at >= 0){ fleet.splice(at,1); }
         base.lost++;
         // Delay all base launches after a loss.
-        base.ready = global.stats.days + Math.round(seededRandom(corsairLostMin,corsairLostMax,true));
+        base.ready = global.stats.days + Math.round(seededRandom(sWarfare.lostMin,sWarfare.lostMax,true));
     }
     zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success');
 }
 
 // Scale plunder capacity by remaining hull integrity.
 function corsairHold(corsair){
-    return Math.floor(corsairPlunder * Math.max(0,100 - (corsair.damage || 0)) / 100);
+    return Math.floor(sWarfare.plunder * Math.max(0,100 - (corsair.damage || 0)) / 100);
 }
 
 // Return surviving freighters in a trade fleet.
@@ -7311,8 +7321,8 @@ function corsairAssault(corsair){
         zMessage(loc('syndicate_world_open',[regionName(where)]),'danger');
     }
     else {
-        zMessage(loc('syndicate_world_struck',[regionName(where),corsairSneak]),'danger');
-        const fight = corsairFight(corsair,guard,where,corsairSneak);
+        zMessage(loc('syndicate_world_struck',[regionName(where),sWarfare.sneak]),'danger');
+        const fight = corsairFight(corsair,guard,where,sWarfare.sneak);
         if (!fight.alive){ corsairLost(corsair,where); return true; }
         plunder = fight.taken > fight.dealt;
         if (!plunder){ zMessage(loc('syndicate_world_held',[regionName(where)]),'success'); }
@@ -7347,11 +7357,11 @@ function corsairStalk(corsair){
     }
     if (!quarry){ return; }
 
-    if (near <= corsairOverdriveAU && !corsair.od){
+    if (near <= sWarfare.overdriveAU && !corsair.od){
         corsairEngageDrive(corsair);
         zMessage(loc('syndicate_corsair_lock',[quarry.name]),'warning');
     }
-    if (near > corsairCatchAU){ return; }
+    if (near > sWarfare.catchAU){ return; }
 
     // Resolve interception as a robbery or escort fight.
     const company = shipFleet(quarry).filter(s => s.class !== 'freighter' && s.damage < 100);
@@ -7394,7 +7404,7 @@ function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.location.name === region){
         corsair.home = false;
         if (corsair.damage > 0){
-            corsair.damage = Math.max(0,corsair.damage - (corsair.haul > 0 ? corsairHaulRepair : corsairRepair) * Math.max(1,elapsed));
+            corsair.damage = Math.max(0,corsair.damage - (corsair.haul > 0 ? sWarfare.haulRepair : sWarfare.repair) * Math.max(1,elapsed));
             if (corsair.damage > 0){ return; }
         }
         corsair.haul = 0;
@@ -7429,7 +7439,7 @@ function patrolHunt(){
 
         // End pursuits that exceed the chase limit.
         if (patrol.chase){
-            if (global.stats.days - patrol.chase >= corsairChaseDays){
+            if (global.stats.days - patrol.chase >= sWarfare.chaseDays){
                 setPatrolChase(group,false);
                 if (!lead.inTransit){ advancePatrol(group); }
             }
@@ -7441,7 +7451,7 @@ function patrolHunt(){
         for (const corsair of corsairs){
             const away = dist3(at,shipPoint(corsair));
             if (away >= near){ continue; }
-            if (away <= sensorRangeAU(lead) * corsairStealth || detectorCue(at,corsair)){ quarry = corsair; near = away; }
+            if (away <= sensorRangeAU(lead) * sWarfare.stealth || detectorCue(at,corsair)){ quarry = corsair; near = away; }
         }
         if (!quarry){ continue; }
 
@@ -7450,9 +7460,9 @@ function patrolHunt(){
         if (id < 0 || !sendShipTo(id,target,true)){ continue; }
         // Apply the patrol pursuit speed multiplier.
         group.forEach(function(member){
-            member.timeToNextStep /= corsairChaseSpeed;
-            member.totalTime /= corsairChaseSpeed;
-            if (Array.isArray(member.path)){ member.path.forEach(function(leg){ leg.totalTime /= corsairChaseSpeed; }); }
+            member.timeToNextStep /= sWarfare.chaseSpeed;
+            member.totalTime /= sWarfare.chaseSpeed;
+            if (Array.isArray(member.path)){ member.path.forEach(function(leg){ leg.totalTime /= sWarfare.chaseSpeed; }); }
         });
         setPatrolChase(group,global.stats.days);
         zMessage(loc('syndicate_patrol_chase',[regionName(target)]),'warning');
@@ -7483,7 +7493,7 @@ function patrolStrike(){
         if (!at){ continue; }
 
         for (const corsair of corsairs){
-            if (dist3(at,shipPoint(corsair)) > corsairCatchAU){ continue; }
+            if (dist3(at,shipPoint(corsair)) > sWarfare.catchAU){ continue; }
             const where = encounterWhere(lead);
             const guns = group.filter(s => s.damage < 100);
             if (guns.length === 0){ break; }
@@ -7502,12 +7512,6 @@ function patrolStrike(){
 
 // --- Syndicate guard post -------------------------------------------------------------------------
 // Trace and defend the stationary Syndicate guard post at Venus.
-
-const syGuardRegion = 'spc_venus';   // Syndicate guard location.
-const syGuardFights = 50;            // Engagements needed to trace the guard.
-const syGuardFleet = 6;              // Corsairs in the guard fleet.
-const syGuardRepair = 1;             // Guard hull repair per day.
-const syGuardRounds = 50;            // Maximum daily guard combat rounds.
 
 // Venus is reachable after scouting or tracing the guard post.
 function venusReachable(){
@@ -7531,11 +7535,11 @@ function syndicateTrace(){
     if (!global.tech['shadow'] || global.tech.shadow !== 10){ return; }
     // Start tracing from the Stealth Detection milestone.
     if (typeof global.race['sy_trace'] !== 'number'){ global.race['sy_trace'] = corsairsFought(); }
-    if (corsairsFought() - global.race.sy_trace < syGuardFights){ return; }
+    if (corsairsFought() - global.race.sy_trace < sWarfare.guardFights){ return; }
 
     global.tech['shadow'] = 11;
     syndicateGuardPost();
-    messageQueue(loc('syndicate_base_traced',[regionName(syGuardRegion)]),'danger',false,['combat','progress']);
+    messageQueue(loc('syndicate_base_traced',[regionName(sWarfare.guardRegion)]),'danger',false,['combat','progress']);
     renderSpace();
     drawTech();
 }
@@ -7544,8 +7548,8 @@ function syndicateTrace(){
 function syndicateGuardPost(){
     if (global.race['sy_guard']){ return; }
     const guard = [];
-    for (let i = 0; i < syGuardFleet; i++){
-        const ship = corsairHull(syGuardRegion);
+    for (let i = 0; i < sWarfare.guardFleet; i++){
+        const ship = corsairHull(sWarfare.guardRegion);
         ship.guard = true;      // Keep guard ships in orbit.
         guard.push(ship);
     }
@@ -7557,9 +7561,9 @@ function syndicateBaseTaken(){
     const post = global.race['sy_guard'];
     post.taken = true;
     global.tech['shadow'] = 12;
-    const base = global.race.sy_base[syGuardRegion];
+    const base = global.race.sy_base[sWarfare.guardRegion];
     if (base){ base.closed = true; }
-    messageQueue(loc('syndicate_base_destroyed',[regionName(syGuardRegion)]),'success',false,['combat','progress']);
+    messageQueue(loc('syndicate_base_destroyed',[regionName(sWarfare.guardRegion)]),'success',false,['combat','progress']);
     // Refresh the map and tech UI after the base is destroyed.
     renderSpace();
     drawTech();
@@ -7570,10 +7574,10 @@ function syndicateGuardDay(){
     const post = global.race['sy_guard'];
     if (!post || !Array.isArray(post.s) || post.taken){ return; }
 
-    if (post.s.length > 0 && guardsAt(syGuardRegion).length > 0){
+    if (post.s.length > 0 && guardsAt(sWarfare.guardRegion).length > 0){
         post.hit = true;
         // Resolve guard combat before daily repairs.
-        zBattle(syGuardRegion,syndicateGuard(),syGuardRounds);
+        zBattle(sWarfare.guardRegion,syndicateGuard(),sWarfare.guardRounds);
     }
 
     // Remove destroyed guards before checking base status or repairing.
@@ -7583,17 +7587,17 @@ function syndicateGuardDay(){
 
     if (post.s.length === 0){
         // Take the base only if player guards survive the battle.
-        if (guardsAt(syGuardRegion).length > 0){ syndicateBaseTaken(); }
+        if (guardsAt(sWarfare.guardRegion).length > 0){ syndicateBaseTaken(); }
         else if (!post.broke){
             post.broke = true;
-            messageQueue(loc('syndicate_base_broken',[regionName(syGuardRegion)]),'success',false,['combat','progress']);
+            messageQueue(loc('syndicate_base_broken',[regionName(sWarfare.guardRegion)]),'success',false,['combat','progress']);
             renderSpace();
         }
         return;
     }
 
     post.s.forEach(function(ship){
-        if (ship.damage > 0){ ship.damage = Math.max(0,ship.damage - syGuardRepair); }
+        if (ship.damage > 0){ ship.damage = Math.max(0,ship.damage - sWarfare.guardRepair); }
     });
 }
 
@@ -11096,10 +11100,6 @@ function sensorContact(foe){
 // --- Detectors -----------------------------------------------------------------------------------
 // Ground detector structures and detection helpers.
 
-const detectorSegments = 10;
-const detectorRange = 1;            // Detection radius in AU.
-const detectorStealthRange = 0.5;   // Detection radius for stealth hulls in AU.
-
 // Detector site definitions and map anchors.
 export function detectorSites(){
     return {
@@ -11113,7 +11113,7 @@ export function detectorSites(){
 // Return whether a site's array is fully assembled.
 function detectorBuilt(at){
     const struct = global[at.region] ? global[at.region][at.key] : false;
-    return struct && struct.count >= detectorSegments ? true : false;
+    return struct && struct.count >= sWarfare.detectorSegments ? true : false;
 }
 
 // Return whether a completed detector is powered.
@@ -11131,12 +11131,12 @@ export function detectorNetwork(){
 // Detection radius against a stealth hull. Halved, until Stealth Detection teaches the arrays what
 // a corsair looks like and they read one as far as they read anything else.
 export function detectorStealthAU(){
-    return global.tech['shadow'] && global.tech.shadow >= 10 ? detectorRange : detectorStealthRange;
+    return global.tech['shadow'] && global.tech.shadow >= 10 ? sWarfare.detectorRange : sWarfare.detectorStealthRange;
 }
 
 // Detection radius against one hull.
 function detectorReach(ship){
-    return (ship.stealth || 1) < 1 ? detectorStealthAU() : detectorRange;
+    return (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
 }
 
 // Detect hulls within the active detector radius.
@@ -11159,7 +11159,7 @@ function detectorCue(at, foe){
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
         const post = genXYZcoord(sites[site].map);
-        if (dist3(post, foe.location.position) <= reach && dist3(post, at) <= detectorRange){ return true; }
+        if (dist3(post, foe.location.position) <= reach && dist3(post, at) <= sWarfare.detectorRange){ return true; }
     }
     return false;
 }
@@ -11170,14 +11170,14 @@ export function detectorTemplate(site){
     const region = at.region, key = at.key;
     // Completed detector segments.
     const built = function(){ return global[region].hasOwnProperty(key) ? global[region][key].count : 0; };
-    const priced = function(r){ return ((r.offset || 0) + built()) < detectorSegments; };
+    const priced = function(r){ return ((r.offset || 0) + built()) < sWarfare.detectorSegments; };
     return {
         id: `${region}-${key}`,
         title(){ return loc('detector_title',[planetName()[at.world]]); },
         desc(wiki){
             let head = `<div>${loc('detector_desc',[planetName()[at.world]])}</div>`;
-            if (built() < detectorSegments || wiki){
-                return head + `<div class="has-text-special">${loc('requires_segments',[detectorSegments])}</div>`;
+            if (built() < sWarfare.detectorSegments || wiki){
+                return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.detectorSegments])}</div>`;
             }
             return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
         },
@@ -11186,7 +11186,7 @@ export function detectorTemplate(site){
         reqs: { planet_defense: 1 },
         path: ['truepath'],
         queue_size: 5,
-        queue_complete(){ return detectorSegments - built(); },
+        queue_complete(){ return sWarfare.detectorSegments - built(); },
         cost: {
             Money(r={}){ return priced(r) ? 30000000 : 0; },
             Adamantite(r={}){ return priced(r) ? 1200000 : 0; },
@@ -11196,21 +11196,21 @@ export function detectorTemplate(site){
         },
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
-            let desc = `<div>${loc('detector_effect',[detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
-            if (count < detectorSegments){
-                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments - count])}</div>`;
+            let desc = `<div>${loc('detector_effect',[sWarfare.detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
+            if (count < sWarfare.detectorSegments){
+                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.detectorSegments - count])}</div>`;
             }
             return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
         },
         powered(){ return powerCostMod(10); },
         // Enable power controls after all segments are complete.
-        switchable(){ return built() >= detectorSegments; },
-        on_cap(){ return built() >= detectorSegments ? 1 : 0; },
+        switchable(){ return built() >= sWarfare.detectorSegments; },
+        on_cap(){ return built() >= sWarfare.detectorSegments ? 1 : 0; },
         action(){
-            if (built() >= detectorSegments){ return false; }
+            if (built() >= sWarfare.detectorSegments){ return false; }
             if (payCosts(this)){
                 incrementStruct(this);
-                if (global[region][key].count >= detectorSegments){
+                if (global[region][key].count >= sWarfare.detectorSegments){
                     global[region][key].on = 1;
                     if (region === 'city'){ drawCity(); }
                     else { renderSpace(); }
