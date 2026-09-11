@@ -2487,6 +2487,7 @@ export function logPrestigeGains(reset, gains) {
     gains = deepClone(gains);
 
     let prestigeReport = loc('prestige_report_list_start',[loc('wiki_resets_' + reset)]);
+    let reportColor = 'success'; // change later if there were no rewards
 
     // calculate number of gained servants and skilled servants
     if (['matrix','retired','eden'].includes(reset)){
@@ -2515,6 +2516,13 @@ export function logPrestigeGains(reset, gains) {
 
     let gainedRes = Object.keys(gains).filter((res) => ((gains[res] > 0) && !res.includes('pdebt')));
 
+    // case for no gains, doable if pdebt absorbed all the reward from a MAD
+    if (gainedRes.length === 0){
+        prestigeReport = prestigeReport + loc('prestige_report_list_nothing');
+        reportColor = 'warning';
+    }
+
+    // build the list one resource at a time
     for(let i = 0; i < gainedRes.length; ++i){
         let res = gainedRes[i];
         let resCount = gains[res];
@@ -2581,7 +2589,7 @@ export function logPrestigeGains(reset, gains) {
 
     prestigeReport = prestigeReport + loc('prestige_report_list_end');
 
-    messageQueue(prestigeReport,'success',false,['prestige']);
+    messageQueue(prestigeReport,reportColor,false,['prestige']);
 }
 
 // opts: { offset, wiki, era } — everything the costs need, in one place.

@@ -3764,6 +3764,7 @@
   "cataclysm_sentience": "A cataclysm has destroyed your homeworld %0. You must attempt to rally the survivors and escape the %1 system.",
   "iceage_sentience": "Your home planet has been blasted away from orbit with the sun, it has gone rogue and frozen over, driving any survivors underground.",
   "prestige_report_list_start": "%0 earned you",
+  "prestige_report_list_nothing": " nothing",
   "prestige_report_list_entry": " %0 %1",
   "prestige_report_list_separator": ",",
   "prestige_report_list_and": " and",
