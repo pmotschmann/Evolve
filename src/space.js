@@ -4033,7 +4033,8 @@ const interstellarProjects = {
                 if (global.race['grenadier']){
                     soldiers--;
                 }
-                return jobScale(soldiers);
+                soldiers *= geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             }
         },
         dyson: {
@@ -5475,7 +5476,8 @@ const galaxyProjects = {
             },
             soldiers(){
                 let soldiers = global.tech.marines >= 2 ? (global.race['grenadier'] ? 5 : 8) : (global.race['grenadier'] ? 3 : 5);
-                return jobScale(soldiers);
+                soldiers *= geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             }
         },
         ship_dock: {

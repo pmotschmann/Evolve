@@ -91,7 +91,8 @@ function initPage(){
                 { key: 'interstellar' },
                 { key: 'intergalactic' },
                 { key: 'hell' },
-                { key: 'edenic' }
+                { key: 'edenic' },
+                { key: 'underground' }
             ]
         },
         {
@@ -116,7 +117,8 @@ function initPage(){
                 { key: 'prehistoric' },
                 { key: 'planetary' },
                 { key: 'space' },
-                { key: 'tauceti' }
+                { key: 'tauceti' },
+                { key: 'underground' }
             ]
         },
         {

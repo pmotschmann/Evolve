@@ -1851,7 +1851,7 @@ export const actions = {
                         vBind({el: `#garrison`},'update');
                         vBind({el: `#c_garrison`},'update');
                     }
-                    global.civic['garrison'].max += Math.round(this.soldiers() * geneBonus('quartermaster'));
+                    global.civic['garrison'].max += Math.round(this.soldiers());
                     incrementStruct('garrison','city');
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -1873,8 +1873,9 @@ export const actions = {
                 if (global.race['grenadier']){
                     soldiers--;
                 }
+                soldiers *= geneBonus('quartermaster');
                 if (soldiers <= 0){ return 1; }
-                return jobScale(soldiers);
+                return +(jobScale(soldiers)).toFixed(3);
             }
         },
         hospital: {

@@ -162,7 +162,7 @@ const extraInformation = {
         loc(`wiki_tech_steel_casks2`),
     ],
     water_pumps: [
-        loc(`wiki_tech_building_unlock`, ['underground_water_pump'])
+        loc(`wiki_tech_building_unlock`, [loc('underground_water_pump')])
     ],
     mythril_valves: [
         loc(`wiki_tech_mythril_valves1`),
@@ -2231,12 +2231,12 @@ const extraInformation = {
     ],
     steel_support_beams: [
         loc(`wiki_tech_steel_support_beams`),
-        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)])
+        loc(`wiki_tech_building_unlock`,[loc(`underground_depths_support_beams`)])
     ],
     titanium_support_beams: [
         loc(`wiki_tech_titanium_support_beams`),
-        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)]),
-        loc(`wiki_tech_building_unlock`,[loc(`underground_support_beams`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_industry_support_beams`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`underground_core_support_beams`)]),
     ],
     mineshaft: [
         loc(`wiki_tech_building_unlock`,[loc(`underground_mineshaft`)])
@@ -2493,7 +2493,74 @@ const extraInformationTP = {
 };
 
 const extraInformationIA = {
-
+    housing: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_hollow')])
+    ],
+    storage: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_storage_space')])
+    ],
+    mining: [
+        loc(`wiki_tech_building_unlock`,[loc('city_mine')])
+    ],
+    science: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_stone_slab')])
+    ],
+    banking: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_vault')])
+    ],
+    theology: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_statue')])
+    ],
+    theology: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_statue')])
+    ],
+    reinforced_shed: [
+        loc(`wiki_tech_store_upgrade`,[loc(`underground_storage_space`),125])
+    ],
+    containerization: [
+        loc(`wiki_tech_containerization`,[10])
+    ],
+    steel_containers: [
+        loc(`wiki_tech_steel_containers`,[10])
+    ],
+    garrison: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_hunting_lodge')])
+    ],
+    trade: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_trade')])
+    ],
+    hospital: [
+        loc(`underground_color_garden_effect2`,[1])
+    ],
+    mythology: [
+        loc(`wiki_tech_empty`)
+    ],
+    res_conjuring: [
+        loc(`wiki_tech_conjuring`, [loc(`city_stone`),loc(`city_stone_conjour`)]),
+        loc(`wiki_tech_conjuring`, [loc(`underground_water`),loc(`underground_water_conjure`)])
+    ],
+    mad_science: [
+        loc(`wiki_tech_gov_time`)
+    ],
+    oil_well: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_oil_pump')])
+    ],
+    oil_depot: [
+        loc(`wiki_tech_building_unlock`,[loc('underground_fluid_depot')])
+    ],
+    adjunct_professor: [
+        loc('tech_adjunct_professor_effect_alt', [loc('job_archaeologist')], 2)
+    ],
+    screw_conveyor: [
+        loc(`wiki_tech_power_upgrade`,[loc(`city_foundry`),2]),
+        loc(`wiki_tech_screw_conveyor_alt`,[5])
+    ],
+    internet: [
+        loc('wiki_tech_internet_alt', [loc('underground_relic')])
+    ],
+    quantum_computing: [
+        loc(`wiki_tech_empty`)
+    ]
 };
 
 const extraRequirements = {
@@ -2900,6 +2967,38 @@ const extraRequirements = {
     decay1 : {
         title: loc('wiki_tech_req_decay1'),
         link: 'wiki.html#mechanics-gameplay-genome_decay'
+    },
+    surface1 : {
+        title: loc('arpa_projects_surface_elevator_title'),
+        link: 'wiki.html#projects-arpa-surface_elevator'
+    },
+    surface6: {
+        title: loc('wiki_iceage_surface_condition1', [10]),
+        link: 'wiki.html#iceage-gameplay-ecosystem'
+    },
+    surface9: {
+        title: loc('wiki_iceage_surface_condition2', [10]),
+        link: 'wiki.html#iceage-gameplay-ecosystem'
+    },
+    wastes1 : {
+        title: loc('wiki_tech_req_building', [loc('surface_woodcutter')]),
+        link: 'wiki.html#surface-structures-woodcutter'
+    },
+    surface_uranium1: {
+        title: loc('wiki_tech_req_building', [loc('surface_crater_drill')]),
+        link: 'wiki.html#surface-structures-crater_drill'
+    },
+    crater1: {
+        title: loc('wiki_iceage_surface_condition5'),
+        link: 'wiki.html#glacial-ice_tech-surface_expedition'
+    },
+    crater5: {
+        title: loc('surface_grand_dome'),
+        link: 'wiki.html#surface-structures-grand_dome'
+    },
+    ecosystem_genetics5: {
+        title: loc('wiki_iceage_surface_condition4'),
+        link: 'wiki.html#iceage-gameplay-aberrant_combat'
     },
     locked1 : {
         title: loc('unavailable_content')
@@ -3361,6 +3460,21 @@ const specialRequirements = {
                     name: 'terrifying'
                 }
             ]
+        },
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
+                    color: !global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                },
+                {
+                    title: loc(`underground_mineshaft_depth`, [10]),
+                    color: global.tech['mineshaft_depth'] >= 1,
+                    link: 'wiki.html#underground-structures-support_beams'
+                }
+            ]
         }
     ],
     diplomacy: [
@@ -3738,7 +3852,7 @@ const specialRequirements = {
             ]
         },
         {
-            category: 'challenge',
+            category: 'scenario',
             not: true,
             subreqs: [
                 {
@@ -4196,7 +4310,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4208,7 +4322,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4225,7 +4339,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4242,7 +4356,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4259,7 +4373,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4276,24 +4390,7 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [10]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
-                }
-            ]
-        }
-    ],
-    trade: [
-        {
-            category: 'unique',
-            subreqs: [
-                {
-                    title: loc(`wiki_tech_special_scenario_not`, [loc('evo_challenge_iceage')]),
-                    color: !global.race['iceage'],
-                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
-                },
-                {
-                    title: loc(`underground_mineshaft_depth`, [10]),
-                    color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
                 }
             ]
         }
@@ -4305,7 +4402,63 @@ const specialRequirements = {
                 {
                     title: loc(`underground_mineshaft_depth`, [20000]),
                     color: global.tech['mineshaft_depth'] >= 1,
-                    link: 'wiki.html#ice-structures-mineshaft'
+                    link: 'wiki.html#underground-structures-support_beams'
+                }
+            ]
+        }
+    ],
+    sequence_ecosystem: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: `${loc('wiki_iceage_surface_condition3', [loc('underground_arena')])}`,
+                    color: global.underground['arena']?.count >= 1,
+                    link: 'wiki.html#underground-structures-arena'
+                }
+            ]
+        }
+    ],
+    power_bone_study: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario`, [loc('evo_challenge_iceage')]),
+                    color: global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                }
+            ]
+        }
+    ],
+    bone_storage: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_scenario`, [loc('evo_challenge_iceage')]),
+                    color: global.race['iceage'],
+                    link: 'wiki.html#challenges-gameplay-scenarios_iceage'
+                }
+            ]
+        }
+    ],
+    underground_perk: [
+        {
+            category: 'achieve',
+            subreqs: [
+                {
+                    name: 'back_on_track',
+                    val: 5
+                }
+            ]
+        },
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'iceage'
                 }
             ]
         }

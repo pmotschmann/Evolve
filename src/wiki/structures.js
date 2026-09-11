@@ -36,7 +36,7 @@ export function renderStructurePage(zone,path){
             taucetiPage(content);
             break;
         case 'underground':
-            undergroundPage(content);
+            undergroundPage(content,path);
             break;
         case 'surface':
             surfacePage(content);
@@ -250,6 +250,7 @@ const calcInfo = {
 const effectInputs ={
     terraformer: ['truepath']
 }
+const fossilTracker = { };
 
 function addCalcInputs(parent,key,section,region,path){
     let hasMax = calcInfo.max[section] && calcInfo.max[section][key] ? calcInfo.max[section][key] : false;
@@ -343,9 +344,33 @@ function addCalcInputs(parent,key,section,region,path){
 
     let cost = action.cost;
 
+    let updateSpecialCosts = function(update){ //specifically for underground buildings because those share fossil costs based on total amount of buildings.
+        if(fossilTracker[`${region}_${key}`]){
+            if(update){
+                fossilTracker[`${region}_${key}`].count = inputs.owned;
+                for (let [index, entry] of Object.entries(fossilTracker)){
+                    entry.func(); //building count changed. Update all structures with a fossil cost.
+                }
+                return;
+            }
+            let total = 1;
+            for (let [index, entry] of Object.entries(fossilTracker)){
+                total += entry.count;
+            }
+            resources['Spent_Fossil'].vis = total > 0 ? true : false;
+            resources['Spent_Fossil'].cost = sizeApproximation(total,1);
+        }
+    }
+
     if (cost){
         Object.keys(adjustCosts(action,{ wiki: true })).forEach(function (res){
             resources[res] = {};
+            if(res === 'Spent_Fossil' && !action.arena){ //init fossil cost tracker. Skip arena because it is excluded from cost scaling that other underground buildings have
+                fossilTracker[`${region}_${key}`] = {
+                    func:updateSpecialCosts,
+                    count:inputs.owned,
+                }
+            }
         });
     }
 
@@ -355,6 +380,9 @@ function addCalcInputs(parent,key,section,region,path){
         if (cost){
             let new_costs = adjustCosts(action,{ offset: inputs.owned - inputs.real_owned, wiki: inputs.extra });
             Object.keys(resources).forEach(function (res){
+                if (res === 'Spent_Fossil' && fossilTracker[`${region}_${key}`]){
+                    return; //handle fossil costs in updateSpecialCosts to avoid excess cost updates
+                }
                 if (res === 'Custom'){
                     resources[res].vis = true;
                 }
@@ -427,20 +455,23 @@ function addCalcInputs(parent,key,section,region,path){
                     inputs[type] = hasMax;
                 }
                 updateEffect();
-                updateCosts();
+                updateCosts(true);
             },
             less(type){
                 if (inputs[type] > 0){
                     inputs[type]--;
                 }
+                updateSpecialCosts(true);
             },
             more(type){
                 if (!hasMax || (hasMax && inputs[type] < hasMax)){
                     inputs[type]++;
                 }
+                updateSpecialCosts(true);
             },
             importInputs(){
                 inputs.owned = inputs.real_owned;
+                updateSpecialCosts(true);
             }
         },
         filters: {
@@ -641,10 +672,11 @@ function taucetiPage(content){
     });
 }
 
-function undergroundPage(content){
+function undergroundPage(content,path){
     Object.keys(actions.underground).forEach(function (region){
         Object.keys(actions.underground[region]).forEach(function (struct){
-            if ((!actions.underground[region][struct].hasOwnProperty('wiki') || actions.underground[region][struct].wiki)){
+            if (path === 'iceage' ^ region === 'cave_perk' &&
+                (!actions.underground[region][struct].hasOwnProperty('wiki') || actions.underground[region][struct].wiki)){
                 let id = actions.underground[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
@@ -655,6 +687,7 @@ function undergroundPage(content){
             }
         });
     });
+    fossilTracker[Object.keys(fossilTracker)[0]].func(true);
 }
 
 function surfacePage(content){

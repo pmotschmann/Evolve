@@ -3933,8 +3933,9 @@ function fastLoop(){
             global_multiplier = global_multiplier ** 0.5;
         }
         if(global.underground['cave_creatures']){
-            global_multiplier *= 1 + (0.03 * global.underground['cave_creatures'].count);
-            breakdown.p['Global'][loc('underground_cave_creatures_vanquisher')] = `+${3 * global.underground['cave_creatures'].count}%`;
+            let mult = (2 * global.underground['cave_creatures'].count) + Math.min(10, global.underground['cave_creatures'].count);
+            global_multiplier *= 1 + (mult / 100);
+            breakdown.p['Global'][loc('underground_cave_creatures_vanquisher')] = `+${mult}%`;
         }
 
         if (global.interstellar['mass_ejector']){
@@ -4913,9 +4914,10 @@ function fastLoop(){
             hunters *= weapons / 20;
             scavengers *= weapons / 20;
 
-            let stealable = ['Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
+            let stealable = ['Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Steel','Titanium','Alloy','Polymer','Iridium'];
             if (!global.race['iceage']){
                 stealable.push('Lumber');
+                stealable.push('Uranium');
             }
             stealable.forEach(function(res){
                 if (global.resource[res].display){
@@ -5980,8 +5982,8 @@ function fastLoop(){
                 if(mineshaft_effect < 1){
                     mineshaft_effect = 1;
                 }
-                iron_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
-                iridium_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
+                iron_smelter *= 1 + (p_on['core_forge'] / 20 * mineshaft_effect);
+                iridium_smelter *= 1 + (p_on['core_forge'] / 20 * mineshaft_effect);
             }
             if(global.underground['smelter_perk']){
                 iron_smelter *= 1 + (global.underground['smelter_perk'].count / 50);
@@ -6076,7 +6078,7 @@ function fastLoop(){
                     if(mineshaft_effect < 1){
                         mineshaft_effect = 1;
                     }
-                    steel_smelter *= 1 + (p_on['core_forge'] / 12.5 * mineshaft_effect);
+                    steel_smelter *= 1 + (p_on['core_forge'] / 20 * mineshaft_effect);
                 }
                 if(global.underground['smelter_perk']){
                     steel_smelter *= 1 + (global.underground['smelter_perk'].count / 50);
@@ -10201,7 +10203,7 @@ function midLoop(){
             lCaps['water_collector'] += jobScale(global.underground['ice_collector'].count);
         }
         if(p_on['core_mine']){
-            lCaps['core_miner'] += p_on['core_mine'];
+            lCaps['core_miner'] += jobScale(p_on['core_mine']);
         }
         if (global.portal['dig_demon'] && global.race['warlord']){
             let demons = global.portal.dig_demon.on * actions.portal.prtl_wasteland.dig_demon.citizens();
@@ -10379,7 +10381,7 @@ function midLoop(){
         if(global.underground['hollow']){
             let pop = global.underground.hollow.count * actions.underground.cave.hollow.citizens();
             if(p_on['hollow']){
-                pop += p_on['hollow'];
+                pop += jobScale(p_on['hollow']);
             }
             caps[global.race.species] += pop;
             breakdown.c[global.race.species][loc('underground_hollow')] = pop + 'v';
@@ -10400,7 +10402,7 @@ function midLoop(){
         if (global.underground['stone_house']){
             let pop = global.underground['stone_house'].count * actions.underground.depths.stone_house.citizens();
             if(p_on['stone_house']){
-                pop += p_on['stone_house'] * 2;
+                pop += jobScale(p_on['stone_house'] * 2);
             }
             caps[global.race.species] += pop;
             breakdown.c[global.race.species][loc('underground_stone_house')] = pop + 'v';
@@ -12645,7 +12647,7 @@ function midLoop(){
             drawTech();
         }
 
-        if (global.race['kindling_kindred'] || global.race['smoldering']){
+        if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['iceage']){
             global.civic.lumberjack.workers = 0;
             global.civic.lumberjack.assigned = 0;
             global.resource.Lumber.crates = 0;
@@ -13591,7 +13593,7 @@ function longLoop(){
             global.civic.govern.rev = 0;
         }
 
-        if (global.city.ptrait.includes('trashed') || global.race['scavenger']){
+        if (global.city.ptrait.includes('trashed') || global.race['scavenger'] || global.race['scrounger']){
             global.civic.scavenger.display = true;
         }
         else {

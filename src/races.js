@@ -4934,7 +4934,7 @@ export const traits = {
         taxonomy: 'production',
         val: 5,
         vars(r){
-            // [Percentage of scavenger production]
+            // [Percentage of raider production]
             switch (r || traitRank('scrounger') || 1){
                 case 0.1:
                     return [10];
@@ -4949,7 +4949,7 @@ export const traits = {
                 case 3:
                     return [90];
                 case 4:
-                    return [100];
+                    return [110];
             }
         }
     },
@@ -6620,7 +6620,7 @@ export const races = {
     },
     raptors: {
         name: loc('race_raptors'),
-        desc(){ return raptorPlumage() ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
+        desc(){ return global.race['raptor_plumage'] ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
         type: 'primordial',
         home: loc('race_raptors_home'),
         entity: loc('race_raptors_entity'),
@@ -7336,9 +7336,9 @@ export function racialTrait(workers,type){
         if (global.city.ptrait.includes('rage')){
             modifier *= planetTraits.rage.vars()[1];
         }
-        if (global.race['cunning']){
+        /*if (global.race['cunning']){
             modifier *= 1 + (geneVars('cunning')[0] * global.race['cunning'] / 100);
-        }
+        }*/
         if (global.city.biome === 'savanna'){
             modifier *= biomes.savanna.vars()[1];
         }
@@ -8355,9 +8355,11 @@ export function cleanAddTrait(trait){
                 }
             }
             removeFromQueue(['city-trade']);
+            setPurgatory(['undeground-trade']);
             removeFromRQueue(['trade']);
             setPurgatory('tech','trade');
             setPurgatory('city','trade');
+            setPurgatory('underground','trade');
             break;
         case 'slaver':
             checkPurgatory('tech','slaves');
@@ -8382,6 +8384,7 @@ export function cleanAddTrait(trait){
         case 'magnificent':
             if (global.tech['theology'] >= 2) {
                 checkPurgatory('city','shrine',actions.city.shrine.struct().d);
+                checkPurgatory('underground','shrine', { count: 0 });
             }
             break;
         case 'unified':
@@ -8454,7 +8457,7 @@ export function cleanAddTrait(trait){
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',actions.city.meditation.struct().d);
-                checkPurgatory('underground','meditation',{ count: 0});
+                checkPurgatory('underground','meditation',{ count: 0 });
                 if (!global.race['orbit_decayed']){
                     global.resource.Zen.display = true;
                 }
@@ -8567,13 +8570,13 @@ export function cleanRemoveTrait(trait,rank){
             if (global.race['kindling_kindred']){
                 break;
             }
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
+            }
             if (global.race['iceage'] && !global.surface['wooductter']){
                 break;
             }
             global.resource.Lumber.display = true;
-            if (global.tech['foundry']){
-                global.resource.Plywood.display = true;
-            }
             if (global.race['casting']){
                 defineIndustry();
             }
@@ -9296,10 +9299,6 @@ function foxColor(){
     return loc(`color_red`);
 }
 
-function raptorPlumage(){
-    return global.race.hasOwnProperty('raptor_plumage');
-}
-
 export function basicRace(skip){
     skip = skip || [];
     let basicList = Object.keys(races).filter(function(r){ return !['custom','hybrid'].includes(r) && !skip.includes(r) && races[r].basic(); });
@@ -9516,7 +9515,7 @@ function minorWish(parent){
                         'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium',
                         'Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Crystal','Chrysotile'
                     ].forEach(function(res){
-                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && res !== 'Lumber')){
+                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && !['Lumber', 'Uranium'].includes(res))){
                             resList.push(res);
                         }
                     });
@@ -9881,7 +9880,7 @@ function majorWish(parent){
                         'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium',
                         'Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Crystal','Chrysotile'
                     ].forEach(function(res){
-                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && res !== 'Lumber')){
+                        if (global.resource[res].display && global.resource[res].amount * 1.05 < global.resource[res].max && (!global.race['iceage'] && !['Lumber', 'Uranium'].includes(res))){
                             resList.push(res);
                         }
                     });
@@ -10059,7 +10058,7 @@ function majorWish(parent){
                     if (!global.race.wishStats.temple && !global.race['cataclysm'] && !global.race['lone_survivor'] && !global.race['warlord']){
                         options.push('temple');
                     }
-                    if (!global.race.wishStats.zigg && !global.race['lone_survivor'] && !global.race['warlord']){
+                    if (!global.race.wishStats.zigg && !global.race['lone_survivor'] && !global.race['warlord'] && !global.race['iceage']){
                         options.push('zigg');
                     }
 

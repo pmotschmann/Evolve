@@ -743,6 +743,8 @@ export function drawnGovernOffice(){
         let contain = $(`<div class="tConfig" v-show="showTask('hunt')"><div class="has-text-warning" role="heading" aria-level="3">${loc(`gov_task_hunt`)}</div></div>`);
         options.append(contain);
 
+        contain.append(`<div class="chk"><b-checkbox v-model="s.aberrantWinMsg">${loc(`gov_task_hunt_victory_message`)}</b-checkbox></div>`);
+
         let identifier = $(`<div class="storage"></div>`);
         contain.append(identifier);
         identifier.append($(`<div class="has-text-success">${loc(`gov_task_hunt_herbivores`)}</div>`));
@@ -773,7 +775,8 @@ export function drawnGovernOffice(){
         data: { 
             t: global.race.governor.tasks,
             c: global.race.governor.config,
-            r: global.resource
+            r: global.resource,
+            s: global.settings,
         },
         methods: {
             setTask(t,n){

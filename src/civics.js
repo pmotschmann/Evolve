@@ -1815,6 +1815,9 @@ function war_campaign(gov){
         if (global.race['artifical'] || global.race['fasting']){
             basic.shift();
         }
+        if (global.race['iceage']){
+            basic = basic.filter(r => r !== 'Lumber');
+        }
         if (global.race['smoldering']){
             basic.push('Chrysotile');
         }

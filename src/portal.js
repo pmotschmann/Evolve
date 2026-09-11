@@ -390,7 +390,7 @@ const fortressModules = {
             },
             soldiers(){
                 let absorb = (global.race?.absorbed?.length || 1);
-                return 20 + absorb + (global.portal.minions?.rank || 1);
+                return +(20 + absorb + (global.portal.minions?.rank || 1) * geneBonus('quartermaster')).toFixed(3);
             },
             aura(){
                 if (global.portal?.throne?.skill && global.portal?.minions?.rank < 5){
@@ -1444,7 +1444,8 @@ const fortressModules = {
                 if (global.race['grenadier']){
                     soldiers -= 4;
                 }
-                return jobScale(soldiers);
+                soldiers *= geneBonus('quartermaster');
+                return +(jobScale(soldiers)).toFixed(3);
             },
             aura(){
                 if (global.portal?.throne?.skill && global.portal?.brute?.rank < 5){
@@ -2176,6 +2177,7 @@ const fortressModules = {
             },
             soldiers(){
                 let soldiers = global.race['grenadier'] ? 3 : 5;
+                soldiers *= geneBonus('quartermaster');
                 return jobScale(soldiers);
             },
             citizens(){
