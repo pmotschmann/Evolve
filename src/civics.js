@@ -1,5 +1,5 @@
 import { $ } from './dom.js';
-import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, decayPerks} from './vars.js';
+import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, support_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery, modalCloseButton, calcDeepPower } from './functions.js';
 import { universeAffix } from './achieve.js';
@@ -11,7 +11,7 @@ import { jobScale } from './jobs.js';
 import { templeCount, actions } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
-import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal, counterEspionage, counterEspionageZones, intelligenceOfficerCost, trainIntelligenceOfficer, dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal, counterEspionage, counterEspionageZones, intelligenceOfficerCost, intelligenceOfficerTrainingTime, intelligenceOfficerRecoveryTime, trainIntelligenceOfficer, dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -88,6 +88,7 @@ export function defineCounterEspionage(){
                 <button class="button dismissOfficer" :disabled="a.officers.available === 0" @click="dismiss">{{ dismissLabel() }}</button>
             </div>
             <span v-if="a.officers.training" class="counterEspionageTraining">{{ trainingLabel() }}</span>
+            <span v-if="a.officers.injured.length" class="counterEspionageTraining">{{ recoveryLabel() }}</span>
             <div v-for="zone in zones()" :key="zone.id" class="counterEspionageZone">
                 <span>{{ zone.name }}: {{ assigned(zone.id) }}</span>
                 <button class="button" @click="assign(zone.id,-1)" :disabled="assigned(zone.id) === 0">-</button>
@@ -100,7 +101,8 @@ export function defineCounterEspionage(){
             zones(){ return counterEspionageZones(); },
             assigned(zone){ return this.a.officers.assigned[zone] || 0; },
             trainLabel(){ return loc('counter_espionage_train',[intelligenceOfficerCost().toLocaleString()]); },
-            trainingLabel(){ return loc('counter_espionage_training',[Math.max(0,this.a.officers.training - global.stats.days)]); },
+            trainingLabel(){ return loc('counter_espionage_training',[intelligenceOfficerTrainingTime()]); },
+            recoveryLabel(){ return loc('counter_espionage_recovery',[this.a.officers.injured.length,intelligenceOfficerRecoveryTime()]); },
             dismissLabel(){ return loc('counter_espionage_fire'); },
             train(){ trainIntelligenceOfficer(); },
             dismiss(){ dismissIntelligenceOfficer(); },
@@ -2563,12 +2565,67 @@ export function armyRating(val,type,wound,analysis){
     return army;
 }
 
+// Return the daily garrison training rate.
+export function soldierTrainingRate(){
+    let rate = 2.5;
+    if (global.race['high_pop']){ rate *= traits.high_pop.vars()[2]; }
+    if (global.race['diverse']){ rate /= 1 + (traits.diverse.vars()[0] / 100); }
+    if (global.city['boot_camp']){
+        let train = global.tech['boot_camp'] >= 2 ? 0.08 : 0.05;
+        train *= geneBonus('ambusher');
+        if (global.blood['lust']){ train += global.blood.lust * 0.002; }
+        const militant = govActive('militant',0);
+        if (militant){ train *= 1 + (militant / 100); }
+        rate *= 1 + ((decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
+    }
+    if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5 && global.eden['bunker']){
+        let train = 0.1;
+        train *= geneBonus('ambusher');
+        if (global.blood['lust']){ train += global.blood.lust * 0.002; }
+        const militant = govActive('militant',0);
+        if (militant){ train *= 1 + (militant / 100); }
+        rate *= 1 + (global.eden.bunker.count * train);
+    }
+    if (global.race['beast']){ rate *= 1 + (traits.beast.vars()[2] / 100); }
+    if (global.race['brute']){ rate += traits.brute.vars()[1] / 40; }
+    const fathom = fathomCheck('orc');
+    if (fathom > 0){ rate += traits.brute.vars(1)[1] / 40 * fathom; }
+    return rate;
+}
+
+// Return the daily recovery rate used for officer injuries.
+export function soldierRecoveryRate(astroSign = astrologySign()){
+    let healed = jobScale(global.race['regenerative'] ? traits.regenerative.vars()[0] : 1);
+    const fathom = fathomCheck('troll');
+    if (fathom > 0){ healed += Math.round(jobScale(20 * traits.regenerative.vars(1)[0] * fathom)); }
+    let healing = global.city['hospital'] ? global.city.hospital.count : 0;
+    if (global.race['orbit_decayed'] && global.race['truepath']){ healing = Math.min(support_on['operating_base'],p_on['operating_base']); }
+    else if (global.race['artifical'] && global.city['boot_camp']){ healing = global.city.boot_camp.count; }
+    if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){ healing += Math.min(5,global.stats.achieve.lamentis.l); }
+    if (astroSign === 'cancer'){ healing = Math.max(0,healing + astroVal('cancer')[0]); }
+    if (global.tech['medic'] && global.tech.medic >= 2){ healing *= global.tech.medic; }
+    if (global.race['fibroblast']){ healing += geneVars('fibroblast')[0] * global.race.fibroblast; }
+    if (global.race['deep_power']){ healing *= 1 + calc_mastery() * calcDeepPower('combat'); }
+    if (global.underground['arena']){ healing *= actions.underground.cave_perk.arena.trophy_effect('carnivores'); }
+    if (global.underground['hunting_lodge_perk']){ healing *= 1 + global.underground.hunting_lodge_perk.count * 0.02; }
+    healing *= geneBonus('mycelial');
+    if (global.race['cannibalize'] && global.city['s_alter']?.regen > 0){ healing = healing >= 20 ? healing * (1 + traits.cannibalize.vars()[0] / 100) : healing + Math.floor(traits.cannibalize.vars()[0] / 5); }
+    const mantis = fathomCheck('mantis');
+    if (mantis > 0){ healing = healing >= 20 ? healing * (1 + traits.cannibalize.vars(1)[0] / 100 * mantis) : healing + Math.floor(traits.cannibalize.vars(1)[0] / 5 * mantis); }
+    if (global.race['high_pop']){ healing *= traits.high_pop.vars()[2]; }
+    const nopain = govActive('nopain',0);
+    if (nopain){ healing *= 1 + nopain / 100; }
+    if (global.city.banquet?.on && global.city.banquet.level >= 2){ healing *= 1 + global.city.banquet.strength ** 0.65 / 100; }
+    let threshold = global.race['slow_regen'] ? 20 * (1 + traits.slow_regen.vars()[0] / 100) : 20;
+    return healed + Math.round(healing) / threshold;
+}
+
 // Return the number of garrison slots occupied by Intelligence Officers.
 export function intelligenceOfficerCount(){
     const officers = global.race.alien?.officers;
     if (!officers){ return 0; }
     const assigned = Object.values(officers.assigned || {}).reduce((sum,count) => sum + count, 0);
-    return officers.available + assigned + (officers.training ? 1 : 0);
+    return officers.available + assigned + (officers.injured?.length || 0) + (officers.training ? 1 : 0);
 }
 
 export function garrisonSize(max, args = {}){

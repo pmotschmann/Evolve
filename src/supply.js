@@ -582,29 +582,68 @@ export function setZoneHousing(byZone, population){
     // Remove legacy population assigned to the destroyed capital.
     if (capitalGone() && pop[CAPITAL]){ delete pop[CAPITAL]; }
 
-    // Redistribute population only when housing capacity changes.
-    if (sameHousing && Object.keys(pop).length){
+    // Rebalance population when housing changes or a zone is over capacity.
+    const overfull = Object.keys(pop).some(zone => pop[zone] > (housing[zone] || 0));
+    if (sameHousing && Object.keys(pop).length && !(overfull && population <= room)){
         let placed = 0;
         for (const zone in pop){ placed += pop[zone]; }
         if (placed === population){ return pop; }
         if (placed < population){
-            pop[homeZone()] = (pop[homeZone()] || 0) + (population - placed);
+            settleCitizens(pop, housing, population - placed);
             return pop;
         }
     }
 
     for (const zone in pop){ delete pop[zone]; }
-    // Whole people, with the rounding remainder going to the capital rather than being dropped: the
-    // parts have to add back up to the population the game thinks it has.
+    // Distribute whole citizens within housing capacity and preserve the total.
     const zones = Object.keys(housing);
     let placed = 0;
     for (const zone of zones){
-        pop[zone] = Math.floor(population * housing[zone] / room);
+        pop[zone] = Math.min(housing[zone], Math.floor(population * housing[zone] / room));
         placed += pop[zone];
     }
-    pop[homeZone()] = (pop[homeZone()] || 0) + (population - placed);
+    settleCitizens(pop, housing, population - placed);
     global.race.zoneHousing = housing;
     return pop;
+}
+
+// Fill spare housing, starting with the capital.
+function settleCitizens(pop, housing, left){
+    const home = capitalZone();
+    const order = [home].concat(Object.keys(housing).filter(zone => zone !== home));
+    for (const zone of order){
+        if (left <= 0){ break; }
+        const give = Math.min(left, Math.max(0, (housing[zone] || 0) - (pop[zone] || 0)));
+        if (give > 0){
+            pop[zone] = (pop[zone] || 0) + give;
+            left -= give;
+        }
+    }
+    if (left > 0){ pop[home] = (pop[home] || 0) + left; }
+}
+
+// Scale zone housing to the population cap.
+export function fitHousing(byZone, raw, cap){
+    if (!(cap > 0)){ return {}; }
+    const home = capitalZone();
+    const housing = {};
+    let named = 0;
+    for (const zone in byZone){
+        if (byZone[zone] > 0){
+            housing[zone] = byZone[zone];
+            named += byZone[zone];
+        }
+    }
+    if (raw > named){ housing[home] = (housing[home] || 0) + (raw - named); }
+    const total = Math.max(raw, named);
+    if (total <= 0){ return { [home]: cap }; }
+    let given = 0;
+    for (const zone in housing){
+        housing[zone] = Math.floor(housing[zone] * cap / total);
+        given += housing[zone];
+    }
+    housing[home] = (housing[home] || 0) + (cap - given);
+    return housing;
 }
 
 // How many citizens live in a zone, or the whole map of them.

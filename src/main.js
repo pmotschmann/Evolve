@@ -5,7 +5,7 @@ import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, c
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
-import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
+import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap, craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone } from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer, rivalCollapsed, collapseRival } from './civics.js';
@@ -10429,8 +10429,7 @@ function midLoop(){
             if(p_on['hollow']){
                 pop += jobScale(p_on['hollow']);
             }
-            caps[global.race.species] += pop;
-            breakdown.c[global.race.species][loc('underground_hollow')] = pop + 'v';
+            addCap(global.race.species, pop, 'city:hollow', loc('underground_hollow'));
         }
         if (global.tauceti['tau_housing'] && global.tech['isolation']){
             let pop = global.tauceti.tau_housing.count * actions.tauceti.tau_home.tau_housing.citizens();
@@ -10450,8 +10449,7 @@ function midLoop(){
             if(p_on['stone_house']){
                 pop += jobScale(p_on['stone_house'] * 2);
             }
-            caps[global.race.species] += pop;
-            breakdown.c[global.race.species][loc('underground_stone_house')] = pop + 'v';
+            addCap(global.race.species, pop, 'city:stone_house', loc('underground_stone_house'));
             if (global.tech['home_safe']){
                 let gain = (global.underground['stone_house'].count * actions.underground.depths.stone_house.res_cap('money'));
                 caps['Money'] += gain;
@@ -10469,8 +10467,7 @@ function midLoop(){
         }
         if (support_on['surface_apartment']){
             let pop = support_on['surface_apartment'] * actions.surface.wastes.surface_apartment.citizens();
-            caps[global.race.species] += pop;
-            breakdown.c[global.race.species][`${housingLabel('large')}+0`] = pop + 'v';
+            addCap(global.race.species, pop, 'city:surface_apartment', `${housingLabel('large')}+0`);
             if (global.tech['home_safe']){
                 let gain = support_on['surface_apartment'] * actions.surface.wastes.surface_apartment.res_cap('money');
                 caps['Money'] += gain;
@@ -10479,8 +10476,7 @@ function midLoop(){
         }
         if (global.underground['apartment_perk']){
             let pop = global.underground['apartment_perk'].count * actions.underground.cave_perk.apartment_perk.citizens();
-            caps[global.race.species] += pop;
-            breakdown.c[global.race.species][`${housingLabel('large')}+1`] = pop + 'v';
+            addCap(global.race.species, pop, 'city:apartment_perk', `${housingLabel('large')}+1`);
         }
         if (global.eden['rectory']){
             let pop = p_on['rectory'] * actions.eden.eden_asphodel.rectory.citizens();
@@ -10587,10 +10583,9 @@ function midLoop(){
         if (support_on['work_station']){
             let gain = Math.round(support_on['work_station'] * actions.surface.crater.work_station.citizens());
             let cap = actions.surface.crater.work_station.res_cap('uranium') * global.surface['work_station'].count;
-            caps[global.race.species] += gain;
+            addCap(global.race.species, gain, 'city:work_station', `${loc('surface_work_station')}`);
             caps['Uranium'] += cap;
             lCaps['crater_worker'] += jobScale(support_on['work_station']);
-            breakdown.c[global.race.species][`${loc('surface_work_station')}`] = gain + 'v';
             breakdown.c['Uranium'][loc('surface_work_station')] = cap+'v';
         }
         if (global.city['lodge']){
@@ -12039,12 +12034,13 @@ function midLoop(){
             }
         });
 
+        const rawHousing = caps[global.race.species];
         if (caps[global.race.species] > 0){
             caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
         }
 
         // Track population by housing zone for local upkeep.
-        setZoneHousing(regCapAccum[global.race.species] || {}, global.resource[global.race.species].amount);
+        setZoneHousing(fitHousing(regCapAccum[global.race.species] || {}, rawHousing, caps[global.race.species]), global.resource[global.race.species].amount);
 
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];
         if (pop_loss > 0){

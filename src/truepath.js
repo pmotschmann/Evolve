@@ -3,7 +3,7 @@ import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webW
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
-import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
+import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed, soldierTrainingRate, soldierRecoveryRate } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
@@ -6928,6 +6928,8 @@ export const sWarfare = {
     haulRepair: 10,         // Hull repair per day after a successful haul.
     overdriveAU: 0.25,      // Distance that enables overdrive.
     catchAU: 0.05,          // Interception distance.
+    huntDays: 30,           // Longest trip a corsair will make for a freighter or a raid.
+    innerAU: 3.5,           // Radius from the Sun of the worlds a corsair prowls with nothing in reach.
     stealth: 0.25,          // Sensor-range multiplier against corsairs.
     overdrive: 2,           // Speed multiplier while pursuing a target.
     rounds: 5,              // Maximum combat rounds before retreating.
@@ -6942,6 +6944,7 @@ export const sWarfare = {
     studyKills: 1,          // Destroyed corsairs needed to complete stealth study.
     // Corsair hull loadout.
     fit: { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'quantum', special: 'none' },
+    flotillaEngine: 'electrokinetic',   // Drive fitted to corsairs launched once a base has three berths.
     // Guard-post location and combat settings.
     guardRegion: 'spc_venus',
     guardFights: 50,        // Engagements needed to trace the guard.
@@ -6973,9 +6976,9 @@ export function revealAlienInfiltrators(){
     const race = choices[Math.floor(seededRandom(0,choices.length,true))];
     global.race.alien = {
         r: race,
-        infiltrators: [],
+        infiltrators: {},
         caught: 0,
-        officers: { available: 0, assigned: {}, training: false, m: true },
+        officers: { available: 0, assigned: {}, injured: [], training: false, m: true },
         next: global.stats.days + Math.floor(seededRandom(4,9,true))
     };
     const entity = typeof races[race].entity === 'function' ? races[race].entity() : races[race].entity;
@@ -6987,22 +6990,13 @@ export function revealAlienInfiltrators(){
 export function counterEspionage(){
     const alien = global.race.alien;
     if (!alien){ return false; }
-    if (!Array.isArray(alien.infiltrators)){ alien.infiltrators = []; }
+    if (!alien.infiltrators || typeof alien.infiltrators !== 'object' || Array.isArray(alien.infiltrators)){ alien.infiltrators = {}; }
     if (typeof alien.caught !== 'number'){ alien.caught = 0; }
-    const seen = new Map();
-    let consolidate = false;
-    alien.infiltrators.forEach(function(infiltrator){
-        const key = `${infiltrator.z}:${infiltrator.b}`;
-        if (!Number.isInteger(infiltrator.c) || seen.has(key)){ consolidate = true; }
-        const current = seen.get(key) || { z: infiltrator.z, b: infiltrator.b, c: 0 };
-        current.c = Math.min(20,current.c + (Number.isInteger(infiltrator.c) ? infiltrator.c : (Number.isInteger(infiltrator.count) ? infiltrator.count : 1)));
-        seen.set(key,current);
-    });
-    if (consolidate){ alien.infiltrators = [...seen.values()]; }
-    if (!alien.officers){ alien.officers = { available: 0, assigned: {}, training: false }; }
+    if (!alien.officers){ alien.officers = { available: 0, assigned: {}, injured: [], training: false }; }
     if (!alien.officers.assigned){ alien.officers.assigned = {}; }
+    if (!Array.isArray(alien.officers.injured)){ alien.officers.injured = []; }
     if (typeof alien.officers.available !== 'number'){ alien.officers.available = 0; }
-    if (typeof alien.officers.training !== 'number'){ alien.officers.training = false; }
+    if (alien.officers.training && typeof alien.officers.training !== 'object'){ alien.officers.training = { p: 0 }; }
     const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
     const officerSlots = alien.officers.available + assigned + (alien.officers.training ? 1 : 0);
     if (!alien.officers.m){
@@ -7047,8 +7041,13 @@ function counterEspionageTargets(){
 export function infiltratorFactor(zone, building){
     const alien = counterEspionage();
     if (!alien){ return 1; }
-    const infiltrator = alien.infiltrators.find(infiltrator => infiltrator.z === zone && infiltrator.b === building);
-    return Math.max(0,1 - (infiltrator ? infiltrator.c : 0) * 0.05);
+    const count = alien.infiltrators[zone]?.[building] || 0;
+    return Math.max(0,1 - count * 0.05);
+}
+
+// Count all active infiltrators across every zone.
+function infiltratorTotal(alien){
+    return Object.values(alien.infiltrators).reduce((total,zone) => total + Object.values(zone).reduce((sum,count) => sum + count, 0), 0);
 }
 
 export function intelligenceOfficerCost(){
@@ -7065,8 +7064,20 @@ export function trainIntelligenceOfficer(){
     if (!alien || alien.officers.training || global.resource.Money.amount < cost || garrisonSize() < 1){ return false; }
     modRes('Money',-cost);
     global.civic.garrison.workers--;
-    alien.officers.training = global.stats.days + 3;
+    alien.officers.training = { p: 0 };
     return true;
+}
+
+// Return training days remaining for the current Intelligence Officer.
+export function intelligenceOfficerTrainingTime(){
+    const training = counterEspionage()?.officers.training;
+    return training ? Math.ceil((1 - training.p) * 125 / soldierTrainingRate()) : 0;
+}
+
+// Return recovery days remaining for the first injured Intelligence Officer.
+export function intelligenceOfficerRecoveryTime(){
+    const injured = counterEspionage()?.officers.injured;
+    return injured?.length ? Math.ceil((1 - injured[0].p) * 75 / soldierRecoveryRate()) : 0;
 }
 
 // Return one unassigned Intelligence Officer to the garrison.
@@ -7092,34 +7103,50 @@ export function assignIntelligenceOfficer(zone, change){
 export function counterEspionageDay(){
     const alien = counterEspionage();
     if (!alien){ return; }
-    if (alien.officers.training && global.stats.days >= alien.officers.training){
-        alien.officers.training = false;
-        alien.officers.available++;
-        messageQueue(loc('counter_espionage_trained'),'success',false,['progress','combat']);
+    if (alien.officers.training){
+        alien.officers.training.p += soldierTrainingRate() / 125;
+        if (alien.officers.training.p >= 1){
+            alien.officers.training = false;
+            alien.officers.available++;
+        }
+    }
+    if (alien.officers.injured.length > 0){
+        const officer = alien.officers.injured[0];
+        officer.p += soldierRecoveryRate() / 75;
+        if (officer.p >= 1){
+            alien.officers.injured.shift();
+            if (counterEspionageZones().some(zone => zone.id === officer.z)){ alien.officers.assigned[officer.z] = (alien.officers.assigned[officer.z] || 0) + 1; }
+            else { alien.officers.available++; }
+            messageQueue(loc('counter_espionage_recovered'),'success',false,['combat']);
+        }
     }
     if (global.stats.days >= alien.next){
-        const targets = counterEspionageTargets();
-        if (targets.length > 0){
-            const target = targets[Math.floor(seededRandom(0,targets.length,true))];
-            const infiltrator = alien.infiltrators.find(infiltrator => infiltrator.z === target.z && infiltrator.b === target.b);
-            if (infiltrator){ infiltrator.c++; }
-            else { alien.infiltrators.push({ ...target, c: 1 }); }
+        if (infiltratorTotal(alien) < global.tech.shadow * 5){
+            const targets = counterEspionageTargets();
+            if (targets.length > 0){
+                const target = targets[Math.floor(seededRandom(0,targets.length,true))];
+                if (!alien.infiltrators[target.z]){ alien.infiltrators[target.z] = {}; }
+                alien.infiltrators[target.z][target.b] = (alien.infiltrators[target.z][target.b] || 0) + 1;
+            }
         }
         alien.next = global.stats.days + Math.floor(seededRandom(4,9,true));
     }
     for (const zone of counterEspionageZones()){
         const officers = alien.officers.assigned[zone.id] || 0;
-        const targets = alien.infiltrators.filter(infiltrator => infiltrator.z === zone.id);
+        const targets = Object.keys(alien.infiltrators[zone.id] || {});
         if (!officers || !targets.length || seededRandom(0,1,true) >= Math.min(0.35,officers * 0.025)){ continue; }
         const target = targets[Math.floor(seededRandom(0,targets.length,true))];
-        const index = alien.infiltrators.indexOf(target);
         if (seededRandom(0,1,true) < 0.18){
             alien.officers.assigned[zone.id]--;
-            messageQueue(loc('counter_espionage_officer_lost',[zone.name]),'danger',false,['combat']);
+            alien.officers.injured.push({ z: zone.id, p: 0 });
+            messageQueue(loc('counter_espionage_officer_injured',[zone.name]),'warning',false,['combat']);
         }
         else {
-            target.c--;
-            if (target.c === 0){ alien.infiltrators.splice(index,1); }
+            alien.infiltrators[zone.id][target]--;
+            if (alien.infiltrators[zone.id][target] === 0){
+                delete alien.infiltrators[zone.id][target];
+                if (Object.keys(alien.infiltrators[zone.id]).length === 0){ delete alien.infiltrators[zone.id]; }
+            }
             alien.caught++;
             messageQueue(loc('counter_espionage_caught',[zone.name]),'success',false,['combat']);
         }
@@ -7150,7 +7177,7 @@ function corsairFleet(base){
 // Return a base's concurrent corsair capacity.
 function corsairBerths(region){
     if (region === sWarfare.guardRegion){ return 1; }
-    return global.tech['shadow'] && global.tech.shadow >= 12 ? 2 : 1;
+    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : 1;
 }
 
 // Every corsair currently off its dock, for the map and for anything hunting them.
@@ -7196,6 +7223,8 @@ function syndicateWatch(){
 
 function corsairHull(region){
     let ship = Object.assign({},sWarfare.fit);
+    // Use flotilla engines after a base fields three corsairs.
+    if (corsairBerths(region) >= 3){ ship.engine = sWarfare.flotillaEngine; }
     ship.name = loc('syndicate_corsair_name',[Math.floor(seededRandom(100,10000,true))]);
     ship.damage = 0;
     ship.fueled = true;
@@ -7218,53 +7247,78 @@ function encounterWhere(ship){
     return ship.inTransit && ship.destination && ship.destination.name ? ship.destination.name : ship.location.name;
 }
 
-// Freighters of yours that are worth a corsair's time.
-function corsairPrey(corsair){
-    const ships = global.space.shipyard?.ships || [];
-    const from = shipPoint(corsair);
-    let best = false, near = Infinity;
-    for (const ship of ships){
-        if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
-        const at = shipPoint(ship);
-        if (!at || !from){ continue; }
-        const away = dist3(from,at);
-        if (away < near){ best = ship; near = away; }
-    }
-    return best;
-}
-
 // Hunt freighters first, then raid a world.
 function corsairHunt(corsair){
     return corsairChase(corsair) || corsairSortie(corsair);
 }
 
-// Put a corsair on course for its prey. A ship under way is met where it is going rather than chased
-// across open space — the syndicate reads your lanes, and that is the whole of its advantage.
+// Chase the nearest reachable freighter.
 function corsairChase(corsair){
-    const prey = corsairPrey(corsair);
-    if (!prey){ return false; }
-    const target = encounterWhere(prey);
-    if (!corsair.inTransit && corsair.location.name === target){ return false; }
-    return corsairLaunch(corsair,target,false);
+    const from = shipPoint(corsair);
+    if (!from){ return false; }
+    const prey = (global.space.shipyard?.ships || [])
+        .filter(ship => ship.class === 'freighter' && ship.damage < 100 && shipPoint(ship))
+        .sort((a,b) => dist3(from,shipPoint(a)) - dist3(from,shipPoint(b)));
+    const tried = new Set();
+    for (const ship of prey){
+        const target = encounterWhere(ship);
+        if (tried.has(target)){ continue; }
+        tried.add(target);
+        if (!corsair.inTransit && corsair.location.name === target){ continue; }
+        if (corsairLaunch(corsair,target,false)){ return true; }
+    }
+    return false;
 }
 
-// Raid a world when no freighter is available.
+// Raid a reachable world when no freighter can be chased.
 function corsairSortie(corsair){
-    const target = corsairMark(corsair);
-    if (!target || !corsairLaunch(corsair,target,true)){ return false; }
-    zMessage(loc('syndicate_corsair_sortie',[regionName(target)]),'warning');
-    return true;
+    for (const target of corsairMarks(corsair)){
+        if (!corsair.inTransit && corsair.location.name === target){
+            // Raid immediately when already in orbit.
+            corsair.od = false;
+            corsair.home = false;
+            corsair.prowl = false;
+            corsair.raid = target;
+            corsairAssault(corsair);
+            return true;
+        }
+        if (corsairLaunch(corsair,target,true)){
+            zMessage(loc('syndicate_corsair_sortie',[regionName(target)]),'warning');
+            return true;
+        }
+    }
+    return false;
 }
 
-// Plot a corsair route and record whether it is a raid.
-function corsairLaunch(corsair,target,raid){
+// Launch a hunt, raid, or prowl route.
+function corsairLaunch(corsair,target,raid,prowl){
     const trip = planShipTrip(corsair,target);
-    if (!trip){ return false; }
+    if (!trip || (!prowl && trip.totalTime > sWarfare.huntDays)){ return false; }
     initializeShipTrip(corsair,target,trip);
     corsair.od = false;
     corsair.home = false;
     corsair.raid = raid ? target : false;
+    corsair.prowl = prowl ? true : false;
     return true;
+}
+
+// List reachable inner-system prowl stops.
+function corsairBeat(){
+    const sun = genXYZcoord('spc_sun');
+    return Object.keys(spaceTech()).filter(region => region !== 'spc_sun_gate'
+        && !syndicateBases().includes(region)
+        && regionReachable(region)
+        && dist3(genXYZcoord(region),sun) <= sWarfare.innerAU);
+}
+
+// Move between inner-system stops until a hunt is available.
+function corsairProwl(corsair){
+    const stops = corsairBeat();
+    if (corsair.prowl && corsair.inTransit && stops.includes(corsair.destination.name)){ return true; }
+    const at = corsair.inTransit ? corsair.destination.name : corsair.location.name;
+    const next = stops.filter(region => region !== at);
+    if (next.length === 0){ return false; }
+    return corsairLaunch(corsair,next[Math.floor(seededRandom(0,next.length,true))],false,true);
 }
 
 // Return whether a region is a valid raid target.
@@ -7275,24 +7329,14 @@ function corsairRaidable(region){
     return activeSupplyRegions().includes(region);
 }
 
-// Worlds of yours a corsair could go and hit, nearest first.
-function corsairMark(corsair){
+// List reachable raid targets, prioritizing stocked worlds.
+function corsairMarks(corsair){
     const from = shipPoint(corsair);
-    if (!from){ return false; }
-    const at = corsair.inTransit ? corsair.destination.name : corsair.location.name;
-    const reachable = activeSupplyRegions().filter(region => region !== at && corsairRaidable(region));
-    // Prefer stocked worlds, then choose the nearest target.
+    if (!from){ return []; }
+    const reachable = activeSupplyRegions().filter(corsairRaidable)
+        .sort((a,b) => dist3(from,genXYZcoord(a)) - dist3(from,genXYZcoord(b)));
     const stocked = reachable.filter(corsairZoneStocked);
-    return corsairNearest(from,stocked.length > 0 ? stocked : reachable);
-}
-
-function corsairNearest(from,regions){
-    let best = false, near = Infinity;
-    for (const region of regions){
-        const away = dist3(from,genXYZcoord(region));
-        if (away < near){ best = region; near = away; }
-    }
-    return best;
+    return stocked.length > 0 ? stocked : reachable;
 }
 
 // Return whether a region's supply pool has stock.
@@ -7310,6 +7354,7 @@ function corsairZoneStocked(region){
 function corsairGoHome(corsair){
     corsair.od = false;
     corsair.raid = false;
+    corsair.prowl = false;
     // Mark the corsair as returning before plotting its route.
     corsair.home = true;
     if (!corsair.inTransit && corsair.location.name === corsair.syn){ return true; }
@@ -7509,7 +7554,7 @@ function corsairRaid(corsair,freighter){
         destroyPlayerShip(freighter,where);
         drawShips();
         zMessage(loc('syndicate_freighter_lost',[freighter.name,regionName(where)]),'danger');
-        corsairHunt(corsair);
+        corsairHunt(corsair) || corsairProwl(corsair);
     }
 }
 
@@ -7620,7 +7665,7 @@ function corsairBaseDay(region){
         const ship = corsairHull(region);
         fleet.push(ship);
         base.launched++;
-        corsairHunt(ship);
+        corsairHunt(ship) || corsairProwl(ship);
     }
 
     // Iterate over a copy because processing can remove a corsair.
@@ -7630,7 +7675,11 @@ function corsairBaseDay(region){
 // Process one corsair's daily state.
 function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
-    if (corsair.inTransit){ return; }
+    if (corsair.inTransit){
+        // Interrupt prowling for a reachable hunt.
+        if (corsair.prowl){ corsairHunt(corsair); }
+        return;
+    }
 
     // Repair and relaunch corsairs at their base.
     if (corsair.location.name === region){
@@ -7640,15 +7689,15 @@ function corsairBaseShipDay(corsair,region,elapsed){
             if (corsair.damage > 0){ return; }
         }
         corsair.haul = 0;
-        corsairHunt(corsair);
+        corsairHunt(corsair) || corsairProwl(corsair);
         return;
     }
 
     // Resolve an arrived raid before assigning a new target.
     if (corsairAssault(corsair)){ return; }
 
-    // Resume hunting when a corsair has no active route.
-    if (!corsairHunt(corsair)){ corsairGoHome(corsair); }
+    // Hunt, prowl, or return home when idle.
+    if (!corsairHunt(corsair) && !corsairProwl(corsair)){ corsairGoHome(corsair); }
 }
 
 // --- Your patrols hunting for enemies --------------------------------------------------------------

@@ -649,8 +649,8 @@ function baseProduction(id,val,wiki){
 
 
 function infiltratorProduction(value, id, wiki){
-    if (wiki || !global.race.alien || !Array.isArray(global.race.alien.infiltrators)){ return value; }
-    const count = global.race.alien.infiltrators.reduce((sum,infiltrator) => infiltrator.b === id ? sum + (infiltrator.c || infiltrator.count || 1) : sum, 0);
+    if (wiki || !global.race.alien || !global.race.alien.infiltrators || typeof global.race.alien.infiltrators !== 'object'){ return value; }
+    const count = Object.values(global.race.alien.infiltrators).reduce((sum,zone) => sum + (zone[id] || 0), 0);
     if (!count){ return value; }
     const factor = Math.max(0,1 - count * 0.05);
     if (typeof value === 'number'){ return value * factor; }
