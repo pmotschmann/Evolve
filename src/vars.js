@@ -69,7 +69,7 @@ export var fight_log = {herbivores: [], carnivores: [], scavengers: []};
 export var message_logs = {
     view: 'all'
 };
-export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
+export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','prestige','hell'];
 export var callback_queue = new Map();
 export var active_rituals = {};
 
@@ -1972,6 +1972,9 @@ if (typeof global.settings.aberrantWinMsg === 'undefined'){
 if (typeof global.settings.solarNames === 'undefined'){
     global.settings['solarNames'] = false;
 }
+if (typeof global.settings.prestigeLog === 'undefined'){
+    global.settings['prestigeLog'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }
@@ -2839,8 +2842,8 @@ export var intervals = {};
 
 export function clearSavedMessages(){
     message_filters.forEach(function (filter){
-        //Preserve achievements log.
-        if (filter !== 'achievements'){
+        //Preserve achievement and prestige log.
+        if (filter !== 'achievements' && filter !== 'prestige'){
             global.lastMsg[filter] = [];
         }
     });
