@@ -5,7 +5,7 @@ import { spaceSectors } from './space.js';
 import { atomic_mass } from './resources.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, regAmount, regMax, regDiff } from './supply.js';
 import { shipFleet, startFreightRoute, stopFreightRoute, dispatchFreighter, canAutoRefuelAt,
-         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals, shipCosts, shipyardZone } from './truepath.js';
+         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals, shipCosts, shipyardZone, fleetCanReach } from './truepath.js';
 
 // Freighter routes planned by the governor.
 
@@ -381,6 +381,8 @@ function dispatch(group, home, stops, kind){
     if (!tradeRouteViable(group, stops)){ return false; }
     if (stops[0].zone !== home){
         if (group[0].tradeRoute){ stopFreightRoute(group[0]); }
+        // Require enough fuel to reach the first route stop.
+        if (!fleetCanReach(group, stops[0].zone)){ return false; }
         return dispatchFreighter(group[0], stops[0].zone);
     }
     if (group[0].tradeRoute){ stopFreightRoute(group[0]); }

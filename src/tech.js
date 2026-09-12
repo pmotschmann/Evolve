@@ -16023,6 +16023,29 @@ const techs = {
             return false;
         }
     },
+    womling_market: {
+        id: 'tech-womling_market',
+        title(){ return loc('tech_womling_market'); },
+        desc(){ return loc('tech_womling_market'); },
+        category: 'womling',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
+        path: ['truepath'],
+        reqs(r){ return r.era === 'matrioshka' ? { womling_logistics: 2, womling_tech: 13, resettle: 13 } : { womling_logistics: 2, womling_tech: 12, shadow: 8 }; },
+        grant: ['womling_logistics',3],
+        cost: {
+            Knowledge(){ return 23500000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_market_effect',[loc('tau_red_womling_market')])}</div>`; },
+        action(){
+            if (payCosts(this)){
+                initStruct(actions.tauceti.tau_red.womling_market);
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_womling_market_flair'); }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
         title(){ return loc('tech_asteroid_analysis'); },
@@ -18816,6 +18839,28 @@ const techs = {
         },
         effect(){
             return `<div>${loc('tech_stealth_detection_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    syndicate_base_data: {
+        id: 'tech-syndicate_base_data',
+        title(){ return loc('tech_syndicate_base_data'); },
+        desc(){ return loc('tech_syndicate_base_data'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 12 },
+        grant: ['shadow',13],
+        cost: {
+            Knowledge(){ return 24000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_syndicate_base_data_effect',[planetName().venus])}</div>`;
         },
         action(){
             if (payCosts(this)){

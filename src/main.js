@@ -13,7 +13,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -960,7 +960,7 @@ export function execGameLoops(periods = 1, offline = false){
     if (offline){
         // Offline catch-up: each period is one time-compressed step.
         while (periods--){
-            fastLoop();
+                        fastLoop();
             midLoop();
             doCallbacks();
             longLoop();
@@ -978,7 +978,7 @@ export function execGameLoops(periods = 1, offline = false){
         const doMid = (loopTick % webWorker.midRatio) === 0;
         const doLong = (loopTick % webWorker.longRatio) === 0;
 
-        // Always run a faster loop before a slower loop
+                // Run faster loops before slower loops.
         fastLoop();
         if (doMid){ midLoop(); }
 
@@ -1220,6 +1220,8 @@ function dataNum(raw){
 }
 
 function affordTint(c_action){
+    // Skip hidden affordability tinting during offline catch-up.
+    if (webWorker.offline){ return; }
     const el = document.getElementById(c_action.id);
     if (!el){ return; }
     const maxOk = checkAffordable(c_action,true);
@@ -1608,6 +1610,16 @@ function fastLoop(){
         return share;
     }
 
+    // Return each supply pool's share of resources actually drawn.
+    function drawnShares(drawn){
+        let total = 0;
+        for (const pool in drawn){ if (drawn[pool] > 0){ total += drawn[pool]; } }
+        if (total <= 0){ return false; }
+        const share = {};
+        for (const pool in drawn){ if (drawn[pool] > 0){ share[pool] = drawn[pool] / total; } }
+        return share;
+    }
+
     // One world's corner of the per-zone ledger.
     function pregSlot(zone, res, consume){
         if (!breakdown.preg[zone]){ breakdown.preg[zone] = { consume: {} }; }
@@ -1634,8 +1646,8 @@ function fastLoop(){
         }
     }
 
-    // Apply a pooled resource change by zone share.
-    function applyShare(res, amount, share, mult){
+    // Apply a pooled resource change and optionally record source pools.
+    function applyShare(res, amount, share, mult, drawn){
         const m = mult === undefined ? 1 : mult;
         if (!partitioned(res)){ return modRes(res, amount * m); }
         if (amount >= 0){
@@ -1670,6 +1682,7 @@ function fastLoop(){
         }
         let ok = true;
         for (const pool in owed){
+            if (drawn && owed[pool] > 0){ drawn[pool] = (drawn[pool] || 0) + owed[pool]; }
             if (!modRes(res, -owed[pool], false, pool)){ ok = false; }
         }
         return ok;
@@ -9247,13 +9260,20 @@ function fastLoop(){
             rawCash += merchsales * global_multiplier;
         }
 
+        // Apply market income for active Womling trade routes.
+        if (global.race['truepath'] && global.tauceti['womling_market']){
+            let base = global.city.market.mtrade * (support_on['womling_market'] || 0);
+            if (base > 0){
+                breakdown.p['Money'][loc('tau_red_womling_market')] = base + 'v';
+                modRes('Money', +(base * global_multiplier * time_multiplier).toFixed(2));
+                rawCash += base * global_multiplier;
+            }
+        }
+
         // Tribute
         if (global.race['truepath'] && global.tauceti['overseer']){
             let rate = (global.tauceti.overseer.loyal + global.tauceti.overseer.morale) / 200;
-            let pop = global.tauceti.overseer.pop;
-            if (p_on['womling_station']){
-                pop += p_on['womling_station'] * 2;
-            }
+            let pop = womlingPop();
             let base = pop * rate * (global.tech['isolation'] ? 25 : 12);
             let culture = p_on['tau_cultural_center'] ? 1 + (p_on['tau_cultural_center'] * 0.08) : 1;
             let delta = base * global_multiplier * culture;
@@ -9291,6 +9311,8 @@ function fastLoop(){
             }
             let crafting_costs = craftCost();
             let crafting_usage = {};
+            // Track source pools for crafting costs.
+            let crafting_drawn = {};
             // Use regional workshop shares for crafting output and costs.
             const crafterAt = industryShares(craftsmanCapacityByZone());
             // Track dedicated-bench usage separately in the resource breakdown.
@@ -9325,15 +9347,19 @@ function fastLoop(){
 
                 for (let i=0; i<crafting_costs[craft].length; i++){
                     let rate = volume * crafting_costs[craft][i].a * craft_costs * speed / 140;
-                    applyShare(crafting_costs[craft][i].r, -rate, at, time_multiplier);
+                    let res = crafting_costs[craft][i].r;
+                    // Track source pools after fallback crafting draws.
+                    let drawn = {};
+                    applyShare(res, -rate, at, time_multiplier, drawn);
                     if (at !== crafterAt){
-                        benchUse.push({ res: crafting_costs[craft][i].r, rate: rate, at: at });
-                    }
-                    else if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
-                        crafting_usage[crafting_costs[craft][i].r] = rate;
+                        benchUse.push({ res: res, rate: rate, at: at, drawn: drawn });
                     }
                     else {
-                        crafting_usage[crafting_costs[craft][i].r] += rate;
+                        crafting_usage[res] = (crafting_usage[res] || 0) + rate;
+                        if (!crafting_drawn[res]){ crafting_drawn[res] = {}; }
+                        for (const pool in drawn){
+                            crafting_drawn[res][pool] = (crafting_drawn[res][pool] || 0) + drawn[pool];
+                        }
                     }
                 }
 
@@ -9348,12 +9374,12 @@ function fastLoop(){
 
             Object.keys(crafting_usage).forEach(function (used){
                 if (crafting_usage[used] > 0){
-                    bdShareUse(used, job_data.craftsman.name(), -(crafting_usage[used]), crafterAt);
+                    bdShareUse(used, job_data.craftsman.name(), -(crafting_usage[used]), drawnShares(crafting_drawn[used]) || crafterAt);
                 }
             });
             benchUse.forEach(function(used){
                 if (used.rate > 0){
-                    bdShareUse(used.res, job_data.craftsman.name(), -(used.rate), used.at, true);
+                    bdShareUse(used.res, job_data.craftsman.name(), -(used.rate), drawnShares(used.drawn) || used.at, true);
                 }
             });
         }
@@ -11600,6 +11626,11 @@ function midLoop(){
             global.city.market.mtrade += global.tech['railway'] * routes;
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
         }
+        if (global.tauceti['womling_market']){
+            let r_count = womlingMarketRoutes();
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('tau_red_womling_market')] = r_count;
+        }
         // Logistician, on the finished total rather than any one source of routes.
         if (global.city.market.mtrade > 0 && geneRank('logistician') > 0){
             let base = global.city.market.mtrade;
@@ -12183,7 +12214,8 @@ function midLoop(){
         });
 
         Object.keys(lCaps).forEach(function (job){
-            global.civic[job].max = lCaps[job];
+            // Store job caps as whole-worker counts.
+            global.civic[job].max = Math.floor(lCaps[job]);
             let cap = (job === 'craftsman' && global.civic[job].max !== -1) ? craftsmanMax() : global.civic[job].max;
             if (global.civic[job].workers > cap && cap !== -1){
                 global.civic[job].workers = cap;
@@ -12486,46 +12518,49 @@ function midLoop(){
             }
         }
 
-        let cityList = Object.keys(global.city);
-        if (global.race['hooved']){
-            cityList.push('horseshoe');
-        }
-        if (global.tech['slaves'] && global.tech['slaves'] >= 2){
-            cityList.push('slave_market');
-        }
-        cityList.forEach(function (action){
-            if (actions.city[action] && actions.city[action].cost){
-                let c_action = actions.city[action];
-                affordTint(c_action);
-                if (global.city[action]){
-                    let tc = timeCheck(c_action,false,true);
-                    global.city[action]['time'] = timeFormat(tc.t);
-                    global.city[action]['bn'] = tc.r;
-                }
+        // Skip affordability display updates during offline catch-up.
+        if (!webWorker.offline){
+            let cityList = Object.keys(global.city);
+            if (global.race['hooved']){
+                cityList.push('horseshoe');
             }
-        });
-
-        Object.keys(actions.tech).forEach(function (action){
-            if (actions.tech[action] && actions.tech[action].cost){
-                let c_action = actions.tech[action];
-                affordTint(c_action);
+            if (global.tech['slaves'] && global.tech['slaves'] >= 2){
+                cityList.push('slave_market');
             }
-        });
-
-        for (let i=0; i<spaceSectors.length; i++){
-            let location = spaceSectors[i];
-            Object.keys(actions[location]).forEach(function (region){
-                Object.keys(actions[location][region]).forEach(function (action){
-                    let s_region = actions[location][region][action] && actions[location][region][action].hasOwnProperty('region') ? actions[location][region][action].region : location;
-                    if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
-                        let c_action = actions[location][region][action];
-                        affordTint(c_action);
-                        if (global[s_region][action]){
-                            global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
-                        }
+            cityList.forEach(function (action){
+                if (actions.city[action] && actions.city[action].cost){
+                    let c_action = actions.city[action];
+                    affordTint(c_action);
+                    if (global.city[action]){
+                        let tc = timeCheck(c_action,false,true);
+                        global.city[action]['time'] = timeFormat(tc.t);
+                        global.city[action]['bn'] = tc.r;
                     }
-                });
+                }
             });
+
+            Object.keys(actions.tech).forEach(function (action){
+                if (actions.tech[action] && actions.tech[action].cost){
+                    let c_action = actions.tech[action];
+                    affordTint(c_action);
+                }
+            });
+
+            for (let i=0; i<spaceSectors.length; i++){
+                let location = spaceSectors[i];
+                Object.keys(actions[location]).forEach(function (region){
+                    Object.keys(actions[location][region]).forEach(function (action){
+                        let s_region = actions[location][region][action] && actions[location][region][action].hasOwnProperty('region') ? actions[location][region][action].region : location;
+                        if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
+                            let c_action = actions[location][region][action];
+                            affordTint(c_action);
+                            if (global[s_region][action]){
+                                global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
+                            }
+                        }
+                    });
+                });
+            }
         }
 
         if (global.space['swarm_control']){

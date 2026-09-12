@@ -1086,7 +1086,7 @@ export function mechanicsPage(content){
                     1: [s.plunder.toLocaleString()],
                     2: [Math.floor(s.plunder * 0.8).toLocaleString()],
                     3: [loc('outer_shipyard_class_freighter')],
-                    5: [s.sneak],
+                    5: [s.sneak,s.sneakDetected],
                     6: [loc('wiki_mechanics_supply')],
                     7: [loc('outer_shipyard_class_freighter')]
                 },
