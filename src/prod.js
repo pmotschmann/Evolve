@@ -304,6 +304,20 @@ export function production(id,val,wiki){
         {
             return 9.8;
         }
+        case 'mercury_mine':
+        {
+            switch (val){
+                case 'tungsten':
+                    return 0.5;
+                case 'stone':
+                    return 2.1;
+                case 'chrysotile':
+                    return global.resource.Chrysotile.display ? 0.8 : 0;
+                case 'unobtainium':
+                    return 0.008;
+            }
+            return 0;
+        }
         case 'orichalcum_mine':
         {
             return 0.08;

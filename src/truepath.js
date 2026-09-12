@@ -7,7 +7,7 @@ import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTi
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
-import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
+import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals, setPowerGrid } from './industry.js';
 import { arpa } from './arpa.js';
@@ -2674,7 +2674,7 @@ const tauCetiModules = {
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
                 if (count < 100){
-                    return `<div>${loc('tau_star_server_farm_effect',[50])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                    return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
                 }
                 let effectText = `<div>${loc('plus_max_resource',['50%',global.resource.Knowledge.name])}</div>`;
                 if (global.resource.Positronium.display){
@@ -5719,7 +5719,7 @@ const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks','botanical'] },
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
-    spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
+    spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant','mercury_mine'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks','comedy_club'] },
     //spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     //spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
@@ -7794,18 +7794,13 @@ function razeStructures(region,razings){
     }
 }
 
-// Region and structure labels come off the action definitions, where `name`/`title` may be either a
-// plain string or a function depending on the entry.
-// Bodies the map draws as scenery have no action of their own, but they are still places things
-// happen — the syndicate keeps a base on one of them — so they are named the way the map names them.
-const sceneryNames = { spc_pluto: 'pluto', spc_haumea: 'haumea' };
-
+// Return a region label, including map-only scenery bodies.
 function regionName(region){
     let cat = razeTargets.hasOwnProperty(region) && razeTargets[region].c === 'tauceti' ? 'tauceti' : 'space';
     let info = actions[cat]?.[region]?.info;
     if (!info || !info.name){
-        if (sceneryNames[region]){
-            let named = planetName()[sceneryNames[region]];
+        if (sceneryBodies[region]){
+            let named = planetName()[sceneryBodies[region]];
             if (named){ return named; }
         }
         return region;

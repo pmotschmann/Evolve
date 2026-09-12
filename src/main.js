@@ -8571,6 +8571,26 @@ function fastLoop(){
             modRes('Tungsten', mine_delta * time_multiplier, false, 'spc_survey');
         }
 
+        // Apply active Mercury Mine production.
+        if (global.space['mercury_mine'] && p_on['mercury_mine']){
+            const label = `${structName('mercury_mine')}+space-mercury_mine`;
+            [
+                { res: 'Tungsten', rate: 'tungsten' },
+                { res: 'Stone', rate: 'stone' },
+                { res: 'Chrysotile', rate: 'chrysotile' },
+                { res: 'Unobtainium', rate: 'unobtainium' }
+            ].forEach(function(dig){
+                if (!global.resource[dig.res].display){ return; }
+                let base = p_on['mercury_mine'] * production('mercury_mine',dig.rate) * production('psychic_boost',dig.res);
+                if (base <= 0){ return; }
+                let delta = base * global_multiplier * qs_multiplier * zigVal;
+                breakdown.p[dig.res][label] = +(base).toFixed(4) + 'v';
+                breakdown.p[dig.res][`ᄂ${loc('space_red_ziggurat_title')}+mercury`] = ((zigVal - 1) * 100) + '%';
+                breakdown.p[dig.res][`ᄂ${loc('quarantine')}+mercury`] = ((qs_multiplier - 1) * 100) + '%';
+                modRes(dig.res, delta * time_multiplier, false, 'spc_hell');
+            });
+        }
+
         // Stone from the Titan mines, once resettlement reopens regolith processing there.
         if (global.tech['resettle'] && global.resource.Stone.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');
@@ -11090,6 +11110,13 @@ function midLoop(){
                 lCaps['professor'] += jobScale(support_on['observatory']);
             }
         }
+
+        if (global.space['seismic'] && global.space.seismic.count > 0){
+            let gain = (p_on['seismic'] * actions.space.spc_hell.seismic.know() * p_on['geothermal']);
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('space_seismic_title')] = gain+'v';
+        }
+
         if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){
             if (global.tech.science >= 16){
                 lCaps['scientist'] += jobScale(int_on['laboratory']);

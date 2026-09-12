@@ -8780,11 +8780,15 @@ export function structName(type){
         }
         case 'red_mine':
         {
-            return global.tech['resettle'] ? loc('space_mine',[planetName().red]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+            return global.tech['resettle'] || global.tech['shadow'] ? loc('space_mine',[planetName().red]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
         }
         case 'titan_mine':
         {
-            return global.tech['resettle'] ? loc('space_mine',[planetName().titan]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+            return global.tech['resettle'] || global.tech['shadow']  ? loc('space_mine',[planetName().titan]) : (halloween.active ? loc(`events_halloween_mine`) : loc('city_mine'));
+        }
+        case 'mercury_mine':
+        {
+            return loc('space_mine',[planetName().hell]);
         }
         case 'coal_mine':
         {

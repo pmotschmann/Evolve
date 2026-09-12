@@ -16,7 +16,6 @@ import { astrologySign, astroVal } from './seasons.js';
 import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
 import { shipCosts, TPShipDesc, freightArrivals, shipyardZone } from './truepath.js';
 import { mechCost, mechDesc } from './portal.js';
-import { big_bang } from './resets.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -459,8 +458,8 @@ export function powerGrid(type,reset){
                 'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','prtl_pit:shadow_mine','prtl_pit:tavern',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','spc_survey:survey_resort','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-                'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
-                'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_dwarf:m_relay','tau_gas2:tcm_relay',
+                'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor','prtl_gate:infernite_mine','spc_hell:seismic',
+                'int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_hell:mercury_mine','spc_dwarf:m_relay','tau_gas2:tcm_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
                 'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
                 'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',

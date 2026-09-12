@@ -1901,8 +1901,85 @@ const spaceProjects = {
                 };
             }
         },
-        firework: buildTemplate(`firework`,'space'),
+        mercury_mine: {
+            id: 'space-mercury_mine',
+            title(){ return loc('space_mine',[planetName().hell]); },
+            desc(){ return `<div>${loc('space_mine',[planetName().hell])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'mining',
+            reqs: { hell: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 18500000, 1.26); },
+                Iridium(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 3100000, 1.26); },
+                Bolognium(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 1200000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('gain',[+(production('mercury_mine','tungsten')).toFixed(3),global.resource.Tungsten.name])}</div>`;
+                [['Stone','stone'],['Chrysotile','chrysotile'],['Unobtainium','unobtainium']].forEach(function(dig){
+                    if (!global.resource[dig[0]].display){ return; }
+                    let rate = +(production('mercury_mine',dig[1])).toFixed(3);
+                    if (rate <= 0){ return; }
+                    desc = desc + `<div>${loc('gain',[rate,global.resource[dig[0]].name])}</div>`;
+                });
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(9); },
+            action(){
+                if (payCosts(this)){
+                    incrementStruct('mercury_mine');
+                    powerOnNewStruct(this);
+                    if (!global.resource.Tungsten.display){
+                        global.resource.Tungsten.display = true;
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mercury_mine','space']
+                };
+            }
+        },
+        seismic: {
+            id: 'space-seismic',
+            title(){ return loc('space_seismic_title'); },
+            desc(){ return `<div>${loc('tech_seismic_research_center')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'science',
+            reqs: { science: 11, hell: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('seismic', r.offset, 250000000, 1.28); },
+                Knowledge(r={}){ return spaceCostMultiplier('seismic', r.offset, 1000000, 1.28); },
+                Copper(r={}){ return spaceCostMultiplier('seismic', r.offset, 5000000, 1.28); },
+                Tungsten(r={}){ return spaceCostMultiplier('seismic', r.offset, 750000, 1.28); },
+                Orichalcum(r={}){ return spaceCostMultiplier('seismic', r.offset, 1125000, 1.28); },
+            },
+            effect(){
+                let know = this.know();
+                return `<div>${loc('space_university_effect',[know,global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            know(){ return 3500; },
+            powered(){ return 8; },
+            action(args){
+                if (payCosts(this)){
+                    incrementStruct('seismic');
+                    powerOnNewStruct(this);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['seismic','space']
+                };
+            }
+        },
         detector_hell: detectorTemplate('spc_hell'),
+        firework: buildTemplate(`firework`,'space'),
     },
     spc_sun_gate: {
         info: {
@@ -7219,6 +7296,7 @@ const structDefinitions = {
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },
+    mercury_mine: { count: 0, on: 0 },
     swarm_plant: { count: 0 },
     swarm_control: { count: 0, support: 0, s_max: 0 },
     swarm_satellite: { count: 0 },
@@ -8039,6 +8117,9 @@ function genomeNamer(genome){
     let named = genome.genus === 'hybrid' && genome.hybrid ? genome.hybrid[0] : genome.genus;
     return genusVars[named] ? named : 'humanoid';
 }
+
+// Map-only bodies that can be ship destinations.
+export const sceneryBodies = { spc_pluto: 'pluto', spc_haumea: 'haumea' };
 
 export function planetName(){
     // "Use real solar names" reads every world off the human race and its genus

@@ -5118,6 +5118,28 @@ const techs = {
             return false;
         }
     },
+    seismic_research_center: {
+        id: 'tech-seismic_research_center',
+        title(){ return loc('tech_seismic_research_center'); },
+        desc(){ return loc('tech_seismic_research_center'); },
+        category: 'science',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 7, hell: 2, science: 10 },
+        grant: ['science',11],
+        cost: {
+            Knowledge(){ return 22000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_seismic_research_center_effect',[planetName().hell])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
     devilish_dish: {
         id: 'tech-devilish_dish',
         title(){ return loc('tech_devilish_dish'); },
@@ -18864,6 +18886,29 @@ const techs = {
         },
         action(){
             if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    tungsten_mine: {
+        id: 'tech-tungsten_mine',
+        title(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
+        desc(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
+        category: 'science',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 7, hell: 1 },
+        grant: ['hell',2],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_tungsten_mine_effect',[global.resource.Tungsten.name,planetName().hell])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                initStruct(actions.space.spc_hell.mercury_mine);
                 return true;
             }
             return false;

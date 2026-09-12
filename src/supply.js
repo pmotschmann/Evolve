@@ -1,7 +1,7 @@
 import { global, breakdown } from './vars.js';
 import { actions } from './actions.js';
 import { atomic_mass, crateValue, containerValue, drawResourceTab, loadRegionSwitch } from './resources.js';
-import { convertSpaceSector, planetName } from './space.js';
+import { convertSpaceSector, planetName, sceneryBodies } from './space.js';
 import { loc } from './locale.js';
 
 // Regional supply pools.
@@ -144,6 +144,11 @@ export function supplyRegionName(region, raw = false){
             return bucket.info.name();
         }
     }
+    // Resolve names for map-only scenery bodies.
+    if (sceneryBodies[region]){
+        const named = planetName()[sceneryBodies[region]];
+        if (named){ return named; }
+    }
     // Resolve a region name from its locale entry when available.
     const suffix = region.replace(/^(spc|int|gxy|prtl|tau|eden)_/, '');
     const cat = supplyContainer(region);
@@ -175,6 +180,11 @@ function links(){
     for (let i = 0; i < groups.length; i++){
         if (Array.isArray(groups[i])){ groups[i] = { r: groups[i] }; }
         if (!groups[i].r){ groups[i].r = []; }
+        // Add missing starting-zone names to legacy supply groups.
+        if (!groups[i].p){
+            const zone = STARTING_ZONES.find(z => z.p && z.r[0] === groups[i].r[0]);
+            if (zone){ groups[i].p = zone.p; }
+        }
     }
     return groups;
 }
@@ -446,8 +456,8 @@ export function splitByStorage(res){
 const STARTING_ZONES = [
     // The home world and its moon.
     { r: [CAPITAL, 'spc_moon'] },
-    // Mercury and the sun.
-    { r: ['spc_sun', 'spc_hell'] },
+    // The shared Mercury-Sun supply zone.
+    { r: ['spc_sun', 'spc_hell'], p: 'hell' },
     // Ceres and the asteroid belt.
     { r: ['spc_belt', 'spc_dwarf'] },
     // Jupiter and its moon.
