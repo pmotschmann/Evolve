@@ -4121,7 +4121,7 @@ export function buildFortress(parent,full){
                 let canBuy = true;
                 while (canBuy && repeats > 0){
                     let cost = mercCost();
-                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                    if (garrisonSize() < garrisonSize(true) && global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
                         global.civic['garrison'].workers++;
                         global.civic.garrison.m_use++;

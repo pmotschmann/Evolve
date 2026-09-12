@@ -3017,6 +3017,9 @@ export function drawStats(){
     if (global.race['sy_fights'] > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_corsairs_fought")}</span> {{ format(g.sy_fights) }}</div>`);
     }
+    if (global.race.alien?.caught > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_infiltrators_caught")}</span> {{ format(g.alien.caught) }}</div>`);
+    }
     if (global.aberrants){
         if(global.aberrants.herbivores.slain){
             stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aberrant_herbivores_slain")}</span> {{ format(s.hslain) }}</div>`);

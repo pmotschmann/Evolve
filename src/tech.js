@@ -7,10 +7,10 @@ import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, draw
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass, unlockCrates, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
-import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
+import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCounterEspionage } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators } from './truepath.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
@@ -18886,6 +18886,8 @@ const techs = {
         },
         action(){
             if (payCosts(this)){
+                revealAlienInfiltrators();
+                defineCounterEspionage();
                 return true;
             }
             return false;

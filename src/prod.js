@@ -24,7 +24,7 @@ export function teamster(v){
     return v;
 }
 
-export function production(id,val,wiki){
+function baseProduction(id,val,wiki){
     switch (id){
         case 'transmitter':
         {
@@ -645,6 +645,26 @@ export function production(id,val,wiki){
             }
         }
     }
+}
+
+
+function infiltratorProduction(value, id, wiki){
+    if (wiki || !global.race.alien || !Array.isArray(global.race.alien.infiltrators)){ return value; }
+    const count = global.race.alien.infiltrators.reduce((sum,infiltrator) => infiltrator.b === id ? sum + (infiltrator.c || infiltrator.count || 1) : sum, 0);
+    if (!count){ return value; }
+    const factor = Math.max(0,1 - count * 0.05);
+    if (typeof value === 'number'){ return value * factor; }
+    if (value && typeof value === 'object'){
+        const adjusted = {};
+        for (const key in value){ adjusted[key] = typeof value[key] === 'number' ? value[key] * factor : value[key]; }
+        return adjusted;
+    }
+    return value;
+}
+
+// Return production after silent infiltrator penalties for the affected structure.
+export function production(id,val,wiki){
+    return infiltratorProduction(baseProduction(id,val,wiki),id,wiki);
 }
 
 export function technicianCount(){

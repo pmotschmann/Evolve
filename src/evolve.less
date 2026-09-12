@@ -3505,6 +3505,34 @@ a {
         }
     }
 
+    #counterEspionage {
+        .counterEspionageActions {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: .5rem;
+            margin-top: .5rem;
+
+            button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        .counterEspionageTraining {
+            display: block;
+            margin-top: .35rem;
+        }
+
+        .counterEspionageZone {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-top: .5rem;
+            > span { flex: 1 1 auto; }
+            button { min-width: 2rem; }
+        }
+    }
+
     #c_garrison.garrison {
         margin-top: .25rem;
 

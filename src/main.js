@@ -13,7 +13,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium, infiltratorFactor } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -2350,7 +2350,7 @@ function fastLoop(){
             let title = typeof c_action[generator.s].title === 'string' ? c_action[generator.s].title : c_action[generator.s].title();
 
             if (global[region][generator.s] && global[region][generator.s]['on']){
-                let watts = c_action[generator.s].powered();
+                let watts = c_action[generator.s].powered() * infiltratorFactor(generator.r, generator.s);
                 p_on[generator.s] = global[region][generator.s].on;
 
                 if (c_action[generator.s].hasOwnProperty('p_fuel')){
@@ -2493,14 +2493,14 @@ function fastLoop(){
         }
 
         if (global.city['mill'] && global.tech['agriculture'] && global.tech['agriculture'] >= 6){
-            let power = global.city.mill.on * actions.city.mill.powered();
+            let power = global.city.mill.on * actions.city.mill.powered() * infiltratorFactor('city','mill');
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.city['windmill'] && global.tech['wind_plant']){
-            let power = global.city.windmill.count * actions.city.windmill.powered();
+            let power = global.city.windmill.count * actions.city.windmill.powered() * infiltratorFactor('city','windmill');
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
@@ -9515,7 +9515,7 @@ function fastLoop(){
         }
     }
 
-    if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
+    if (global.civic['garrison'] && garrisonSize() < garrisonSize(true)){
         let rate = 2.5;
         if (global.race['high_pop']){
             rate *= traits.high_pop.vars()[2];

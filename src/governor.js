@@ -1576,7 +1576,7 @@ export const gov_tasks = {
         task(){
             if ( this.req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.merc.reserve / 100);
-                while (global.civic.garrison.max > global.civic.garrison.workers + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= cashCap || global.resource.Money.diff >= govCivics('m_cost')) ){
+                while (garrisonSize(true) > garrisonSize() + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= cashCap || global.resource.Money.diff >= govCivics('m_cost')) ){
                     govCivics('m_buy');
                 }
             }

@@ -11,7 +11,7 @@ import { jobScale } from './jobs.js';
 import { templeCount, actions } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
-import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal } from './truepath.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal, counterEspionage, counterEspionageZones, intelligenceOfficerCost, trainIntelligenceOfficer, dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -65,6 +65,7 @@ export function defineGovernment(define){
     // system of government rendered AFTER foreign powers instead of before it.
     government($(`#r_govern0`));
     taxRates($(`#r_govern0`));
+    defineCounterEspionage();
 
     var civ_garrison = $('<div id="c_garrison" v-show="g.display" class="garrison tile is-child"></div>');
     $('#r_govern0').append(civ_garrison);
@@ -72,6 +73,41 @@ export function defineGovernment(define){
     defineGovernor();
 }
 
+// Sets up Counter Espionage after infiltrators are identified.
+export function defineCounterEspionage(){
+    if (!counterEspionage() || $('#counterEspionage').length || $('#r_govern0').length === 0){ return; }
+    $('#r_govern0').append($('<div id="counterEspionage" class="garrison tile is-child"></div>'));
+    vBind({
+        el: '#counterEspionage',
+        data: { a: counterEspionage() },
+        template: `<div>
+            <div class="header has-text-warning">{{ label() }}</div>
+            <div class="has-text-caution">{{ summary() }}</div>
+            <div class="counterEspionageActions">
+                <button class="button trainOfficer" :disabled="!!a.officers.training" @click="train">{{ trainLabel() }}</button>
+                <button class="button dismissOfficer" :disabled="a.officers.available === 0" @click="dismiss">{{ dismissLabel() }}</button>
+            </div>
+            <span v-if="a.officers.training" class="counterEspionageTraining">{{ trainingLabel() }}</span>
+            <div v-for="zone in zones()" :key="zone.id" class="counterEspionageZone">
+                <span>{{ zone.name }}: {{ assigned(zone.id) }}</span>
+                <button class="button" @click="assign(zone.id,-1)" :disabled="assigned(zone.id) === 0">-</button>
+                <button class="button" @click="assign(zone.id,1)" :disabled="a.officers.available === 0">+</button>
+            </div>
+        </div>`,
+        methods: {
+            label(){ return loc('counter_espionage'); },
+            summary(){ return loc('counter_espionage_available',[this.a.officers.available]); },
+            zones(){ return counterEspionageZones(); },
+            assigned(zone){ return this.a.officers.assigned[zone] || 0; },
+            trainLabel(){ return loc('counter_espionage_train',[intelligenceOfficerCost().toLocaleString()]); },
+            trainingLabel(){ return loc('counter_espionage_training',[Math.max(0,this.a.officers.training - global.stats.days)]); },
+            dismissLabel(){ return loc('counter_espionage_fire'); },
+            train(){ trainIntelligenceOfficer(); },
+            dismiss(){ dismissIntelligenceOfficer(); },
+            assign(zone, change){ assignIntelligenceOfficer(zone,change); }
+        }
+    });
+}
 // Sets up garrison in civics tab
 export function defineGarrison(){
     commisionGarrison();
@@ -1269,7 +1305,7 @@ function hireMerc(num){
         let canBuy = true;
         while (canBuy && repeats > 0){
             let cost = mercCost();
-            if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+            if (garrisonSize() < garrisonSize(true) && global.resource.Money.amount >= cost){
                 global.resource.Money.amount -= cost;
                 global.civic['garrison'].workers++;
                 global.civic.garrison.m_use++;
@@ -2527,6 +2563,14 @@ export function armyRating(val,type,wound,analysis){
     return army;
 }
 
+// Return the number of garrison slots occupied by Intelligence Officers.
+export function intelligenceOfficerCount(){
+    const officers = global.race.alien?.officers;
+    if (!officers){ return 0; }
+    const assigned = Object.values(officers.assigned || {}).reduce((sum,count) => sum + count, 0);
+    return officers.available + assigned + (officers.training ? 1 : 0);
+}
+
 export function garrisonSize(max, args = {}){
     if (!global.civic.garrison){
         return 0;
@@ -2535,7 +2579,7 @@ export function garrisonSize(max, args = {}){
     let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
     let fob = global.space['fob'] && !args['nofob'] ? global.space.fob.troops : 0;
     let pillbox = global.eden['pillbox'] && !args['nopill'] ? global.eden.pillbox.staffed : 0;
-    let troops = global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox;
+    let troops = global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob - pillbox - (max ? intelligenceOfficerCount() : 0);
     if (global.race['warlord'] && p_on['soul_forge'] && !args['no_forge']){
         let forge = soulForgeSoldiers();
         if (troops >= forge){ troops -= forge; }

@@ -6955,6 +6955,177 @@ export const sWarfare = {
     detectorStealthRange: 0.5   // Detection radius against a stealth hull, until Stealth Detection.
 };
 
+const counterEspionageZoneDefs = [
+    { id: 'city', cat: 'city', active: 'spc_home' },
+    { id: 'spc_moon', cat: 'space' }, { id: 'spc_red', cat: 'space' },
+    { id: 'spc_hell', cat: 'space' }, { id: 'spc_belt', cat: 'space' },
+    { id: 'spc_gas_moon', cat: 'space' }, { id: 'spc_titan', cat: 'space', name(){ return planetName().titan; } },
+    { id: 'spc_enceladus', cat: 'space', name(){ return planetName().enceladus; } }, { id: 'spc_makemake', cat: 'space' },
+    { id: 'tau_home', cat: 'tauceti' }, { id: 'tau_red', cat: 'tauceti' }
+];
+
+// Initialize the captured-base Counter Espionage state and identify the infiltrator species.
+export function revealAlienInfiltrators(){
+    if (global.race.alien){ return global.race.alien; }
+    const player = global.race.species === 'custom' ? global.custom?.race0 : (global.race.species === 'hybrid' ? global.custom?.race1 : races[global.race.species]);
+    const playerType = player?.type || player?.genus;
+    const choices = Object.keys(races).filter(r => !['custom','hybrid'].includes(r) && races[r].type && races[r].type !== playerType);
+    const race = choices[Math.floor(seededRandom(0,choices.length,true))];
+    global.race.alien = {
+        r: race,
+        infiltrators: [],
+        caught: 0,
+        officers: { available: 0, assigned: {}, training: false, m: true },
+        next: global.stats.days + Math.floor(seededRandom(4,9,true))
+    };
+    const entity = typeof races[race].entity === 'function' ? races[race].entity() : races[race].entity;
+    messageQueue(loc('syndicate_alien_reveal',[entity]),'danger',false,['progress','combat']);
+    return global.race.alien;
+}
+
+// Return Counter Espionage state after captured-base data identifies the infiltrators.
+export function counterEspionage(){
+    const alien = global.race.alien;
+    if (!alien){ return false; }
+    if (!Array.isArray(alien.infiltrators)){ alien.infiltrators = []; }
+    if (typeof alien.caught !== 'number'){ alien.caught = 0; }
+    const seen = new Map();
+    let consolidate = false;
+    alien.infiltrators.forEach(function(infiltrator){
+        const key = `${infiltrator.z}:${infiltrator.b}`;
+        if (!Number.isInteger(infiltrator.c) || seen.has(key)){ consolidate = true; }
+        const current = seen.get(key) || { z: infiltrator.z, b: infiltrator.b, c: 0 };
+        current.c = Math.min(20,current.c + (Number.isInteger(infiltrator.c) ? infiltrator.c : (Number.isInteger(infiltrator.count) ? infiltrator.count : 1)));
+        seen.set(key,current);
+    });
+    if (consolidate){ alien.infiltrators = [...seen.values()]; }
+    if (!alien.officers){ alien.officers = { available: 0, assigned: {}, training: false }; }
+    if (!alien.officers.assigned){ alien.officers.assigned = {}; }
+    if (typeof alien.officers.available !== 'number'){ alien.officers.available = 0; }
+    if (typeof alien.officers.training !== 'number'){ alien.officers.training = false; }
+    const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
+    const officerSlots = alien.officers.available + assigned + (alien.officers.training ? 1 : 0);
+    if (!alien.officers.m){
+        if (global.civic.garrison){ global.civic.garrison.max += officerSlots; }
+        alien.officers.m = true;
+    }
+    if (global.civic.garrison){
+        global.civic.garrison.workers = Math.min(global.civic.garrison.workers, Math.max(0,global.civic.garrison.max - officerSlots));
+    }
+    if (typeof alien.next !== 'number'){ alien.next = global.stats.days + Math.floor(seededRandom(4,9,true)); }
+    return alien;
+}
+
+// Return zones that can host infiltrators in the current run.
+export function counterEspionageZones(){
+    const active = activeSupplyRegions();
+    return counterEspionageZoneDefs.filter(zone => !capitalGone() || zone.id !== 'city')
+        .filter(zone => active.includes(zone.active || zone.id))
+        .map(zone => ({ ...zone, name: zone.name ? zone.name() : supplyRegionName(zone.active || zone.id) }));
+}
+
+function counterEspionageTargets(){
+    const targets = [];
+    counterEspionageZones().forEach(function(zone){
+        const source = zone.cat === 'tauceti' ? tauCetiModules[zone.id] : (zone.cat === 'city' ? actions.city : actions.space[zone.id]);
+        const state = global[zone.cat];
+        if (!source || !state){ return; }
+        Object.keys(source).forEach(function(key){
+            const action = source[key];
+            const struct = state[key];
+            if (!action || !struct || !struct.count){ return; }
+            if (!['industry','mining','power','science'].includes(action.type) && !key.startsWith('detector')){ return; }
+            if (!(p_on[key] > 0 || support_on[key] > 0 || struct.on > 0)){ return; }
+            if (infiltratorFactor(zone.id,key) <= 0){ return; }
+            targets.push({ z: zone.id, b: key });
+        });
+    });
+    return targets;
+}
+
+// Return the remaining output fraction for one infiltrated structure.
+export function infiltratorFactor(zone, building){
+    const alien = counterEspionage();
+    if (!alien){ return 1; }
+    const infiltrator = alien.infiltrators.find(infiltrator => infiltrator.z === zone && infiltrator.b === building);
+    return Math.max(0,1 - (infiltrator ? infiltrator.c : 0) * 0.05);
+}
+
+export function intelligenceOfficerCost(){
+    const alien = counterEspionage();
+    if (!alien){ return 0; }
+    const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
+    return Math.round(5000000 * (1 + (alien.officers.available + assigned) * 0.25));
+}
+
+// Start training one Intelligence Officer when funds are available.
+export function trainIntelligenceOfficer(){
+    const alien = counterEspionage();
+    const cost = intelligenceOfficerCost();
+    if (!alien || alien.officers.training || global.resource.Money.amount < cost || garrisonSize() < 1){ return false; }
+    modRes('Money',-cost);
+    global.civic.garrison.workers--;
+    alien.officers.training = global.stats.days + 3;
+    return true;
+}
+
+// Return one unassigned Intelligence Officer to the garrison.
+export function dismissIntelligenceOfficer(){
+    const alien = counterEspionage();
+    if (!alien || alien.officers.available < 1 || !global.civic.garrison){ return false; }
+    alien.officers.available--;
+    global.civic.garrison.workers++;
+    return true;
+}
+// Assign an available Intelligence Officer to or from a Counter Espionage zone.
+export function assignIntelligenceOfficer(zone, change){
+    const alien = counterEspionage();
+    if (!alien || !counterEspionageZones().some(entry => entry.id === zone)){ return false; }
+    const assigned = alien.officers.assigned;
+    const current = assigned[zone] || 0;
+    if (change > 0 && alien.officers.available > 0){ assigned[zone] = current + 1; alien.officers.available--; return true; }
+    if (change < 0 && current > 0){ assigned[zone] = current - 1; alien.officers.available++; return true; }
+    return false;
+}
+
+// Advance officer training, searches, and infiltrator recruitment once per game day.
+export function counterEspionageDay(){
+    const alien = counterEspionage();
+    if (!alien){ return; }
+    if (alien.officers.training && global.stats.days >= alien.officers.training){
+        alien.officers.training = false;
+        alien.officers.available++;
+        messageQueue(loc('counter_espionage_trained'),'success',false,['progress','combat']);
+    }
+    if (global.stats.days >= alien.next){
+        const targets = counterEspionageTargets();
+        if (targets.length > 0){
+            const target = targets[Math.floor(seededRandom(0,targets.length,true))];
+            const infiltrator = alien.infiltrators.find(infiltrator => infiltrator.z === target.z && infiltrator.b === target.b);
+            if (infiltrator){ infiltrator.c++; }
+            else { alien.infiltrators.push({ ...target, c: 1 }); }
+        }
+        alien.next = global.stats.days + Math.floor(seededRandom(4,9,true));
+    }
+    for (const zone of counterEspionageZones()){
+        const officers = alien.officers.assigned[zone.id] || 0;
+        const targets = alien.infiltrators.filter(infiltrator => infiltrator.z === zone.id);
+        if (!officers || !targets.length || seededRandom(0,1,true) >= Math.min(0.35,officers * 0.025)){ continue; }
+        const target = targets[Math.floor(seededRandom(0,targets.length,true))];
+        const index = alien.infiltrators.indexOf(target);
+        if (seededRandom(0,1,true) < 0.18){
+            alien.officers.assigned[zone.id]--;
+            messageQueue(loc('counter_espionage_officer_lost',[zone.name]),'danger',false,['combat']);
+        }
+        else {
+            target.c--;
+            if (target.c === 0){ alien.infiltrators.splice(index,1); }
+            alien.caught++;
+            messageQueue(loc('counter_espionage_caught',[zone.name]),'success',false,['combat']);
+        }
+    }
+}
+
 // The raiding arc, which picks up exactly where syndicateActive() leaves off: that one switches itself
 // off at shadow 5, and this one begins after it.
 export function corsairsActive(){
@@ -7666,6 +7837,7 @@ function syndicateGuardDay(){
 
 // Advance Syndicate bases, guard post, and patrols each day.
 export function syndicateDay(){
+    counterEspionageDay();
     syndicateWatch();
     if (!corsairsActive()){ return; }
     syndicateBases().forEach(corsairBaseDay);
@@ -11229,17 +11401,17 @@ export function detectorStealthAU(){
 }
 
 // Detection radius against one hull.
-function detectorReach(ship){
-    return (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
+function detectorReach(ship, site){
+    const reach = (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
+    return site ? reach * infiltratorFactor(site.region === 'city' ? 'city' : site.map, site.key) : reach;
 }
 
 // Detect hulls within the active detector radius.
 function detectorContact(foe){
-    const reach = detectorReach(foe);
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
-        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= reach){ return true; }
+        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= detectorReach(foe,sites[site])){ return true; }
     }
     return false;
 }
@@ -11248,12 +11420,11 @@ function detectorContact(foe){
 // array only talks to what it can reach, so a corsair picked up over Ceres is no use to a fleet out
 // past Pluto — both have to be inside the same bubble.
 function detectorCue(at, foe){
-    const reach = detectorReach(foe);
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
         const post = genXYZcoord(sites[site].map);
-        if (dist3(post, foe.location.position) <= reach && dist3(post, at) <= sWarfare.detectorRange){ return true; }
+        if (dist3(post, foe.location.position) <= detectorReach(foe,sites[site]) && dist3(post, at) <= sWarfare.detectorRange){ return true; }
     }
     return false;
 }
