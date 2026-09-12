@@ -10,7 +10,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, fleetVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, detectorSegments, fleetVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1073,7 +1073,7 @@ export function mechanicsPage(content){
                 para_data: {
                     1: [loc('tech_ship_patrols')],
                     3: [pct(s.stealth)],
-                    4: [s.detectorSegments,s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
+                    4: [detectorSegments(),s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
                     5: [s.chaseDays,pct(s.chaseSpeed - 1)],
                     7: [s.rounds]
                 }

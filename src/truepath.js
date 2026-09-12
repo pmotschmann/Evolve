@@ -17,7 +17,7 @@ import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
 import { loc } from './locale.js';
-import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions } from './supply.js';
+import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions, capitalGone } from './supply.js';
 
 const outerTruth = {
     spc_titan: {
@@ -6948,8 +6948,9 @@ export const sWarfare = {
     guardFleet: 6,          // Corsairs in the guard fleet.
     guardRepair: 1,         // Guard hull repair per day.
     guardRounds: 50,        // Maximum daily guard combat rounds.
-    // Ground detector settings.
+    // Ground detector settings; use detectorSegments() for orbit-decay adjustments.
     detectorSegments: 10,   // Segments to finish one array.
+    detectorSegmentsLost: 12,   // Segments to finish one array with no homeworld to build on.
     detectorRange: 1,       // Detection radius in AU.
     detectorStealthRange: 0.5   // Detection radius against a stealth hull, until Stealth Detection.
 };
@@ -11185,19 +11186,29 @@ function sensorContact(foe){
 // Ground detector structures and detection helpers.
 
 // Detector site definitions and map anchors.
+const detectorSiteData = {
+    city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
+    spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
+    spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
+    spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
+};
+
+// Return detector sites that remain available after orbit decay.
 export function detectorSites(){
-    return {
-        city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
-        spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
-        spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
-        spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
-    };
+    const sites = { ...detectorSiteData };
+    if (capitalGone()){ delete sites.city; }
+    return sites;
+}
+
+// Return detector segments required for the current capital state.
+export function detectorSegments(){
+    return capitalGone() ? sWarfare.detectorSegmentsLost : sWarfare.detectorSegments;
 }
 
 // Return whether a site's array is fully assembled.
 function detectorBuilt(at){
     const struct = global[at.region] ? global[at.region][at.key] : false;
-    return struct && struct.count >= sWarfare.detectorSegments ? true : false;
+    return struct && struct.count >= detectorSegments() ? true : false;
 }
 
 // Return whether a completed detector is powered.
@@ -11205,8 +11216,7 @@ function detectorOn(at){
     return detectorBuilt(at) && p_on[at.key] > 0 ? true : false;
 }
 
-// Every world has its array. A network is only a network once the last of them is finished; power
-// does not come into it, since a switched-off array is still built.
+// A network requires every available detector site; power does not affect completion.
 export function detectorNetwork(){
     const sites = detectorSites();
     return Object.keys(sites).every(site => detectorBuilt(sites[site]));
@@ -11250,27 +11260,28 @@ function detectorCue(at, foe){
 
 // Build the Detector action for one site.
 export function detectorTemplate(site){
-    const at = detectorSites()[site];
+    const at = detectorSiteData[site];
     const region = at.region, key = at.key;
     // Completed detector segments.
     const built = function(){ return global[region].hasOwnProperty(key) ? global[region][key].count : 0; };
-    const priced = function(r){ return ((r.offset || 0) + built()) < sWarfare.detectorSegments; };
+    const priced = function(r){ return ((r.offset || 0) + built()) < detectorSegments(); };
     return {
         id: `${region}-${key}`,
         title(){ return loc('detector_title',[planetName()[at.world]]); },
         desc(wiki){
             let head = `<div>${loc('detector_desc',[planetName()[at.world]])}</div>`;
-            if (built() < sWarfare.detectorSegments || wiki){
-                return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.detectorSegments])}</div>`;
+            if (built() < detectorSegments() || wiki){
+                return head + `<div class="has-text-special">${loc('requires_segments',[detectorSegments()])}</div>`;
             }
             return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
         },
         type: 'megaproject',
         category: 'military',
         reqs: { planet_defense: 1 },
+        condition(){ return site !== 'city' || !capitalGone(); },
         path: ['truepath'],
         queue_size: 5,
-        queue_complete(){ return sWarfare.detectorSegments - built(); },
+        queue_complete(){ return detectorSegments() - built(); },
         cost: {
             Money(r={}){ return priced(r) ? 30000000 : 0; },
             Adamantite(r={}){ return priced(r) ? 1200000 : 0; },
@@ -11281,20 +11292,20 @@ export function detectorTemplate(site){
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
             let desc = `<div>${loc('detector_effect',[sWarfare.detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
-            if (count < sWarfare.detectorSegments){
-                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.detectorSegments - count])}</div>`;
+            if (count < detectorSegments()){
+                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments() - count])}</div>`;
             }
             return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
         },
         powered(){ return powerCostMod(10); },
         // Enable power controls after all segments are complete.
-        switchable(){ return built() >= sWarfare.detectorSegments; },
-        on_cap(){ return built() >= sWarfare.detectorSegments ? 1 : 0; },
+        switchable(){ return built() >= detectorSegments(); },
+        on_cap(){ return built() >= detectorSegments() ? 1 : 0; },
         action(){
-            if (built() >= sWarfare.detectorSegments){ return false; }
+            if (built() >= detectorSegments()){ return false; }
             if (payCosts(this)){
                 incrementStruct(this);
-                if (global[region][key].count >= sWarfare.detectorSegments){
+                if (global[region][key].count >= detectorSegments()){
                     global[region][key].on = 1;
                     if (region === 'city'){ drawCity(); }
                     else { renderSpace(); }

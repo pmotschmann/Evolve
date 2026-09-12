@@ -26,15 +26,36 @@ export const CAPITAL = 'spc_home';
 // Sentinel for civilization-wide costs that draw from every supply pool.
 export const ANYWHERE = '*';
 
+// Capital region after orbit decay.
+const EXILE = 'spc_red';
+
+// Return whether orbit decay destroyed the homeworld.
+export function capitalGone(){
+    return global.race['orbit_decayed'] ? true : false;
+}
+
+// Return the capital region after any relocation.
+export function capitalZone(){
+    return capitalGone() ? EXILE : CAPITAL;
+}
+
+// Return the capital's supply pool.
+export function homeZone(){
+    return supplyPool(capitalZone());
+}
+
 // Categories that carry regions, and the one that does not.
 const REGION_CATS = ['space','interstellar','galaxy','portal','tauceti','eden'];
 
-// Built once, on demand, rather than at module load.
+// Cache region data by the current capital region.
 let regionList = false;
 let structMap = false;
+let indexedCapital = false;
 
 function buildIndex(){
-    if (regionList){ return; }
+    const seat = capitalZone();
+    if (regionList && indexedCapital === seat){ return; }
+    indexedCapital = seat;
     regionList = [];
     structMap = {};
     for (const cat of REGION_CATS){
@@ -58,15 +79,16 @@ function buildIndex(){
         for (const key of Object.keys(actions.city)){
             const c_action = actions.city[key];
             if (!c_action || typeof c_action !== 'object'){ continue; }
-            tagSupply(c_action, CAPITAL);
+            // Retag city structures for the current capital region.
+            tagSupply(c_action, seat, true);
             structMap[`city:${key}`] = c_action.s_zone;
         }
     }
 }
 
 // Tag building supply zone
-function tagSupply(c_action, region){
-    if (!c_action.s_zone){ c_action.s_zone = region; }
+function tagSupply(c_action, region, force){
+    if (force || !c_action.s_zone){ c_action.s_zone = region; }
     if (typeof c_action.supply !== 'function'){
         c_action.supply = function(){ return this.s_zone; };
     }
@@ -79,7 +101,7 @@ function isZone(name){
 
 // The zone something belongs to.
 export function supplyZone(at, cat){
-    if (!at){ return CAPITAL; }
+    if (!at){ return capitalZone(); }
     if (isZone(at)){ return at; }
     const split = at.indexOf(':');
     if (split > 0){ return regionOf(at.slice(split + 1), at.slice(0, split)); }
@@ -111,7 +133,7 @@ export function supplyOf(c_action, cat){
         const key = c_action.id.split('-').slice(1).join('-');
         if (structMap[`${cat}:${key}`]){ return structMap[`${cat}:${key}`]; }
     }
-    return CAPITAL;
+    return capitalZone();
 }
 
 // The region a bare structure name belongs to, for callers holding only what the game state stores.
@@ -121,7 +143,7 @@ export function regionOf(structKey, cat){
     for (const c of ['city', ...REGION_CATS]){
         if (structMap[`${c}:${structKey}`]){ return structMap[`${c}:${structKey}`]; }
     }
-    return CAPITAL;
+    return capitalZone();
 }
 
 // What a region is called on screen.
@@ -163,7 +185,7 @@ export function supplyRegionName(region, raw = false){
 
 // Normalize legacy city references to the home-world region.
 export function supplyRegionKey(r){
-    return r === 'city' ? CAPITAL : r;
+    return r === 'city' ? capitalZone() : r;
 }
 
 // The container in `global` a region's structures are counted in. Straight through to the existing
@@ -209,7 +231,10 @@ export function supplyPool(region){
             for (const member of group.r){ poolOfCache[member] = group.r[0]; }
         }
     }
-    return poolOfCache[region] || region;
+    const pool = poolOfCache[region] || region;
+    // Map the destroyed capital pool to the relocated capital.
+    if (capitalGone() && pool === CAPITAL){ return poolOfCache[EXILE] || EXILE; }
+    return pool;
 }
 
 // Every active region drawing on a pool.
@@ -221,7 +246,8 @@ export function poolRegions(pool){
 }
 
 export function regionEnabled(region){
-    if (region === CAPITAL){ return true; }        // the home world is always there
+    // Disable the destroyed capital region.
+    if (region === CAPITAL){ return !capitalGone(); }
     const settings = global.settings || {};
     switch (supplyContainer(region)){
         case 'portal':  return !!(settings.portal && settings.portal[region.slice(5)]);
@@ -242,8 +268,9 @@ export function activeSupplyRegions(){
         const held = global[cat] && global[cat][struct];
         if (held && held.count > 0){ live[region] = true; }
     }
-    // The capital is always a place: it is where the civilisation started.
-    live[CAPITAL] = true;
+    // Always include the current capital in active supply regions.
+    live[capitalZone()] = true;
+    if (capitalGone()){ delete live[CAPITAL]; }
     return supplyRegions().filter(r => live[r]);
 }
 
@@ -420,7 +447,7 @@ export function storageShare(res){
     // worlds that exist is the only reading that does not favour one of them arbitrarily.
     if (uncapped(res)){
         const live = supplyPools();
-        if (!live.length){ return { [CAPITAL]: 1 }; }
+        if (!live.length){ return { [homeZone()]: 1 }; }
         const each = {};
         for (const pool of live){ each[pool] = 1 / live.length; }
         return each;
@@ -429,7 +456,7 @@ export function storageShare(res){
     const share = {};
     let total = 0;
     for (const pool in caps){ total += caps[pool] > 0 ? caps[pool] : 0; }
-    if (total <= 0){ return { [CAPITAL]: 1 }; }
+    if (total <= 0){ return { [homeZone()]: 1 }; }
     for (const pool in caps){
         if (caps[pool] > 0){ share[pool] = caps[pool] / total; }
     }
@@ -470,6 +497,8 @@ const STARTING_ZONES = [
 
 export function splitSupply(){
     for (const zone of STARTING_ZONES){
+        // Skip the destroyed capital zone when splitting supplies.
+        if (capitalGone() && zone.r[0] === CAPITAL){ continue; }
         // Joined to the first one in turn, so the zone keeps that region's name however many
         // worlds it ends up holding.
         for (let i = 1; i < zone.r.length; i++){
@@ -538,7 +567,7 @@ export function setZoneHousing(byZone, population){
         for (const zone in pop){ delete pop[zone]; }
         // No housing anywhere the reckoning knows of — everyone is at home, which is where the
         // civilisation starts and where anything unattributed belongs.
-        pop[CAPITAL] = population || 0;
+        pop[homeZone()] = population || 0;
         global.race.zoneHousing = {};
         return pop;
     }
@@ -550,13 +579,16 @@ export function setZoneHousing(byZone, population){
     const sameHousing = Object.keys(housing).length === Object.keys(previousHousing).length
         && Object.keys(housing).every(zone => housing[zone] === previousHousing[zone]);
 
+    // Remove legacy population assigned to the destroyed capital.
+    if (capitalGone() && pop[CAPITAL]){ delete pop[CAPITAL]; }
+
     // Redistribute population only when housing capacity changes.
     if (sameHousing && Object.keys(pop).length){
         let placed = 0;
         for (const zone in pop){ placed += pop[zone]; }
         if (placed === population){ return pop; }
         if (placed < population){
-            pop[supplyPool(CAPITAL)] = (pop[supplyPool(CAPITAL)] || 0) + (population - placed);
+            pop[homeZone()] = (pop[homeZone()] || 0) + (population - placed);
             return pop;
         }
     }
@@ -570,7 +602,7 @@ export function setZoneHousing(byZone, population){
         pop[zone] = Math.floor(population * housing[zone] / room);
         placed += pop[zone];
     }
-    pop[supplyPool(CAPITAL)] = (pop[supplyPool(CAPITAL)] || 0) + (population - placed);
+    pop[homeZone()] = (pop[homeZone()] || 0) + (population - placed);
     global.race.zoneHousing = housing;
     return pop;
 }
@@ -603,7 +635,7 @@ export function starveZone(zone){
 // run there is no zonePop yet, and an empty list would drop that tick's upkeep entirely.
 export function citizenZones(){
     const zones = Object.keys(global.race['zonePop'] || {});
-    return zones.length ? zones : [CAPITAL];
+    return zones.length ? zones : [homeZone()];
 }
 
 // A zone's share of the population, for charging it its share of what the population eats.
@@ -611,7 +643,7 @@ export function citizenShare(zone){
     const pop = global.race['zonePop'] || {};
     let all = 0;
     for (const z in pop){ all += pop[z]; }
-    return all > 0 ? zoneCitizens(zone) / all : (supplyPool(zone) === supplyPool(CAPITAL) ? 1 : 0);
+    return all > 0 ? zoneCitizens(zone) / all : (supplyPool(zone) === homeZone() ? 1 : 0);
 }
 
 export function regCrates(res){
@@ -638,12 +670,12 @@ export function setRegCaps(res, structural, attributed, crateVal, conVal){
         }
     }
     const spare = structural - named;
-    base[CAPITAL] = (base[CAPITAL] || 0) + spare;
+    base[capitalZone()] = (base[capitalZone()] || 0) + spare;
     global.resource[res].regBase = base;
     // Include unattributed and base storage in the regional breakdown.
     for (const pool of supplyPools()){
         for (const region of poolRegions(pool)){
-            const own = regionBaseStorage(res, region) + (region === CAPITAL ? spare : 0);
+            const own = regionBaseStorage(res, region) + (region === capitalZone() ? spare : 0);
             if (!own){ continue; }
             if (!breakdown.creg[region]){ breakdown.creg[region] = {}; }
             if (!breakdown.creg[region][res]){ breakdown.creg[region][res] = {}; }
@@ -668,7 +700,7 @@ export function setRegCaps(res, structural, attributed, crateVal, conVal){
                              + (global.resource[res].crates || 0) * crateVal
                              + (global.resource[res].containers || 0) * conVal;
     if (Math.abs(whole - placed) > 1e-9){
-        caps[supplyPool(CAPITAL)] = (caps[supplyPool(CAPITAL)] || 0) + (whole - placed);
+        caps[homeZone()] = (caps[homeZone()] || 0) + (whole - placed);
     }
 }
 
@@ -752,6 +784,20 @@ function repool(res){
     }
 }
 
+// Move destroyed-capital crates and containers to the relocated capital.
+function reclaimCapital(res){
+    if (!capitalGone()){ return; }
+    const home = homeZone();
+    if (home === CAPITAL){ return; }
+    const move = (ledger) => {
+        if (!ledger || !ledger[CAPITAL]){ return; }
+        ledger[home] = (ledger[home] || 0) + ledger[CAPITAL];
+        delete ledger[CAPITAL];
+    };
+    move(regCrates(res));
+    move(regContainers(res));
+}
+
 // Trim each pool back to what it can hold. Overflow is lost exactly as a full store has always lost
 // it — and since linked regions are one pool, linking is what stops it being lost.
 export function clampPools(res){
@@ -762,6 +808,7 @@ export function clampPools(res){
     }
     ensureLedger(res);
     repool(res);
+    reclaimCapital(res);
     const reg = regLedger(res);
     for (const pool in reg){
         const cap = regMax(res, pool);
@@ -816,7 +863,7 @@ export function poolMod(res, pool, val){
     // Global debits draw from all pools; global credits go to the capital.
     if (pool === ANYWHERE){
         if (val < 0){ return -(val + drawPools(res, -val)); }
-        pool = supplyPool(CAPITAL);
+        pool = homeZone();
     }
     const reg = regLedger(res);
     const have = reg.hasOwnProperty(pool) ? reg[pool] : 0;

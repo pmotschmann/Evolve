@@ -12225,6 +12225,14 @@ function midLoop(){
             }
         });
 
+        // Repool unlimited resources after regional storage updates.
+        if (regional){
+            Object.keys(global.resource).forEach(function (res){
+                if (!atomic_mass[res] || caps.hasOwnProperty(res)){ return; }
+                clampPools(res);
+            });
+        }
+
         let unlock_servants = false;
         let total_servants = 0;
         let not_scavanger_jobs_avail = 0;
