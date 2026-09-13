@@ -1141,6 +1141,22 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`supply`,loc('wiki_mechanics_supply'));
     }
 
+    { // Alien Infiltrators
+        infoBoxBuilder(mainContent,{ name: 'infiltrators', template: 'mechanics', label: loc('wiki_mechanics_infiltrators'), paragraphs: 5, break: [2,3,4,5], h_level: 2,
+            para_data: {
+                1: [loc('tech_syndicate_base_data'),loc('counter_espionage')],
+                2: [loc('counter_espionage')],
+                3: [5,20],
+                5: [sWarfare.containmentStops,loc('tech_alien_containment'),loc('space_dwarf_alien_containment_title'),sWarfare.containmentCapture * 100,sWarfare.interrogationTime,sWarfare.intelMin,sWarfare.intelMax,loc('resource_Alien_Intel_name')]
+            },
+            data_link: {
+                1: ['wiki.html#shadow_war-tp_tech-syndicate_base_data',false],
+                5: ['wiki.html#shadow_war-tp_tech-alien_containment']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`infiltrators`,loc('wiki_mechanics_infiltrators'));
+    }
+
     { // Seeded Randomness
         let seed = infoBoxBuilder(mainContent,{ name: 'seed', template: 'mechanics', label: loc('wiki_mechanics_seed'), paragraphs: 14, break: [3,5,6,7,8,9,10,11,12,13,14], h_level: 2,
             para_data: {
