@@ -9,7 +9,7 @@ import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad,
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
-import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
+import { highPopAdjust, production, teamster, technicianCount, infiltratorFactor } from './prod.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
@@ -56,6 +56,7 @@ export const resource_values = {
     Corrupt_Gem: 0,
     Codex: 0,
     Cipher: 0,
+    Alien_Intel: 0,
     Demonic_Essence: 0,
     Blessed_Essence: 0
 };
@@ -321,7 +322,7 @@ export const craftingRatio = (function(){
             };
             // Womling artisans working a craftworks, a percent each on everything crafted.
             {
-                let artisans = womlingArtisans();
+                let artisans = womlingArtisans() * infiltratorFactor('tau_red','womling_craftworks');
                 if (artisans > 0){
                     crafting.general.multi.push({
                         name: loc(`tau_red_womling_craftworks`),
@@ -332,7 +333,7 @@ export const craftingRatio = (function(){
             }
             if (global.tech['foundry'] >= 2){
                 let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
-                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
+                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
                 crafting.general.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * skill,
@@ -353,12 +354,12 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 4 && global.city['sawmill']){
                 crafting.Plywood.add.push({
                     name: loc(`city_sawmill`),
-                    manual: global.city['sawmill'].count * 0.02,
-                    auto: global.city['sawmill'].count * 0.02
+                    manual: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill'),
+                    auto: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill')
                 });
             }
             if (global.tech['foundry'] >= 6){
-                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
+                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
                 crafting.Brick.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * 0.02,
@@ -368,14 +369,14 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 7){
                 crafting.general.add.push({
                     name: loc(`city_factory`) + ` (${loc(`tab_city5`)})`,
-                    manual: p_on['factory'] * 0.05,
-                    auto: p_on['factory'] * 0.05
+                    manual: p_on['factory'] * 0.05 * infiltratorFactor('city','factory'),
+                    auto: p_on['factory'] * 0.05 * infiltratorFactor('city','factory')
                 });
                 if (global.tech['mars'] >= 4){
                     crafting.general.add.push({
                         name: loc(`city_factory`) + ` (${loc(`tab_space`)})`,
-                        manual: p_on['red_factory'] * 0.05,
-                        auto: p_on['red_factory'] * 0.05
+                        manual: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory'),
+                        auto: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory')
                     });
                 }
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
@@ -428,8 +429,8 @@ export const craftingRatio = (function(){
             if (global.space['fabrication'] && support_on['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
-                    manual: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)),
-                    auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02))
+                    manual: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication'),
+                    auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication')
                 });
             }
             if (global.race['artisan']){
@@ -918,6 +919,7 @@ export function defineResources(wiki){
     loadResource('Energy',wiki,0,0,false,false,'warning');
     loadResource('Sus',wiki,0,0,false,false,'warning');
     loadResource('Knowledge',wiki,100,1,false,false,'warning');
+    loadResource('Alien_Intel',wiki,-2,0,false,false,'warning');
     loadResource('Omniscience',wiki,100,1,false,false,'warning');
     loadResource('Zen',wiki,0,0,false,false,'warning');
     loadResource('Crates',wiki,0,0,false,false,'warning');
@@ -3672,21 +3674,51 @@ function initMarket(){
     loadMarket();
 }
 
-// Update only the inbound cards while cargo is travelling. Redrawing the whole tab every second
-// made the zone cards flash; the full render happens only when an arrival changes their state.
+// Refresh inbound freighter cards while they travel.
 let supplyZonesArrivalTimer = false;
 let supplyZonesInboundIds = [];
 let supplyZonesInboundShips = [];
+let supplyZonesInboundCards = [];
+let supplyZonesResources = [];
+
+function supplyZoneCard(pool){
+    return $('#resSupplyZones').find('.supplyZone').toArray().find(card => card.dataset.supplyPool === pool);
+}
+
+function moveArrivedSupplyFreighter(inbound){
+    const card = document.getElementById(inbound.id);
+    const ship = inbound.ships[0];
+    const pool = ship && ship.location ? supplyPool(ship.location.name) : false;
+    const zone = pool && supplyZoneCard(pool);
+    const host = zone && zone.querySelector('.supplyDockedList');
+    const ships = ship?.fid ? shipFleet(ship).filter(member => member.class === 'freighter') : [ship];
+    const group = freightGroups(ships)[0];
+    // Rebuild all zones when the tracked card or group changed.
+    if (!card || !host || !group || freightGroupKey(group.ships) !== inbound.key){ return false; }
+    appendDockedFreighterCard(host, group, pool, supplyZonesResources, card);
+    return true;
+}
 
 function refreshInboundSupplyZones(){
     supplyZonesArrivalTimer = false;
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
-    if (supplyZonesInboundShips.some(ship => !ship.inTransit)){
-        initSupplyZones();
-        return;
+    const arrived = supplyZonesInboundCards.filter(inbound => inbound.ships.every(ship => !ship.inTransit));
+    if (arrived.length){
+        // Move unchanged groups in place; redraw if their structure changed.
+        if (!arrived.every(moveArrivedSupplyFreighter)){
+            initSupplyZones();
+            return;
+        }
+        supplyZonesInboundCards = supplyZonesInboundCards.filter(inbound => !arrived.includes(inbound));
+        supplyZonesInboundIds = supplyZonesInboundCards.map(inbound => inbound.id);
+        supplyZonesInboundShips = supplyZonesInboundCards.flatMap(inbound => inbound.ships);
     }
     supplyZonesInboundIds.forEach(id => vBind({ el: `#${id}` }, 'update'));
-    supplyZonesArrivalTimer = setTimeout(refreshInboundSupplyZones, 1000);
+    if (supplyZonesInboundIds.length){ supplyZonesArrivalTimer = setTimeout(refreshInboundSupplyZones, 1000); }
+}
+
+function freightGroupKey(ships){
+    return ships.map(ship => global.space.shipyard.ships.indexOf(ship)).sort((a,b) => a - b).join('_');
 }
 
 function freightGroups(ships){
@@ -3889,6 +3921,56 @@ function freightLoadModal(buefy, ships, pool, resources){
     }, 50);
 }
 
+
+function appendDockedFreighterCard(host, group, pool, resources, card = false){
+    const ships = group.ships;
+    const id = `supplyFreighter_${freightGroupKey(ships)}`;
+    if (card){ vBind({ el: card }, 'destroy'); }
+    else { card = document.createElement('article'); }
+    card.id = id;
+    card.className = 'supplyFreighter';
+    card.innerHTML = `<header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyFreighterCapacity">{{ load() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span></div><div class="supplyFreighterStats"><span>${loc('supply_freighter_weight')}: {{ weight() }}</span><span v-show="penalty()">{{ penalty() }}</span><span v-show="hasRoute()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span></div></header><div class="supplyFreighterTabs"><button class="button is-small" :class="{ 'is-info': tab === 'cargo' }" @click="tab = 'cargo'">${loc('supply_freighter_cargo')}</button><button class="button is-small" :class="{ 'is-info': tab === 'route' }" @click="tab = 'route'">${loc('supply_freighter_routes')}</button><button class="button is-small" :class="{ 'is-success': auto }" v-show="showAuto()" @click="toggleAuto">{{ autoText() }}</button><button class="button is-small supplyFreighterMap" @click="openMap">${loc('outer_shipyard_map')}</button></div><section class="supplyManifest" v-show="tab === 'cargo'"><div class="supplyManifestHead"><span>${loc('supply_freighter_manifest')}</span><button class="button is-small is-info" @click="openLoad">${loc('supply_freighter_load_cargo')}</button></div><div class="supplyCargoRows" v-show="cargo().length"><div class="supplyCargoRow" v-for="item in cargo()"><span>{{ item.name }}</span><span class="has-text-caution">{{ item.amount }}</span><button class="button is-small" @click="unload(item.res)">${loc('supply_freighter_unload_all')}</button></div></div><div class="supplyCargoEmpty" v-show="!cargo().length">${loc('supply_freighter_empty')}</div></section><section class="supplyRoutePanel" v-show="tab === 'route'">${routeSummaryMarkup}<div class="supplyRouteStops" v-show="!hasRoute()"><div class="supplyRouteStop" v-for="(stop,index) in stops"><span class="supplyRouteNumber">{{ index + 1 }}</span><b-select v-model="stop.zone" :disabled="index === 0"><option v-for="zone in zones" :value="zone">{{ zoneName(zone) }}</option></b-select><button class="button is-small" @click="pick(index)">{{ pickupText(stop) }}</button><button class="button is-small" v-show="index > 1" @click="remove(index)">×</button></div></div><div class="supplyRouteActions" v-show="!hasRoute()"><button class="button is-small" @click="add">${loc('supply_freighter_route_add_stop')}</button><button class="button is-info" @click="start">${loc('supply_freighter_route_start')}</button></div><div class="supplyRouteActions" v-show="hasRoute()"><button class="button is-small" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div><p class="has-text-danger" v-show="routeError">${loc('supply_freighter_route_invalid')}</p></section><footer class="supplyDispatch"><span>${loc('supply_freighter_send')}:</span><div>${supplyPools().filter(target => target !== pool).map(target => `<button class="button is-small" @click="send('${target}')">${supplyRegionName(target)}</button>`).join('')}</div></footer>`;
+    host.append(card);
+    const route = ships[0].tradeRoute;
+    const zones = supplyPools();
+    const firstNext = zones.find(zone => zone !== pool) || pool;
+    const stops = route?.stops?.length ? route.stops.map(stop => ({ zone: stop.zone, pickups: Array.isArray(stop.pickups) ? stop.pickups.slice() : [] })) : [{ zone: pool, pickups: [] }, { zone: firstNext, pickups: [] }];
+    vBind({ el: card, data: { tab: 'cargo', zones, stops, routeError: false, auto: autoRouteOn(ships[0]) }, methods: {
+        // Show freight-governor controls only for opted-in routes.
+        showAuto(){ return govTaskActive('freight'); },
+        autoText(){ return this.auto ? loc('supply_freighter_auto_on') : loc('supply_freighter_auto_off'); },
+        toggleAuto(){ this.auto = toggleAutoRoute(ships[0]); },
+        load(){ return sizeApproximation(freightGroupLoad(ships), 0); },
+        weight(){ return sizeApproximation(freightGroupWeight(ships), 0); },
+        penalty(){ const penalty = Math.max(...ships.map(freightSpeedPenalty)); return penalty ? loc('supply_freighter_speed_penalty',[penalty]) : ''; },
+        speed(){ return freightRouteSpeed(ships); },
+        cargo(){ return Object.entries(freightGroupCargo(ships)).filter(([,amount]) => amount > 0).map(([res,amount]) => ({ res, name: global.resource[res].name, amount: sizeApproximation(amount,0) })); },
+        openLoad(){ freightLoadModal(this.$buefy, ships, pool, resources); },
+        openMap(){ freightSolarMapModal(this.$buefy, ships[0]); },
+        hasRoute(){ return !!ships[0].tradeRoute; },
+        summary(){ return routeSummary(ships[0]); },
+        managed(){ return routeManaged(ships[0]); },
+        zoneName(zone){ return supplyRegionName(zone); },
+        pickupText(stop){ return stop.pickups.length ? stop.pickups.map(res => global.resource[res].name).join(', ') : loc('supply_freighter_route_no_pickup'); },
+        pick(index){ freightRoutePickupModal(this.$buefy, this.stops[index], resources, () => vBind({ el: `#${id}` }, 'update')); },
+        add(){ this.stops.push({ zone: this.zones.find(zone => zone !== pool) || pool, pickups: [] }); },
+        remove(index){ this.stops.splice(index, 1); },
+        start(){ this.routeError = !startFreightRoute(ships[0], this.stops); if (!this.routeError){ initSupplyZones(); } },
+        stopRoute(){ if (stopFreightRoute(ships[0])){ initSupplyZones(); } },
+        unload(res){
+            const held = freightGroupCargo(ships)[res] || 0;
+            if (held <= 0){ return; }
+            const spill = poolMod(res, pool, held);
+            const moved = held - Math.max(0, spill);
+            if (moved <= 0){ return; }
+            unloadFreightGroup(ships, res, moved);
+            syncTotal(res);
+            vBind({ el: `#${id}` }, 'update');
+        },
+        send(destination){ if (dispatchFreighter(ships[0], destination)){ initSupplyZones(); } }
+    }});
+    return card;
+}
 export function initSupplyZones(){
     // Also migrates existing regional saves: the unlock already happened there, so the tech action
     // will not run again to seed the new starter routes.
@@ -3896,6 +3978,7 @@ export function initSupplyZones(){
     if (supplyZonesArrivalTimer){ clearTimeout(supplyZonesArrivalTimer); supplyZonesArrivalTimer = false; }
     supplyZonesInboundIds = [];
     supplyZonesInboundShips = [];
+    supplyZonesInboundCards = [];
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
     const host = $('#resSupplyZones');
     clearElement(host);
@@ -3905,11 +3988,12 @@ export function initSupplyZones(){
     }
     host.append($(`<div class="storage-header supplyZonesTitle"><h2>${loc('tab_supply_zones')}</h2></div>`));
     const resources = Object.keys(global.resource).filter(res => atomic_mass[res] && global.resource[res].display);
+    supplyZonesResources = resources;
     supplyPools().forEach(function(pool, index){
         const members = poolRegions(pool);
         const docked = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && !ship.inTransit && supplyPool(ship.location.name) === pool);
         const incoming = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && ship.inTransit && ship.destination && supplyPool(ship.destination.name) === pool);
-        const card = $(`<section id="supplyZone${index}" class="market-item supplyZone"><header class="supplyZoneHead"><div><h3 class="res has-text-warning">${supplyRegionName(pool)}</h3><div class="supplyZoneMeta"><span>${loc('supply_zone_primary',[supplyRegionName(pool)])}</span><span>${loc('supply_zone_linked',[members.map(member => supplyRegionName(member, true)).join(', ')])}</span></div></div><span class="supplyZoneCount">${docked.length + incoming.length}</span></header></section>`);
+        const card = $(`<section id="supplyZone${index}" class="market-item supplyZone" data-supply-pool="${pool}"><header class="supplyZoneHead"><div><h3 class="res has-text-warning">${supplyRegionName(pool)}</h3><div class="supplyZoneMeta"><span>${loc('supply_zone_primary',[supplyRegionName(pool)])}</span><span>${loc('supply_zone_linked',[members.map(member => supplyRegionName(member, true)).join(', ')])}</span></div></div><span class="supplyZoneCount">${docked.length + incoming.length}</span></header></section>`);
         host.append(card);
 
         // Show deployed and deployable Supply Ships before freighter details.
@@ -3945,6 +4029,7 @@ export function initSupplyZones(){
                 const id = `supplyInbound${index}_${groupIndex}`;
                 supplyZonesInboundIds.push(id);
                 supplyZonesInboundShips.push(...ships);
+                supplyZonesInboundCards.push({ id, ships, key: freightGroupKey(ships) });
                 arrivals.append($(`<article id="${id}" class="supplyFreighter supplyFreighterIncoming"><header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyInboundStatus has-text-caution">{{ arrival() }}</span></div><div class="supplyFreighterStats"><span>${loc('supply_freighter_load')}: {{ load() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span><span>${loc('supply_freighter_weight')}: {{ weight() }}</span><span v-show="route()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span></div></header><div class="supplyInboundCargo" v-show="contents()">{{ contents() }}</div>${routeSummaryMarkup}<div class="supplyFreighterActions"><button class="button is-small" @click="openMap">${loc('outer_shipyard_map')}</button><button class="button is-small" v-show="route()" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div></article>`));
                 vBind({ el: `#${id}`, data: ships[0], methods: {
                     route(){ return !!ships[0].tradeRoute; },
@@ -3961,53 +4046,9 @@ export function initSupplyZones(){
                 }});
             });
         }
-        if (!docked.length){ return; }
-        const freightHost = $('<div class="supplyFreighterList"></div>');
+        const freightHost = $('<div class="supplyFreighterList supplyDockedList"></div>');
         card.append(freightHost);
-        freightGroups(docked).forEach(function(group, groupIndex){
-            const ships = group.ships;
-            const id = `supplyFreighter${index}_${groupIndex}`;
-            const destinations = supplyPools().filter(target => target !== pool).map(target => `<button class="button is-small" @click="send('${target}')">${supplyRegionName(target)}</button>`).join('');
-            freightHost.append($(`<article id="${id}" class="supplyFreighter"><header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyFreighterCapacity">{{ load() }} / ${sizeApproximation(freightGroupCapacity(ships),0)}</span></div><div class="supplyFreighterStats"><span>${loc('supply_freighter_weight')}: {{ weight() }}</span><span v-show="penalty()">{{ penalty() }}</span><span v-show="hasRoute()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span></div></header><div class="supplyFreighterTabs"><button class="button is-small" :class="{ 'is-info': tab === 'cargo' }" @click="tab = 'cargo'">${loc('supply_freighter_cargo')}</button><button class="button is-small" :class="{ 'is-info': tab === 'route' }" @click="tab = 'route'">${loc('supply_freighter_routes')}</button><button class="button is-small" :class="{ 'is-success': auto }" v-show="showAuto()" @click="toggleAuto">{{ autoText() }}</button><button class="button is-small supplyFreighterMap" @click="openMap">${loc('outer_shipyard_map')}</button></div><section class="supplyManifest" v-show="tab === 'cargo'"><div class="supplyManifestHead"><span>${loc('supply_freighter_manifest')}</span><button class="button is-small is-info" @click="openLoad">${loc('supply_freighter_load_cargo')}</button></div><div class="supplyCargoRows" v-show="cargo().length"><div class="supplyCargoRow" v-for="item in cargo()"><span>{{ item.name }}</span><span class="has-text-caution">{{ item.amount }}</span><button class="button is-small" @click="unload(item.res)">${loc('supply_freighter_unload_all')}</button></div></div><div class="supplyCargoEmpty" v-show="!cargo().length">${loc('supply_freighter_empty')}</div></section><section class="supplyRoutePanel" v-show="tab === 'route'">${routeSummaryMarkup}<div class="supplyRouteStops" v-show="!hasRoute()"><div class="supplyRouteStop" v-for="(stop,index) in stops"><span class="supplyRouteNumber">{{ index + 1 }}</span><b-select v-model="stop.zone" :disabled="index === 0"><option v-for="zone in zones" :value="zone">{{ zoneName(zone) }}</option></b-select><button class="button is-small" @click="pick(index)">{{ pickupText(stop) }}</button><button class="button is-small" v-show="index > 1" @click="remove(index)">×</button></div></div><div class="supplyRouteActions" v-show="!hasRoute()"><button class="button is-small" @click="add">${loc('supply_freighter_route_add_stop')}</button><button class="button is-info" @click="start">${loc('supply_freighter_route_start')}</button></div><div class="supplyRouteActions" v-show="hasRoute()"><button class="button is-small" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div><p class="has-text-danger" v-show="routeError">${loc('supply_freighter_route_invalid')}</p></section><footer class="supplyDispatch"><span>${loc('supply_freighter_send')}:</span><div>${destinations}</div></footer></article>`));
-            const route = ships[0].tradeRoute;
-            const zones = supplyPools();
-            const firstNext = zones.find(zone => zone !== pool) || pool;
-            const stops = route?.stops?.length ? route.stops.map(stop => ({ zone: stop.zone, pickups: Array.isArray(stop.pickups) ? stop.pickups.slice() : [] })) : [{ zone: pool, pickups: [] }, { zone: firstNext, pickups: [] }];
-            vBind({ el: `#${id}`, data: { tab: 'cargo', zones, stops, routeError: false, auto: autoRouteOn(ships[0]) }, methods: {
-                // Show freight-governor controls only for opted-in routes.
-                showAuto(){ return govTaskActive('freight'); },
-                autoText(){ return this.auto ? loc('supply_freighter_auto_on') : loc('supply_freighter_auto_off'); },
-                toggleAuto(){ this.auto = toggleAutoRoute(ships[0]); },
-                load(){ return sizeApproximation(freightGroupLoad(ships), 0); },
-                weight(){ return sizeApproximation(freightGroupWeight(ships), 0); },
-                penalty(){ const penalty = Math.max(...ships.map(freightSpeedPenalty)); return penalty ? loc('supply_freighter_speed_penalty',[penalty]) : ''; },
-                speed(){ return freightRouteSpeed(ships); },
-                cargo(){ return Object.entries(freightGroupCargo(ships)).filter(([,amount]) => amount > 0).map(([res,amount]) => ({ res, name: global.resource[res].name, amount: sizeApproximation(amount,0) })); },
-                openLoad(){ freightLoadModal(this.$buefy, ships, pool, resources); },
-                openMap(){ freightSolarMapModal(this.$buefy, ships[0]); },
-                hasRoute(){ return !!ships[0].tradeRoute; },
-                summary(){ return routeSummary(ships[0]); },
-                managed(){ return routeManaged(ships[0]); },
-                zoneName(zone){ return supplyRegionName(zone); },
-                pickupText(stop){ return stop.pickups.length ? stop.pickups.map(res => global.resource[res].name).join(', ') : loc('supply_freighter_route_no_pickup'); },
-                pick(index){ freightRoutePickupModal(this.$buefy, this.stops[index], resources, () => vBind({ el: `#${id}` }, 'update')); },
-                add(){ this.stops.push({ zone: this.zones.find(zone => zone !== pool) || pool, pickups: [] }); },
-                remove(index){ this.stops.splice(index, 1); },
-                start(){ this.routeError = !startFreightRoute(ships[0], this.stops); if (!this.routeError){ initSupplyZones(); } },
-                stopRoute(){ if (stopFreightRoute(ships[0])){ initSupplyZones(); } },
-                unload(res){
-                    const held = freightGroupCargo(ships)[res] || 0;
-                    if (held <= 0){ return; }
-                    const spill = poolMod(res, pool, held);
-                    const moved = held - Math.max(0, spill);
-                    if (moved <= 0){ return; }
-                    unloadFreightGroup(ships, res, moved);
-                    syncTotal(res);
-                    vBind({ el: `#${id}` }, 'update');
-                },
-                send(destination){ if (dispatchFreighter(ships[0], destination)){ initSupplyZones(); } }
-            }});
-        });
+        freightGroups(docked).forEach(group => appendDockedFreighterCard(freightHost.get(0), group, pool, resources));
     });
     if (supplyZonesInboundIds.length){
         supplyZonesArrivalTimer = setTimeout(refreshInboundSupplyZones, 1000);
