@@ -9,7 +9,7 @@ import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './c
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
 import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
@@ -286,10 +286,13 @@ const fortressModules = {
             },
             effect(){
                 let bonus = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 50 : 20) : 10;
-                let know = global.tech.infernite >= 6 ? 2500 : 1000;
+                let know = this.knowVal();
                 let sci_bonus = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[2])}</div>` : `<div>${loc('space_moon_observatory_effect',[2])}</div><div>${loc('portal_sensor_drone_effect2',[2])}</div>`;
                 let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[know])}</div>${sci_bonus}` : '';
                 return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                return hugeAdjust(global.tech.infernite >= 6 ? 2500 : 1000);
             },
             action(args){
                 if (payCosts(this)){
@@ -890,9 +893,9 @@ const fortressModules = {
                 if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
                     multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
                 }
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -914,9 +917,9 @@ const fortressModules = {
                     if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
                         multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
                     }
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
                         }
                     };
                     return true;
@@ -1054,18 +1057,24 @@ const fortressModules = {
                 Graphene(r={}){ return spaceCostMultiplier('twisted_lab', r.offset, 230000, 1.3, 'portal'); }
             },
             effect(){
-                let baseVal = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
-                let know = global.race['absorbed'] ? global.race.absorbed.length * baseVal : baseVal;
-                if (global.tech['supercollider']){
-                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    know *= (global.tech['supercollider'] / ratio) + 1;
-                }
-                let desc = `<div>${loc('plus_max_resource',[(+know.toFixed(0)).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                let know = +(this.knowVal()).toFixed(0);
+                let desc = `<div>${loc('plus_max_resource',[know.toLocaleString(),global.resource.Knowledge.name])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(2),job_data.scientist.name()])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){
+                let gain = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
+                gain *= global.race.absorbed?.length || 1;
+                if (global.tech['supercollider']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    know *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain = hugeAdjust(gain);
+                return gain;
+
             },
             powered(){ return 4; },
             special: true,
@@ -2645,7 +2654,7 @@ const fortressModules = {
                 Stanene(r={}){ return spaceCostMultiplier('harbor', r.offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
-            res(){
+            res_list(){
                 let list = [
                     'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
                     'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
@@ -2663,7 +2672,7 @@ const fortressModules = {
                 }
                 return list;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Oil':
                         return 30000;
@@ -2721,9 +2730,9 @@ const fortressModules = {
                 if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
                     multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
                 }
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res) * multiplier)).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res) * multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2738,9 +2747,9 @@ const fortressModules = {
                         if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
                             multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
                         }
-                        for (const res of this.res()){
+                        for (const res of this.res_list()){
                             if (global.resource[res].display){
-                                global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                                global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
                             }
                         };
                     }

@@ -5,7 +5,7 @@ import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
@@ -321,7 +321,7 @@ const outerTruth = {
                 Cement(r={}){ return spaceCostMultiplier('storehouse', r.offset, 45000, 1.28); }
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite'
@@ -344,7 +344,7 @@ const outerTruth = {
             heavy(res){
                 return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? true : false;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 3000;
@@ -402,10 +402,10 @@ const outerTruth = {
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('storehouse',false,wiki);
                 let h_multiplier = tpStorageMultiplier('storehouse',true,wiki);
-                for (const res of this.res()){
+                for (const res of this.res_cap()){
                     if (global.resource[res].display){
                         let heavy = this.heavy(res);
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -417,10 +417,10 @@ const outerTruth = {
                     incrementStruct('storehouse');
                     let multiplier = tpStorageMultiplier('storehouse',false);
                     let h_multiplier = tpStorageMultiplier('storehouse',true);
-                    for (const res of this.res()){
+                    for (const res of this.res_cap()){
                         if (global.resource[res].display){
                             let heavy = this.heavy(res);
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier));
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier));
                         }
                     };
                     return true;
@@ -981,9 +981,7 @@ const outerTruth = {
                 Stanene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 600000, 1.25); }
             },
             effect(){
-                let synd = syndicate('spc_enceladus');
-                let know = Math.round(10000 * synd);
-
+                let know = Math.round(this.knowVal());
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.resource.Quantium.display){
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
@@ -992,6 +990,12 @@ const outerTruth = {
                     desc = desc + `<div>${loc('plus_max_resource',[10000,global.resource.Cipher.name])}</div>`;
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                let synd = syndicate('spc_enceladus');
+                let gain = 10000 * synd;
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'enceladus',
             support(){ return -1; },
@@ -2081,7 +2085,7 @@ const outerTruth = {
                 Plywood(r={}){ return spaceCostMultiplier('university', r.offset, 42000000, 1.26); }
             },
             effect(){
-                let desc = `<div>${loc('space_university_effect',[this.knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                let desc = `<div>${loc('space_university_effect',[this.knowledge().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(this.professors()),job_data.professor.name()])}</div>`;
                 desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
                 return desc;
@@ -2090,20 +2094,20 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             knowVal(){
+                let profs = workerScale(global.civic.professor.workers,'professor');
+                if (global.race['high_pop']){
+                    profs = highPopAdjust(profs);
+                }
+                return this.knowledge() * profs;
+            },
+            professors(){ return 2; },
+            knowledge(){
                 let facility = actions.space.spc_venus.alien_facility;
                 let val = 2222;
                 if (facility.uplinked()){
                     val *= 1 + (facility.uplinkKnowledge() / 100);
                 }
                 return val;
-            },
-            professors(){ return 2; },
-            knowledge(){
-                let profs = workerScale(global.civic.professor.workers,'professor');
-                if (global.race['high_pop']){
-                    profs = highPopAdjust(profs);
-                }
-                return this.knowVal() * profs;
             },
             action(){
                 if (payCosts(this)){
@@ -2231,7 +2235,7 @@ const outerTruth = {
                 Adamantite(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 2250000, 1.28); }
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
@@ -2239,7 +2243,7 @@ const outerTruth = {
                 ];
                 return res;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 680000;
@@ -2298,9 +2302,9 @@ const outerTruth = {
             effect(wiki){
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('warehouse',false,wiki);
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2311,9 +2315,9 @@ const outerTruth = {
                 if (payCosts(this)){
                     incrementStruct(this);
                     let multiplier = tpStorageMultiplier('warehouse',false);
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * multiplier);
                         }
                     };
                     return true;
@@ -3535,7 +3539,7 @@ const tauCetiModules = {
                 Neutronium(r={}){ return spaceCostMultiplier('repository', r.offset, 215000, 1.28, 'tauceti'); },
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium'
@@ -3557,7 +3561,7 @@ const tauCetiModules = {
                 }
                 return res;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 30000;
@@ -3625,9 +3629,9 @@ const tauCetiModules = {
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('repository',false,wiki);
                 let containers = 250;
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3649,9 +3653,9 @@ const tauCetiModules = {
                     }
 
                     let multiplier = tpStorageMultiplier('repository');
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * multiplier);
                         }
                     };
                     return true;

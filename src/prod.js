@@ -14,6 +14,13 @@ export function highPopAdjust(v){
     return v;
 }
 
+export function hugeAdjust(v){
+    if (global.race['humongous']){
+        v *= traits.humongous.vars()[0];
+    }
+    return v;
+}
+
 export function teamster(v){
     if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
         let cap = teamsterCap();

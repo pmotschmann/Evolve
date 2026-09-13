@@ -375,7 +375,7 @@ const edenicModules = {
                 Alloy(r={}){ return spaceCostMultiplier('warehouse', r.offset, 18000000, 1.28, 'eden'); },
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 27500000, 1.28, 'eden'); }
             },
-            res(){
+            res_list(){
                 let r_list = [
                     'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal',
                     'Nano_Tube','Neutronium','Adamantite','Infernite','Alloy','Polymer','Iridium',
@@ -389,7 +389,7 @@ const edenicModules = {
                 }
                 return r_list;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return global.race['warlord'] ? 5500 : 3750
@@ -452,9 +452,9 @@ const edenicModules = {
                 if (global.race['warlord'] && global.eden['corruptor']){
                     multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
                 }
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(+(this.val(res) * multiplier)).toFixed(0)));
+                        let val = sizeApproximation(+(spatialReasoning(+(this.res_val(res) * multiplier)).toFixed(0)));
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -468,9 +468,9 @@ const edenicModules = {
                     if (global.race['warlord'] && global.eden['corruptor']){
                         multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
                     }
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
                         }
                     };
                     return true;

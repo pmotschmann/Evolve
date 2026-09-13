@@ -782,6 +782,9 @@ export function workerScale(num,job){
             num *= 125;
         }
     }
+    else if (global.race['humongous']){
+        num *= traits.humongous.vars()[0];
+    }
     return num;
 }
 
