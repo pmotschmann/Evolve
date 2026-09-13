@@ -433,7 +433,7 @@ const iceAgeModules = {
                         p: ['nanite_factory','underground']
                     };
                 },
-                flair: loc(`city_nanite_factory_flair`)
+                flair: loc('city_nanite_factory_flair')
             },
             storage_space: {
                 id: 'underground-storage_space',
@@ -759,6 +759,7 @@ const iceAgeModules = {
                         p: ['bonfire','underground']
                     };
                 },
+                flair: loc('underground_bonfire_flair')
             },
             under_slave_pen: {
                 id: 'underground-under_slave_pen',
@@ -969,9 +970,7 @@ const iceAgeModules = {
                         p: ['mineshaft','underground']
                     };
                 },
-                flair(){
-                    return loc('underground_mineshaft_flair');
-                }
+                flair: loc('underground_mineshaft_flair')
             },
             mineshaft_elevator:{
                 id: 'underground-mineshaft_elevator',
@@ -1070,9 +1069,7 @@ const iceAgeModules = {
                         p: ['mineshaft_vator','underground']
                     };
                 },
-                flair(){
-                    return loc('underground_mineshaft_elevator_flair');
-                }
+                flair: loc('underground_mineshaft_elevator_flair')
             },
         },
         depths: {
@@ -1751,7 +1748,7 @@ const iceAgeModules = {
             under_coal_power:{
                 id: 'underground-under_coal_power',
                 title(){
-                    return global.race['environmentalist'] ? loc('city_hydro_power') : loc(global.race.universe === 'magic' ? 'city_mana_engine' : 'city_coal_power');
+                    return global.race['environmentalist'] ? loc('city_hydro_power') : loc(global.race.universe === 'magic' ? 'city_mana_engine' : 'underground_coal_power');
                 },
                 desc(){
                     return global.race['environmentalist']
@@ -1957,7 +1954,7 @@ const iceAgeModules = {
             under_oil_power: {
                 id: 'underground-under_oil_power',
                 title(){
-                    return global.race['environmentalist'] ? loc('underground_thermal_power') : loc('city_oil_power');
+                    return global.race['environmentalist'] ? loc('underground_thermal_power') : loc('underground_oil_burner');
                 },
                 desc(){
                     return global.race['environmentalist']
@@ -3109,7 +3106,7 @@ const iceAgeModules = {
                         p: ['surface_zoo','surface']
                     };
                 },
-                flair(){ return loc('surface_zoo_flair'); }
+                flair: loc('surface_zoo_flair')
             },
             shrine: {
                 id: `surface-shrine`,
@@ -4067,7 +4064,7 @@ const iceAgeModules = {
             },
             crater_fission: {
                 id: 'surface-crater_fission',
-                title(){ return loc('city_fission_power'); },
+                title(){ return loc('surface_crater_fission'); },
                 desc(){ return `<div>${loc('city_fission_power_desc')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Uranium.name])}</div>`; },
                 type: 'power',
                 reqs: { surface_uranium: 2 },
@@ -4441,7 +4438,7 @@ const iceAgeModules = {
                         p: ['rocket_engine','surface']
                     };
                 },
-                flair(){ return loc('surface_rocket_engine_flair'); }
+                flair: loc('surface_rocket_engine_flair')
             }
         },
         thruster_site: {
@@ -5724,7 +5721,7 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
         if (global.surface[creature]?.empowered || global.underground['arena']?.count){
             let aberrant_odds = 0;
             if (global.underground['arena']?.count){
-                aberrant_odds = global.underground['arena']?.count - (global.aberrants[creature].count+1);
+                aberrant_odds = global.underground['arena']?.count - global.aberrants[creature].count;
             }
             else{
                 aberrant_odds = Math.floor(((global.surface[creature].empowered - 50) ** 0.25) / (global.aberrants[creature].count+1));
@@ -5984,7 +5981,6 @@ export function ecoGainMajorTrait(lifeform, trait, suppress, force){
     let success = false;
     if (Object.keys(curr_traits).length < ecosystemInfo.majorTraitCap() /*6*/ || force){
         if (global.aberrants.trees.mutations >= 10 && lifeform === 'trees'){
-            console.log(Math.rand(0, 5));
             if (Math.rand(0, 5) === 0){
                 trait = 'hivemind';
             }
