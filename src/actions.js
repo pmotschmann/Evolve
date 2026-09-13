@@ -13,7 +13,7 @@ import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor, detectorTemplate } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed, blast_away } from './resets.js';
@@ -2014,7 +2014,7 @@ export const actions = {
                 }
             },
             supply(){ return 'spc_home'; },
-            res(){
+            res_list(){
                 let r_list = ['Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron','Aluminium','Cement','Coal'];
                 if (global.tech['storage'] >= 3 && global.resource.Steel.display){
                     r_list.push('Steel');
@@ -2033,7 +2033,7 @@ export const actions = {
                 }
                 return r_list;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Food':
                         return 50;
@@ -2072,9 +2072,9 @@ export const actions = {
             effect(wiki){
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2086,9 +2086,9 @@ export const actions = {
                 if (payCosts(this)){
                     incrementStruct('shed','city');
                     let multiplier = storageMultipler();
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
                         }
                     };
                     return true;
@@ -3464,6 +3464,8 @@ export const actions = {
                         gain *= 2;
                     }
                 }
+                gain *= infiltratorFactor('city','university');
+                gain = hugeAdjust(gain);
                 return gain;
             },
             action(args){
@@ -3511,6 +3513,18 @@ export const actions = {
                 Brick(r={}){ return costMultiplier('library', r.offset, 15, 1.2); }
             },
             effect(){
+                let gain = +(this.knowVal()).toFixed(0);
+                let muckVal2 = govActive('muckraker',2);
+                let know = muckVal2 ? (5 - muckVal2) : 5;
+                if (global.race['autoignition']){
+                    know -= traits.autoignition.vars()[0];
+                    if (know < 0){
+                        know = 0;
+                    }
+                }
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[know])}</div>`;
+            },
+            knowVal(){
                 let gain = 125;
                 if (global.race['nearsighted']){
                     gain *= 1 - (traits.nearsighted.vars()[0] / 100);
@@ -3547,34 +3561,13 @@ export const actions = {
                 if (muckVal1){
                     gain *= 1 + (muckVal1 / 100);
                 }
-                gain = +(gain).toFixed(0);
-                let muckVal2 = govActive('muckraker',2);
-                let know = muckVal2 ? (5 - muckVal2) : 5;
-                if (global.race['autoignition']){
-                    know -= traits.autoignition.vars()[0];
-                    if (know < 0){
-                        know = 0;
-                    }
-                }
-                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[know])}</div>`;
+                gain *= infiltratorFactor('city','library');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             action(args){
                 if (payCosts(this)){
-                    let gain = 125;
-                    if (global.race['nearsighted']){
-                        gain *= 1 - (traits.nearsighted.vars()[0] / 100);
-                    }
-                    if (global.tech['science'] && global.tech.science >= 8){
-                        gain *= 1.4;
-                    }
-                    if (global.tech['anthropology'] && global.tech.anthropology >= 2){
-                        gain *= 1 + (faithTempleCount() * 0.05);
-                    }
-                    if (global.tech['science'] && global.tech.science >= 5){
-                        gain *= 1 + (workerScale(global.civic.scientist.workers,'scientist') * 0.12);
-                    }
-                    gain = +(gain).toFixed(1);
-                    global['resource']['Knowledge'].max += gain;
+                    global['resource']['Knowledge'].max += this.knowVal();
                     incrementStruct('library','city');
                     return true;
                 }
@@ -3607,41 +3600,11 @@ export const actions = {
                 Nanite(r={}){ return global.race['deconstructor'] ? costMultiplier('wardenclyffe', r.offset, 50, 1.18) : 0; },
             },
             effect(){
-                let gain = 1000;
-                if (global.city.ptrait.includes('magnetic')){
-                    gain += planetTraits.magnetic.vars()[1];
-                }
-                if (global.tech['supercollider']){
-                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
-                    gain *= (global.tech['supercollider'] / ratio) + 1;
-                }
-                if (global.space['satellite']){
-                    gain *= 1 + (global.space.satellite.count * 0.04);
-                }
-                let athVal = govActive('athleticism',2);
-                if (athVal){
-                    gain *= 1 - (athVal / 100);
-                }
-                gain = +(gain).toFixed(0);
+                let gain = +(this.knowVal()).toFixed(0);
 
                 let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),job_data.scientist.name()])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
-                    let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
-                    if (global.city.ptrait.includes('magnetic')){
-                        pgain += planetTraits.magnetic.vars()[1];
-                    }
-                    if (global.space['satellite']){
-                        pgain *= 1 + (global.space.satellite.count * 0.04);
-                    }
-                    if (global.tech['supercollider']){
-                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
-                        pgain *= (global.tech['supercollider'] / ratio) + 1;
-                    }
-                    let athVal = govActive('athleticism',2);
-                    if (athVal){
-                        pgain *= 1 - (athVal / 100);
-                    }
-                    pgain = +(pgain).toFixed(1);
+                    let pgain = +(this.knowVal(true)).toFixed(1);
                     if (global.tech.science >= 15){
                         desc = desc + `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
@@ -3662,21 +3625,36 @@ export const actions = {
                 }
                 return desc;
             },
+            knowVal(powered){
+                let gain = 1000;
+                if (global.city.ptrait.includes('magnetic')){
+                    gain += planetTraits.magnetic.vars()[1];
+                }
+                if (powered){
+                    gain += global.tech['science'] >= 7 ? 1500 : 1000;
+                }
+                if (global.tech['supercollider']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                if (global.space['satellite']){
+                    gain *= 1 + (global.space.satellite.count * 0.04);
+                }
+                let athVal = govActive('athleticism',2);
+                if (athVal){
+                    gain *= 1 - (athVal / 100);
+                }
+                gain *= infiltratorFactor('city','wardenclyffe');
+                gain = hugeAdjust(gain);
+                return gain;
+            },
             powered(){ return powerCostMod(2); },
             action(args){
                 if (payCosts(this)){
-                    let gain = 1000;
                     incrementStruct('wardenclyffe','city');
                     global.civic.scientist.display = true;
                     global.civic.scientist.max += jobScale(1);
-                    if (powerOnNewStruct(this)){
-                        gain = global.tech['science'] >= 7 ? 2500 : 2000;
-                    }
-                    if (global.tech['supercollider']){
-                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
-                        gain *= (global.tech['supercollider'] / ratio) + 1;
-                    }
-                    global['resource']['Knowledge'].max += gain;
+                    global['resource']['Knowledge'].max += this.knowVal(powerOnNewStruct(this));
                     return true;
                 }
                 return false;
@@ -3705,6 +3683,10 @@ export const actions = {
                 Alloy(r={}){ return costMultiplier('biolab', r.offset, 350, 1.3); }
             },
             effect(wiki){
+                let gain = +(this.knowVal(wiki)).toFixed(0);
+                return `<span>${loc('city_max_knowledge',[gain.toLocaleString()])}</span>, <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span>`;
+            },
+            knowVal(wiki){
                 let gain = 3000;
                 if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                     gain *= 1 + (wiki ? global.portal.sensor_drone.on : p_on['sensor_drone']) * 0.02;
@@ -3721,8 +3703,9 @@ export const actions = {
                 if (global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
                     gain *= 1 + (traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
                 }
-                gain = +(gain).toFixed(0);
-                return `<span>${loc('city_max_knowledge',[gain.toLocaleString()])}</span>, <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span>`;
+                gain *= infiltratorFactor('city','biolab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             powered(){ return powerCostMod(2); },
             action(args){
@@ -5144,6 +5127,10 @@ export function buildTemplate(key, region){
                     }
                     return desc;
                 },
+                knowVal(){
+                    let gain = getShrineBonus('know').add;
+                    return gain;
+                },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct('shrine','city');
@@ -5762,7 +5749,7 @@ function challengeEffect(c){
             let coeff = 50;      // roughly same as all pre-space warehouses tech + 26 supercolliders
 
             let cement_name = global.race['flier'] ? 'Stone' : 'Cement';
-            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.val(cement_name));
+            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.res_val(cement_name));
             let num_fuel_depot = 0; // max with no CRISPR is usually 20 fuel depots
             let offset = global.city?.oil_depot?.count ?? 0;
             while (num_fuel_depot < 1000){
@@ -5772,7 +5759,7 @@ function challengeEffect(c){
                 num_fuel_depot++;
             }
 
-            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.val('Steel'));
+            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.res_val('Steel'));
             let num_oil_derrick = 0; // max with no CRISPR is usually 16 oil derricks
             offset = global.city?.oil_well?.count ?? 0;
             while (num_oil_derrick < 1000){

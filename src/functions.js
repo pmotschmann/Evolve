@@ -10,7 +10,7 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, hugeAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
@@ -1160,6 +1160,10 @@ export function costMultiplier(structure,offset,base,multiplier,cat){
     if (offset){
         count += offset;
     }
+    let common = commonCostMultiplier(structure, offset, base, multiplier, cat, count);
+    base = common.base;
+    multiplier = common.multiplier;
+    count = common.count;
     return Math.round((multiplier ** count) * base);
 }
 
@@ -1193,7 +1197,23 @@ export function spaceCostMultiplier(action,offset,base,multiplier,sector,c_min){
     if (offset && typeof offset === 'number'){
         count += offset;
     }
+    let common = commonCostMultiplier(action, offset, base, multiplier, sector, count);
+    base = common.base;
+    multiplier = common.multiplier;
+    count = common.count;
     return Math.round((multiplier ** count) * base);
+}
+
+export function commonCostMultiplier(action,offset,base,multiplier,sector,count){
+    count = count ? (action === 'citizen' ? global['resource'][global.race.species].amount : global[sector][action]?.count || 0) : 0;
+    if (global.race['humongous']){
+        if (count > 0){ //first building of any kind is unaffected by humongous
+            base *= traits.humongous.vars()[1];
+            multiplier *= traits.humongous.vars()[1];
+            count--; //first building does not contribute to cost/creep for humongous
+        }
+    }
+    return {action:action, offset:offset, base:base, multiplier:multiplier, sector:sector, count:count };
 }
 
 export function harmonyEffect(){
@@ -3907,7 +3927,7 @@ export function getShrineBonus(type) {
 			case 'know':
                 let know = global.city.shrine.know;
                 if ((global.city.calendar.moon > 14 && global.city.calendar.moon <= 21) || global.city.calendar.moon === 14){ know += global.city.shrine.cycle; }
-                shrine_bonus.add += +(know* traits.magnificent.vars()[0]);
+                shrine_bonus.add += +hugeAdjust(know * traits.magnificent.vars()[0]);
                 shrine_bonus.mult += +(know * traits.magnificent.vars()[1] / 100);
                 if (know > 0){ shrine_bonus.active = true; }
 				break;
