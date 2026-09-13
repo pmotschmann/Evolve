@@ -2574,8 +2574,8 @@ export function containerItem(mount,market_item,name,color){
             toggleZones(){
                 const was = openStack;
                 openStack = was === name ? false : name;
-                // Each resource is its own Vue app, so the one being closed has to be told to
-                // repaint — nothing else is watching a variable that lives outside all of them.
+                // Refresh cards that read the shared, non-reactive open state.
+                vBind({ el: mount }, 'update');
                 if (was && was !== name){ vBind({ el: `#stack-${was}` }, 'update'); }
             },
             held(pool){
