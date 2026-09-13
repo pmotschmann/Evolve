@@ -1191,6 +1191,7 @@ if (window.Worker){
         }
     }, false);
 }
+const storageStructs = findStorageStructs();
 initDrift();
 if (!global.settings.pause){
     gameLoop('start');
@@ -9694,6 +9695,28 @@ function fastLoop(){
     firstRun = false;
 }
 
+// Gather every structure that declares a storage key, so midLoop can apply them all without searching.
+function findStorageStructs(){
+    let structs = [];
+    let add = function(c_action, cat){
+        if (c_action && c_action.storage && typeof c_action.storage.res === 'function'){
+            let p = typeof c_action.struct === 'function' ? c_action.struct().p : [];
+            structs.push({ a: c_action, id: p[0], cat: p[1] || cat });
+        }
+    };
+    Object.keys(actions).forEach(function(cat){
+        Object.values(actions[cat]).forEach(function(entry){
+            if (entry && typeof entry === 'object' && !entry.hasOwnProperty('id')){
+                Object.values(entry).forEach(c_action => add(c_action, cat));
+            }
+            else {
+                add(entry, cat);
+            }
+        });
+    });
+    return structs;
+}
+
 function midLoop(){
     const astroSign = astrologySign();
     let blockGeneBuffer = false;
@@ -10641,29 +10664,39 @@ function midLoop(){
             let gain = global.space['outpost'].count * spatialReasoning(500);
             addCap('Neutronium', gain, 'outpost', loc('space_gas_moon_outpost_title'));
         }
-        if (global.city['shed']){
-            var multiplier = storageMultipler();
-            let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
-            for (const res of actions.city.shed.res_list()){
+        storageStructs.forEach(function(s){
+            let struct = global[s.cat] ? global[s.cat][s.id] : false;
+            if (!struct){
+                return;
+            }
+            let storage = s.a.storage;
+            let count = storage.count ? storage.count() : struct.count;
+            if (!count){
+                return;
+            }
+            let label = storage.label ? (typeof storage.label === 'function' ? storage.label() : storage.label) : (typeof s.a.title === 'function' ? s.a.title() : s.a.title);
+            let list = storage.res();
+            let multipliers = {};
+            for (const res of Object.keys(list)){
                 if (global.resource[res].display){
-                    let gain = global.city.shed.count * spatialReasoning(actions.city.shed.res_val(res) * multiplier);
-                    addCap(res, gain, 'city:shed', label);
-                }
-            };
-        }
-        if(global.underground['storage_space']){
-            for (const res of actions.underground.cave['storage_space'].res_list()){
-                if (global.resource[res].display){
-                    let gain = Math.floor((global.underground['storage_space'].count + (p_on['storage_space'] || 0)) * actions.underground.cave['storage_space'].res_val(res));
-                    addCap(res, gain, 'underground:storage_space', loc('underground_storage_space'));
+                    let type = storage.mtype ? storage.mtype(res) : 'multiplier';
+                    if (!multipliers.hasOwnProperty(type)){
+                        multipliers[type] = storage[type]();
+                    }
+                    let gain = storage.gain
+                        ? storage.gain(res, list[res], multipliers[type], count)
+                        : count * spatialReasoning(list[res] * multipliers[type]);
+                    addCap(res, gain, `${s.cat}:${s.id}`, label);
                 }
             }
-        }
+        });
+
         if (global.race['wooly']){
-            var multiplier = storageMultipler();
-            for (const res of actions.city.shed.res_list()){
+            var multiplier = actions.city.shed.storage.multiplier();
+            let list = actions.city.shed.storage.res();
+            for (const res of Object.keys(list)){
                 if (global.resource[res].display){
-                    let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(actions.city.shed.res_val(res) * multiplier);
+                    let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(list[res] * multiplier);
                     addCap(res, gain, false, races[global.race.species].name); //todo. Make this work with new supply system?
                 }
             };
@@ -10674,40 +10707,19 @@ function midLoop(){
             caps[global.race.species] = 1;
         }
 
-        if (global.interstellar['warehouse']){
-            var multiplier = storageMultipler();
-            let label = loc('interstellar_alpha_name');
-            for (const res of actions.interstellar.int_alpha.warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.interstellar.warehouse.count * spatialReasoning(actions.interstellar.int_alpha.warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'interstellar:warehouse', label);
-                }
-            };
-        }
-
-        if (global.space['m_warehouse']){
-            var multiplier = storageMultipler();
-            let label = planetName().hell;
-            for (const res of actions.space.spc_hell.m_warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.space.m_warehouse.count * spatialReasoning(actions.space.spc_hell.m_warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'space:m_warehouse', label);
-                }
-            };
-        }
-
         // Apply storage supplied by deployed Supply Ships.
         {
             const deployed = global.race['supply_deployed'];
             if (deployed){
-                var multiplier = storageMultipler();
+                var multiplier = actions.space.spc_hell.m_warehouse.storage.multiplier();
                 const label = loc('outer_shipyard_class_supply_ship');
+                const list = actions.space.spc_hell.m_warehouse.storage.res();
                 Object.keys(deployed).forEach(function(pool){
                     const count = Array.isArray(deployed[pool]) ? deployed[pool].length : 0;
                     if (count <= 0){ return; }
-                    for (const res of actions.space.spc_hell.m_warehouse.res_list()){
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let gain = count * spatialReasoning(actions.space.spc_hell.m_warehouse.res_val(res) * multiplier);
+                            let gain = count * spatialReasoning(list[res] * multiplier);
                             addCap(res, gain, pool, label);
                         }
                     }
@@ -10719,43 +10731,8 @@ function midLoop(){
             }
         }
 
-        if (global.space['c_warehouse']){
-            var multiplier = storageMultipler();
-            let label = planetName().dwarf;
-            for (const res of actions.space.spc_dwarf.c_warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.space.c_warehouse.count * spatialReasoning(actions.space.spc_dwarf.c_warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'space:c_warehouse', label);
-                }
-            };
-        }
-
-        if (global.eden['warehouse']){
-            var multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
-            if (global.race['warlord'] && global.eden['corruptor']){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
-            }
-            let label = loc('eden_asphodel_name');
-            for (const res of actions.eden.eden_asphodel.warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.eden.warehouse.count * spatialReasoning(actions.eden.eden_asphodel.warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'eden:warehouse', label);
-                }
-            };
-        }
-
         if (global.portal['warehouse']){
-            var multiplier = storageMultipler();
-            if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
-            }
-            let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
-            for (const res of actions.portal.prtl_wasteland.warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.portal.warehouse.count * spatialReasoning(actions.portal.prtl_wasteland.warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'portal:warehouse', label);
-                }
-            };
+            let label = actions.portal.prtl_wasteland.warehouse.storage.label();
             let cc_gain = global.portal.warehouse.count * (65 + global.portal.warehouse.rank * 35);
             caps['Crates'] += cc_gain;
             breakdown.c['Crates'][label] = cc_gain+'v';
@@ -10763,39 +10740,7 @@ function midLoop(){
             breakdown.c['Containers'][label] = cc_gain+'v';
         }
 
-        if (global.space['storehouse']){
-            var multiplier = tpStorageMultiplier('storehouse',false);
-            var h_multiplier = tpStorageMultiplier('storehouse',true);
-            let label = loc('space_storehouse_title');
-            for (const res of actions.space.spc_titan.storehouse.res_list()){
-                if (global.resource[res].display){
-                    let heavy = actions.space.spc_titan.storehouse.heavy(res);
-                    let gain = global.space.storehouse.count * spatialReasoning(actions.space.spc_titan.storehouse.res_val(res) * (heavy ? h_multiplier : multiplier));
-                    addCap(res, gain, 'space:storehouse', label);
-                }
-            };
-        }
-
-        if (global.space['survey_warehouse']){
-            var multiplier = tpStorageMultiplier('warehouse',false);
-            let label = loc('city_shed_title3');
-            for (const res of actions.space.spc_survey.survey_warehouse.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.space.survey_warehouse.count * spatialReasoning(actions.space.spc_survey.survey_warehouse.res_val(res) * multiplier);
-                    addCap(res, gain, 'space:survey_warehouse', label);
-                }
-            };
-        }
-
         if (global.tauceti['repository']){
-            var multiplier = tpStorageMultiplier('repository');
-            let label = loc('tech_repository');
-            for (const res of actions.tauceti.tau_home.repository.res_list()){
-                if (global.resource[res].display){
-                    let gain = global.tauceti.repository.count * spatialReasoning(actions.tauceti.tau_home.repository.res_val(res) * multiplier);
-                    addCap(res, gain, 'tauceti:repository', label);
-                }
-            };
             if (global.tech['isolation']){
                 let containers = 250;
                 addCap('Containers', (global.tauceti.repository.count * containers), 'tauceti:repository', loc('tech_repository'));
@@ -10848,33 +10793,6 @@ function midLoop(){
             addCap('Infernite', gain, 'prtl_fortress', loc('portal_fortress_name'));
         }
 
-        if (global.space['garage']){
-            var multiplier = actions.space.spc_red.garage.multiplier(false);
-            var h_multiplier = actions.space.spc_red.garage.multiplier(true);
-            let label = loc('space_red_garage_title');
-            for (const res of actions.space.spc_red.garage.res_list()){
-                if (global.resource[res].display){
-                    let heavy = actions.space.spc_red.garage.heavy(res);
-                    let gain = global.space.garage.count * spatialReasoning(actions.space.spc_red.garage.res_val(res) * (heavy ? h_multiplier : multiplier));
-                    addCap(res, gain, 'space:garage', label);
-                }
-            };
-        }
-
-        if (global.portal['harbor'] && p_on['harbor']){
-            let multiplier = 1;
-            if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.12 : 0.1);
-            }
-            let label = loc('portal_harbor_title');
-            for (const res of actions.portal.prtl_lake.harbor.res_list()){
-                if (global.resource[res].display){
-                    let gain = p_on['harbor'] * spatialReasoning(actions.portal.prtl_lake.harbor.res_val(res) * multiplier);
-                    addCap(res, gain, 'portal:harbor', label);
-                }
-            };
-        }
-
         if (global.city['silo']){
             let gain = BHStorageMulti(global.city['silo'].count * spatialReasoning(500));
             addCap('Food', gain, 'silo', loc('city_silo'));
@@ -10912,14 +10830,6 @@ function midLoop(){
                 gain = (global.city['oil_depot'].count * spatialReasoning(400));
                 gain *= global.tech['world_control'] ? 1.5 : 1;
                 addCap('Helium_3', gain, 'oil_depot', loc('city_oil_depot'));
-            }
-        }
-        if (global.underground['fluid_depot']){
-            for (const res of actions.underground.industry['fluid_depot'].res_list()){
-                if (global.resource[res].display){
-                    let gain = global.underground['fluid_depot'].count * actions.underground.industry['fluid_depot'].res_val(res);
-                    addCap(res, gain, 'underground:fluid_depot', loc('underground_fluid_depot'));
-                }
             }
         }
         if (global.surface['critical_storage']){

@@ -445,37 +445,43 @@ const iceAgeModules = {
                     Money(r={}){ return undergroundCostMultiplier('storage_space', r.offset, 400, 1.35, 'cave'); },
                     Stone(r={}){ return undergroundCostMultiplier('storage_space', r.offset, 250, 1.38, 'cave'); }
                 },
-                res_list(){
-                    return ['Lumber', 'Stone', 'Chrysotile', 'Crystal', 'Furs', 'Copper', 'Iron', 'Aluminium', 'Cement', 'Coal', 'Steel', 'Titanium', 'Crates', 'Containers'];
-                },
-                res_val(res, wiki){
-                    let storage = {
-                        Lumber: 100,
-                        Stone: 100,
-                        Chrysotile: 100,
-                        Crystal: 8,
-                        Furs: 40,
-                        Copper: 20,
-                        Iron: 40,
-                        Aluminium: 20,
-                        Cement: 30,
-                        Coal: 30,
-                        Steel: 20,
-                        Titanium: 10,
-                        Crates: this.containers('crates'),
-                        Containers: this.containers('containers')
+                storage: {
+                    res(res){
+                        let list = {
+                            'Lumber': 100,
+                            'Stone': 100,
+                            'Chrysotile': 100,
+                            'Crystal': 8,
+                            'Furs': 40,
+                            'Copper': 20,
+                            'Iron': 40,
+                            'Aluminium': 20,
+                            'Cement': 30,
+                            'Coal': 30,
+                            'Steel': 20,
+                            'Titanium': 10,
+                            'Crates': actions.underground.cave.storage_space.containers('crates'),
+                            'Containers': actions.underground.cave.storage_space.containers('containers')
+                        };
+                        Object.keys(list).forEach(function(r){
+                            if (p_on['storage_space']){
+                                list[r] *= 1 + (0.02 * p_on['storage_space']);
+                            }
+                            if (global.surface['surface_warehouse']){
+                                list[r] *= 1 + (0.04 * global.surface['surface_warehouse'].count);
+                            }
+                        });
+                        return res ? list[res] || 0 : list;
+                    },
+                    multiplier(wiki){
+                        return storageMultipler(1, wiki);
+                    },
+                    count(){
+                        return global.underground['storage_space'].count + (p_on['storage_space'] || 0);
+                    },
+                    gain(res, val, multiplier, count){
+                        return Math.floor(count * (['Crates', 'Containers'].includes(res) ? Math.floor(val) : iceAgeStorage(val) * multiplier));
                     }
-                    let val = storage[res];
-                    if (p_on['storage_space']){
-                        val *= 1 + (0.02 * p_on['storage_space']);
-                    }
-                    if (global.surface['surface_warehouse']){
-                        val *= 1 + (0.04 * global.surface['surface_warehouse'].count);
-                    }
-                    if (!['Crates', 'Containers'].includes(res)){
-                        return storageMultipler(iceAgeStorage(val || 0), wiki);
-                    }
-                    return Math.floor(val || 0);
                 },
                 containers(which){
                     if (global.tech.container >= 1){
@@ -499,9 +505,12 @@ const iceAgeModules = {
                         storage += `<div class="has-text-caution">${loc('underground_storage_space_effect1', [this.powered()])}</div><div class="has-text-caution">${loc('underground_storage_space_effect2', [ this.title()])}</div>`;
                     }
                     storage += '<div class="aTable">';
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier(wiki);
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let val = sizeApproximation(+this.res_val(res, wiki).toFixed(0),1);
+                            let cap = ['Crates', 'Containers'].includes(res) ? Math.floor(list[res]) : iceAgeStorage(list[res]) * multiplier;
+                            let val = sizeApproximation(+cap.toFixed(0),1);
                             storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                         }
                     };
@@ -2026,27 +2035,31 @@ const iceAgeModules = {
                 effect() {
                     let storage = '';
                     storage += '<div class="aTable">';
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let val = sizeApproximation(+this.res_val(res).toFixed(0),1);
+                            let val = sizeApproximation(+iceAgeStorage(list[res] * multiplier).toFixed(0),1);
                             storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                         }
                     };
                     storage = storage + '</div>';
                     return storage;
                 },
-                res_list(){
-                    return ['Oil', 'Water'];
-                },
-                res_val(res){
-                    let storage = {
-                        Oil: 500,
-                        Water: 1500
-                    }[res] || 0;
-                    if (global.tech['water'] >= 5){
-                        storage *= 3;
+                storage: {
+                    res(res){
+                        let list = {
+                            'Oil': 500,
+                            'Water': 1500
+                        };
+                        return res ? list[res] || 0 : list;
+                    },
+                    multiplier(){
+                        return global.tech['water'] >= 5 ? 3 : 1;
+                    },
+                    gain(res, val, multiplier, count){
+                        return count * iceAgeStorage(val * multiplier);
                     }
-                    return iceAgeStorage(storage);
                 },
                 action(args){
                     if (payCosts(this)){

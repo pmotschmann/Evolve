@@ -2014,67 +2014,60 @@ export const actions = {
                 }
             },
             supply(){ return 'spc_home'; },
-            res_list(){
-                let r_list = ['Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron','Aluminium','Cement','Coal'];
-                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    r_list.push('Steel');
-                }
-                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    r_list.push('Titanium');
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
-                    r_list.push('Graphene');
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
-                    r_list.push('Stanene');
-                }
-                if (global.race['unfathomable']){
-                    r_list.push('Food');
-                }
-                return r_list;
-            },
-            res_val(res){
-                switch (res){
-                    case 'Food':
-                        return 50;
-                    case 'Lumber':
-                        return 300;
-                    case 'Stone':
-                        return 300;
-                    case 'Chrysotile':
-                        return 300;
-                    case 'Crystal':
-                        return 8;
-                    case 'Furs':
-                        return 125;
-                    case 'Copper':
-                        return 90;
-                    case 'Iron':
-                        return 125;
-                    case 'Aluminium':
-                        return 90;
-                    case 'Cement':
-                        return 100;
-                    case 'Coal':
-                        return 75;
-                    case 'Steel':
-                        return 40;
-                    case 'Titanium':
-                        return 20;
-                    case 'Graphene':
-                        return 15;
-                    case 'Stanene':
-                        return 25;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 300,
+                        'Stone': 300,
+                        'Chrysotile': 300,
+                        'Crystal': 8,
+                        'Furs': 125,
+                        'Copper': 90,
+                        'Iron': 125,
+                        'Aluminium': 90,
+                        'Cement': 100,
+                        'Coal': 75,
+                        'Steel': 40,
+                        'Titanium': 20,
+                        'Graphene': 15,
+                        'Stanene': 25,
+                        'Food': 50
+                    };
+                    // A single resource is priced whether or not it is unlocked yet; the gravity well estimate asks for Steel before there is any.
+                    if (res){
+                        return list[res] || 0;
+                    }
+                    if (!(global.tech['storage'] >= 3 && global.resource.Steel.display)){
+                        delete list['Steel'];
+                    }
+                    if (!(global.tech['storage'] >= 4 && global.resource.Titanium.display)){
+                        delete list['Titanium'];
+                    }
+                    if (!(global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display)){
+                        delete list['Graphene'];
+                    }
+                    if (!(global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display)){
+                        delete list['Stanene'];
+                    }
+                    if (!global.race['unfathomable']){
+                        delete list['Food'];
+                    }
+                    return list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res_list()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2085,10 +2078,11 @@ export const actions = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('shed','city');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -5749,7 +5743,7 @@ function challengeEffect(c){
             let coeff = 50;      // roughly same as all pre-space warehouses tech + 26 supercolliders
 
             let cement_name = global.race['flier'] ? 'Stone' : 'Cement';
-            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.res_val(cement_name));
+            let max_cement = crates + containers + storageMultipler(warehouses * coeff * actions.city.shed.storage.res(cement_name));
             let num_fuel_depot = 0; // max with no CRISPR is usually 20 fuel depots
             let offset = global.city?.oil_depot?.count ?? 0;
             while (num_fuel_depot < 1000){
@@ -5759,7 +5753,7 @@ function challengeEffect(c){
                 num_fuel_depot++;
             }
 
-            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.res_val('Steel'));
+            let max_derrick = max_cement + storageMultipler(warehouses * coeff * actions.city.shed.storage.res('Steel'));
             let num_oil_derrick = 0; // max with no CRISPR is usually 16 oil derricks
             offset = global.city?.oil_well?.count ?? 0;
             while (num_oil_derrick < 1000){

@@ -902,79 +902,52 @@ const spaceProjects = {
             },
             wide: true,
             supply(){ return 'spc_red'; },
-            res_list(){
-                let r_list = ['Copper','Iron','Cement','Steel','Titanium','Alloy','Nano_Tube','Neutronium','Infernite'];
-                if (global.race['cataclysm'] || decayPerks()){
-                    r_list.push('Polymer');
-                    r_list.push('Coal');
-                    r_list.push('Lumber');
-                    r_list.push('Chrysotile');
-                    r_list.push('Stone');
-                    r_list.push('Furs');
-                }
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            heavy(res){
-                return ['Copper','Iron','Steel','Titanium','Neutronium','Infernite'].includes(res) ? true : false;
-            },
-            res_val(res){
-                switch (res){
-                    case 'Copper':
-                        return 6500;
-                    case 'Iron':
-                        return 5500;
-                    case 'Cement':
-                        return global.race['cataclysm'] ? 10500 : 6000;
-                    case 'Steel':
-                        return 4500;
-                    case 'Titanium':
-                        return 3500;
-                    case 'Alloy':
-                        return 2500;
-                    case 'Nano_Tube':
-                        return 25000;
-                    case 'Tungsten':
-                        return 2750;
-                    case 'Neutronium':
-                        return 125;
-                    case 'Infernite':
-                        return 75;
-                    case 'Polymer':
-                        return 2500;
-                    case 'Coal':
-                        return 1500;
-                    case 'Lumber':
-                        return 7500;
-                    case 'Chrysotile':
-                        return 7500;
-                    case 'Stone':
-                        return 7500;
-                    case 'Furs':
-                        return 2200;
-                    default:
-                        return 0;
-                }
-            },
-            multiplier(h){
-                let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-                if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
-                    multiplier *= 2;
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3){
-                    multiplier *= 1.5;
-                }
-                multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-                if (h){
+            storage: {
+                res(res){
+                    let list = {
+                        'Copper': 6500,
+                        'Iron': 5500,
+                        'Cement': global.race['cataclysm'] ? 10500 : 6000,
+                        'Steel': 4500,
+                        'Titanium': 3500,
+                        'Alloy': 2500,
+                        'Nano_Tube': 25000,
+                        'Neutronium': 125,
+                        'Infernite': 75
+                    };
+                    if (global.race['cataclysm'] || decayPerks()){
+                        list['Polymer'] = 2500;
+                        list['Coal'] = 1500;
+                        list['Lumber'] = 7500;
+                        list['Chrysotile'] = 7500;
+                        list['Stone'] = 7500;
+                        list['Furs'] = 2200;
+                    }
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 2750;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(){
+                    let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
+                    if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
+                        multiplier *= 2;
+                    }
+                    if (global.tech['shelving'] && global.tech.shelving >= 3){
+                        multiplier *= 1.5;
+                    }
+                    multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
+                    return multiplier;
+                },
+                h_multiplier(){
+                    let multiplier = this.multiplier();
                     return global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
+                },
+                mtype(res){
+                    return ['Copper','Iron','Steel','Titanium','Neutronium','Infernite'].includes(res) ? 'h_multiplier' : 'multiplier';
                 }
-                return multiplier;
             },
             effect(){
-                let multiplier = this.multiplier(false);
-                let h_multiplier = this.multiplier(true);
                 let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
                 if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
                     containers += 10;
@@ -983,10 +956,11 @@ const spaceProjects = {
 
                 let desc = '<div class="aTable">';
                 desc = desc + `<span>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</span>${crate}`;
-                for (const res of this.res_list()){
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let heavy = this.heavy(res);
-                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
+                        let multiplier = this.storage[this.storage.mtype(res)]();
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         desc = desc + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -1006,12 +980,11 @@ const spaceProjects = {
                         unlockContainers();
                     }
 
-                    let multiplier = this.multiplier(false);
-                    let h_multiplier = this.multiplier(true);
-                    for (const res of this.res_list()){
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let heavy = this.heavy(res);
-                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier));
+                            let multiplier = this.storage[this.storage.mtype(res)]();
+                            global.resource[res].max += (spatialReasoning(list[res]) * multiplier);
                         }
                     };
                     return true;
@@ -1828,78 +1801,53 @@ const spaceProjects = {
                 Aluminium(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 120000, 1.28, 'space'); },
                 Cement(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 45000, 1.28, 'space'); }
             },
-            res_list(){
-                let r_list = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
-                    'Graphene','Stanene','Bolognium','Orichalcum',
-                ];
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            res_val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 40;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Crystal':
-                        return 50;
-                    case 'Alloy':
-                        return 45;
-                    case 'Polymer':
-                        return 40;
-                    case 'Iridium':
-                        return 35;
-                    case 'Graphene':
-                        return 30;
-                    case 'Stanene':
-                        return 25;
-                    case 'Bolognium':
-                        return 20;
-                    case 'Orichalcum':
-                        return 15;
-                    case 'Unobtainium':
-                        return 10;
-                    case 'Tungsten':
-                        return 35;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Steel': 60,
+                        'Titanium': 40,
+                        'Crystal': 50,
+                        'Alloy': 45,
+                        'Polymer': 40,
+                        'Iridium': 35,
+                        'Chrysotile': 750,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Unobtainium': 10,
+                        'Graphene': 30,
+                        'Stanene': 25,
+                        'Bolognium': 20,
+                        'Orichalcum': 15
+                    };
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 35;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return planetName().hell;
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res_list()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -1909,10 +1857,11 @@ const spaceProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('m_warehouse','space');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -3217,78 +3166,53 @@ const spaceProjects = {
                 Aluminium(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 120000, 1.28, 'space'); },
                 Cement(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 45000, 1.28, 'space'); }
             },
-            res_list(){
-                let r_list = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
-                    'Graphene','Stanene','Bolognium','Orichalcum',
-                ];
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            res_val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 250;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Crystal':
-                        return 50;
-                    case 'Alloy':
-                        return 45;
-                    case 'Polymer':
-                        return 40;
-                    case 'Iridium':
-                        return 35;
-                    case 'Graphene':
-                        return 30;
-                    case 'Stanene':
-                        return 25;
-                    case 'Bolognium':
-                        return 20;
-                    case 'Orichalcum':
-                        return 15;
-                    case 'Unobtainium':
-                        return 10;
-                    case 'Tungsten':
-                        return 35;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Steel': 60,
+                        'Titanium': 250,
+                        'Crystal': 50,
+                        'Alloy': 45,
+                        'Polymer': 40,
+                        'Iridium': 35,
+                        'Chrysotile': 750,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Unobtainium': 10,
+                        'Graphene': 30,
+                        'Stanene': 25,
+                        'Bolognium': 20,
+                        'Orichalcum': 15
+                    };
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 35;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return planetName().dwarf;
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res_list()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3298,10 +3222,11 @@ const spaceProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('c_warehouse','space');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -3941,59 +3866,46 @@ const interstellarProjects = {
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 45000, 1.28, 'interstellar'); }
             },
             supply(){ return 'int_alpha'; },
-            res_list(){
-                let r_list = ['Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal','Nano_Tube','Neutronium','Adamantite','Infernite'];
-                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    r_list.push('Steel');
-                }
-                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    r_list.push('Titanium');
-                }
-                return r_list;
-            },
-            res_val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 40;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Infernite':
-                        return 5;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Chrysotile': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Infernite': 5
+                    };
+                    if (global.tech['storage'] >= 3 && global.resource.Steel.display){
+                        list['Steel'] = 60;
+                    }
+                    if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
+                        list['Titanium'] = 40;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return loc('interstellar_alpha_name');
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res_list()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -4003,10 +3915,11 @@ const interstellarProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('warehouse','interstellar');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res_list()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.res_val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
