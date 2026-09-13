@@ -671,16 +671,22 @@ const outerTruth = {
             },
             effect(wiki){
                 let cipher = this.support_fuel().a;
-                let know = 2500;
-                if (global.race['high_pop']){
-                    know = highPopAdjust(know);
-                }
-                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
-                    know *= 1.25;
-                }
+                let know = this.knowVal(wiki);
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[this.support_fuel().r].name])}</div>`;
+            },
+            knowVal(wiki){
+                let gain = 2500
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
+                }
+                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
+                    gain *= 1.25;
+                }
+                gain *= infiltratorFactor('spc_titan','decoder');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'titan',
             support(){ return -1; },
@@ -3368,7 +3374,7 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(this.knowVal()).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
@@ -3380,6 +3386,13 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){ //does not contain percentage increase
+                let gain = 0;
+                if (global.tech['isolation']){
+                    gain = (global.race['lone_survivor'] ? 3500000 : 6500000) * infiltratorFactor('tau_home','alien_outpost');
+                }
+                return gain;
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 25) : 100); },
             special(){
@@ -3744,11 +3757,7 @@ const tauCetiModules = {
                 Unobtainium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 64000, 1.25, 'tauceti'); },
             },
             effect(){
-                let sci = 39616;
-                if (global.tech['supercollider'] && global.tech['isolation']){
-                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    sci *= (global.tech['supercollider'] / ratio) + 1;
-                }
+                let sci = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
@@ -3770,6 +3779,16 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){
+                let gain = 39616;
+                if (global.tech['supercollider'] && global.tech['isolation']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain *= infiltratorFactor('tau_home','infectious_disease_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_home',
             support(){ return -1; },
@@ -4412,8 +4431,6 @@ const tauCetiModules = {
                 Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
-                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
-                let know = Math.round(25000 * overseer / 100);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
@@ -4424,6 +4441,13 @@ const tauCetiModules = {
                     desc = desc + `<div class="has-text-advanced">${loc('tau_red_womling_lab_tech_level',[global.tech.womling_tech ?? 0, progress.toFixed(2)])}</div>`;
                 }
                 return desc;
+            },
+            knowVal(){
+                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
+                let gain = Math.round(25000 * overseer / 100);
+                gain *= infiltratorFactor('tau_red','womling_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_red',
             support(){ return -1; },

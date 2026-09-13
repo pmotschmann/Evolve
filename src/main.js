@@ -11012,7 +11012,7 @@ function midLoop(){
         }
         let pirate_alien2 = piracy('gxy_alien2');
         if (global.city['university']){
-            let gain = actions.city.university.knowVal() * global.city.university.count * infiltratorFactor('city','university');
+            let gain = actions.city.university.knowVal() * global.city.university.count;
             lCaps['professor'] += jobScale(global.city.university.count);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('city_university')] = gain+'v';
@@ -11116,7 +11116,7 @@ function midLoop(){
             breakdown.c.Knowledge[loc('tech_zero_g_lab')] = gain+'v';
 
             if (global.resource.Cipher.display){
-                let cipher = 10000 * using * zero_g_kept;
+                let cipher = 10000 * using * infiltratorFactor('spc_enceladus','zero_g_lab');
                 caps['Cipher'] += cipher;
                 breakdown.c.Cipher[loc('tech_zero_g_lab')] = cipher+'v';
             }
@@ -11200,44 +11200,13 @@ function midLoop(){
         }
 
         if(support_on['genetics_lab']){
-            let know = actions.surface.wastes.genetics_lab.knowVal() * support_on['genetics_lab'];
+            let know = support_on['genetics_lab'] * actions.surface.wastes.genetics_lab.knowVal();
             caps['Knowledge'] += know;
             breakdown.c.Knowledge[loc('surface_genetics_lab')] = (know)+'v';
         }
 
         if (p_on['embassy'] && global.galaxy['symposium']){
-            let dorm = 1750 * p_on['dormitory'];
-            let gtrade = 650 * global.galaxy.trade.cur;
-            let leave = 0;
-            if (global.tech.xeno >= 7){
-                for (let j = 0; j < galaxy_ship_types.length; j++){
-                    const area = galaxy_ship_types[j].area;
-                    const region = galaxy_ship_types[j].region;
-                    if (area !== 'galaxy') { continue; }
-
-                    let crew = 0;
-                    for (const ship of gatewayArmada){
-                        crew += global.galaxy.defense[region][ship] * (actions[area]['gxy_gateway'][ship].ship.civ() + actions[area]['gxy_gateway'][ship].ship.mil());
-                    }
-
-                    for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
-                        const ship = galaxy_ship_types[j].ships[i];
-                        if (!gatewayArmada.includes(ship) && actions[area][region][ship].hasOwnProperty('ship') && gal_on[ship]){
-                            // Every ship with the 'ship' property has both civ() and mil() functions
-                            crew += gal_on[ship] * (actions[area][region][ship].ship.civ() + actions[area][region][ship].ship.mil());
-                        }
-                    }
-
-                    if (region === 'gxy_gorddon'){
-                        leave += +highPopAdjust(crew).toFixed(2) * 300;
-                    }
-                    else {
-                        leave += +highPopAdjust(crew).toFixed(2) * 100 * piracy(region);
-                    }
-                }
-            }
-            let pirate = piracy('gxy_gorddon');
-            let know = (dorm + gtrade + leave) * pirate * p_on['symposium'];
+            let know = p_on['symposium'] * actions.galaxy.gxy_gorddon.symposium.knowVal();
             caps['Knowledge'] += know;
             breakdown.c.Knowledge[loc('galaxy_symposium')] = know +'v';
         }
@@ -11365,36 +11334,9 @@ function midLoop(){
             }
         }
         if (support_on['exotic_lab']){
-            let exotic_kept = infiltratorFactor('spc_red','exotic_lab');
-            let el_gain = support_on['exotic_lab'] * spatialReasoning(10) * exotic_kept;
+            let el_gain = support_on['exotic_lab'] * spatialReasoning(10) * infiltratorFactor('spc_red','exotic_lab');
             addCap('Elerium', el_gain, 'exotic_lab', loc('space_red_exotic_lab_bd'));
-            let sci = 500;
-            if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
-                sci += int_on['laboratory'] * 25;
-            }
-            if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                sci += templeCount(true) * 15;
-            }
-            if (global.tech.mass >= 2){
-                let brain = workerScale(global.civic.scientist.workers,'scientist');
-                if (global.race['high_pop']){
-                    brain = highPopAdjust(brain);
-                }
-                sci += p_on['mass_driver'] * brain * infiltratorFactor('city','mass_driver');
-            }
-            if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
-                sci *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25) * infiltratorFactor('spc_moon','observatory'));
-            }
-            if ((global.race['cataclysm'] || decayPerks()) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
-                sci *= 1 + (p_on['sensor_drone'] * 0.02);
-            }
-            if (global.tech['science'] >= 21){
-                sci *= 1.45;
-            }
-            if (global.race['high_pop']){
-                sci = highPopAdjust(sci);
-            }
-            let gain = support_on['exotic_lab'] * workerScale(global.civic.colonist.workers,'colonist') * sci * exotic_kept;
+            let gain = support_on['exotic_lab'] * actions.space.spc_red.exotic_lab.knowVal() * workerScale(global.civic.colonist.workers,'colonist');
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_exotic_bd')] = gain+'v';
 
@@ -11430,13 +11372,7 @@ function midLoop(){
 
         if (support_on['decoder']){
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
-            let gain = support_on['decoder'] * titan_colonists * 2500 * infiltratorFactor('spc_titan','decoder');
-            if (global.race['high_pop']){
-                gain = highPopAdjust(gain);
-            }
-            if (p_on['ai_core2']){
-                gain *= 1.25;
-            }
+            let gain = support_on['decoder'] * titan_colonists * actions.space.spc_titan.decoder.knowVal();
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('space_decoder_title')] = gain+'v';
         }
@@ -11516,16 +11452,13 @@ function midLoop(){
             addCap('Elerium', gain, 'gateway_station', loc('galaxy_gateway_station'));
         }
         if (p_on['s_gate'] && p_on['telemetry_beacon']){
-            let base_val = global.tech['telemetry'] ? 1200 : 800;
-            if (global.tech.science >= 17){
-                base_val += gal_on['scout_ship'] * 25;
-            }
+            let base_val = actions.galaxy.gxy_stargate.telemetry_beacon.knowVal();
             let gain = p_on['telemetry_beacon'] ** 2 * base_val;
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('galaxy_telemetry_beacon_bd')] = gain+'v';
         }
         if (p_on['s_gate'] && gal_on['scavenger']){
-            let gain = gal_on['scavenger'] * Math.round(pirate_alien2 * 25000);
+            let gain = gal_on['scavenger'] * actions.galaxy.gxy_alien2.scavenger.knowVal();
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('galaxy_scavenger')] = gain+'v';
         }
@@ -11848,18 +11781,12 @@ function midLoop(){
         }
 
         if (global.tauceti['infectious_disease_lab']){
-            let lab_kept = infiltratorFactor('tau_home','infectious_disease_lab');
-            let gain = 39616;
-            if (global.tech['supercollider'] && global.tech['isolation']){
-                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                gain *= (global.tech['supercollider'] / ratio) + 1;
-            }
-            gain *= lab_kept;
-            caps['Knowledge'] += (p_on['infectious_disease_lab'] * Math.round(gain));
-            breakdown.c.Knowledge[actions.tauceti.tau_home.infectious_disease_lab.title()] = (p_on['infectious_disease_lab'] * gain)+'v';
+            let gain = p_on['infectious_disease_lab'] * actions.tauceti.tau_home.infectious_disease_lab.knowVal();
+            caps['Knowledge'] += Math.round(gain);
+            breakdown.c.Knowledge[actions.tauceti.tau_home.infectious_disease_lab.title()] = gain+'v';
 
             if (global.tech['isolation']){
-                let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375) * lab_kept;
+                let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375) * infiltratorFactor('tau_home','infectious_disease_lab');
                 addCap('Elerium', el_gain, 'infectious_disease_lab', actions.tauceti.tau_home.infectious_disease_lab.title());
             }
         }
@@ -11900,7 +11827,7 @@ function midLoop(){
                 if (scientist > unemployed){ scientist = unemployed; }
                 unemployed -= scientist;
 
-                let gain = scientist * Math.round(25000 * global.tauceti.overseer.prod / 100) * infiltratorFactor('tau_red','womling_lab');
+                let gain = scientist * actions.tauceti.tau_red.womling_lab.knowVal();
                 caps['Knowledge'] += gain;
                 breakdown.c.Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
 
@@ -12003,13 +11930,9 @@ function midLoop(){
             }
         }
         if (p_on['alien_outpost']){
-            let outpost_kept = infiltratorFactor('tau_home','alien_outpost');
-            let iso = 0;
-            if (global.tech['isolation']){
-                iso = (global.race['lone_survivor'] ? 3500000 : 6500000) * outpost_kept;
-                caps['Knowledge'] += iso;
-            }
-            let boost = 0.2 * outpost_kept;
+            let iso = actions.tauceti.tau_home.alien_outpost.knowVal();
+            caps['Knowledge'] += iso;
+            let boost = 0.2 * infiltratorFactor('tau_home','alien_outpost');
             let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_alien_outpost')] = gain+iso+'v';

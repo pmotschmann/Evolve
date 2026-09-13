@@ -13,7 +13,7 @@ import { renderFortress, fortressTech, warlordSetup } from './portal.js';
 import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor, detectorTemplate } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
-import { production, highPopAdjust, hugeAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed, blast_away } from './resets.js';
@@ -3464,6 +3464,7 @@ export const actions = {
                         gain *= 2;
                     }
                 }
+                gain *= infiltratorFactor('city','university');
                 gain = hugeAdjust(gain);
                 return gain;
             },
@@ -3560,6 +3561,7 @@ export const actions = {
                 if (muckVal1){
                     gain *= 1 + (muckVal1 / 100);
                 }
+                gain *= infiltratorFactor('city','library');
                 gain = hugeAdjust(gain);
                 return gain;
             },
@@ -3642,6 +3644,7 @@ export const actions = {
                 if (athVal){
                     gain *= 1 - (athVal / 100);
                 }
+                gain *= infiltratorFactor('city','wardenclyffe');
                 gain = hugeAdjust(gain);
                 return gain;
             },
@@ -3700,6 +3703,7 @@ export const actions = {
                 if (global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
                     gain *= 1 + (traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
                 }
+                gain *= infiltratorFactor('city','biolab');
                 gain = hugeAdjust(gain);
                 return gain;
             },
@@ -5122,6 +5126,10 @@ export function buildTemplate(key, region){
                         desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
                     }
                     return desc;
+                },
+                knowVal(){
+                    let gain = getShrineBonus('know').add;
+                    return gain;
                 },
                 action(args){
                     if (payCosts(this)){

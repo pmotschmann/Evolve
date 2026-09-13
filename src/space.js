@@ -4,7 +4,7 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale, job_data } from './jobs.js';
+import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
@@ -1304,36 +1304,49 @@ const spaceProjects = {
                 Elerium(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 20, 1.28) - 4; }
             },
             effect(wiki){
-                let sci = 500;
-                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
-                    let num_lab_on = wiki ? global.interstellar.laboratory.on : int_on['laboratory'];
-                    sci += num_lab_on * 25;
-                }
-                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                    sci += templeCount(true) * 15;
-                }
-                let num_mass_driver_on = wiki ? (global.city?.mass_driver?.on ?? 0) : p_on['mass_driver'];
-                if (global.tech.mass >= 2 && num_mass_driver_on > 0){
-                    sci += highPopAdjust(num_mass_driver_on * global.civic.scientist.workers);
-                }
-                if (global.tech['science'] >= 21){
-                    sci *= 1.45;
-                }
-                if (global.race['high_pop']){
-                    sci = highPopAdjust(sci);
-                }
+                let sci = this.knowVal();
                 let elerium = spatialReasoning(10);
 
                 let scientist = '';
                 let lab = '';
                 if (global.race['cataclysm'] || global.tech['resettle'] || global.race['orbit_decayed']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
-                    sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * (global.tech['resettle'] ? 0.02 : 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
+            },
+            knowVal(){
+                let gain = 500;
+                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                    gain += int_on['laboratory'] * 25;
+                }
+                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
+                    gain += templeCount(true) * 15;
+                }
+                if (global.tech.mass >= 2){
+                    let brain = workerScale(global.civic.scientist.workers,'scientist');
+                    if (global.race['high_pop']){
+                        brain = highPopAdjust(brain);
+                    }
+                    gain += p_on['mass_driver'] * brain * infiltratorFactor('city','mass_driver');
+                }
+                if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
+                    gain *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25) * infiltratorFactor('spc_moon','observatory'));
+                }
+                if ((global.race['cataclysm'] || decayPerks()) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
+                    gain *= 1 + (p_on['sensor_drone'] * 0.02);
+                }
+                if (global.tech['science'] >= 21){
+                    gain *= 1.45;
+                }
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
+                }
+                gain *= infiltratorFactor('spc_red','exotic_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'red',
             support(){ return -1; },
@@ -6081,11 +6094,7 @@ const galaxyProjects = {
                 Iridium(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 177000, 1.25, 'galaxy'); },
             },
             effect(wiki){
-                let base = global.tech['telemetry'] ? 1200 : 800;
-                if (global.tech.science >= 17){
-                    let num_scout_ship_on = wiki ? (global.galaxy?.scout_ship?.on ?? 0) : gal_on['scout_ship'];
-                    base += num_scout_ship_on * 25;
-                }
+                let base = this.knowVal();
                 let num_telemetry_on = wiki ? (global.galaxy?.telemetry_beacon?.on ?? 0) : p_on['telemetry_beacon'];
                 let know = num_telemetry_on ? base * num_telemetry_on : 0;
                 let gateway = '';
@@ -6093,6 +6102,14 @@ const galaxyProjects = {
                     gateway = `<div>${loc('galaxy_gateway_support',[this.support()])}</div>`;
                 }
                 return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[base])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
+            },
+            knowVal(){
+                let know = global.tech['telemetry'] ? 1200 : 800;
+                if (global.tech.science >= 17){
+                    know += gal_on['scout_ship'] * 25;
+                }
+                know = hugeAdjust(know);
+                return know;
             },
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
@@ -6401,6 +6418,42 @@ const galaxyProjects = {
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`
                 return desc;
+            },
+            knowVal(){
+                let dorm = 1750 * p_on['dormitory'];
+                let gtrade = 650 * global.galaxy.trade.cur;
+                let leave = 0;
+                if (global.tech.xeno >= 7){
+                    for (let j = 0; j < galaxy_ship_types.length; j++){
+                        const area = galaxy_ship_types[j].area;
+                        const region = galaxy_ship_types[j].region;
+                        if (area !== 'galaxy') { continue; }
+
+                        let crew = 0;
+                        for (const ship of gatewayArmada){
+                            crew += global.galaxy.defense[region][ship] * (actions[area]['gxy_gateway'][ship].ship.civ() + actions[area]['gxy_gateway'][ship].ship.mil());
+                        }
+
+                        for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
+                            const ship = galaxy_ship_types[j].ships[i];
+                            if (!gatewayArmada.includes(ship) && actions[area][region][ship].hasOwnProperty('ship') && gal_on[ship]){
+                                // Every ship with the 'ship' property has both civ() and mil() functions
+                                crew += gal_on[ship] * (actions[area][region][ship].ship.civ() + actions[area][region][ship].ship.mil());
+                            }
+                        }
+
+                        if (region === 'gxy_gorddon'){
+                            leave += +highPopAdjust(crew).toFixed(2) * 300;
+                        }
+                        else {
+                            leave += +highPopAdjust(crew).toFixed(2) * 100 * piracy(region);
+                        }
+                    }
+                }
+                let pirate = piracy('gxy_gorddon');
+                let gain = (dorm + gtrade + leave) * pirate;
+                gain = hugeAdjust(gain);
+                return gain;
             },
             powered(){ return powerCostMod(4); },
             action(args){
@@ -6886,10 +6939,16 @@ const galaxyProjects = {
             },
             effect(wiki){
                 let pirate = piracy('gxy_alien2',false,false,wiki);
-                let know = Math.round(pirate * 25000);
+                let know = this.knowVal(wiki);
                 let helium = +int_fuel_adjust(this.ship.helium).toFixed(2);
                 let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[+(pirate * 100 * 0.75).toFixed(1)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[+(pirate * 100 / 4).toFixed(1)])}</div>`;
                 return `<div>${loc('galaxy_scavenger_effect',[know])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[this.support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            knowVal(wiki){
+                let pirate = piracy('gxy_alien2',false,false,wiki);
+                let gain = Math.round(pirate * 25000);
+                gain = hugeAdjust(gain);
+                return gain;
             },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
