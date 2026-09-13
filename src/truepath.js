@@ -5,7 +5,7 @@ import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed, soldierTrainingRate, soldierRecoveryRate } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, infiltratorFactor } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
@@ -7029,20 +7029,14 @@ function counterEspionageTargets(){
             const struct = state[key];
             if (!action || !struct || !struct.count){ return; }
             if (!['industry','mining','power','science'].includes(action.type) && !key.startsWith('detector')){ return; }
-            if (!(p_on[key] > 0 || support_on[key] > 0 || struct.on > 0)){ return; }
+            // Only target structures that are currently operating.
+            const running = struct.hasOwnProperty('on') ? (p_on[key] > 0 || support_on[key] > 0 || struct.on > 0) : true;
+            if (!running){ return; }
             if (infiltratorFactor(zone.id,key) <= 0){ return; }
             targets.push({ z: zone.id, b: key });
         });
     });
     return targets;
-}
-
-// Return the remaining output fraction for one infiltrated structure.
-export function infiltratorFactor(zone, building){
-    const alien = counterEspionage();
-    if (!alien){ return 1; }
-    const count = alien.infiltrators[zone]?.[building] || 0;
-    return Math.max(0,1 - count * 0.05);
 }
 
 // Count all active infiltrators across every zone.

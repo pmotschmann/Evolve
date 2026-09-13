@@ -9,7 +9,7 @@ import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad,
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
-import { highPopAdjust, production, teamster, technicianCount } from './prod.js';
+import { highPopAdjust, production, teamster, technicianCount, infiltratorFactor } from './prod.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
@@ -321,7 +321,7 @@ export const craftingRatio = (function(){
             };
             // Womling artisans working a craftworks, a percent each on everything crafted.
             {
-                let artisans = womlingArtisans();
+                let artisans = womlingArtisans() * infiltratorFactor('tau_red','womling_craftworks');
                 if (artisans > 0){
                     crafting.general.multi.push({
                         name: loc(`tau_red_womling_craftworks`),
@@ -332,7 +332,7 @@ export const craftingRatio = (function(){
             }
             if (global.tech['foundry'] >= 2){
                 let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
-                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
+                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
                 crafting.general.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * skill,
@@ -353,12 +353,12 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 4 && global.city['sawmill']){
                 crafting.Plywood.add.push({
                     name: loc(`city_sawmill`),
-                    manual: global.city['sawmill'].count * 0.02,
-                    auto: global.city['sawmill'].count * 0.02
+                    manual: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill'),
+                    auto: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill')
                 });
             }
             if (global.tech['foundry'] >= 6){
-                let foundries = global.city.foundry.count + (global.underground.under_foundry?.count || 0);
+                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
                 crafting.Brick.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * 0.02,
@@ -368,14 +368,14 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 7){
                 crafting.general.add.push({
                     name: loc(`city_factory`) + ` (${loc(`tab_city5`)})`,
-                    manual: p_on['factory'] * 0.05,
-                    auto: p_on['factory'] * 0.05
+                    manual: p_on['factory'] * 0.05 * infiltratorFactor('city','factory'),
+                    auto: p_on['factory'] * 0.05 * infiltratorFactor('city','factory')
                 });
                 if (global.tech['mars'] >= 4){
                     crafting.general.add.push({
                         name: loc(`city_factory`) + ` (${loc(`tab_space`)})`,
-                        manual: p_on['red_factory'] * 0.05,
-                        auto: p_on['red_factory'] * 0.05
+                        manual: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory'),
+                        auto: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory')
                     });
                 }
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
@@ -428,8 +428,8 @@ export const craftingRatio = (function(){
             if (global.space['fabrication'] && support_on['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
-                    manual: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)),
-                    auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02))
+                    manual: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication'),
+                    auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication')
                 });
             }
             if (global.race['artisan']){

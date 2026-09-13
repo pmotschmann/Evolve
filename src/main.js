@@ -7,18 +7,18 @@ import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, splitSupply, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, workerScale, limitCraftsmen, loadServants, craftsmanCap, craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone } from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, smelterInfiltratedShare,setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer, rivalCollapsed, collapseRival } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium, infiltratorFactor } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
-import { production, highPopAdjust, teamster, factoryBonus, technicianBonus } from './prod.js';
+import { production, highPopAdjust, teamster, factoryBonus, technicianBonus, infiltratorFactor, weightedInfiltration } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse, living_extinction } from './resets.js';
 import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './index.js';
@@ -26,6 +26,8 @@ import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from '.
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect, ice_fuel_adjust } from './iceage.js';
+
+// Debug: global.race.alien.infiltrators.city.cement_plant = 2;
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -2419,7 +2421,7 @@ function fastLoop(){
         }
 
         if (global.space['hydrogen_plant']){
-            let output = actions.space.spc_titan.hydrogen_plant.powered();
+            let output = actions.space.spc_titan.hydrogen_plant.powered() * infiltratorFactor('spc_titan','hydrogen_plant');
             if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
                 global.space.hydrogen_plant.on = global.space.electrolysis.on;
             }
@@ -2804,6 +2806,11 @@ function fastLoop(){
                 }
 
                 global[sup.a][sup.s].s_max = p_on[sup.s] * actions[sup.a][sup.r][sup.s].support();
+                // Reduce support capacity by the provider's infiltrator penalty.
+                const sup_infil = infiltratorFactor(sup.r, sup.s);
+                if (sup_infil < 1){
+                    global[sup.a][sup.s].s_max = Math.floor(global[sup.a][sup.s].s_max * sup_infil);
+                }
                 switch (sup.g){
                     case 'moon':
                         {
@@ -5000,7 +5007,7 @@ function fastLoop(){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);
             }
 
-            let womling_sci = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist : 0;
+            let womling_sci = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * infiltratorFactor('tau_red','womling_lab') : 0;
 
             let scientist_base = workerScale(global.civic.scientist.workers,'scientist');
             scientist_base *= job_data.scientist.impact();
@@ -5010,7 +5017,7 @@ function fastLoop(){
                 if (global.race['high_pop']){
                     professor = highPopAdjust(professor);
                 }
-                scientist_base *= 1 + (professor * p_on['wardenclyffe'] * 0.01);
+                scientist_base *= 1 + (professor * p_on['wardenclyffe'] * 0.01 * infiltratorFactor('city','wardenclyffe'));
             }
             if (global.space['satellite']){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
@@ -5086,7 +5093,7 @@ function fastLoop(){
                     }
                 }
                 let lib_count = global.race['warlord'] ? ((global.race?.absorbed?.length || 1) * 10) : global.city.library.count;
-                let library_mult = 1 + (lib_count * lib_multiplier);
+                let library_mult = 1 + (lib_count * lib_multiplier * (global.race['warlord'] ? 1 : infiltratorFactor('city','library')));
                 breakdown.p['Knowledge'][global.race['warlord'] ? loc('portal_throne_of_evil_title') : loc('city_library')] = ((library_mult - 1) * 100) + '%';
                 delta *= library_mult;
             }
@@ -5096,7 +5103,7 @@ function fastLoop(){
                 delta *= astro_mult;
             }
             if (global.tech['isolation'] && support_on['infectious_disease_lab']){
-                let lab_mult = 1 + support_on['infectious_disease_lab'] * 0.75;
+                let lab_mult = 1 + support_on['infectious_disease_lab'] * 0.75 * infiltratorFactor('tau_home','infectious_disease_lab');
                 breakdown.p['Knowledge'][actions.tauceti.tau_home.infectious_disease_lab.title()] = ((lab_mult - 1) * 100) + '%';
                 delta *= lab_mult;
             }
@@ -5258,6 +5265,8 @@ function fastLoop(){
 
             // Use active factory-line shares for pooled production and costs.
             const factoryAt = industryShares(factoryData.capacityByZone());
+            // Apply factory infiltrator penalties to output.
+            const factoryKept = factoryData.infiltratedShare();
 
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
                 let fur_cost = global.city.factory.Lux * f_rate.Lux.fur[assembly] * eff;
@@ -5274,7 +5283,7 @@ function fastLoop(){
                 let demand = highPopAdjust(global.resource[global.race.species].amount) * f_rate.Lux.demand[assembly] * eff;
                 demand = luxGoodPrice(demand);
 
-                let delta = workDone * demand;
+                let delta = workDone * demand * factoryKept;
                 if (global.race['gravity_well']){ delta = teamster(delta); }
                 FactoryMoney = delta;
 
@@ -5308,7 +5317,7 @@ function fastLoop(){
                 modRes('Money', -(money_cost * time_multiplier));
                 applyShare('Polymer', -(polymer_cost), factoryAt, time_multiplier);
 
-                let factory_output = workDone * f_rate.Furs.output[assembly] * eff * production('psychic_boost','Furs');
+                let factory_output = workDone * f_rate.Furs.output[assembly] * eff * factoryKept * production('psychic_boost','Furs');
                 factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
@@ -5373,7 +5382,7 @@ function fastLoop(){
                 applyShare('Copper', -(copper_cost), factoryAt, time_multiplier);
                 applyShare('Aluminium', -(aluminium_cost), factoryAt, time_multiplier);
 
-                let factory_output = workDone * f_rate.Alloy.output[assembly] * eff * production('psychic_boost','Alloy');
+                let factory_output = workDone * f_rate.Alloy.output[assembly] * eff * factoryKept * production('psychic_boost','Alloy');
                 factory_output = factoryBonus(factory_output);
 
                 if (global.tech['alloy']){
@@ -5451,7 +5460,7 @@ function fastLoop(){
                 applyShare('Lumber', -(lumber_cost), factoryAt, time_multiplier);
                 applyShare('Oil', -(oil_cost), factoryAt, time_multiplier);
 
-                let factory_output = workDone * f_rate.Polymer.output[assembly] * eff * production('psychic_boost','Polymer');
+                let factory_output = workDone * f_rate.Polymer.output[assembly] * eff * factoryKept * production('psychic_boost','Polymer');
                 factory_output = factoryBonus(factory_output);
                 
                 if (global.tech['polymer'] >= 2){
@@ -5536,7 +5545,7 @@ function fastLoop(){
                 applyShare('Neutronium', -(neutronium_cost), factoryAt, time_multiplier);
                 applyShare('Coal', -(coal_cost), factoryAt, time_multiplier);
 
-                let factory_output = workDone * f_rate.Nano_Tube.output[assembly] * eff * production('psychic_boost','Nano_Tube');
+                let factory_output = workDone * f_rate.Nano_Tube.output[assembly] * eff * factoryKept * production('psychic_boost','Nano_Tube');
                 factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
@@ -5614,7 +5623,7 @@ function fastLoop(){
                 applyShare('Aluminium', -(alum_cost), factoryAt, time_multiplier);
                 applyShare('Nano_Tube', -(nano_cost), factoryAt, time_multiplier);
 
-                let factory_output = workDone * f_rate.Stanene.output[assembly] * eff * production('psychic_boost','Stanene');
+                let factory_output = workDone * f_rate.Stanene.output[assembly] * eff * factoryKept * production('psychic_boost','Stanene');
                 factory_output = factoryBonus(factory_output);
 
                 let delta = factory_output * tauBonus;
@@ -5707,7 +5716,16 @@ function fastLoop(){
                 cement_base *= 1.1;
             }
 
-            let factory_output = workDone * cement_base * production('psychic_boost','Cement');
+            // Weight cement penalties by active plant capacity.
+            let cement_kept = weightedInfiltration([
+                ['city', 'cement_plant', global.city['cement_plant'] ? global.city.cement_plant.count * 2 : 0],
+                ['spc_red', 'red_factory', global.race['orbit_decayed'] ? (p_on['red_factory'] || 0) : 0],
+                ['spc_red', 'fabrication', global.race['cataclysm'] ? (support_on['fabrication'] || 0) : 0],
+                ['tau_home', 'tau_factory', global.tech['isolation'] ? (support_on['tau_factory'] || 0) * 2 : 0],
+                ['surface', 'crater_fabrication', (support_on['crater_fabrication'] || 0) * 2],
+                ['portal', 'hell_factory', global.race['warlord'] ? (p_on['hell_factory'] || 0) * 5 : 0]
+            ]);
+            let factory_output = workDone * cement_base * cement_kept * production('psychic_boost','Cement');
             if (global.civic.govern.type === 'corpocracy'){
                 factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
             }
@@ -5740,7 +5758,7 @@ function fastLoop(){
                 hell_factory += p_on['hell_factory'] * 8 * (global.portal.hell_factory.rank - 1) / 100
             }
 
-            let mining_pit = global.tech['isolation'] ? 1 + (support_on['mining_pit'] * 0.08) : 1;
+            let mining_pit = global.tech['isolation'] ? 1 + (support_on['mining_pit'] * 0.08 * infiltratorFactor('tau_home','mining_pit')) : 1;
 
             // Kept out of cement_base so it lands on output only — folding it in there would have made
             // the plant eat proportionally more stone as well — and so it gets its own breakdown line.
@@ -6017,6 +6035,11 @@ function fastLoop(){
                 iridium_smelter *= 1 + (0.2 * salFathom);
             }
 
+            // Apply smelter penalties after fuel consumption.
+            const smelterKept = smelterInfiltratedShare();
+            iron_smelter *= smelterKept;
+            iridium_smelter *= smelterKept;
+
             bdShareUse(fuel_config.l_type, loc('city_smelter'), -(consume_wood), smelterAt);
             bdShareUse('Coal', loc('city_smelter'), -(consume_coal), smelterAt);
             bdShareUse('Oil', loc('city_smelter'), -(consume_oil), smelterAt);
@@ -6103,7 +6126,7 @@ function fastLoop(){
                     steel_smelter *= 1 + (0.2 * salFathom);
                 }
 
-                let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel') * geneBonus('refiner');
+                let smelter_output = steel_smelter * steel_base * smelterKept * production('psychic_boost','Steel') * geneBonus('refiner');
                 if (global.race['pyrophobia']){
                     smelter_output *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 }
@@ -6450,7 +6473,7 @@ function fastLoop(){
             // Each decoder reads the outpost that much better, and how much better is exactly how far
             // your own computing has come — one quantum level of extra yield per running decoder.
             let decoders = Math.min(support_on['data_decoder'] || 0, p_on['data_decoder'] || 0);
-            let decoder_val = 1 + (decoders * quantum_level / 100);
+            let decoder_val = 1 + (decoders * quantum_level / 100 * infiltratorFactor('tau_home','data_decoder'));
 
             breakdown.p['Cipher'][loc('tech_alien_outpost')] = base + 'v';
             if (base > 0){
@@ -6631,19 +6654,20 @@ function fastLoop(){
                 lumber_base *= production('psychic_boost','Lumber');
 
                 let sawmills = 1;
+                let sawmill_kept = infiltratorFactor('city','sawmill');
                 if (global.city['sawmill']){
                     let saw = global.tech['saw'] >= 2 ? 0.08 : 0.05;
-                    sawmills *= (global.city.sawmill.count * saw) + 1;
+                    sawmills *= (global.city.sawmill.count * saw * sawmill_kept) + 1;
                 }
                 let power_mult = 1;
                 let power_single = 1;
                 if (global.city.powered && global.city.sawmill && p_on['sawmill']){
-                    power_mult += (p_on['sawmill'] * 0.04);
+                    power_mult += (p_on['sawmill'] * 0.04 * sawmill_kept);
                     power_single += 0.04;
                 }
                 let lumber_yard = 1;
                 if (global.city['lumber_yard']){
-                    lumber_yard += global.city['lumber_yard'].count * 0.02;
+                    lumber_yard += global.city['lumber_yard'].count * 0.02 * infiltratorFactor('city','lumber_yard');
                 }
                 let woodcutter = 1;
                 if(support_on['woodcutter']){
@@ -6724,7 +6748,8 @@ function fastLoop(){
             }
         }
 
-        let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
+        let refinery_kept = infiltratorFactor('city','metal_refinery');
+        let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 * refinery_kept : 0;
         refinery *= q_multiplier;
 
         // Stone / Amber
@@ -6852,10 +6877,11 @@ function fastLoop(){
                 }
             }
             else if (global.city['rock_quarry']){
-                rock_quarry += global.city['rock_quarry'].count * 0.02;
+                let quarry_kept = infiltratorFactor('city','rock_quarry');
+                rock_quarry += global.city['rock_quarry'].count * 0.02 * quarry_kept;
                 if (p_on['rock_quarry']){
                     power_single += 0.04;
-                    power_mult += (p_on['rock_quarry'] * 0.04);
+                    power_mult += (p_on['rock_quarry'] * 0.04 * quarry_kept);
                     quarry_discharge = global.race['discharge'] && global.race['discharge'] > 0;
                 }
 
@@ -7008,7 +7034,7 @@ function fastLoop(){
                 delta *= power_mult;
 
                 if (global.tech['alumina'] >= 2){
-                    refinery += p_on['metal_refinery'] * 6 * q_multiplier;
+                    refinery += p_on['metal_refinery'] * 6 * q_multiplier * refinery_kept;
                     let ref_single = 6 * q_multiplier / 100;
                     global.city.metal_refinery['pwr'] = +(delta * ref_single).toFixed(5);
                 }
@@ -7428,6 +7454,7 @@ function fastLoop(){
             if (global.tech['explosives'] && global.tech.explosives >= 2){
                 miner_base *= 0.95 + (global.tech.explosives * 0.15);
             }
+            miner_base *= infiltratorFactor('city','mine');
 
             let power_mult = 1;
             let pow_single = 1;
@@ -7715,7 +7742,7 @@ function fastLoop(){
                     let delta = base * shrineMetal.mult * mworks.Aluminium * hunger * global_multiplier;
 
                     if (global.tech['alumina'] >= 2){
-                        refinery += p_on['metal_refinery'] * 6;
+                        refinery += p_on['metal_refinery'] * 6 * refinery_kept;
                     }
 
                     delta *= 1 + (refinery / 100);
@@ -7886,7 +7913,7 @@ function fastLoop(){
                 tunneler = 1 + (global.portal.tunneler.rank + 3) / 100 * global.portal.tunneler.count;
             }
 
-            coal_base *= job_data.coal_miner.impact() * production('psychic_boost','Coal');
+            coal_base *= job_data.coal_miner.impact() * production('psychic_boost','Coal') * infiltratorFactor('city','coal_mine');
             breakdown.p['Coal'][global.race['warlord'] ? job_data.miner.name() : job_data.coal_miner.name()] = coal_base + 'v';
             if (coal_base > 0){
                 breakdown.p['Coal'][`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
@@ -9335,6 +9362,18 @@ function fastLoop(){
             let crafting_drawn = {};
             // Use regional workshop shares for crafting output and costs.
             const crafterAt = industryShares(craftsmanCapacityByZone());
+            // Weight crafting penalties by active bench capacity.
+            const bench_seats = {
+                foundry: global.city['foundry'] ? jobScale(global.city.foundry.count) : 0,
+                fabrication: support_on['fabrication'] ? jobScale(support_on['fabrication']) : 0,
+                tau_factory: global.tech['isolation'] && support_on['tau_factory'] ? jobScale(support_on['tau_factory'] * 5) : 0
+            };
+            const crafted_kept = weightedInfiltration([
+                ['city', 'foundry', bench_seats.foundry],
+                ['spc_red', 'fabrication', bench_seats.fabrication],
+                ['tau_home', 'tau_factory', bench_seats.tau_factory],
+                ['', '', craftsmanCapacity() - bench_seats.foundry - bench_seats.fabrication - bench_seats.tau_factory]
+            ]);
             // Track dedicated-bench usage separately in the resource breakdown.
             let benchUse = [];
 
@@ -9385,6 +9424,10 @@ function fastLoop(){
 
                 if (global.race['high_pop']){
                     volume = highPopAdjust(volume);
+                }
+                // Exclude dedicated benches from foundry penalties.
+                if (at === crafterAt){
+                    volume *= crafted_kept;
                 }
 
                 bdShare(craft, job_data.craftsman.name(), volume * speed / 140, at);
@@ -10975,7 +11018,7 @@ function midLoop(){
         }
         let pirate_alien2 = piracy('gxy_alien2');
         if (global.city['university']){
-            let gain = actions.city.university.knowVal() * global.city.university.count;
+            let gain = actions.city.university.knowVal() * global.city.university.count * infiltratorFactor('city','university');
             lCaps['professor'] += jobScale(global.city.university.count);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('city_university')] = gain+'v';
@@ -11033,7 +11076,7 @@ function midLoop(){
             if (muckVal){
                 shelving *= 1 + (muckVal / 100);
             }
-            let gain = Math.round(global.city.library.count * shelving);
+            let gain = Math.round(global.city.library.count * shelving * infiltratorFactor('city','library'));
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('city_library')] = gain+'v';
         }
@@ -11057,17 +11100,19 @@ function midLoop(){
             if (athVal){
                 gain *= 1 - (athVal / 100);
             }
+            let warden_kept = infiltratorFactor('city','wardenclyffe');
+            gain *= warden_kept;
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[wardenLabel()] = gain+'v';
 
             if (global.race.universe === 'magic'){
-                let mana = global.city.wardenclyffe.count * spatialReasoning(8);
+                let mana = global.city.wardenclyffe.count * spatialReasoning(8) * warden_kept;
                 caps['Mana'] += mana;
                 breakdown.c.Mana[wardenLabel()] = mana+'v';
             }
 
             if (global.race['artifical']){
-                let gain = p_on['wardenclyffe'] * spatialReasoning(250);
+                let gain = p_on['wardenclyffe'] * spatialReasoning(250) * warden_kept;
                 addCap('Food', gain, 'wardenclyffe', wardenLabel());
             }
         }
@@ -11093,7 +11138,7 @@ function midLoop(){
             breakdown.c.Knowledge[loc('space_home_satellite_title')] = gain+'v';
         }
         if (global.space['observatory'] && global.space.observatory.count > 0){
-            let gain = (support_on['observatory'] * 5000 * geneBonus('stargazer'));
+            let gain = (support_on['observatory'] * 5000 * geneBonus('stargazer') * infiltratorFactor('spc_moon','observatory'));
             if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                 gain *= 1 + (global.space.satellite.count * 0.25);
             }
@@ -11107,7 +11152,7 @@ function midLoop(){
         }
 
         if (global.space['seismic'] && global.space.seismic.count > 0){
-            let gain = (p_on['seismic'] * actions.space.spc_hell.seismic.know() * p_on['geothermal']);
+            let gain = (p_on['seismic'] * actions.space.spc_hell.seismic.know() * p_on['geothermal'] * infiltratorFactor('spc_hell','seismic'));
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('space_seismic_title')] = gain+'v';
         }
@@ -11153,18 +11198,20 @@ function midLoop(){
                 gain *= 1 + highPopAdjust(traits.elemental.vars()[4] * global.resource[global.race.species].amount / 100);
             }
 
+            gain *= infiltratorFactor('city','biolab');
             caps['Knowledge'] += (p_on['biolab'] * gain);
             breakdown.c.Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
         if (global.space['zero_g_lab'] && Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) > 0){
             let using = Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']);
             let synd = syndicate('spc_enceladus');
-            let gain = Math.round(using * 10000 * synd);
+            let zero_g_kept = infiltratorFactor('spc_enceladus','zero_g_lab');
+            let gain = Math.round(using * 10000 * synd * zero_g_kept);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_zero_g_lab')] = gain+'v';
 
             if (global.resource.Cipher.display){
-                let cipher = 10000 * using;
+                let cipher = 10000 * using * zero_g_kept;
                 caps['Cipher'] += cipher;
                 breakdown.c.Cipher[loc('tech_zero_g_lab')] = cipher+'v';
             }
@@ -11229,7 +11276,7 @@ function midLoop(){
         }
 
         if (global.tech['isolation'] && global.tauceti['alien_outpost'] && global.resource.Cipher.display){
-            let cipher = 200000;
+            let cipher = 200000 * infiltratorFactor('tau_home','alien_outpost');
             caps['Cipher'] += cipher;
             breakdown.c.Cipher[loc('tech_alien_outpost')] = cipher+'v';
         }
@@ -11417,7 +11464,8 @@ function midLoop(){
             }
         }
         if (support_on['exotic_lab']){
-            let el_gain = support_on['exotic_lab'] * spatialReasoning(10);
+            let exotic_kept = infiltratorFactor('spc_red','exotic_lab');
+            let el_gain = support_on['exotic_lab'] * spatialReasoning(10) * exotic_kept;
             addCap('Elerium', el_gain, 'exotic_lab', loc('space_red_exotic_lab_bd'));
             let sci = 500;
             if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
@@ -11431,10 +11479,10 @@ function midLoop(){
                 if (global.race['high_pop']){
                     brain = highPopAdjust(brain);
                 }
-                sci += p_on['mass_driver'] * brain;
+                sci += p_on['mass_driver'] * brain * infiltratorFactor('city','mass_driver');
             }
             if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
-                sci *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25));
+                sci *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25) * infiltratorFactor('spc_moon','observatory'));
             }
             if ((global.race['cataclysm'] || decayPerks()) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
@@ -11445,7 +11493,7 @@ function midLoop(){
             if (global.race['high_pop']){
                 sci = highPopAdjust(sci);
             }
-            let gain = support_on['exotic_lab'] * workerScale(global.civic.colonist.workers,'colonist') * sci;
+            let gain = support_on['exotic_lab'] * workerScale(global.civic.colonist.workers,'colonist') * sci * exotic_kept;
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_exotic_bd')] = gain+'v';
 
@@ -11481,7 +11529,7 @@ function midLoop(){
 
         if (support_on['decoder']){
             let titan_colonists = p_on['ai_colonist'] ? workerScale(global.civic.titan_colonist.workers,'titan_colonist') + jobScale(p_on['ai_colonist']) : workerScale(global.civic.titan_colonist.workers,'titan_colonist');
-            let gain = support_on['decoder'] * titan_colonists * 2500;
+            let gain = support_on['decoder'] * titan_colonists * 2500 * infiltratorFactor('spc_titan','decoder');
             if (global.race['high_pop']){
                 gain = highPopAdjust(gain);
             }
@@ -11901,16 +11949,18 @@ function midLoop(){
         }
 
         if (global.tauceti['infectious_disease_lab']){
+            let lab_kept = infiltratorFactor('tau_home','infectious_disease_lab');
             let gain = 39616;
             if (global.tech['supercollider'] && global.tech['isolation']){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
+            gain *= lab_kept;
             caps['Knowledge'] += (p_on['infectious_disease_lab'] * Math.round(gain));
             breakdown.c.Knowledge[actions.tauceti.tau_home.infectious_disease_lab.title()] = (p_on['infectious_disease_lab'] * gain)+'v';
 
             if (global.tech['isolation']){
-                let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375);
+                let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375) * lab_kept;
                 addCap('Elerium', el_gain, 'infectious_disease_lab', actions.tauceti.tau_home.infectious_disease_lab.title());
             }
         }
@@ -11951,7 +12001,7 @@ function midLoop(){
                 if (scientist > unemployed){ scientist = unemployed; }
                 unemployed -= scientist;
 
-                let gain = scientist * Math.round(25000 * global.tauceti.overseer.prod / 100);
+                let gain = scientist * Math.round(25000 * global.tauceti.overseer.prod / 100) * infiltratorFactor('tau_red','womling_lab');
                 caps['Knowledge'] += gain;
                 breakdown.c.Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
 
@@ -12054,12 +12104,13 @@ function midLoop(){
             }
         }
         if (p_on['alien_outpost']){
+            let outpost_kept = infiltratorFactor('tau_home','alien_outpost');
             let iso = 0;
             if (global.tech['isolation']){
-                iso = global.race['lone_survivor'] ? 3500000 : 6500000;
+                iso = (global.race['lone_survivor'] ? 3500000 : 6500000) * outpost_kept;
                 caps['Knowledge'] += iso;
             }
-            let boost = 0.2;
+            let boost = 0.2 * outpost_kept;
             let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('tech_alien_outpost')] = gain+iso+'v';

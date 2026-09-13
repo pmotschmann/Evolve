@@ -146,7 +146,7 @@ function baseProduction(id,val,wiki){
             };
             if (global.tech['drone']){
                 let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 0.12 : 0.06;
-                vals.d = global.space.drone.count * rate;
+                vals.d = global.space.drone.count * rate * (wiki ? 1 : infiltratorFactor('spc_gas_moon','drone'));
                 vals.n = vals.b * (1 + (vals.d));
             }
             else {
@@ -209,7 +209,7 @@ function baseProduction(id,val,wiki){
             if (share <= 0){ return 1; }
             // Colonists counted exactly as the graphene factory above counts them, AI colonists included.
             let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-            let pool = 0.01 * titan_colonists * works;
+            let pool = 0.01 * titan_colonists * works * (wiki ? 1 : infiltratorFactor('spc_titan','metalworks'));
             if (global.race['high_pop']){
                 pool = highPopAdjust(pool);
             }
@@ -648,23 +648,53 @@ function baseProduction(id,val,wiki){
 }
 
 
-function infiltratorProduction(value, id, wiki){
-    if (wiki || !global.race.alien || !global.race.alien.infiltrators || typeof global.race.alien.infiltrators !== 'object'){ return value; }
-    const count = Object.values(global.race.alien.infiltrators).reduce((sum,zone) => sum + (zone[id] || 0), 0);
-    if (!count){ return value; }
-    const factor = Math.max(0,1 - count * 0.05);
-    if (typeof value === 'number'){ return value * factor; }
-    if (value && typeof value === 'object'){
-        const adjusted = {};
-        for (const key in value){ adjusted[key] = typeof value[key] === 'number' ? value[key] * factor : value[key]; }
-        return adjusted;
-    }
-    return value;
+// --- Infiltrators ----------------------------------------------------------------------------------
+// Apply hidden 5% output penalties per infiltrator, capped at 20.
+
+// Return a structure's output fraction for its Counter Espionage zone.
+export function infiltratorFactor(zone, building){
+    const planted = global.race['alien'] && global.race.alien['infiltrators'];
+    const count = planted && planted[zone] ? (planted[zone][building] || 0) : 0;
+    return count > 0 ? Math.max(0, 1 - count * 0.05) : 1;
 }
 
-// Return production after silent infiltrator penalties for the affected structure.
+// Return a capacity-weighted infiltrator factor for shared output.
+export function weightedInfiltration(sources){
+    let total = 0, kept = 0;
+    for (const [zone, building, weight] of sources){
+        if (!(weight > 0)){ continue; }
+        total += weight;
+        kept += weight * infiltratorFactor(zone, building);
+    }
+    return total > 0 ? kept / total : 1;
+}
+
+// Map production rates to their Counter Espionage zones.
+const infiltratedRates = {
+    oil_well: 'city',
+    iridium_mine: 'spc_moon', helium_mine: 'spc_moon',
+    red_mine: 'spc_red',
+    oil_extractor: 'spc_gas_moon',
+    elerium_ship: 'spc_belt', iridium_ship: 'spc_belt', iron_ship: 'spc_belt',
+    g_factory: 'spc_titan', titan_mine: 'spc_titan',
+    mercury_mine: 'spc_hell',
+    orichalcum_mine: 'spc_makemake', uranium_mine: 'spc_makemake', neutronium_mine: 'spc_makemake', elerium_mine: 'spc_makemake',
+    mining_pit: 'tau_home', alien_outpost: 'tau_home',
+    womling_mine: 'tau_red'
+};
+
+// Apply infiltrator penalties to per-structure production.
 export function production(id,val,wiki){
-    return infiltratorProduction(baseProduction(id,val,wiki),id,wiki);
+    const value = baseProduction(id,val,wiki);
+    if (wiki || !infiltratedRates[id]){ return value; }
+    const factor = infiltratorFactor(infiltratedRates[id], id);
+    if (factor === 1){ return value; }
+    if (typeof value === 'number'){ return value * factor; }
+    // Scale output fields; leave the government relation bonus unchanged.
+    if (value && typeof value === 'object' && typeof value.f === 'number'){
+        return { ...value, b: value.b * factor, f: value.f * factor };
+    }
+    return value;
 }
 
 export function technicianCount(){

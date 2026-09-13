@@ -9,7 +9,7 @@ import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
 import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate } from './truepath.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
 import { loadTab } from './index.js';
@@ -7998,7 +7998,7 @@ export function swarm_adjust(res,wiki){
         if (reduce < 0.05){
             reduce = 0.05;
         }
-        res *= reduce ** global.space.swarm_plant.count;
+        res *= reduce ** (global.space.swarm_plant.count * (wiki ? 1 : infiltratorFactor('spc_hell','swarm_plant')));
     }
     return res;
 }
@@ -8013,7 +8013,7 @@ export function fuel_adjust(fuel,drain,wiki){
     let num_driver_on = wiki ? (global.city?.mass_driver?.on ?? 0) : p_on['mass_driver'];
     if (num_driver_on){
         let factor = (wiki ? wiki.truepath : global.race['truepath']) ? 0.94 : 0.95;
-        fuel *= factor ** num_driver_on;
+        fuel *= factor ** (num_driver_on * (wiki ? 1 : infiltratorFactor('city','mass_driver')));
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
