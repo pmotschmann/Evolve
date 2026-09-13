@@ -13,7 +13,7 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, detectorNetwork, tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork,tankerRefuel, repairShipYards, supplyShipElerium } from './truepath.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -26,8 +26,6 @@ import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from '.
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect, ice_fuel_adjust } from './iceage.js';
-
-// Debug: global.race.alien.infiltrators.city.cement_plant = 2;
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -14742,6 +14740,11 @@ function longLoop(){
         // Run syndicate raids independently of infestation tracking.
         if (global.race['truepath'] && global.space['shipyard']){
             syndicateDay();
+        }
+
+        // Advance alien-containment interrogations by the elapsed game time.
+        if (global.race['truepath'] && global.space['alien_containment']){
+            alienContainmentTick(dayStep() * webWorker.mt * webWorker.longRatio / 1000);
         }
 
         if (global.space['shipyard'] && global.tech['resettle'] && global.tech.resettle >= 3){

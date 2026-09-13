@@ -8,7 +8,7 @@ import { loadFoundry, jobScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt } from './truepath.js';
 import { production, highPopAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1557,7 +1557,7 @@ const spaceProjects = {
                 return {r: true, l: global.settings.space.hell || global.tech?.resettle >= 9};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech?.resettle >= 9 ? true : false; }
+            nav(){ return global.tech?.resettle >= 9 || global.tech?.shadow >= 4 ? true : false; }
         },
         hell_mission: {
             id: 'space-hell_mission',
@@ -3021,6 +3021,8 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { dwarf: 2 },
             path: ['truepath'],
+            // Reserve Ceres rank 2 for resettlement; Alien Containment uses Shadow War progression.
+            condition(){ return global.tech['shadow'] ? false : true; },
             cost: {
                 Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 785000000 : 0; },
                 Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 1000000000 : 0; },
@@ -3284,6 +3286,70 @@ const spaceProjects = {
             }
         },
         detector_dwarf: detectorTemplate('spc_dwarf'),
+        alien_containment: {
+            id: 'space-alien_containment',
+            title(){ return loc('space_dwarf_alien_containment_title'); },
+            desc(wiki){
+                let head = `<div>${loc('space_dwarf_alien_containment_desc',[planetName().dwarf])}</div>`;
+                if (!global.space.hasOwnProperty('alien_containment') || global.space.alien_containment.count < sWarfare.containmentSegments || wiki){
+                    return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.containmentSegments])}</div>`;
+                }
+                return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            category: 'military',
+            reqs: { dwarf: 2, shadow: 14 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return sWarfare.containmentSegments - (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0); },
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 40000000 : 0; },
+                Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 25000000 : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 8000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 250000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0);
+                let desc = ``;
+                if (count < sWarfare.containmentSegments){
+                    return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.containmentSegments - count])}</div>`;
+                }
+                const facility = containmentBuilt();
+                if (!wiki && facility){
+                    desc += `<div>${loc('space_dwarf_alien_containment_captives',[facility.captives])}</div>`;
+                    if (facility.captives > 0){
+                        const pct = Math.floor(facility.p / sWarfare.interrogationTime * 100);
+                        const left = timeFormat(Math.max(0, sWarfare.interrogationTime - facility.p));
+                        desc += `<div>${loc('space_dwarf_alien_containment_progress',[pct,left])}</div>`;
+                    }
+                }
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(100); },
+            // Enable power controls after construction.
+            switchable(){ return containmentBuilt() ? true : false; },
+            on_cap(){ return containmentBuilt() ? 1 : 0; },
+            action(args){
+                if (!containmentBuilt() && payCosts(this)){
+                    incrementStruct(this);
+                    if (global.space.alien_containment.count >= sWarfare.containmentSegments){
+                        global.space.alien_containment.on = 1;
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, captives: 0, p: 0 },
+                    p: ['alien_containment','space']
+                };
+            }
+        },
     },
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,

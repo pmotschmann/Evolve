@@ -649,13 +649,27 @@ function baseProduction(id,val,wiki){
 
 
 // --- Infiltrators ----------------------------------------------------------------------------------
-// Apply hidden 5% output penalties per infiltrator, capped at 20.
+// Apply each building's hidden infiltrator production penalty.
+
+// Knowledge-cap structures that use the reduced infiltrator penalty.
+const knowledgeCapTargets = {
+    city: ['university','library','wardenclyffe','biolab'],
+    spc_moon: ['observatory'],
+    spc_red: ['exotic_lab'],
+    spc_hell: ['seismic'],
+    spc_titan: ['decoder'],
+    spc_enceladus: ['zero_g_lab'],
+    tau_home: ['infectious_disease_lab','alien_outpost'],
+    tau_red: ['womling_lab']
+};
 
 // Return a structure's output fraction for its Counter Espionage zone.
 export function infiltratorFactor(zone, building){
     const planted = global.race['alien'] && global.race.alien['infiltrators'];
     const count = planted && planted[zone] ? (planted[zone][building] || 0) : 0;
-    return count > 0 ? Math.max(0, 1 - count * 0.05) : 1;
+    if (count <= 0){ return 1; }
+    const penalty = knowledgeCapTargets[zone] && knowledgeCapTargets[zone].includes(building) ? 0.01 : 0.05;
+    return Math.max(0, 1 - count * penalty);
 }
 
 // Return a capacity-weighted infiltrator factor for shared output.

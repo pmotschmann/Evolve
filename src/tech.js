@@ -18893,6 +18893,28 @@ const techs = {
             return false;
         }
     },
+    alien_containment: {
+        id: 'tech-alien_containment',
+        title(){ return loc('tech_alien_containment'); },
+        desc(){ return loc('tech_alien_containment'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 14, dwarf: 1 },
+        grant: ['dwarf',2],
+        cost: {
+            Knowledge(){ return 25000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_alien_containment_effect',[planetName().dwarf])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
     tungsten_mine: {
         id: 'tech-tungsten_mine',
         title(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
