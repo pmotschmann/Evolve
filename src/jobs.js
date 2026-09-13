@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, hugeAdjust } from './prod.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus, geneFlat} from './races.js';
 import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
@@ -781,6 +781,9 @@ export function workerScale(num,job){
         else if (['professor','scientist'].includes(job)){
             num *= 125;
         }
+    }
+    else if (global.race['humongous']){
+        num = hugeAdjust(num);
     }
     return num;
 }

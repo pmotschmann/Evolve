@@ -1298,7 +1298,7 @@ export function blast_away(){
         let god = global.race.species;
         let genus = races[god].type === 'hybrid' ? global.race.maintype : races[god].type;
         let biome = global.city.biome;
-        let atmo = global.city.ptrait;
+        let atmo = global.city.ptrait.filter(r => r !== 'kamikaze');
         unlockAchieve(`back_on_track`);
         unlockAchieve(`biome_${biome}`);
         atmo.forEach(function(a){

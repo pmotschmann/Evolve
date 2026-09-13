@@ -5,7 +5,7 @@ import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed, soldierTrainingRate, soldierRecoveryRate } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
-import { production, highPopAdjust, infiltratorFactor } from './prod.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
@@ -321,7 +321,7 @@ const outerTruth = {
                 Cement(r={}){ return spaceCostMultiplier('storehouse', r.offset, 45000, 1.28); }
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite'
@@ -344,7 +344,7 @@ const outerTruth = {
             heavy(res){
                 return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? true : false;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 3000;
@@ -402,10 +402,10 @@ const outerTruth = {
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('storehouse',false,wiki);
                 let h_multiplier = tpStorageMultiplier('storehouse',true,wiki);
-                for (const res of this.res()){
+                for (const res of this.res_cap()){
                     if (global.resource[res].display){
                         let heavy = this.heavy(res);
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -417,10 +417,10 @@ const outerTruth = {
                     incrementStruct('storehouse');
                     let multiplier = tpStorageMultiplier('storehouse',false);
                     let h_multiplier = tpStorageMultiplier('storehouse',true);
-                    for (const res of this.res()){
+                    for (const res of this.res_cap()){
                         if (global.resource[res].display){
                             let heavy = this.heavy(res);
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier));
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * (heavy ? h_multiplier : multiplier));
                         }
                     };
                     return true;
@@ -671,16 +671,22 @@ const outerTruth = {
             },
             effect(wiki){
                 let cipher = this.support_fuel().a;
-                let know = 2500;
-                if (global.race['high_pop']){
-                    know = highPopAdjust(know);
-                }
-                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
-                    know *= 1.25;
-                }
+                let know = this.knowVal(wiki);
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[this.support_fuel().r].name])}</div>`;
+            },
+            knowVal(wiki){
+                let gain = 2500
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
+                }
+                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
+                    gain *= 1.25;
+                }
+                gain *= infiltratorFactor('spc_titan','decoder');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'titan',
             support(){ return -1; },
@@ -981,9 +987,7 @@ const outerTruth = {
                 Stanene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 600000, 1.25); }
             },
             effect(){
-                let synd = syndicate('spc_enceladus');
-                let know = Math.round(10000 * synd);
-
+                let know = Math.round(this.knowVal());
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.resource.Quantium.display){
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
@@ -992,6 +996,13 @@ const outerTruth = {
                     desc = desc + `<div>${loc('plus_max_resource',[10000,global.resource.Cipher.name])}</div>`;
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                let synd = syndicate('spc_enceladus');
+                let gain = 10000 * synd;
+                gain *= infiltratorFactor('spc_enceladus','zero_g_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'enceladus',
             support(){ return -1; },
@@ -2081,7 +2092,7 @@ const outerTruth = {
                 Plywood(r={}){ return spaceCostMultiplier('university', r.offset, 42000000, 1.26); }
             },
             effect(){
-                let desc = `<div>${loc('space_university_effect',[this.knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                let desc = `<div>${loc('space_university_effect',[this.knowledge().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(this.professors()),job_data.professor.name()])}</div>`;
                 desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
                 return desc;
@@ -2090,20 +2101,20 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             knowVal(){
+                let profs = workerScale(global.civic.professor.workers,'professor');
+                if (global.race['high_pop']){
+                    profs = highPopAdjust(profs);
+                }
+                return this.knowledge() * profs;
+            },
+            professors(){ return 2; },
+            knowledge(){
                 let facility = actions.space.spc_venus.alien_facility;
                 let val = 2222;
                 if (facility.uplinked()){
                     val *= 1 + (facility.uplinkKnowledge() / 100);
                 }
                 return val;
-            },
-            professors(){ return 2; },
-            knowledge(){
-                let profs = workerScale(global.civic.professor.workers,'professor');
-                if (global.race['high_pop']){
-                    profs = highPopAdjust(profs);
-                }
-                return this.knowVal() * profs;
             },
             action(){
                 if (payCosts(this)){
@@ -2231,7 +2242,7 @@ const outerTruth = {
                 Adamantite(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 2250000, 1.28); }
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
@@ -2239,7 +2250,7 @@ const outerTruth = {
                 ];
                 return res;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 680000;
@@ -2298,9 +2309,9 @@ const outerTruth = {
             effect(wiki){
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('warehouse',false,wiki);
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2311,9 +2322,9 @@ const outerTruth = {
                 if (payCosts(this)){
                     incrementStruct(this);
                     let multiplier = tpStorageMultiplier('warehouse',false);
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * multiplier);
                         }
                     };
                     return true;
@@ -3363,7 +3374,7 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(this.knowVal()).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
@@ -3375,6 +3386,13 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){ //does not contain percentage increase
+                let gain = 0;
+                if (global.tech['isolation']){
+                    gain = (global.race['lone_survivor'] ? 3500000 : 6500000) * infiltratorFactor('tau_home','alien_outpost');
+                }
+                return gain;
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 25) : 100); },
             special(){
@@ -3535,7 +3553,7 @@ const tauCetiModules = {
                 Neutronium(r={}){ return spaceCostMultiplier('repository', r.offset, 215000, 1.28, 'tauceti'); },
             },
             wide: true,
-            res(){
+            res_list(){
                 let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium'
@@ -3557,7 +3575,7 @@ const tauCetiModules = {
                 }
                 return res;
             },
-            val(res){
+            res_val(res){
                 switch (res){
                     case 'Lumber':
                         return 30000;
@@ -3625,9 +3643,9 @@ const tauCetiModules = {
                 let storage = '<div class="aTable">';
                 let multiplier = tpStorageMultiplier('repository',false,wiki);
                 let containers = 250;
-                for (const res of this.res()){
+                for (const res of this.res_list()){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(this.res_val(res)) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3649,9 +3667,9 @@ const tauCetiModules = {
                     }
 
                     let multiplier = tpStorageMultiplier('repository');
-                    for (const res of this.res()){
+                    for (const res of this.res_list()){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(this.res_val(res)) * multiplier);
                         }
                     };
                     return true;
@@ -3739,11 +3757,7 @@ const tauCetiModules = {
                 Unobtainium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 64000, 1.25, 'tauceti'); },
             },
             effect(){
-                let sci = 39616;
-                if (global.tech['supercollider'] && global.tech['isolation']){
-                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    sci *= (global.tech['supercollider'] / ratio) + 1;
-                }
+                let sci = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
@@ -3765,6 +3779,16 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){
+                let gain = 39616;
+                if (global.tech['supercollider'] && global.tech['isolation']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain *= infiltratorFactor('tau_home','infectious_disease_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_home',
             support(){ return -1; },
@@ -4407,8 +4431,6 @@ const tauCetiModules = {
                 Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
-                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
-                let know = Math.round(25000 * overseer / 100);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
@@ -4419,6 +4441,13 @@ const tauCetiModules = {
                     desc = desc + `<div class="has-text-advanced">${loc('tau_red_womling_lab_tech_level',[global.tech.womling_tech ?? 0, progress.toFixed(2)])}</div>`;
                 }
                 return desc;
+            },
+            knowVal(){
+                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
+                let gain = Math.round(25000 * overseer / 100);
+                gain *= infiltratorFactor('tau_red','womling_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_red',
             support(){ return -1; },

@@ -2292,13 +2292,17 @@ const techs = {
                     initStruct(actions.city.s_alter);
                 }
                 if(global.race['iceage']){
-                    global.tech['mining'] = 2;
                     initStruct(actions.underground.cave.under_mine);
                     initStruct(actions.city.mine); //just for error mitigation
                 }
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['iceage']){
+                global.tech['mining'] = 2;
+            }
         }
     },
     bayer_process: {
