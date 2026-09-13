@@ -7,10 +7,10 @@ import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, draw
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass, unlockCrates, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
-import { buildGarrison, checkControlling, govTitle, defineFleetCommand } from './civics.js';
+import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCounterEspionage } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators } from './truepath.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
@@ -2292,13 +2292,17 @@ const techs = {
                     initStruct(actions.city.s_alter);
                 }
                 if(global.race['iceage']){
-                    global.tech['mining'] = 2;
                     initStruct(actions.underground.cave.under_mine);
                     initStruct(actions.city.mine); //just for error mitigation
                 }
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['iceage']){
+                global.tech['mining'] = 2;
+            }
         }
     },
     bayer_process: {
@@ -5111,6 +5115,28 @@ const techs = {
             Knowledge(){ return 17500000; }
         },
         effect(){ return loc('tech_lab_assistants_effect',[global.tech['shadow'] ? 2 : 5]); },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    seismic_research_center: {
+        id: 'tech-seismic_research_center',
+        title(){ return loc('tech_seismic_research_center'); },
+        desc(){ return loc('tech_seismic_research_center'); },
+        category: 'science',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 7, hell: 2, science: 10 },
+        grant: ['science',11],
+        cost: {
+            Knowledge(){ return 22000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_seismic_research_center_effect',[planetName().hell])}</div>`;
+        },
         action(){
             if (payCosts(this)){
                 return true;
@@ -16023,6 +16049,29 @@ const techs = {
             return false;
         }
     },
+    womling_market: {
+        id: 'tech-womling_market',
+        title(){ return loc('tech_womling_market'); },
+        desc(){ return loc('tech_womling_market'); },
+        category: 'womling',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
+        path: ['truepath'],
+        reqs(r){ return r.era === 'matrioshka' ? { womling_logistics: 2, womling_tech: 13, resettle: 13 } : { womling_logistics: 2, womling_tech: 12, shadow: 8 }; },
+        grant: ['womling_logistics',3],
+        cost: {
+            Knowledge(){ return 23500000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_market_effect',[loc('tau_red_womling_market')])}</div>`; },
+        action(){
+            if (payCosts(this)){
+                initStruct(actions.tauceti.tau_red.womling_market);
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_womling_market_flair'); }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
         title(){ return loc('tech_asteroid_analysis'); },
@@ -18819,6 +18868,75 @@ const techs = {
         },
         action(){
             if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    syndicate_base_data: {
+        id: 'tech-syndicate_base_data',
+        title(){ return loc('tech_syndicate_base_data'); },
+        desc(){ return loc('tech_syndicate_base_data'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 12 },
+        grant: ['shadow',13],
+        cost: {
+            Knowledge(){ return 24000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_syndicate_base_data_effect',[planetName().venus])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                revealAlienInfiltrators();
+                defineCounterEspionage();
+                return true;
+            }
+            return false;
+        }
+    },
+    alien_containment: {
+        id: 'tech-alien_containment',
+        title(){ return loc('tech_alien_containment'); },
+        desc(){ return loc('tech_alien_containment'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 14, dwarf: 1 },
+        grant: ['dwarf',2],
+        cost: {
+            Knowledge(){ return 25000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_alien_containment_effect',[planetName().dwarf])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    tungsten_mine: {
+        id: 'tech-tungsten_mine',
+        title(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
+        desc(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
+        category: 'science',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 7, hell: 1 },
+        grant: ['hell',2],
+        cost: {
+            Knowledge(){ return 21000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_tungsten_mine_effect',[global.resource.Tungsten.name,planetName().hell])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                initStruct(actions.space.spc_hell.mercury_mine);
                 return true;
             }
             return false;

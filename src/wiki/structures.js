@@ -128,6 +128,7 @@ const calcInfo = {
             detector_red: 10,
             detector_hell: 10,
             detector_dwarf: 10,
+            alien_containment: 25,
         },
         starDock: {
             seeder: 100

@@ -4,12 +4,12 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale, job_data } from './jobs.js';
+import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate } from './truepath.js';
-import { production, highPopAdjust } from './prod.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt } from './truepath.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
 import { loadTab } from './index.js';
@@ -76,15 +76,21 @@ const spaceProjects = {
                 Alloy(r={}){ return spaceCostMultiplier('satellite', r.offset, 8000, 1.22); }
             },
             effect(){
-                let knowledge = global.race['cataclysm'] || decayPerks() ? 2000 : 750;
-                if ((global.race['cataclysm'] || decayPerks()) && global.tech['supercollider']){
-                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 5 : 10;
-                    knowledge *= (global.tech['supercollider'] / ratio) + 1;
-                }
+                let knowledge = this.knowVal();
                 let label = global.race['cataclysm'] ? loc('space_moon_observatory_title') : (global.race['orbit_decayed'] ? loc('city_university') : wardenLabel());
                 let amount = global.race['cataclysm'] ? 25 : (decayPerks() ? 12 : 4);
                 let synergy = `<div>${loc('space_home_satellite_effect2',[label, amount])}</div>`;
                 return `<div>${loc('plus_max_resource',[knowledge,global.resource.Knowledge.name])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[job_data.scientist.name()])}</div>`
+            },
+            knowVal(){
+                let decay_active = global.race['cataclysm'] || decayPerks();
+                let knowledge = decay_active ? 2000 : 750;
+                if (decay_active && global.tech['supercollider']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 5 : 10;
+                    knowledge *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                knowledge = hugeAdjust(knowledge);
+                return knowledge;
             },
             action(args){
                 if (payCosts(this)){
@@ -442,12 +448,18 @@ const spaceProjects = {
                 if (global.race['cataclysm']){
                     prof = `<div>${loc('city_university_effect',[jobScale(1)])}</div>`;
                 }
+                let gain = this.knowVal();
+                let synergy = global.race['cataclysm'] || global.tech['resettle'] ? `<div>${loc('space_moon_observatory_cata_effect',[global.tech['resettle'] ? 2 : 25])}</div>` : `<div>${loc('space_moon_observatory_effect',[5])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,global.resource.Knowledge.name])}</div>${synergy}`;
+            },
+            knowVal(){
                 let gain = 5000 * geneBonus('stargazer');
                 if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
                     gain *= 1 + (global.space.satellite.count * 0.25);
                 }
-                let synergy = global.race['cataclysm'] || global.tech['resettle'] ? `<div>${loc('space_moon_observatory_cata_effect',[global.tech['resettle'] ? 2 : 25])}</div>` : `<div>${loc('space_moon_observatory_effect',[5])}</div>`;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,global.resource.Knowledge.name])}</div>${synergy}`;
+                gain *= infiltratorFactor('spc_moon','observatory');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'moon',
             support(){ return -1; },
@@ -890,79 +902,52 @@ const spaceProjects = {
             },
             wide: true,
             supply(){ return 'spc_red'; },
-            res(){
-                let r_list = ['Copper','Iron','Cement','Steel','Titanium','Alloy','Nano_Tube','Neutronium','Infernite'];
-                if (global.race['cataclysm'] || decayPerks()){
-                    r_list.push('Polymer');
-                    r_list.push('Coal');
-                    r_list.push('Lumber');
-                    r_list.push('Chrysotile');
-                    r_list.push('Stone');
-                    r_list.push('Furs');
-                }
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            heavy(res){
-                return ['Copper','Iron','Steel','Titanium','Neutronium','Infernite'].includes(res) ? true : false;
-            },
-            val(res){
-                switch (res){
-                    case 'Copper':
-                        return 6500;
-                    case 'Iron':
-                        return 5500;
-                    case 'Cement':
-                        return global.race['cataclysm'] ? 10500 : 6000;
-                    case 'Steel':
-                        return 4500;
-                    case 'Titanium':
-                        return 3500;
-                    case 'Alloy':
-                        return 2500;
-                    case 'Nano_Tube':
-                        return 25000;
-                    case 'Tungsten':
-                        return 2750;
-                    case 'Neutronium':
-                        return 125;
-                    case 'Infernite':
-                        return 75;
-                    case 'Polymer':
-                        return 2500;
-                    case 'Coal':
-                        return 1500;
-                    case 'Lumber':
-                        return 7500;
-                    case 'Chrysotile':
-                        return 7500;
-                    case 'Stone':
-                        return 7500;
-                    case 'Furs':
-                        return 2200;
-                    default:
-                        return 0;
-                }
-            },
-            multiplier(h){
-                let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-                if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
-                    multiplier *= 2;
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3){
-                    multiplier *= 1.5;
-                }
-                multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-                if (h){
+            storage: {
+                res(res){
+                    let list = {
+                        'Copper': 6500,
+                        'Iron': 5500,
+                        'Cement': global.race['cataclysm'] ? 10500 : 6000,
+                        'Steel': 4500,
+                        'Titanium': 3500,
+                        'Alloy': 2500,
+                        'Nano_Tube': 25000,
+                        'Neutronium': 125,
+                        'Infernite': 75
+                    };
+                    if (global.race['cataclysm'] || decayPerks()){
+                        list['Polymer'] = 2500;
+                        list['Coal'] = 1500;
+                        list['Lumber'] = 7500;
+                        list['Chrysotile'] = 7500;
+                        list['Stone'] = 7500;
+                        list['Furs'] = 2200;
+                    }
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 2750;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(){
+                    let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
+                    if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
+                        multiplier *= 2;
+                    }
+                    if (global.tech['shelving'] && global.tech.shelving >= 3){
+                        multiplier *= 1.5;
+                    }
+                    multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
+                    return multiplier;
+                },
+                h_multiplier(){
+                    let multiplier = this.multiplier();
                     return global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
+                },
+                mtype(res){
+                    return ['Copper','Iron','Steel','Titanium','Neutronium','Infernite'].includes(res) ? 'h_multiplier' : 'multiplier';
                 }
-                return multiplier;
             },
             effect(){
-                let multiplier = this.multiplier(false);
-                let h_multiplier = this.multiplier(true);
                 let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
                 if (global.tech['world_control'] || global.race['cataclysm'] || decayPerks()){
                     containers += 10;
@@ -971,10 +956,11 @@ const spaceProjects = {
 
                 let desc = '<div class="aTable">';
                 desc = desc + `<span>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</span>${crate}`;
-                for (const res of this.res()){
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let heavy = this.heavy(res);
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
+                        let multiplier = this.storage[this.storage.mtype(res)]();
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         desc = desc + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -994,12 +980,11 @@ const spaceProjects = {
                         unlockContainers();
                     }
 
-                    let multiplier = this.multiplier(false);
-                    let h_multiplier = this.multiplier(true);
-                    for (const res of this.res()){
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let heavy = this.heavy(res);
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier));
+                            let multiplier = this.storage[this.storage.mtype(res)]();
+                            global.resource[res].max += (spatialReasoning(list[res]) * multiplier);
                         }
                     };
                     return true;
@@ -1292,36 +1277,49 @@ const spaceProjects = {
                 Elerium(r={}){ return spaceCostMultiplier('exotic_lab', r.offset, 20, 1.28) - 4; }
             },
             effect(wiki){
-                let sci = 500;
-                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
-                    let num_lab_on = wiki ? global.interstellar.laboratory.on : int_on['laboratory'];
-                    sci += num_lab_on * 25;
-                }
-                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                    sci += templeCount(true) * 15;
-                }
-                let num_mass_driver_on = wiki ? (global.city?.mass_driver?.on ?? 0) : p_on['mass_driver'];
-                if (global.tech.mass >= 2 && num_mass_driver_on > 0){
-                    sci += highPopAdjust(num_mass_driver_on * global.civic.scientist.workers);
-                }
-                if (global.tech['science'] >= 21){
-                    sci *= 1.45;
-                }
-                if (global.race['high_pop']){
-                    sci = highPopAdjust(sci);
-                }
+                let sci = this.knowVal();
                 let elerium = spatialReasoning(10);
 
                 let scientist = '';
                 let lab = '';
                 if (global.race['cataclysm'] || global.tech['resettle'] || global.race['orbit_decayed']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
-                    sci *= 1 + (wiki ? global.space.observatory.on : support_on['observatory']) * (global.tech['resettle'] ? 0.02 : 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
+            },
+            knowVal(){
+                let gain = 500;
+                if (global.tech['science'] >= 13 && global.interstellar['laboratory']){
+                    gain += int_on['laboratory'] * 25;
+                }
+                if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
+                    gain += templeCount(true) * 15;
+                }
+                if (global.tech.mass >= 2){
+                    let brain = workerScale(global.civic.scientist.workers,'scientist');
+                    if (global.race['high_pop']){
+                        brain = highPopAdjust(brain);
+                    }
+                    gain += p_on['mass_driver'] * brain * infiltratorFactor('city','mass_driver');
+                }
+                if ((global.race['cataclysm'] || global.tech['resettle']) && support_on['observatory']){
+                    gain *= 1 + (support_on['observatory'] * (global.tech['resettle'] ? 0.02 : 0.25) * infiltratorFactor('spc_moon','observatory'));
+                }
+                if ((global.race['cataclysm'] || decayPerks()) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
+                    gain *= 1 + (p_on['sensor_drone'] * 0.02);
+                }
+                if (global.tech['science'] >= 21){
+                    gain *= 1.45;
+                }
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
+                }
+                gain *= infiltratorFactor('spc_red','exotic_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'red',
             support(){ return -1; },
@@ -1557,7 +1555,7 @@ const spaceProjects = {
                 return {r: true, l: global.settings.space.hell || global.tech?.resettle >= 9};
             },
             syndicate(){ return false; },
-            nav(){ return global.tech?.resettle >= 9 ? true : false; }
+            nav(){ return global.tech?.resettle >= 9 || global.tech?.shadow >= 4 ? true : false; }
         },
         hell_mission: {
             id: 'space-hell_mission',
@@ -1803,78 +1801,53 @@ const spaceProjects = {
                 Aluminium(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 120000, 1.28, 'space'); },
                 Cement(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 45000, 1.28, 'space'); }
             },
-            res(){
-                let r_list = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
-                    'Graphene','Stanene','Bolognium','Orichalcum',
-                ];
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 40;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Crystal':
-                        return 50;
-                    case 'Alloy':
-                        return 45;
-                    case 'Polymer':
-                        return 40;
-                    case 'Iridium':
-                        return 35;
-                    case 'Graphene':
-                        return 30;
-                    case 'Stanene':
-                        return 25;
-                    case 'Bolognium':
-                        return 20;
-                    case 'Orichalcum':
-                        return 15;
-                    case 'Unobtainium':
-                        return 10;
-                    case 'Tungsten':
-                        return 35;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Steel': 60,
+                        'Titanium': 40,
+                        'Crystal': 50,
+                        'Alloy': 45,
+                        'Polymer': 40,
+                        'Iridium': 35,
+                        'Chrysotile': 750,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Unobtainium': 10,
+                        'Graphene': 30,
+                        'Stanene': 25,
+                        'Bolognium': 20,
+                        'Orichalcum': 15
+                    };
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 35;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return planetName().hell;
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -1884,10 +1857,11 @@ const spaceProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('m_warehouse','space');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -1901,8 +1875,90 @@ const spaceProjects = {
                 };
             }
         },
-        firework: buildTemplate(`firework`,'space'),
+        mercury_mine: {
+            id: 'space-mercury_mine',
+            title(){ return loc('space_mine',[planetName().hell]); },
+            desc(){ return `<div>${loc('space_mine',[planetName().hell])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'mining',
+            reqs: { hell: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 18500000, 1.26); },
+                Iridium(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 3100000, 1.26); },
+                Bolognium(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 1200000, 1.26); }
+            },
+            effect(){
+                let desc = `<div>${loc('gain',[+(production('mercury_mine','tungsten')).toFixed(3),global.resource.Tungsten.name])}</div>`;
+                [['Stone','stone'],['Chrysotile','chrysotile'],['Unobtainium','unobtainium']].forEach(function(dig){
+                    if (!global.resource[dig[0]].display){ return; }
+                    let rate = +(production('mercury_mine',dig[1])).toFixed(3);
+                    if (rate <= 0){ return; }
+                    desc = desc + `<div>${loc('gain',[rate,global.resource[dig[0]].name])}</div>`;
+                });
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(9); },
+            action(){
+                if (payCosts(this)){
+                    incrementStruct('mercury_mine');
+                    powerOnNewStruct(this);
+                    if (!global.resource.Tungsten.display){
+                        global.resource.Tungsten.display = true;
+                        defineIndustry();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['mercury_mine','space']
+                };
+            }
+        },
+        seismic: {
+            id: 'space-seismic',
+            title(){ return loc('space_seismic_title'); },
+            desc(){ return `<div>${loc('tech_seismic_research_center')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            type: 'science',
+            reqs: { science: 11, hell: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('seismic', r.offset, 250000000, 1.28); },
+                Knowledge(r={}){ return spaceCostMultiplier('seismic', r.offset, 1000000, 1.28); },
+                Copper(r={}){ return spaceCostMultiplier('seismic', r.offset, 5000000, 1.28); },
+                Tungsten(r={}){ return spaceCostMultiplier('seismic', r.offset, 750000, 1.28); },
+                Orichalcum(r={}){ return spaceCostMultiplier('seismic', r.offset, 1125000, 1.28); },
+            },
+            effect(){
+                let know = this.knowVal();
+                return `<div>${loc('space_university_effect',[know,global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                let gain = 3500;
+                gain *= infiltratorFactor('spc_hell','seismic');
+                gain = hugeAdjust(gain);
+                return gain;
+            },
+            powered(){ return 8; },
+            action(args){
+                if (payCosts(this)){
+                    incrementStruct('seismic');
+                    powerOnNewStruct(this);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['seismic','space']
+                };
+            }
+        },
         detector_hell: detectorTemplate('spc_hell'),
+        firework: buildTemplate(`firework`,'space'),
     },
     spc_sun_gate: {
         info: {
@@ -2944,6 +3000,8 @@ const spaceProjects = {
             type: 'outpost',
             reqs: { dwarf: 2 },
             path: ['truepath'],
+            // Reserve Ceres rank 2 for resettlement; Alien Containment uses Shadow War progression.
+            condition(){ return global.tech['shadow'] ? false : true; },
             cost: {
                 Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 785000000 : 0; },
                 Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('repair_yard') ? global.space.repair_yard.count : 0)) < 1 ? 1000000000 : 0; },
@@ -3108,78 +3166,53 @@ const spaceProjects = {
                 Aluminium(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 120000, 1.28, 'space'); },
                 Cement(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 45000, 1.28, 'space'); }
             },
-            res(){
-                let r_list = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium',
-                    'Graphene','Stanene','Bolognium','Orichalcum',
-                ];
-                if (global.resource.Tungsten.display){
-                    r_list.push('Tungsten');
-                }
-                return r_list;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 250;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Crystal':
-                        return 50;
-                    case 'Alloy':
-                        return 45;
-                    case 'Polymer':
-                        return 40;
-                    case 'Iridium':
-                        return 35;
-                    case 'Graphene':
-                        return 30;
-                    case 'Stanene':
-                        return 25;
-                    case 'Bolognium':
-                        return 20;
-                    case 'Orichalcum':
-                        return 15;
-                    case 'Unobtainium':
-                        return 10;
-                    case 'Tungsten':
-                        return 35;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Steel': 60,
+                        'Titanium': 250,
+                        'Crystal': 50,
+                        'Alloy': 45,
+                        'Polymer': 40,
+                        'Iridium': 35,
+                        'Chrysotile': 750,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Unobtainium': 10,
+                        'Graphene': 30,
+                        'Stanene': 25,
+                        'Bolognium': 20,
+                        'Orichalcum': 15
+                    };
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 35;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return planetName().dwarf;
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3189,10 +3222,11 @@ const spaceProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('c_warehouse','space');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -3207,6 +3241,70 @@ const spaceProjects = {
             }
         },
         detector_dwarf: detectorTemplate('spc_dwarf'),
+        alien_containment: {
+            id: 'space-alien_containment',
+            title(){ return loc('space_dwarf_alien_containment_title'); },
+            desc(wiki){
+                let head = `<div>${loc('space_dwarf_alien_containment_desc',[planetName().dwarf])}</div>`;
+                if (!global.space.hasOwnProperty('alien_containment') || global.space.alien_containment.count < sWarfare.containmentSegments || wiki){
+                    return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.containmentSegments])}</div>`;
+                }
+                return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            category: 'military',
+            reqs: { dwarf: 2, shadow: 14 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return sWarfare.containmentSegments - (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0); },
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 40000000 : 0; },
+                Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 25000000 : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 8000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 250000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0);
+                let desc = ``;
+                if (count < sWarfare.containmentSegments){
+                    return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.containmentSegments - count])}</div>`;
+                }
+                const facility = containmentBuilt();
+                if (!wiki && facility){
+                    desc += `<div>${loc('space_dwarf_alien_containment_captives',[facility.captives])}</div>`;
+                    if (facility.captives > 0){
+                        const pct = Math.floor(facility.p / sWarfare.interrogationTime * 100);
+                        const left = timeFormat(Math.max(0, sWarfare.interrogationTime - facility.p));
+                        desc += `<div>${loc('space_dwarf_alien_containment_progress',[pct,left])}</div>`;
+                    }
+                }
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(100); },
+            // Enable power controls after construction.
+            switchable(){ return containmentBuilt() ? true : false; },
+            on_cap(){ return containmentBuilt() ? 1 : 0; },
+            action(args){
+                if (!containmentBuilt() && payCosts(this)){
+                    incrementStruct(this);
+                    if (global.space.alien_containment.count >= sWarfare.containmentSegments){
+                        global.space.alien_containment.on = 1;
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, captives: 0, p: 0 },
+                    p: ['alien_containment','space']
+                };
+            }
+        },
     },
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,
@@ -3475,20 +3573,7 @@ const interstellarProjects = {
                 Mythril(r={}){ return spaceCostMultiplier('laboratory', r.offset, 8500, 1.28, 'interstellar'); }
             },
             effect(wiki){
-                let know = 10000;
-                if (global.tech.science >= 15){
-                    let num_exo_labs_on = wiki ? global.space.exotic_lab.on : support_on['exotic_lab'];
-                    know *= 1 + ((global.race['cataclysm'] || global.race['orbit_decayed'] ? num_exo_labs_on : global.city.wardenclyffe.count) * 0.02);
-                }
-                let sg_on = isStargateOn(wiki);
-                let num_tech_scavs_on = sg_on ? (wiki ? (global.galaxy?.scavenger?.on ?? 0) : gal_on['scavenger']) : 0;
-                if ((global.race['cataclysm'] || decayPerks()) && num_tech_scavs_on > 0){
-                    know *= 1 + (num_tech_scavs_on * +(piracy('gxy_alien2',false,false,wiki) * 0.75).toFixed(1));
-                }
-                if (global.tech['science'] >= 21){
-                    know *= 1.45;
-                }
-                know = Math.round(know);
+                let know = Math.round(this.knowVal(wiki));
                 let sci = '';
                 if (global.tech.science >= 16){
                     sci = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), job_data.scientist.name()])}</div>`;
@@ -3503,6 +3588,23 @@ const interstellarProjects = {
                 }
                 return desc;
             },
+            knowVal(wiki){
+                let gain = 10000;
+                if (global.tech.science >= 15){
+                    let num_exo_labs_on = wiki ? global.space.exotic_lab.on : support_on['exotic_lab'];
+                    gain *= 1 + ((global.race['cataclysm'] || global.race['orbit_decayed'] ? num_exo_labs_on : global.city.wardenclyffe.count) * 0.02);
+                }
+                let sg_on = isStargateOn(wiki);
+                let num_tech_scavs_on = sg_on ? (wiki ? (global.galaxy?.scavenger?.on ?? 0) : gal_on['scavenger']) : 0;
+                if ((global.race['cataclysm'] || decayPerks()) && num_tech_scavs_on > 0){
+                    gain *= 1 + (num_tech_scavs_on * +(piracy('gxy_alien2',false,false,wiki) * 0.75).toFixed(1));
+                }
+                if (global.tech['science'] >= 21){
+                    gain *= 1.45;
+                }
+                gain = hugeAdjust(gain);
+                return gain;
+            },
             s_type: 'alpha',
             support(){ return -1; },
             powered(){ return 0; },
@@ -3510,11 +3612,11 @@ const interstellarProjects = {
                 if (payCosts(this)){
                     incrementStruct('laboratory','interstellar');
                     if (powerOnNewStruct(this)){
-                        global.resource.Knowledge.max += 10000;
-                        if (global.tech.science >= 16){
-                            global.civic.scientist.display = true;
-                            global.civic.scientist.max += jobScale(1);
-                        }
+                        global.resource.Knowledge.max += this.knowVal();
+                    }
+                    if (global.tech.science >= 16){
+                        global.civic.scientist.display = true;
+                        global.civic.scientist.max += jobScale(1);
                     }
                     return true;
                 }
@@ -3764,59 +3866,46 @@ const interstellarProjects = {
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 45000, 1.28, 'interstellar'); }
             },
             supply(){ return 'int_alpha'; },
-            res(){
-                let r_list = ['Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal','Nano_Tube','Neutronium','Adamantite','Infernite'];
-                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    r_list.push('Steel');
-                }
-                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    r_list.push('Titanium');
-                }
-                return r_list;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 750;
-                    case 'Stone':
-                        return 750;
-                    case 'Chrysotile':
-                        return 750;
-                    case 'Furs':
-                        return 425;
-                    case 'Copper':
-                        return 380;
-                    case 'Iron':
-                        return 350;
-                    case 'Aluminium':
-                        return 320;
-                    case 'Cement':
-                        return 280;
-                    case 'Coal':
-                        return 120;
-                    case 'Steel':
-                        return 60;
-                    case 'Titanium':
-                        return 40;
-                    case 'Nano_Tube':
-                        return 30;
-                    case 'Neutronium':
-                        return 8;
-                    case 'Adamantite':
-                        return 18;
-                    case 'Infernite':
-                        return 5;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 750,
+                        'Stone': 750,
+                        'Chrysotile': 750,
+                        'Furs': 425,
+                        'Copper': 380,
+                        'Iron': 350,
+                        'Aluminium': 320,
+                        'Cement': 280,
+                        'Coal': 120,
+                        'Nano_Tube': 30,
+                        'Neutronium': 8,
+                        'Adamantite': 18,
+                        'Infernite': 5
+                    };
+                    if (global.tech['storage'] >= 3 && global.resource.Steel.display){
+                        list['Steel'] = 60;
+                    }
+                    if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
+                        list['Titanium'] = 40;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return storageMultipler(1, wiki);
+                },
+                label(){
+                    return loc('interstellar_alpha_name');
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3826,10 +3915,11 @@ const interstellarProjects = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('warehouse','interstellar');
-                    let multiplier = storageMultipler();
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -5917,11 +6007,7 @@ const galaxyProjects = {
                 Iridium(r={}){ return spaceCostMultiplier('telemetry_beacon', r.offset, 177000, 1.25, 'galaxy'); },
             },
             effect(wiki){
-                let base = global.tech['telemetry'] ? 1200 : 800;
-                if (global.tech.science >= 17){
-                    let num_scout_ship_on = wiki ? (global.galaxy?.scout_ship?.on ?? 0) : gal_on['scout_ship'];
-                    base += num_scout_ship_on * 25;
-                }
+                let base = this.knowVal();
                 let num_telemetry_on = wiki ? (global.galaxy?.telemetry_beacon?.on ?? 0) : p_on['telemetry_beacon'];
                 let know = num_telemetry_on ? base * num_telemetry_on : 0;
                 let gateway = '';
@@ -5929,6 +6015,14 @@ const galaxyProjects = {
                     gateway = `<div>${loc('galaxy_gateway_support',[this.support()])}</div>`;
                 }
                 return `${gateway}<div>${loc('galaxy_telemetry_beacon_effect1',[base])}</div><div>${loc('galaxy_telemetry_beacon_effect2',[know])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
+            },
+            knowVal(){
+                let know = global.tech['telemetry'] ? 1200 : 800;
+                if (global.tech.science >= 17){
+                    know += gal_on['scout_ship'] * 25;
+                }
+                know = hugeAdjust(know);
+                return know;
             },
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
@@ -6237,6 +6331,42 @@ const galaxyProjects = {
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`
                 return desc;
+            },
+            knowVal(){
+                let dorm = 1750 * p_on['dormitory'];
+                let gtrade = 650 * global.galaxy.trade.cur;
+                let leave = 0;
+                if (global.tech.xeno >= 7){
+                    for (let j = 0; j < galaxy_ship_types.length; j++){
+                        const area = galaxy_ship_types[j].area;
+                        const region = galaxy_ship_types[j].region;
+                        if (area !== 'galaxy') { continue; }
+
+                        let crew = 0;
+                        for (const ship of gatewayArmada){
+                            crew += global.galaxy.defense[region][ship] * (actions[area]['gxy_gateway'][ship].ship.civ() + actions[area]['gxy_gateway'][ship].ship.mil());
+                        }
+
+                        for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
+                            const ship = galaxy_ship_types[j].ships[i];
+                            if (!gatewayArmada.includes(ship) && actions[area][region][ship].hasOwnProperty('ship') && gal_on[ship]){
+                                // Every ship with the 'ship' property has both civ() and mil() functions
+                                crew += gal_on[ship] * (actions[area][region][ship].ship.civ() + actions[area][region][ship].ship.mil());
+                            }
+                        }
+
+                        if (region === 'gxy_gorddon'){
+                            leave += +highPopAdjust(crew).toFixed(2) * 300;
+                        }
+                        else {
+                            leave += +highPopAdjust(crew).toFixed(2) * 100 * piracy(region);
+                        }
+                    }
+                }
+                let pirate = piracy('gxy_gorddon');
+                let gain = (dorm + gtrade + leave) * pirate;
+                gain = hugeAdjust(gain);
+                return gain;
             },
             powered(){ return powerCostMod(4); },
             action(args){
@@ -6722,10 +6852,16 @@ const galaxyProjects = {
             },
             effect(wiki){
                 let pirate = piracy('gxy_alien2',false,false,wiki);
-                let know = Math.round(pirate * 25000);
+                let know = this.knowVal(wiki);
                 let helium = +int_fuel_adjust(this.ship.helium).toFixed(2);
                 let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[+(pirate * 100 * 0.75).toFixed(1)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[+(pirate * 100 / 4).toFixed(1)])}</div>`;
                 return `<div>${loc('galaxy_scavenger_effect',[know])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[this.support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+            },
+            knowVal(wiki){
+                let pirate = piracy('gxy_alien2',false,false,wiki);
+                let gain = Math.round(pirate * 25000);
+                gain = hugeAdjust(gain);
+                return gain;
             },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
@@ -7219,6 +7355,7 @@ const structDefinitions = {
     biodome: { count: 0, on: 0 },
     laboratory: { count: 0, on: 0 },
     geothermal: { count: 0, on: 0 },
+    mercury_mine: { count: 0, on: 0 },
     swarm_plant: { count: 0 },
     swarm_control: { count: 0, support: 0, s_max: 0 },
     swarm_satellite: { count: 0 },
@@ -7920,7 +8057,7 @@ export function swarm_adjust(res,wiki){
         if (reduce < 0.05){
             reduce = 0.05;
         }
-        res *= reduce ** global.space.swarm_plant.count;
+        res *= reduce ** (global.space.swarm_plant.count * (wiki ? 1 : infiltratorFactor('spc_hell','swarm_plant')));
     }
     return res;
 }
@@ -7935,7 +8072,7 @@ export function fuel_adjust(fuel,drain,wiki){
     let num_driver_on = wiki ? (global.city?.mass_driver?.on ?? 0) : p_on['mass_driver'];
     if (num_driver_on){
         let factor = (wiki ? wiki.truepath : global.race['truepath']) ? 0.94 : 0.95;
-        fuel *= factor ** num_driver_on;
+        fuel *= factor ** (num_driver_on * (wiki ? 1 : infiltratorFactor('city','mass_driver')));
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
@@ -8039,6 +8176,9 @@ function genomeNamer(genome){
     let named = genome.genus === 'hybrid' && genome.hybrid ? genome.hybrid[0] : genome.genus;
     return genusVars[named] ? named : 'humanoid';
 }
+
+// Map-only bodies that can be ship destinations.
+export const sceneryBodies = { spc_pluto: 'pluto', spc_haumea: 'haumea' };
 
 export function planetName(){
     // "Use real solar names" reads every world off the human race and its genus

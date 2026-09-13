@@ -3,11 +3,11 @@ import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webW
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, orbitLength, geneBonus } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
-import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed } from './civics.js';
+import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed, soldierTrainingRate, soldierRecoveryRate } from './civics.js';
 import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
-import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName } from './space.js';
+import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
 import { defineGovernor, removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals, setPowerGrid } from './industry.js';
 import { arpa } from './arpa.js';
@@ -17,7 +17,7 @@ import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
 import { loc } from './locale.js';
-import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions } from './supply.js';
+import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions, capitalGone } from './supply.js';
 
 const outerTruth = {
     spc_titan: {
@@ -321,91 +321,59 @@ const outerTruth = {
                 Cement(r={}){ return spaceCostMultiplier('storehouse', r.offset, 45000, 1.28); }
             },
             wide: true,
-            res(){
-                let res = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite'
-                ];
-                if (global.resource.Tungsten.display){
-                    res.push('Tungsten');
-                }
-                if (global.resource.Water.display && global.tech['resettle']){
-                    res.push('Water');
-                }
-                if (global.tech['shadow']){
-                    res.push('Graphene');
-                    res.push('Stanene');
-                    res.push('Bolognium');
-                    res.push('Orichalcum');
-                    res.push('Unobtainium');
-                }
-                return res;
-            },
-            heavy(res){
-                return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? true : false;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 3000;
-                    case 'Stone':
-                        return 3000;
-                    case 'Chrysotile':
-                        return 3000;
-                    case 'Furs':
-                        return 1700;
-                    case 'Copper':
-                        return 1520;
-                    case 'Iron':
-                        return 1400;
-                    case 'Aluminium':
-                        return 1280;
-                    case 'Tungsten':
-                        return 480;
-                    case 'Cement':
-                        return 1120;
-                    case 'Coal':
-                        return 480;
-                    case 'Steel':
-                        return 240;
-                    case 'Titanium':
-                        return 160;
-                    case 'Alloy':
-                        return 180;
-                    case 'Polymer':
-                        return 150;
-                    case 'Iridium':
-                        return 175;
-                    case 'Nano_Tube':
-                        return 120;
-                    case 'Neutronium':
-                        return 64;
-                    case 'Adamantite':
-                        return 72;
-                    case 'Water':
-                        return 2;
-                    case 'Graphene':
-                        return 500;
-                    case 'Stanene':
-                        return 500;
-                    case 'Bolognium':
-                        return 250;
-                    case 'Orichalcum':
-                        return 250;
-                    case 'Unobtainium':
-                        return 75;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 3000,
+                        'Stone': 3000,
+                        'Furs': 1700,
+                        'Copper': 1520,
+                        'Iron': 1400,
+                        'Aluminium': 1280,
+                        'Cement': 1120,
+                        'Coal': 480,
+                        'Steel': 240,
+                        'Titanium': 160,
+                        'Alloy': 180,
+                        'Polymer': 150,
+                        'Iridium': 175,
+                        'Chrysotile': 3000,
+                        'Nano_Tube': 120,
+                        'Neutronium': 64,
+                        'Adamantite': 72
+                    };
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 480;
+                    }
+                    if (global.resource.Water.display && global.tech['resettle']){
+                        list['Water'] = 2;
+                    }
+                    if (global.tech['shadow']){
+                        list['Graphene'] = 500;
+                        list['Stanene'] = 500;
+                        list['Bolognium'] = 250;
+                        list['Orichalcum'] = 250;
+                        list['Unobtainium'] = 75;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return tpStorageMultiplier('storehouse',false,wiki);
+                },
+                h_multiplier(wiki){
+                    return tpStorageMultiplier('storehouse',true,wiki);
+                },
+                mtype(res){
+                    return ['Copper','Iron','Steel','Titanium','Iridium','Neutronium','Adamantite','Tungsten'].includes(res) ? 'h_multiplier' : 'multiplier';
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('storehouse',false,wiki);
-                let h_multiplier = tpStorageMultiplier('storehouse',true,wiki);
-                for (const res of this.res()){
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let heavy = this.heavy(res);
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
+                        let multiplier = this.storage[this.storage.mtype(res)](wiki);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -415,12 +383,11 @@ const outerTruth = {
             action(){
                 if (payCosts(this)){
                     incrementStruct('storehouse');
-                    let multiplier = tpStorageMultiplier('storehouse',false);
-                    let h_multiplier = tpStorageMultiplier('storehouse',true);
-                    for (const res of this.res()){
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            let heavy = this.heavy(res);
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * (heavy ? h_multiplier : multiplier));
+                            let multiplier = this.storage[this.storage.mtype(res)]();
+                            global.resource[res].max += (spatialReasoning(list[res]) * multiplier);
                         }
                     };
                     return true;
@@ -671,16 +638,22 @@ const outerTruth = {
             },
             effect(wiki){
                 let cipher = this.support_fuel().a;
-                let know = 2500;
-                if (global.race['high_pop']){
-                    know = highPopAdjust(know);
-                }
-                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
-                    know *= 1.25;
-                }
+                let know = this.knowVal(wiki);
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[this.support_fuel().r].name])}</div>`;
+            },
+            knowVal(wiki){
+                let gain = 2500
+                if (global.race['high_pop']){
+                    gain = highPopAdjust(gain);
+                }
+                if (wiki ? (global.space?.ai_core2?.on ?? 0) : p_on['ai_core2']){
+                    gain *= 1.25;
+                }
+                gain *= infiltratorFactor('spc_titan','decoder');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'titan',
             support(){ return -1; },
@@ -981,9 +954,7 @@ const outerTruth = {
                 Stanene(r={}){ return spaceCostMultiplier('zero_g_lab', r.offset, 600000, 1.25); }
             },
             effect(){
-                let synd = syndicate('spc_enceladus');
-                let know = Math.round(10000 * synd);
-
+                let know = Math.round(this.knowVal());
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.resource.Quantium.display){
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
@@ -992,6 +963,13 @@ const outerTruth = {
                     desc = desc + `<div>${loc('plus_max_resource',[10000,global.resource.Cipher.name])}</div>`;
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                let synd = syndicate('spc_enceladus');
+                let gain = 10000 * synd;
+                gain *= infiltratorFactor('spc_enceladus','zero_g_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'enceladus',
             support(){ return -1; },
@@ -2081,7 +2059,7 @@ const outerTruth = {
                 Plywood(r={}){ return spaceCostMultiplier('university', r.offset, 42000000, 1.26); }
             },
             effect(){
-                let desc = `<div>${loc('space_university_effect',[this.knowVal().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                let desc = `<div>${loc('space_university_effect',[this.knowledge().toLocaleString(),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(this.professors()),job_data.professor.name()])}</div>`;
                 desc += `<div class="has-text-caution">${loc('space_used_support',[planetName().venus])}</div>`;
                 return desc;
@@ -2090,20 +2068,20 @@ const outerTruth = {
             support(){ return -1; },
             powered(){ return 0; },
             knowVal(){
+                let profs = workerScale(global.civic.professor.workers,'professor');
+                if (global.race['high_pop']){
+                    profs = highPopAdjust(profs);
+                }
+                return this.knowledge() * profs;
+            },
+            professors(){ return 2; },
+            knowledge(){
                 let facility = actions.space.spc_venus.alien_facility;
                 let val = 2222;
                 if (facility.uplinked()){
                     val *= 1 + (facility.uplinkKnowledge() / 100);
                 }
                 return val;
-            },
-            professors(){ return 2; },
-            knowledge(){
-                let profs = workerScale(global.civic.professor.workers,'professor');
-                if (global.race['high_pop']){
-                    profs = highPopAdjust(profs);
-                }
-                return this.knowVal() * profs;
             },
             action(){
                 if (payCosts(this)){
@@ -2231,76 +2209,48 @@ const outerTruth = {
                 Adamantite(r={}){ return spaceCostMultiplier('survey_warehouse', r.offset, 2250000, 1.28); }
             },
             wide: true,
-            res(){
-                let res = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Tungsten',
-                    'Graphene','Stanene','Bolognium','Unobtainium','Uranium','Water','Orichalcum'
-                ];
-                return res;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 680000;
-                    case 'Stone':
-                        return 680000;
-                    case 'Chrysotile':
-                        return 680000;
-                    case 'Furs':
-                        return 552000;
-                    case 'Copper':
-                        return 551200;
-                    case 'Iron':
-                        return 564000;
-                    case 'Aluminium':
-                        return 546800;
-                    case 'Tungsten':
-                        return 527600;
-                    case 'Cement':
-                        return 507200;
-                    case 'Coal':
-                        return 258800;
-                    case 'Steel':
-                        return 254400;
-                    case 'Titanium':
-                        return 249600;
-                    case 'Alloy':
-                        return 130800;
-                    case 'Polymer':
-                        return 129000;
-                    case 'Iridium':
-                        return 160500;
-                    case 'Nano_Tube':
-                        return 137200;
-                    case 'Neutronium':
-                        return 123840;
-                    case 'Adamantite':
-                        return 134320;
-                    case 'Graphene':
-                        return 135000;
-                    case 'Stanene':
-                        return 136000;
-                    case 'Bolognium':
-                        return 58000;
-                    case 'Unobtainium':
-                        return 10000;
-                    case 'Uranium':
-                        return 2700;
-                    case 'Orichalcum':
-                        return 25000;
-                    case 'Water':
-                        return 150;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 680000,
+                        'Stone': 680000,
+                        'Furs': 552000,
+                        'Copper': 551200,
+                        'Iron': 564000,
+                        'Aluminium': 546800,
+                        'Cement': 507200,
+                        'Coal': 258800,
+                        'Steel': 254400,
+                        'Titanium': 249600,
+                        'Alloy': 130800,
+                        'Polymer': 129000,
+                        'Iridium': 160500,
+                        'Chrysotile': 680000,
+                        'Nano_Tube': 137200,
+                        'Neutronium': 123840,
+                        'Adamantite': 134320,
+                        'Tungsten': 527600,
+                        'Graphene': 135000,
+                        'Stanene': 136000,
+                        'Bolognium': 58000,
+                        'Unobtainium': 10000,
+                        'Uranium': 2700,
+                        'Water': 150,
+                        'Orichalcum': 25000
+                    };
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return tpStorageMultiplier('warehouse',false,wiki);
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('warehouse',false,wiki);
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2310,10 +2260,11 @@ const outerTruth = {
             action(){
                 if (payCosts(this)){
                     incrementStruct(this);
-                    let multiplier = tpStorageMultiplier('warehouse',false);
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(list[res]) * multiplier);
                         }
                     };
                     return true;
@@ -2674,7 +2625,7 @@ const tauCetiModules = {
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('server_farm') ? global.tauceti.server_farm.count : 0);
                 if (count < 100){
-                    return `<div>${loc('tau_star_server_farm_effect',[50])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
+                    return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[100 - count])}</div>`;
                 }
                 let effectText = `<div>${loc('plus_max_resource',['50%',global.resource.Knowledge.name])}</div>`;
                 if (global.resource.Positronium.display){
@@ -3363,7 +3314,7 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(this.knowVal()).toLocaleString(),global.resource.Knowledge.name])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
@@ -3375,6 +3326,13 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){ //does not contain percentage increase
+                let gain = 0;
+                if (global.tech['isolation']){
+                    gain = (global.race['lone_survivor'] ? 3500000 : 6500000) * infiltratorFactor('tau_home','alien_outpost');
+                }
+                return gain;
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 25) : 100); },
             special(){
@@ -3535,99 +3493,58 @@ const tauCetiModules = {
                 Neutronium(r={}){ return spaceCostMultiplier('repository', r.offset, 215000, 1.28, 'tauceti'); },
             },
             wide: true,
-            res(){
-                let res = [
-                    'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
-                    'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium'
-                ];
-                if (global.tech['isolation']){
-                    res.push('Oil');
-                    res.push('Helium_3');
-                    res.push('Uranium');
-                    res.push('Water');
-                }
-                if (global.tech['shadow']){
-                    res.push('Graphene');
-                    res.push('Stanene');
-                    res.push('Bolognium');
-                    res.push('Orichalcum');
-                }
-                if (global.resource.Tungsten.display){
-                    res.push('Tungsten');
-                }
-                return res;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 30000;
-                    case 'Stone':
-                        return 30000;
-                    case 'Chrysotile':
-                        return 30000;
-                    case 'Crystal':
-                        return 10;
-                    case 'Furs':
-                        return 17000;
-                    case 'Copper':
-                        return 15200;
-                    case 'Iron':
-                        return 14000;
-                    case 'Aluminium':
-                        return 12800;
-                    case 'Cement':
-                        return 11200;
-                    case 'Coal':
-                        return 4800;
-                    case 'Steel':
-                        return 2400;
-                    case 'Titanium':
-                        return 1600;
-                    case 'Alloy':
-                        return 1800;
-                    case 'Polymer':
-                        return 1500;
-                    case 'Iridium':
-                        return 1750;
-                    case 'Nano_Tube':
-                        return 1200;
-                    case 'Tungsten':
-                        return 2000;
-                    case 'Neutronium':
-                        return 640;
-                    case 'Adamantite':
-                        return 720;
-                    case 'Unobtainium':
-                        return 1000;
-                    case 'Oil':
-                        return 680;
-                    case 'Helium_3':
-                        return 575;
-                    case 'Uranium':
-                        return 125;
-                    case 'Water':
-                        return 15;
-                    case 'Elerium':
-                        return 3;
-                    case 'Graphene':
-                        return 1000;
-                    case 'Stanene':
-                        return 1000;
-                    case 'Bolognium':
-                        return 750;
-                    case 'Orichalcum':
-                        return 750;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 30000,
+                        'Stone': 30000,
+                        'Furs': 17000,
+                        'Copper': 15200,
+                        'Iron': 14000,
+                        'Aluminium': 12800,
+                        'Cement': 11200,
+                        'Coal': 4800,
+                        'Steel': 2400,
+                        'Titanium': 1600,
+                        'Crystal': 10,
+                        'Alloy': 1800,
+                        'Polymer': 1500,
+                        'Iridium': 1750,
+                        'Chrysotile': 30000,
+                        'Nano_Tube': 1200,
+                        'Neutronium': 640,
+                        'Adamantite': 720,
+                        'Unobtainium': 1000
+                    };
+                    if (global.tech['isolation']){
+                        list['Oil'] = 680;
+                        list['Helium_3'] = 575;
+                        list['Uranium'] = 125;
+                        list['Water'] = 15;
+                    }
+                    if (global.tech['shadow']){
+                        list['Graphene'] = 1000;
+                        list['Stanene'] = 1000;
+                        list['Bolognium'] = 750;
+                        list['Orichalcum'] = 750;
+                    }
+                    if (global.resource.Tungsten.display){
+                        list['Tungsten'] = 2000;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    return tpStorageMultiplier('repository',false,wiki);
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = tpStorageMultiplier('repository',false,wiki);
+                let multiplier = this.storage.multiplier(wiki);
                 let containers = 250;
-                for (const res of this.res()){
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -3648,10 +3565,11 @@ const tauCetiModules = {
                         unlockContainers();
                     }
 
-                    let multiplier = tpStorageMultiplier('repository');
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res)) * multiplier);
+                            global.resource[res].max += (spatialReasoning(list[res]) * multiplier);
                         }
                     };
                     return true;
@@ -3739,11 +3657,7 @@ const tauCetiModules = {
                 Unobtainium(r={}){ return spaceCostMultiplier('infectious_disease_lab', r.offset, 64000, 1.25, 'tauceti'); },
             },
             effect(){
-                let sci = 39616;
-                if (global.tech['supercollider'] && global.tech['isolation']){
-                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    sci *= (global.tech['supercollider'] / ratio) + 1;
-                }
+                let sci = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
@@ -3765,6 +3679,16 @@ const tauCetiModules = {
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){
+                let gain = 39616;
+                if (global.tech['supercollider'] && global.tech['isolation']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain *= infiltratorFactor('tau_home','infectious_disease_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_home',
             support(){ return -1; },
@@ -4407,8 +4331,6 @@ const tauCetiModules = {
                 Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
-                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
-                let know = Math.round(25000 * overseer / 100);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
@@ -4419,6 +4341,13 @@ const tauCetiModules = {
                     desc = desc + `<div class="has-text-advanced">${loc('tau_red_womling_lab_tech_level',[global.tech.womling_tech ?? 0, progress.toFixed(2)])}</div>`;
                 }
                 return desc;
+            },
+            knowVal(){
+                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
+                let gain = Math.round(25000 * overseer / 100);
+                gain *= infiltratorFactor('tau_red','womling_lab');
+                gain = hugeAdjust(gain);
+                return gain;
             },
             s_type: 'tau_red',
             support(){ return -1; },
@@ -4555,6 +4484,45 @@ const tauCetiModules = {
                     p: ['womling_craftworks','tauceti']
                 };
             },
+        },
+        womling_market: {
+            id: 'tauceti-womling_market',
+            title(){ return loc('tau_red_womling_market'); },
+            desc(){ return `<div>${loc('tau_red_womling_market')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
+            type: 'finance',
+            reqs: { womling_logistics: 3 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('womling_market', r.offset, 125000000, 1.28, 'tauceti'); },
+                Furs(r={}){ return spaceCostMultiplier('womling_market', r.offset, 4200000, 1.28, 'tauceti'); },
+                Iron(r={}){ return spaceCostMultiplier('womling_market', r.offset, 12000000, 1.28, 'tauceti'); },
+                Brick(r={}){ return spaceCostMultiplier('womling_market', r.offset, wom_recycle(1800000), 1.28, 'tauceti'); },
+            },
+            effect(){
+                let routes = 1;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_market_effect',[routes,tauCetiModules.tau_red.womling_village.title()])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_market_effect2',[1])}</div>`;
+                return desc;
+            },
+            s_type: 'tau_red',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts(this)){
+                    incrementStruct('womling_market','tauceti');
+                    powerOnNewStruct(this);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count : 0, on: 0 },
+                    p: ['womling_market','tauceti']
+                };
+            },
+            flair(){ return loc('tau_red_womling_market_flair'); },
         },
     },
     tau_gas: {
@@ -5648,6 +5616,19 @@ export function womlingArtisans(){
     return global.tauceti && global.tauceti.hasOwnProperty('womling_craftworks') ? (global.tauceti.womling_craftworks.artisan || 0) : 0;
 }
 
+// Return overseer Womlings, including orbital-station workers.
+export function womlingPop(){
+    if (!global.tauceti || !global.tauceti['overseer']){ return 0; }
+    let pop = global.tauceti.overseer.pop || 0;
+    if (p_on['womling_station']){ pop += p_on['womling_station'] * 2; }
+    return pop;
+}
+
+// Return active Womling market routes.
+export function womlingMarketRoutes(){
+    return (support_on['womling_market'] || 0) * (support_on['womling_village'] || 0);
+}
+
 export function tauEnabled(){
     if (global.tech['tauceti'] && global.tech.tauceti >= 4){
         return true;
@@ -5667,12 +5648,12 @@ const razeTargets = {
     spc_moon: { c: 'space', s: ['moon_base','iridium_mine','helium_mine','observatory'] },
     spc_red: { c: 'space', s: ['spaceport','red_tower','living_quarters','pylon','vr_center','garage','red_mine','fabrication','red_factory','biodome','exotic_lab','ziggurat','space_barracks','botanical'] },
     spc_venus: { c: 'space', s: ['cloud_city','nitrogen_harvester','cloud_quarters','industrial_complex','workshop','university'] },
-    spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant'] },
+    spc_hell: { c: 'space', s: ['geothermal','hell_smelter','spc_casino','swarm_plant','mercury_mine'] },
     spc_titan: { c: 'space', s: ['titan_spaceport','electrolysis','hydrogen_plant','titan_quarters','titan_mine','storehouse','titan_bank','g_factory','sam','decoder','ai_colonist','metalworks','comedy_club'] },
     //spc_enceladus: { c: 'space', s: ['water_freighter','zero_g_lab','operating_base','munitions_depot'] },
     //spc_dwarf: { c: 'space', s: ['elerium_contain','e_reactor'] },
     tau_home: { c: 'tauceti', s: ['colony','tau_housing','pylon','tau_farm','mining_pit','fusion_generator','repository','tau_factory','infectious_disease_lab','tauceti_casino','tau_cultural_center','marine_barracks','data_decoder'] },
-    tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','womling_craftworks','antimatter_reactor','womling_rangers'] }
+    tau_red: { c: 'tauceti', s: ['overseer','womling_village','womling_farm','womling_mine','womling_fun','womling_lab','womling_craftworks','womling_market','antimatter_reactor','womling_rangers'] }
 };
 
 // Ships shoot the horde from orbit, but bombardment is a blunt instrument against a scattered mob —
@@ -6876,6 +6857,8 @@ export const sWarfare = {
     haulRepair: 10,         // Hull repair per day after a successful haul.
     overdriveAU: 0.25,      // Distance that enables overdrive.
     catchAU: 0.05,          // Interception distance.
+    huntDays: 30,           // Longest trip a corsair will make for a freighter or a raid.
+    innerAU: 3.5,           // Radius from the Sun of the worlds a corsair prowls with nothing in reach.
     stealth: 0.25,          // Sensor-range multiplier against corsairs.
     overdrive: 2,           // Speed multiplier while pursuing a target.
     rounds: 5,              // Maximum combat rounds before retreating.
@@ -6883,23 +6866,284 @@ export const sWarfare = {
     chaseDays: 5,           // Patrol pursuit duration.
     chaseSpeed: 1.1,        // Patrol speed multiplier while pursuing.
     sneak: 2,               // Opening raid shots.
+    sneakDetected: 1,       // Opening raid shots when a detector array had the approach.
     plunder: 1000000,       // Maximum raid cargo units.
     engagements: 5,         // Engagements required to advance Shadow War.
     studyFights: 250,       // Engagements needed to complete stealth study.
     studyKills: 1,          // Destroyed corsairs needed to complete stealth study.
     // Corsair hull loadout.
     fit: { class: 'corsair', power: 'elerium', engine: 'vacuum', weapon: 'phaser', armor: 'alloy', sensor: 'quantum', special: 'none' },
+    flotillaEngine: 'electrokinetic',   // Drive fitted to corsairs launched once a base has three berths.
     // Guard-post location and combat settings.
     guardRegion: 'spc_venus',
     guardFights: 50,        // Engagements needed to trace the guard.
     guardFleet: 6,          // Corsairs in the guard fleet.
     guardRepair: 1,         // Guard hull repair per day.
     guardRounds: 50,        // Maximum daily guard combat rounds.
-    // Ground detector settings.
+    // Ground detector settings; use detectorSegments() for orbit-decay adjustments.
     detectorSegments: 10,   // Segments to finish one array.
+    detectorSegmentsLost: 12,   // Segments to finish one array with no homeworld to build on.
     detectorRange: 1,       // Detection radius in AU.
-    detectorStealthRange: 0.5   // Detection radius against a stealth hull, until Stealth Detection.
+    detectorStealthRange: 0.5,  // Detection radius against a stealth hull, until Stealth Detection.
+    // Alien Containment settings.
+    containmentStops: 10,       // Infiltrators stopped to unlock Alien Containment.
+    containmentSegments: 25,    // Construction segments required.
+    containmentCapture: 0.25,   // Capture chance per successful officer action.
+    interrogationTime: 600,     // Seconds per captive interrogation.
+    intelMin: 50,               // Minimum Alien Intel per interrogation.
+    intelMax: 100               // Maximum Alien Intel per interrogation.
 };
+
+const counterEspionageZoneDefs = [
+    { id: 'city', cat: 'city', active: 'spc_home' },
+    { id: 'spc_moon', cat: 'space' }, { id: 'spc_red', cat: 'space' },
+    { id: 'spc_hell', cat: 'space' }, { id: 'spc_belt', cat: 'space' },
+    { id: 'spc_gas_moon', cat: 'space' }, { id: 'spc_titan', cat: 'space', name(){ return planetName().titan; } },
+    { id: 'spc_enceladus', cat: 'space', name(){ return planetName().enceladus; } }, { id: 'spc_makemake', cat: 'space' },
+    { id: 'tau_home', cat: 'tauceti' }, { id: 'tau_red', cat: 'tauceti' }
+];
+
+// Initialize the captured-base Counter Espionage state and identify the infiltrator species.
+export function revealAlienInfiltrators(){
+    if (global.race.alien){ return global.race.alien; }
+    const player = global.race.species === 'custom' ? global.custom?.race0 : (global.race.species === 'hybrid' ? global.custom?.race1 : races[global.race.species]);
+    const playerType = player?.type || player?.genus;
+    const choices = Object.keys(races).filter(r => !['custom','hybrid'].includes(r) && races[r].type && races[r].type !== playerType);
+    const race = choices[Math.floor(seededRandom(0,choices.length,true))];
+    global.race.alien = {
+        r: race,
+        infiltrators: {},
+        caught: 0,
+        officers: { available: 0, assigned: {}, injured: [], training: false, m: true },
+        next: global.stats.days + Math.floor(seededRandom(4,9,true))
+    };
+    const entity = typeof races[race].entity === 'function' ? races[race].entity() : races[race].entity;
+    messageQueue(loc('syndicate_alien_reveal',[entity]),'danger',false,['progress','combat']);
+    return global.race.alien;
+}
+
+// Return Counter Espionage state after captured-base data identifies the infiltrators.
+export function counterEspionage(){
+    const alien = global.race.alien;
+    if (!alien){ return false; }
+    if (!alien.infiltrators || typeof alien.infiltrators !== 'object' || Array.isArray(alien.infiltrators)){ alien.infiltrators = {}; }
+    if (typeof alien.caught !== 'number'){ alien.caught = 0; }
+    if (!alien.officers){ alien.officers = { available: 0, assigned: {}, injured: [], training: false }; }
+    if (!alien.officers.assigned){ alien.officers.assigned = {}; }
+    if (!Array.isArray(alien.officers.injured)){ alien.officers.injured = []; }
+    if (typeof alien.officers.available !== 'number'){ alien.officers.available = 0; }
+    if (alien.officers.training && typeof alien.officers.training !== 'object'){ alien.officers.training = { p: 0 }; }
+    const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
+    const officerSlots = alien.officers.available + assigned + (alien.officers.training ? 1 : 0);
+    if (!alien.officers.m){
+        if (global.civic.garrison){ global.civic.garrison.max += officerSlots; }
+        alien.officers.m = true;
+    }
+    if (global.civic.garrison){
+        global.civic.garrison.workers = Math.min(global.civic.garrison.workers, Math.max(0,global.civic.garrison.max - officerSlots));
+    }
+    if (typeof alien.next !== 'number'){ alien.next = global.stats.days + Math.floor(seededRandom(4,9,true)); }
+    return alien;
+}
+
+// Return zones that can host infiltrators in the current run.
+export function counterEspionageZones(){
+    const active = activeSupplyRegions();
+    return counterEspionageZoneDefs.filter(zone => !capitalGone() || zone.id !== 'city')
+        .filter(zone => active.includes(zone.active || zone.id))
+        .map(zone => ({ ...zone, name: zone.name ? zone.name() : supplyRegionName(zone.active || zone.id) }));
+}
+
+function counterEspionageTargets(){
+    const targets = [];
+    counterEspionageZones().forEach(function(zone){
+        const source = zone.cat === 'tauceti' ? tauCetiModules[zone.id] : (zone.cat === 'city' ? actions.city : actions.space[zone.id]);
+        const state = global[zone.cat];
+        if (!source || !state){ return; }
+        Object.keys(source).forEach(function(key){
+            const action = source[key];
+            const struct = state[key];
+            if (!action || !struct || !struct.count){ return; }
+            if (!['industry','mining','power','science'].includes(action.type) && !key.startsWith('detector')){ return; }
+            // Only target structures that are currently operating.
+            const running = struct.hasOwnProperty('on') ? (p_on[key] > 0 || support_on[key] > 0 || struct.on > 0) : true;
+            if (!running){ return; }
+            if (infiltratorFactor(zone.id,key) <= 0){ return; }
+            targets.push({ z: zone.id, b: key });
+        });
+    });
+    return targets;
+}
+
+// Count all active infiltrators across every zone.
+function infiltratorTotal(alien){
+    return Object.values(alien.infiltrators).reduce((total,zone) => total + Object.values(zone).reduce((sum,count) => sum + count, 0), 0);
+}
+
+export function intelligenceOfficerCost(){
+    const alien = counterEspionage();
+    if (!alien){ return 0; }
+    const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
+    return Math.round(5000000 * (1 + (alien.officers.available + assigned) * 0.25));
+}
+
+// Start training one Intelligence Officer when funds are available.
+export function trainIntelligenceOfficer(){
+    const alien = counterEspionage();
+    const cost = intelligenceOfficerCost();
+    if (!alien || alien.officers.training || global.resource.Money.amount < cost || garrisonSize() < 1){ return false; }
+    modRes('Money',-cost);
+    global.civic.garrison.workers--;
+    alien.officers.training = { p: 0 };
+    return true;
+}
+
+// Return training days remaining for the current Intelligence Officer.
+export function intelligenceOfficerTrainingTime(){
+    const training = counterEspionage()?.officers.training;
+    return training ? Math.ceil((1 - training.p) * 125 / soldierTrainingRate()) : 0;
+}
+
+// Return recovery days remaining for the first injured Intelligence Officer.
+export function intelligenceOfficerRecoveryTime(){
+    const injured = counterEspionage()?.officers.injured;
+    return injured?.length ? Math.ceil((1 - injured[0].p) * 75 / soldierRecoveryRate()) : 0;
+}
+
+// Return one unassigned Intelligence Officer to the garrison.
+export function dismissIntelligenceOfficer(){
+    const alien = counterEspionage();
+    if (!alien || alien.officers.available < 1 || !global.civic.garrison){ return false; }
+    alien.officers.available--;
+    global.civic.garrison.workers++;
+    return true;
+}
+// Assign an available Intelligence Officer to or from a Counter Espionage zone.
+export function assignIntelligenceOfficer(zone, change){
+    const alien = counterEspionage();
+    if (!alien || !counterEspionageZones().some(entry => entry.id === zone)){ return false; }
+    const assigned = alien.officers.assigned;
+    const current = assigned[zone] || 0;
+    if (change > 0 && alien.officers.available > 0){ assigned[zone] = current + 1; alien.officers.available--; return true; }
+    if (change < 0 && current > 0){ assigned[zone] = current - 1; alien.officers.available++; return true; }
+    return false;
+}
+
+// Advance officer training, searches, and infiltrator recruitment once per game day.
+export function counterEspionageDay(){
+    const alien = counterEspionage();
+    if (!alien){ return; }
+    if (alien.officers.training){
+        alien.officers.training.p += soldierTrainingRate() / 125;
+        if (alien.officers.training.p >= 1){
+            alien.officers.training = false;
+            alien.officers.available++;
+        }
+    }
+    if (alien.officers.injured.length > 0){
+        const officer = alien.officers.injured[0];
+        officer.p += soldierRecoveryRate() / 75;
+        if (officer.p >= 1){
+            alien.officers.injured.shift();
+            if (counterEspionageZones().some(zone => zone.id === officer.z)){ alien.officers.assigned[officer.z] = (alien.officers.assigned[officer.z] || 0) + 1; }
+            else { alien.officers.available++; }
+            messageQueue(loc('counter_espionage_recovered'),'success',false,['combat']);
+        }
+    }
+    if (global.stats.days >= alien.next){
+        if (infiltratorTotal(alien) < global.tech.shadow * 5){
+            const targets = counterEspionageTargets();
+            if (targets.length > 0){
+                const target = targets[Math.floor(seededRandom(0,targets.length,true))];
+                if (!alien.infiltrators[target.z]){ alien.infiltrators[target.z] = {}; }
+                alien.infiltrators[target.z][target.b] = (alien.infiltrators[target.z][target.b] || 0) + 1;
+            }
+        }
+        alien.next = global.stats.days + Math.floor(seededRandom(4,9,true));
+    }
+    for (const zone of counterEspionageZones()){
+        const officers = alien.officers.assigned[zone.id] || 0;
+        const targets = Object.keys(alien.infiltrators[zone.id] || {});
+        if (!officers || !targets.length || seededRandom(0,1,true) >= Math.min(0.35,officers * 0.025)){ continue; }
+        const target = targets[Math.floor(seededRandom(0,targets.length,true))];
+        if (seededRandom(0,1,true) < 0.18){
+            alien.officers.assigned[zone.id]--;
+            alien.officers.injured.push({ z: zone.id, p: 0 });
+            messageQueue(loc('counter_espionage_officer_injured',[zone.name]),'warning',false,['combat']);
+        }
+        else {
+            alien.infiltrators[zone.id][target]--;
+            if (alien.infiltrators[zone.id][target] === 0){
+                delete alien.infiltrators[zone.id][target];
+                if (Object.keys(alien.infiltrators[zone.id]).length === 0){ delete alien.infiltrators[zone.id]; }
+            }
+            alien.caught++;
+            if (containmentActive() && seededRandom(0,1,true) < sWarfare.containmentCapture){
+                const facility = containmentBuilt();
+                facility.captives++;
+                messageQueue(loc('counter_espionage_captured',[zone.name,loc('space_dwarf_alien_containment_title')]),'success',false,['combat']);
+            }
+            else {
+                messageQueue(loc('counter_espionage_caught',[zone.name]),'success',false,['combat']);
+            }
+        }
+    }
+    // Unlock Alien Containment after enough infiltrators are stopped.
+    if (global.tech['shadow'] === 13 && alien.caught >= sWarfare.containmentStops){
+        global.tech.shadow = 14;
+        drawTech();
+    }
+}
+
+// --- Alien Containment ---------------------------------------------------------------------------
+// Manage captured infiltrators and convert them to Alien Intel.
+
+// Return the completed facility state, or false.
+export function containmentBuilt(){
+    const facility = global.space['alien_containment'];
+    if (!facility || !(facility.count >= sWarfare.containmentSegments)){ return false; }
+    for (const field of ['captives','p']){
+        if (typeof facility[field] !== 'number' || !Number.isFinite(facility[field])){ facility[field] = 0; }
+    }
+    return facility;
+}
+
+// Return whether the completed facility has power.
+export function containmentActive(){
+    return containmentBuilt() && p_on['alien_containment'] > 0 ? true : false;
+}
+
+// Consecutive long-loop passes without facility power.
+let containmentDark = 0;
+
+// Process captive interrogations and power-loss escapes.
+export function alienContainmentTick(seconds){
+    const facility = containmentBuilt();
+    if (!facility){ return; }
+    if (!containmentActive()){
+        containmentDark++;
+        if (containmentDark >= 2 && facility.captives > 0){
+            facility.captives = 0;
+            facility.p = 0;
+            messageQueue(loc('space_dwarf_alien_containment_lost',[loc('space_dwarf_alien_containment_title')]),'danger',false,['combat']);
+        }
+        return;
+    }
+    containmentDark = 0;
+    if (facility.captives <= 0){
+        facility.p = 0;
+        return;
+    }
+    facility.p += seconds;
+    while (facility.captives > 0 && facility.p >= sWarfare.interrogationTime){
+        facility.p -= sWarfare.interrogationTime;
+        facility.captives--;
+        const intel = Math.floor(seededRandom(sWarfare.intelMin,sWarfare.intelMax + 1,true));
+        if (!global.resource.Alien_Intel.display){ global.resource.Alien_Intel.display = true; }
+        modRes('Alien_Intel',intel,true);
+    }
+    if (facility.captives <= 0){ facility.p = 0; }
+}
 
 // The raiding arc, which picks up exactly where syndicateActive() leaves off: that one switches itself
 // off at shadow 5, and this one begins after it.
@@ -6925,7 +7169,7 @@ function corsairFleet(base){
 // Return a base's concurrent corsair capacity.
 function corsairBerths(region){
     if (region === sWarfare.guardRegion){ return 1; }
-    return global.tech['shadow'] && global.tech.shadow >= 12 ? 2 : 1;
+    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : 1;
 }
 
 // Every corsair currently off its dock, for the map and for anything hunting them.
@@ -6971,6 +7215,8 @@ function syndicateWatch(){
 
 function corsairHull(region){
     let ship = Object.assign({},sWarfare.fit);
+    // Use flotilla engines after a base fields three corsairs.
+    if (corsairBerths(region) >= 3){ ship.engine = sWarfare.flotillaEngine; }
     ship.name = loc('syndicate_corsair_name',[Math.floor(seededRandom(100,10000,true))]);
     ship.damage = 0;
     ship.fueled = true;
@@ -6993,53 +7239,77 @@ function encounterWhere(ship){
     return ship.inTransit && ship.destination && ship.destination.name ? ship.destination.name : ship.location.name;
 }
 
-// Freighters of yours that are worth a corsair's time.
-function corsairPrey(corsair){
-    const ships = global.space.shipyard?.ships || [];
-    const from = shipPoint(corsair);
-    let best = false, near = Infinity;
-    for (const ship of ships){
-        if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
-        const at = shipPoint(ship);
-        if (!at || !from){ continue; }
-        const away = dist3(from,at);
-        if (away < near){ best = ship; near = away; }
-    }
-    return best;
-}
-
 // Hunt freighters first, then raid a world.
 function corsairHunt(corsair){
     return corsairChase(corsair) || corsairSortie(corsair);
 }
 
-// Put a corsair on course for its prey. A ship under way is met where it is going rather than chased
-// across open space — the syndicate reads your lanes, and that is the whole of its advantage.
+// Chase the nearest reachable freighter.
 function corsairChase(corsair){
-    const prey = corsairPrey(corsair);
-    if (!prey){ return false; }
-    const target = encounterWhere(prey);
-    if (!corsair.inTransit && corsair.location.name === target){ return false; }
-    return corsairLaunch(corsair,target,false);
+    const from = shipPoint(corsair);
+    if (!from){ return false; }
+    const prey = (global.space.shipyard?.ships || [])
+        .filter(ship => ship.class === 'freighter' && ship.damage < 100 && shipPoint(ship))
+        .sort((a,b) => dist3(from,shipPoint(a)) - dist3(from,shipPoint(b)));
+    const tried = new Set();
+    for (const ship of prey){
+        const target = encounterWhere(ship);
+        if (tried.has(target)){ continue; }
+        tried.add(target);
+        if (!corsair.inTransit && corsair.location.name === target){ continue; }
+        if (corsairLaunch(corsair,target,false)){ return true; }
+    }
+    return false;
 }
 
-// Raid a world when no freighter is available.
+// Raid a reachable world when no freighter can be chased.
 function corsairSortie(corsair){
-    const target = corsairMark(corsair);
-    if (!target || !corsairLaunch(corsair,target,true)){ return false; }
-    zMessage(loc('syndicate_corsair_sortie',[regionName(target)]),'warning');
-    return true;
+    for (const target of corsairMarks(corsair)){
+        if (!corsair.inTransit && corsair.location.name === target){
+            // Raid immediately when already in orbit.
+            corsair.od = false;
+            corsair.home = false;
+            corsair.prowl = false;
+            corsair.raid = target;
+            corsairAssault(corsair);
+            return true;
+        }
+        if (corsairLaunch(corsair,target,true)){
+            return true;
+        }
+    }
+    return false;
 }
 
-// Plot a corsair route and record whether it is a raid.
-function corsairLaunch(corsair,target,raid){
+// Launch a hunt, raid, or prowl route.
+function corsairLaunch(corsair,target,raid,prowl){
     const trip = planShipTrip(corsair,target);
-    if (!trip){ return false; }
+    if (!trip || (!prowl && trip.totalTime > sWarfare.huntDays)){ return false; }
     initializeShipTrip(corsair,target,trip);
     corsair.od = false;
     corsair.home = false;
     corsair.raid = raid ? target : false;
+    corsair.prowl = prowl ? true : false;
     return true;
+}
+
+// List reachable inner-system prowl stops.
+function corsairBeat(){
+    const sun = genXYZcoord('spc_sun');
+    return Object.keys(spaceTech()).filter(region => region !== 'spc_sun_gate'
+        && !syndicateBases().includes(region)
+        && regionReachable(region)
+        && dist3(genXYZcoord(region),sun) <= sWarfare.innerAU);
+}
+
+// Move between inner-system stops until a hunt is available.
+function corsairProwl(corsair){
+    const stops = corsairBeat();
+    if (corsair.prowl && corsair.inTransit && stops.includes(corsair.destination.name)){ return true; }
+    const at = corsair.inTransit ? corsair.destination.name : corsair.location.name;
+    const next = stops.filter(region => region !== at);
+    if (next.length === 0){ return false; }
+    return corsairLaunch(corsair,next[Math.floor(seededRandom(0,next.length,true))],false,true);
 }
 
 // Return whether a region is a valid raid target.
@@ -7050,24 +7320,14 @@ function corsairRaidable(region){
     return activeSupplyRegions().includes(region);
 }
 
-// Worlds of yours a corsair could go and hit, nearest first.
-function corsairMark(corsair){
+// List reachable raid targets, prioritizing stocked worlds.
+function corsairMarks(corsair){
     const from = shipPoint(corsair);
-    if (!from){ return false; }
-    const at = corsair.inTransit ? corsair.destination.name : corsair.location.name;
-    const reachable = activeSupplyRegions().filter(region => region !== at && corsairRaidable(region));
-    // Prefer stocked worlds, then choose the nearest target.
+    if (!from){ return []; }
+    const reachable = activeSupplyRegions().filter(corsairRaidable)
+        .sort((a,b) => dist3(from,genXYZcoord(a)) - dist3(from,genXYZcoord(b)));
     const stocked = reachable.filter(corsairZoneStocked);
-    return corsairNearest(from,stocked.length > 0 ? stocked : reachable);
-}
-
-function corsairNearest(from,regions){
-    let best = false, near = Infinity;
-    for (const region of regions){
-        const away = dist3(from,genXYZcoord(region));
-        if (away < near){ best = region; near = away; }
-    }
-    return best;
+    return stocked.length > 0 ? stocked : reachable;
 }
 
 // Return whether a region's supply pool has stock.
@@ -7085,6 +7345,7 @@ function corsairZoneStocked(region){
 function corsairGoHome(corsair){
     corsair.od = false;
     corsair.raid = false;
+    corsair.prowl = false;
     // Mark the corsair as returning before plotting its route.
     corsair.home = true;
     if (!corsair.inTransit && corsair.location.name === corsair.syn){ return true; }
@@ -7284,7 +7545,7 @@ function corsairRaid(corsair,freighter){
         destroyPlayerShip(freighter,where);
         drawShips();
         zMessage(loc('syndicate_freighter_lost',[freighter.name,regionName(where)]),'danger');
-        corsairHunt(corsair);
+        corsairHunt(corsair) || corsairProwl(corsair);
     }
 }
 
@@ -7325,8 +7586,11 @@ function corsairAssault(corsair){
         zMessage(loc('syndicate_world_open',[regionName(where)]),'danger');
     }
     else {
-        zMessage(loc('syndicate_world_struck',[regionName(where),sWarfare.sneak]),'danger');
-        const fight = corsairFight(corsair,guard,where,sWarfare.sneak);
+        // Detector contact reduces a raider's opening volleys.
+        const seen = detectorContact(corsair);
+        const volleys = seen ? sWarfare.sneakDetected : sWarfare.sneak;
+        zMessage(loc(seen ? 'syndicate_world_warned' : 'syndicate_world_struck',[regionName(where),volleys]),'danger');
+        const fight = corsairFight(corsair,guard,where,volleys);
         if (!fight.alive){ corsairLost(corsair,where); return true; }
         plunder = fight.taken > fight.dealt;
         if (!plunder){ zMessage(loc('syndicate_world_held',[regionName(where)]),'success'); }
@@ -7392,7 +7656,7 @@ function corsairBaseDay(region){
         const ship = corsairHull(region);
         fleet.push(ship);
         base.launched++;
-        corsairHunt(ship);
+        corsairHunt(ship) || corsairProwl(ship);
     }
 
     // Iterate over a copy because processing can remove a corsair.
@@ -7402,7 +7666,11 @@ function corsairBaseDay(region){
 // Process one corsair's daily state.
 function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
-    if (corsair.inTransit){ return; }
+    if (corsair.inTransit){
+        // Interrupt prowling for a reachable hunt.
+        if (corsair.prowl){ corsairHunt(corsair); }
+        return;
+    }
 
     // Repair and relaunch corsairs at their base.
     if (corsair.location.name === region){
@@ -7412,15 +7680,15 @@ function corsairBaseShipDay(corsair,region,elapsed){
             if (corsair.damage > 0){ return; }
         }
         corsair.haul = 0;
-        corsairHunt(corsair);
+        corsairHunt(corsair) || corsairProwl(corsair);
         return;
     }
 
     // Resolve an arrived raid before assigning a new target.
     if (corsairAssault(corsair)){ return; }
 
-    // Resume hunting when a corsair has no active route.
-    if (!corsairHunt(corsair)){ corsairGoHome(corsair); }
+    // Hunt, prowl, or return home when idle.
+    if (!corsairHunt(corsair) && !corsairProwl(corsair)){ corsairGoHome(corsair); }
 }
 
 // --- Your patrols hunting for enemies --------------------------------------------------------------
@@ -7609,6 +7877,7 @@ function syndicateGuardDay(){
 
 // Advance Syndicate bases, guard post, and patrols each day.
 export function syndicateDay(){
+    counterEspionageDay();
     syndicateWatch();
     if (!corsairsActive()){ return; }
     syndicateBases().forEach(corsairBaseDay);
@@ -7738,18 +8007,13 @@ function razeStructures(region,razings){
     }
 }
 
-// Region and structure labels come off the action definitions, where `name`/`title` may be either a
-// plain string or a function depending on the entry.
-// Bodies the map draws as scenery have no action of their own, but they are still places things
-// happen — the syndicate keeps a base on one of them — so they are named the way the map names them.
-const sceneryNames = { spc_pluto: 'pluto', spc_haumea: 'haumea' };
-
+// Return a region label, including map-only scenery bodies.
 function regionName(region){
     let cat = razeTargets.hasOwnProperty(region) && razeTargets[region].c === 'tauceti' ? 'tauceti' : 'space';
     let info = actions[cat]?.[region]?.info;
     if (!info || !info.name){
-        if (sceneryNames[region]){
-            let named = planetName()[sceneryNames[region]];
+        if (sceneryBodies[region]){
+            let named = planetName()[sceneryBodies[region]];
             if (named){ return named; }
         }
         return region;
@@ -9447,26 +9711,55 @@ function paceAt(group, from){
     return at;
 }
 
-function tradeTrip(group, from, to){
-    const pace = paceAt(group, from);
-    return pace ? planShipTrip(pace, to) : false;
+// Cache route legs and fleet pace by simulated day.
+const legCache = { at: 0, day: false, map: new Map(), pace: new Map() };
+
+// Cache fleet pace for the current simulated day.
+function legSpeed(group){
+    const head = group && group.length ? group[0] : false;
+    if (!head){ return 0; }
+    if (legCache.pace.has(head)){ return legCache.pace.get(head); }
+    const lead = fleetPace(group);
+    const speed = lead ? shipSpeed(lead) : 0;
+    legCache.pace.set(head, speed);
+    return speed;
 }
 
-// Return fleet travel time for one route leg, or Infinity if unreachable.
-const legCache = { at: 0, map: new Map() };
-export function tradeLegDays(group, from, to){
-    if (from === to){ return 0; }
+function tradeLeg(group, from, to){
     const now = Date.now();
-    if (now - legCache.at > 2000){ legCache.at = now; legCache.map.clear(); }
-    // Cache route legs by fleet speed and endpoints.
-    const lead = fleetPace(group);
-    const key = `${from}|${to}|${lead ? shipSpeed(lead) : 0}`;
+    if (now - legCache.at > 2000 || legCache.day !== global.stats.days){
+        legCache.at = now;
+        legCache.day = global.stats.days;
+        legCache.map.clear();
+        legCache.pace.clear();
+    }
+    const key = `${from}|${to}|${legSpeed(group)}`;
     if (legCache.map.has(key)){ return legCache.map.get(key); }
     const pace = paceAt(group, from);
     const trip = pace ? planShipTrip(pace, to) : false;
-    const days = trip ? trip.totalTime : Infinity;
-    legCache.map.set(key, days);
-    return days;
+    legCache.map.set(key, trip);
+    return trip;
+}
+
+// Return a cached route-leg plan.
+function tradeTrip(group, from, to){
+    return tradeLeg(group, from, to);
+}
+
+// Return fleet travel time for one route leg, or Infinity if unreachable.
+export function tradeLegDays(group, from, to){
+    if (from === to){ return 0; }
+    const trip = tradeLeg(group, from, to);
+    return trip ? trip.totalTime : Infinity;
+}
+
+// Return whether a fleet can reach a world on its current fuel.
+export function fleetCanReach(group, to){
+    if (!group || !group.length){ return false; }
+    const from = group[0].location.name;
+    if (from === to){ return true; }
+    const trip = tradeLeg(group, from, to);
+    return trip ? group.every(s => shipCanMakeTrip(s, trip)) : false;
 }
 
 // Validate that a proposed route is flyable with available fuel.
@@ -11105,19 +11398,29 @@ function sensorContact(foe){
 // Ground detector structures and detection helpers.
 
 // Detector site definitions and map anchors.
+const detectorSiteData = {
+    city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
+    spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
+    spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
+    spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
+};
+
+// Return detector sites that remain available after orbit decay.
 export function detectorSites(){
-    return {
-        city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
-        spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
-        spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
-        spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
-    };
+    const sites = { ...detectorSiteData };
+    if (capitalGone()){ delete sites.city; }
+    return sites;
+}
+
+// Return detector segments required for the current capital state.
+export function detectorSegments(){
+    return capitalGone() ? sWarfare.detectorSegmentsLost : sWarfare.detectorSegments;
 }
 
 // Return whether a site's array is fully assembled.
 function detectorBuilt(at){
     const struct = global[at.region] ? global[at.region][at.key] : false;
-    return struct && struct.count >= sWarfare.detectorSegments ? true : false;
+    return struct && struct.count >= detectorSegments() ? true : false;
 }
 
 // Return whether a completed detector is powered.
@@ -11125,8 +11428,7 @@ function detectorOn(at){
     return detectorBuilt(at) && p_on[at.key] > 0 ? true : false;
 }
 
-// Every world has its array. A network is only a network once the last of them is finished; power
-// does not come into it, since a switched-off array is still built.
+// A network requires every available detector site; power does not affect completion.
 export function detectorNetwork(){
     const sites = detectorSites();
     return Object.keys(sites).every(site => detectorBuilt(sites[site]));
@@ -11139,17 +11441,17 @@ export function detectorStealthAU(){
 }
 
 // Detection radius against one hull.
-function detectorReach(ship){
-    return (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
+function detectorReach(ship, site){
+    const reach = (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
+    return site ? reach * infiltratorFactor(site.region === 'city' ? 'city' : site.map, site.key) : reach;
 }
 
 // Detect hulls within the active detector radius.
 function detectorContact(foe){
-    const reach = detectorReach(foe);
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
-        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= reach){ return true; }
+        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= detectorReach(foe,sites[site])){ return true; }
     }
     return false;
 }
@@ -11158,39 +11460,39 @@ function detectorContact(foe){
 // array only talks to what it can reach, so a corsair picked up over Ceres is no use to a fleet out
 // past Pluto — both have to be inside the same bubble.
 function detectorCue(at, foe){
-    const reach = detectorReach(foe);
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
         const post = genXYZcoord(sites[site].map);
-        if (dist3(post, foe.location.position) <= reach && dist3(post, at) <= sWarfare.detectorRange){ return true; }
+        if (dist3(post, foe.location.position) <= detectorReach(foe,sites[site]) && dist3(post, at) <= sWarfare.detectorRange){ return true; }
     }
     return false;
 }
 
 // Build the Detector action for one site.
 export function detectorTemplate(site){
-    const at = detectorSites()[site];
+    const at = detectorSiteData[site];
     const region = at.region, key = at.key;
     // Completed detector segments.
     const built = function(){ return global[region].hasOwnProperty(key) ? global[region][key].count : 0; };
-    const priced = function(r){ return ((r.offset || 0) + built()) < sWarfare.detectorSegments; };
+    const priced = function(r){ return ((r.offset || 0) + built()) < detectorSegments(); };
     return {
         id: `${region}-${key}`,
         title(){ return loc('detector_title',[planetName()[at.world]]); },
         desc(wiki){
             let head = `<div>${loc('detector_desc',[planetName()[at.world]])}</div>`;
-            if (built() < sWarfare.detectorSegments || wiki){
-                return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.detectorSegments])}</div>`;
+            if (built() < detectorSegments() || wiki){
+                return head + `<div class="has-text-special">${loc('requires_segments',[detectorSegments()])}</div>`;
             }
             return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
         },
         type: 'megaproject',
         category: 'military',
         reqs: { planet_defense: 1 },
+        condition(){ return site !== 'city' || !capitalGone(); },
         path: ['truepath'],
         queue_size: 5,
-        queue_complete(){ return sWarfare.detectorSegments - built(); },
+        queue_complete(){ return detectorSegments() - built(); },
         cost: {
             Money(r={}){ return priced(r) ? 30000000 : 0; },
             Adamantite(r={}){ return priced(r) ? 1200000 : 0; },
@@ -11201,20 +11503,20 @@ export function detectorTemplate(site){
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
             let desc = `<div>${loc('detector_effect',[sWarfare.detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
-            if (count < sWarfare.detectorSegments){
-                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.detectorSegments - count])}</div>`;
+            if (count < detectorSegments()){
+                return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments() - count])}</div>`;
             }
             return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
         },
         powered(){ return powerCostMod(10); },
         // Enable power controls after all segments are complete.
-        switchable(){ return built() >= sWarfare.detectorSegments; },
-        on_cap(){ return built() >= sWarfare.detectorSegments ? 1 : 0; },
+        switchable(){ return built() >= detectorSegments(); },
+        on_cap(){ return built() >= detectorSegments() ? 1 : 0; },
         action(){
-            if (built() >= sWarfare.detectorSegments){ return false; }
+            if (built() >= detectorSegments()){ return false; }
             if (payCosts(this)){
                 incrementStruct(this);
-                if (global[region][key].count >= sWarfare.detectorSegments){
+                if (global[region][key].count >= detectorSegments()){
                     global[region][key].on = 1;
                     if (region === 'city'){ drawCity(); }
                     else { renderSpace(); }

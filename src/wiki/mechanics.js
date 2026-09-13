@@ -10,7 +10,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, fleetVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, detectorSegments, fleetVars } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1073,7 +1073,7 @@ export function mechanicsPage(content){
                 para_data: {
                     1: [loc('tech_ship_patrols')],
                     3: [pct(s.stealth)],
-                    4: [s.detectorSegments,s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
+                    4: [detectorSegments(),s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
                     5: [s.chaseDays,pct(s.chaseSpeed - 1)],
                     7: [s.rounds]
                 }
@@ -1086,7 +1086,7 @@ export function mechanicsPage(content){
                     1: [s.plunder.toLocaleString()],
                     2: [Math.floor(s.plunder * 0.8).toLocaleString()],
                     3: [loc('outer_shipyard_class_freighter')],
-                    5: [s.sneak],
+                    5: [s.sneak,s.sneakDetected],
                     6: [loc('wiki_mechanics_supply')],
                     7: [loc('outer_shipyard_class_freighter')]
                 },
@@ -1139,6 +1139,22 @@ export function mechanicsPage(content){
         }
 
         sideMenu('add',`mechanics-gameplay`,`supply`,loc('wiki_mechanics_supply'));
+    }
+
+    { // Alien Infiltrators
+        infoBoxBuilder(mainContent,{ name: 'infiltrators', template: 'mechanics', label: loc('wiki_mechanics_infiltrators'), paragraphs: 5, break: [2,3,4,5], h_level: 2,
+            para_data: {
+                1: [loc('tech_syndicate_base_data'),loc('counter_espionage')],
+                2: [loc('counter_espionage')],
+                3: [5,20],
+                5: [sWarfare.containmentStops,loc('tech_alien_containment'),loc('space_dwarf_alien_containment_title'),sWarfare.containmentCapture * 100,sWarfare.interrogationTime,sWarfare.intelMin,sWarfare.intelMax,loc('resource_Alien_Intel_name')]
+            },
+            data_link: {
+                1: ['wiki.html#shadow_war-tp_tech-syndicate_base_data',false],
+                5: ['wiki.html#shadow_war-tp_tech-alien_containment']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`infiltrators`,loc('wiki_mechanics_infiltrators'));
     }
 
     { // Seeded Randomness

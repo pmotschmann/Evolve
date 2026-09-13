@@ -9,7 +9,7 @@ import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './c
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
-import { production, highPopAdjust } from './prod.js';
+import { production, highPopAdjust, hugeAdjust } from './prod.js';
 import { govActive, defineGovernor } from './governor.js';
 import { descension } from './resets.js';
 import { renderEdenic } from './edenic.js';
@@ -286,10 +286,13 @@ const fortressModules = {
             },
             effect(){
                 let bonus = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 50 : 20) : 10;
-                let know = global.tech.infernite >= 6 ? 2500 : 1000;
+                let know = this.knowVal();
                 let sci_bonus = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[2])}</div>` : `<div>${loc('space_moon_observatory_effect',[2])}</div><div>${loc('portal_sensor_drone_effect2',[2])}</div>`;
                 let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[know])}</div>${sci_bonus}` : '';
                 return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            knowVal(){
+                return hugeAdjust(global.tech.infernite >= 6 ? 2500 : 1000);
             },
             action(args){
                 if (payCosts(this)){
@@ -819,80 +822,56 @@ const fortressModules = {
                 Aluminium(r={}){ return spaceCostMultiplier('warehouse', r.offset, 180000, 1.28, 'portal'); },
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 95000, 1.28, 'portal'); }
             },
-            res(){
-                let r_list = [
-                    'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Steel','Titanium',
-                    'Cement','Coal','Uranium','Alloy','Polymer','Iridium','Nano_Tube','Neutronium',
-                    'Adamantite','Infernite','Bolognium','Orichalcum','Graphene','Stanene','Oil','Helium_3'
-                ];
-                return r_list;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
-                    case 'Stone':
-                        return 650 + (global.portal?.warehouse?.rank || 1) * 100;
-                    case 'Chrysotile':
-                        return 700 + (global.portal?.warehouse?.rank || 1) * 50;
-                    case 'Furs':
-                        return 400 + (global.portal?.warehouse?.rank || 1) * 25;
-                    case 'Copper':
-                        return 330 + (global.portal?.warehouse?.rank || 1) * 50;
-                    case 'Iron':
-                        return 320 + (global.portal?.warehouse?.rank || 1) * 30;
-                    case 'Aluminium':
-                        return 290 + (global.portal?.warehouse?.rank || 1) * 30;
-                    case 'Cement':
-                        return 260 + (global.portal?.warehouse?.rank || 1) * 20;
-                    case 'Coal':
-                        return 135 + (global.portal?.warehouse?.rank || 1) * 15;
-                    case 'Steel':
-                        return 52 + (global.portal?.warehouse?.rank || 1) * 8;
-                    case 'Titanium':
-                        return 32 + (global.portal?.warehouse?.rank || 1) * 8;
-                    case 'Uranium':
-                        return global.portal?.warehouse?.rank || 1;
-                    case 'Alloy':
-                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
-                    case 'Polymer':
-                        return 31 + (global.portal?.warehouse?.rank || 1) * 4;
-                    case 'Iridium':
-                        return 28 + (global.portal?.warehouse?.rank || 1) * 4;
-                    case 'Nano_Tube':
-                        return 50 + (global.portal?.warehouse?.rank || 1) * 18;
-                    case 'Neutronium':
-                        return 12 + (global.portal?.warehouse?.rank || 1) * 4;
-                    case 'Adamantite':
-                        return 15 + (global.portal?.warehouse?.rank || 1) * 3;
-                    case 'Infernite':
-                        return 3 + global.portal?.warehouse?.rank || 1;
-                    case 'Bolognium':
-                        return 6 + global.portal?.warehouse?.rank || 3;
-                    case 'Orichalcum':
-                        return 8 + global.portal?.warehouse?.rank || 4;
-                    case 'Graphene':
-                        return 14 + global.portal?.warehouse?.rank || 3;
-                    case 'Stanene':
-                        return 14 + global.portal?.warehouse?.rank || 3;
-                    case 'Oil':
-                        return 18 + global.portal?.warehouse?.rank || 2;
-                    case 'Helium_3':
-                        return 17 + global.portal?.warehouse?.rank || 2;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 650 + (global.portal?.warehouse?.rank || 1) * 100,
+                        'Stone': 650 + (global.portal?.warehouse?.rank || 1) * 100,
+                        'Chrysotile': 700 + (global.portal?.warehouse?.rank || 1) * 50,
+                        'Furs': 400 + (global.portal?.warehouse?.rank || 1) * 25,
+                        'Copper': 330 + (global.portal?.warehouse?.rank || 1) * 50,
+                        'Iron': 320 + (global.portal?.warehouse?.rank || 1) * 30,
+                        'Aluminium': 290 + (global.portal?.warehouse?.rank || 1) * 30,
+                        'Steel': 52 + (global.portal?.warehouse?.rank || 1) * 8,
+                        'Titanium': 32 + (global.portal?.warehouse?.rank || 1) * 8,
+                        'Cement': 260 + (global.portal?.warehouse?.rank || 1) * 20,
+                        'Coal': 135 + (global.portal?.warehouse?.rank || 1) * 15,
+                        'Uranium': global.portal?.warehouse?.rank || 1,
+                        'Alloy': 31 + (global.portal?.warehouse?.rank || 1) * 4,
+                        'Polymer': 31 + (global.portal?.warehouse?.rank || 1) * 4,
+                        'Iridium': 28 + (global.portal?.warehouse?.rank || 1) * 4,
+                        'Nano_Tube': 50 + (global.portal?.warehouse?.rank || 1) * 18,
+                        'Neutronium': 12 + (global.portal?.warehouse?.rank || 1) * 4,
+                        'Adamantite': 15 + (global.portal?.warehouse?.rank || 1) * 3,
+                        'Infernite': 3 + global.portal?.warehouse?.rank || 1,
+                        'Bolognium': 6 + global.portal?.warehouse?.rank || 3,
+                        'Orichalcum': 8 + global.portal?.warehouse?.rank || 4,
+                        'Graphene': 14 + global.portal?.warehouse?.rank || 3,
+                        'Stanene': 14 + global.portal?.warehouse?.rank || 3,
+                        'Oil': 18 + global.portal?.warehouse?.rank || 2,
+                        'Helium_3': 17 + global.portal?.warehouse?.rank || 2
+                    };
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(wiki){
+                    let multiplier = storageMultipler(1, wiki);
+                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                    }
+                    return multiplier;
+                },
+                label(){
+                    return global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
                 }
             },
             wide: true,
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(1, wiki);
-                if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
-                }
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier(wiki);
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res)) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
                         storage += `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -910,13 +889,11 @@ const fortressModules = {
                 }
                 else if (payCosts(this)){
                     incrementStruct('warehouse','portal');
-                    let multiplier = storageMultipler();
-                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
-                    }
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;
@@ -1054,18 +1031,24 @@ const fortressModules = {
                 Graphene(r={}){ return spaceCostMultiplier('twisted_lab', r.offset, 230000, 1.3, 'portal'); }
             },
             effect(){
-                let baseVal = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
-                let know = global.race['absorbed'] ? global.race.absorbed.length * baseVal : baseVal;
-                if (global.tech['supercollider']){
-                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    know *= (global.tech['supercollider'] / ratio) + 1;
-                }
-                let desc = `<div>${loc('plus_max_resource',[(+know.toFixed(0)).toLocaleString(),global.resource.Knowledge.name])}</div>`;
+                let know = +(this.knowVal()).toFixed(0);
+                let desc = `<div>${loc('plus_max_resource',[know.toLocaleString(),global.resource.Knowledge.name])}</div>`;
                 desc += `<div>${loc('city_university_effect',[jobScale(3)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[jobScale(2),job_data.scientist.name()])}</div>`;
                 desc += `<div>${loc('interstellar_g_factory_effect')}</div>`;
                 desc += `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
+            },
+            knowVal(){
+                let gain = 6000 + (global.portal?.twisted_lab?.rank || 1) * 2000;
+                gain *= global.race.absorbed?.length || 1;
+                if (global.tech['supercollider']){
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
+                    know *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain = hugeAdjust(gain);
+                return gain;
+
             },
             powered(){ return 4; },
             special: true,
@@ -2645,85 +2628,55 @@ const fortressModules = {
                 Stanene(r={}){ return spaceCostMultiplier('harbor', r.offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
-            res(){
-                let list = [
-                    'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
-                    'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
-                ];
-                if (global.race['warlord']){
-                    list.push('Lumber');
-                    list.push('Stone');
-                    list.push('Copper');
-                    list.push('Iron');
-                    list.push('Aluminium');
-                    list.push('Cement');
-                    list.push('Steel');
-                    list.push('Titanium');
-                    list.push('Coal');
-                }
-                return list;
-            },
-            val(res){
-                switch (res){
-                    case 'Oil':
-                        return 30000;
-                    case 'Alloy':
-                        return 250000;
-                    case 'Polymer':
-                        return 250000;
-                    case 'Iridium':
-                        return 200000;
-                    case 'Helium_3':
-                        return 18000;
-                    case 'Deuterium':
-                        return 12000;
-                    case 'Neutronium':
-                        return 180000;
-                    case 'Adamantite':
-                        return 150000;
-                    case 'Infernite':
-                        return 75000;
-                    case 'Nano_Tube':
-                        return 750000;
-                    case 'Graphene':
-                        return 1200000;
-                    case 'Stanene':
-                        return 1200000;
-                    case 'Bolognium':
-                        return 130000;
-                    case 'Orichalcum':
-                        return 130000;
-                    case 'Lumber':
-                        return 1500000;
-                    case 'Stone':
-                        return 1500000;
-                    case 'Copper':
-                        return 650000;
-                    case 'Iron':
-                        return 650000;
-                    case 'Steel':
-                        return 650000;
-                    case 'Aluminium':
-                        return 425000;
-                    case 'Titanium':
-                        return 350000;
-                    case 'Cement':
-                        return 550000;
-                    case 'Coal':
-                        return 275000;
-                    default:
-                        return 0;
+            storage: {
+                res(res){
+                    let list = {
+                        'Oil': 30000,
+                        'Alloy': 250000,
+                        'Polymer': 250000,
+                        'Iridium': 200000,
+                        'Helium_3': 18000,
+                        'Deuterium': 12000,
+                        'Neutronium': 180000,
+                        'Adamantite': 150000,
+                        'Infernite': 75000,
+                        'Nano_Tube': 750000,
+                        'Graphene': 1200000,
+                        'Stanene': 1200000,
+                        'Bolognium': 130000,
+                        'Orichalcum': 130000
+                    };
+                    if (global.race['warlord']){
+                        list['Lumber'] = 1500000;
+                        list['Stone'] = 1500000;
+                        list['Copper'] = 650000;
+                        list['Iron'] = 650000;
+                        list['Aluminium'] = 425000;
+                        list['Cement'] = 550000;
+                        list['Steel'] = 650000;
+                        list['Titanium'] = 350000;
+                        list['Coal'] = 275000;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(){
+                    let multiplier = 1;
+                    if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
+                    }
+                    return multiplier;
+                },
+                count(){
+                    return p_on['harbor'] || 0;
                 }
             },
             effect(wiki){
                 let storage = '<div class="aTable">';
-                let multiplier = 1;
-                if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
-                }
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier();
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(this.val(res) * multiplier)).toFixed(0),1);
+                        let val = sizeApproximation(+(spatialReasoning(list[res] * multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2734,13 +2687,11 @@ const fortressModules = {
                 if (payCosts(this)){
                     incrementStruct('harbor','portal');
                     if (powerOnNewStruct(this)){
-                        let multiplier = 1;
-                        if (global.race['warlord'] && global.eden['corruptor'] && global.tech?.asphodel >= 12){
-                            multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech?.asphodel >= 13 ? 0.12 : 0.1);
-                        }
-                        for (const res of this.res()){
+                        let multiplier = this.storage.multiplier();
+                        let list = this.storage.res();
+                        for (const res of Object.keys(list)){
                             if (global.resource[res].display){
-                                global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                                global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                             }
                         };
                     }
@@ -4121,7 +4072,7 @@ export function buildFortress(parent,full){
                 let canBuy = true;
                 while (canBuy && repeats > 0){
                     let cost = mercCost();
-                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                    if (garrisonSize() < garrisonSize(true) && global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
                         global.civic['garrison'].workers++;
                         global.civic.garrison.m_use++;

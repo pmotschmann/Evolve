@@ -2511,9 +2511,6 @@ const extraInformationIA = {
     theology: [
         loc(`wiki_tech_building_unlock`,[loc('underground_statue')])
     ],
-    theology: [
-        loc(`wiki_tech_building_unlock`,[loc('underground_statue')])
-    ],
     reinforced_shed: [
         loc(`wiki_tech_store_upgrade`,[loc(`underground_storage_space`),125])
     ],

@@ -10,7 +10,7 @@ import { supplyZone } from './supply.js';
 import { fortressTech } from './portal.js';
 import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
-import { highPopAdjust, production } from './prod.js';
+import { highPopAdjust, production, infiltratorFactor } from './prod.js';
 import { govEffect } from './civics.js';
 import { undergroundTech, surfaceTech, thrusterOrbitProjection } from './iceage.js';
 
@@ -702,8 +702,29 @@ export const factoryData = {
         let on_factories = 0;
         for (const zone in by){ on_factories += by[zone]; }
         return on_factories;
+    },
+    // Return factory output after infiltrator penalties.
+    infiltratedShare(){
+        const total = factoryData.actualCapacity();
+        if (!(total > 0)){ return 1; }
+        const lost = (p_on['factory'] || 0) * (1 - infiltratorFactor('city','factory'))
+            + (p_on['red_factory'] || 0) * (1 - infiltratorFactor('spc_red','red_factory'))
+            + (support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3) * (1 - infiltratorFactor('tau_home','tau_factory'));
+        return Math.max(0, (total - lost) / total);
     }
 };
+
+// Return smelter output after infiltrator penalties.
+export function smelterInfiltratedShare(){
+    const by = smelterCapacityByZone();
+    let total = 0;
+    for (const zone in by){ total += by[zone]; }
+    if (!(total > 0) || !global.city['smelter']){ return 1; }
+    const lost = global.city.smelter.count * (1 - infiltratorFactor('city','smelter'))
+        + (global.space['hell_smelter'] ? global.space.hell_smelter.count : 0) * actions.space.spc_hell.hell_smelter.smelting() * (1 - infiltratorFactor('spc_hell','hell_smelter'))
+        + (p_on['geothermal'] || 0) * actions.space.spc_hell.geothermal.smelting() * (1 - infiltratorFactor('spc_hell','geothermal'));
+    return Math.max(0, (total - lost) / total);
+}
 
 // Return smelter capacity grouped by supply zone.
 export function smelterCapacityByZone(){

@@ -375,86 +375,62 @@ const edenicModules = {
                 Alloy(r={}){ return spaceCostMultiplier('warehouse', r.offset, 18000000, 1.28, 'eden'); },
                 Cement(r={}){ return spaceCostMultiplier('warehouse', r.offset, 27500000, 1.28, 'eden'); }
             },
-            res(){
-                let r_list = [
-                    'Lumber','Stone','Chrysotile','Furs','Copper','Iron','Aluminium','Cement','Coal',
-                    'Nano_Tube','Neutronium','Adamantite','Infernite','Alloy','Polymer','Iridium',
-                    'Graphene','Stanene','Bolognium','Orichalcum','Asphodel_Powder',
-                ];
-                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    r_list.push('Steel');
-                }
-                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    r_list.push('Titanium');
-                }
-                return r_list;
-            },
-            val(res){
-                switch (res){
-                    case 'Lumber':
-                        return global.race['warlord'] ? 5500 : 3750
-                    case 'Stone':
-                        return global.race['warlord'] ? 5500 : 3750;
-                    case 'Chrysotile':
-                        return 3750;
-                    case 'Furs':
-                        return 2125;
-                    case 'Copper':
-                        return global.race['warlord'] ? 3800 : 1900;
-                    case 'Iron':
-                        return global.race['warlord'] ? 3300 : 1750;
-                    case 'Aluminium':
-                        return global.race['warlord'] ? 3750 : 1600;
-                    case 'Cement':
-                        return global.race['warlord'] ? 1800 : 1400;
-                    case 'Coal':
-                        return global.race['warlord'] ? 800 : 600;
-                    case 'Steel':
-                        return global.race['warlord'] ? 450 : 300;
-                    case 'Titanium':
-                        return global.race['warlord'] ? 325 : 200;
-                    case 'Nano_Tube':
-                        return global.race['warlord'] ? 350 : 150;
-                    case 'Neutronium':
-                        return global.race['warlord'] ? 65 : 40;
-                    case 'Adamantite':
-                        return global.race['warlord'] ? 120 : 90;
-                    case 'Infernite':
-                        return global.race['warlord'] ? 22 : 18;
-                    case 'Alloy':
-                        return global.race['warlord'] ? 350 : 250;
-                    case 'Polymer':
-                        return global.race['warlord'] ? 350 : 250;
-                    case 'Iridium':
-                        return global.race['warlord'] ? 375 : 225;
-                    case 'Graphene':
-                        return global.race['warlord'] ? 250 : 175;
-                    case 'Stanene':
-                        return global.race['warlord'] ? 250 : 175;
-                    case 'Bolognium':
-                        return global.race['warlord'] ? 75 : 45;
-                    case 'Orichalcum':
-                        return global.race['warlord'] ? 62 : 22;
-                    case 'Asphodel_Powder':
-                        return global.eden['stabilizer'] 
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': global.race['warlord'] ? 5500 : 3750,
+                        'Stone': global.race['warlord'] ? 5500 : 3750,
+                        'Chrysotile': 3750,
+                        'Furs': 2125,
+                        'Copper': global.race['warlord'] ? 3800 : 1900,
+                        'Iron': global.race['warlord'] ? 3300 : 1750,
+                        'Aluminium': global.race['warlord'] ? 3750 : 1600,
+                        'Cement': global.race['warlord'] ? 1800 : 1400,
+                        'Coal': global.race['warlord'] ? 800 : 600,
+                        'Nano_Tube': global.race['warlord'] ? 350 : 150,
+                        'Neutronium': global.race['warlord'] ? 65 : 40,
+                        'Adamantite': global.race['warlord'] ? 120 : 90,
+                        'Infernite': global.race['warlord'] ? 22 : 18,
+                        'Alloy': global.race['warlord'] ? 350 : 250,
+                        'Polymer': global.race['warlord'] ? 350 : 250,
+                        'Iridium': global.race['warlord'] ? 375 : 225,
+                        'Graphene': global.race['warlord'] ? 250 : 175,
+                        'Stanene': global.race['warlord'] ? 250 : 175,
+                        'Bolognium': global.race['warlord'] ? 75 : 45,
+                        'Orichalcum': global.race['warlord'] ? 62 : 22,
+                        'Asphodel_Powder': global.eden['stabilizer']
                             ? 0.1 + (global.eden.stabilizer.count * 0.015 * (
                                 global.race['warlord'] && global.eden['corruptor'] && p_on['corruptor'] ? 1 + (p_on['corruptor'] * 0.05) : 1
-                            )) 
-                            : 0.1;
-                    default:
-                        return 0;
+                            ))
+                            : 0.1
+                    };
+                    if (global.tech['storage'] >= 3 && global.resource.Steel.display){
+                        list['Steel'] = global.race['warlord'] ? 450 : 300;
+                    }
+                    if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
+                        list['Titanium'] = global.race['warlord'] ? 325 : 200;
+                    }
+                    return res ? list[res] || 0 : list;
+                },
+                multiplier(){
+                    let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
+                    if (global.race['warlord'] && global.eden['corruptor']){
+                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
+                    }
+                    return multiplier;
+                },
+                label(){
+                    return loc('eden_asphodel_name');
                 }
             },
             wide: true,
             effect(){
                 let storage = '<div class="aTable">';
-                let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
-                if (global.race['warlord'] && global.eden['corruptor']){
-                    multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
-                }
-                for (const res of this.res()){
+                let multiplier = this.storage.multiplier();
+                let list = this.storage.res();
+                for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(+(this.val(res) * multiplier)).toFixed(0)));
+                        let val = sizeApproximation(+(spatialReasoning(+(list[res] * multiplier)).toFixed(0)));
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -464,13 +440,11 @@ const edenicModules = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('warehouse','eden');
-                    let multiplier = storageMultipler(global.race['warlord'] ? 1 : 0.2);
-                    if (global.race['warlord'] && global.eden['corruptor']){
-                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 12 ? (global.tech.asphodel >= 13 ? 0.16 : 0.12) : 0.08);
-                    }
-                    for (const res of this.res()){
+                    let multiplier = this.storage.multiplier();
+                    let list = this.storage.res();
+                    for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(this.val(res) * multiplier));
+                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
                         }
                     };
                     return true;

@@ -14,6 +14,13 @@ export function highPopAdjust(v){
     return v;
 }
 
+export function hugeAdjust(v){
+    if (global.race['humongous']){
+        v *= traits.humongous.vars()[0];
+    }
+    return v;
+}
+
 export function teamster(v){
     if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
         let cap = teamsterCap();
@@ -24,7 +31,7 @@ export function teamster(v){
     return v;
 }
 
-export function production(id,val,wiki){
+function baseProduction(id,val,wiki){
     switch (id){
         case 'transmitter':
         {
@@ -146,7 +153,7 @@ export function production(id,val,wiki){
             };
             if (global.tech['drone']){
                 let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 0.12 : 0.06;
-                vals.d = global.space.drone.count * rate;
+                vals.d = global.space.drone.count * rate * (wiki ? 1 : infiltratorFactor('spc_gas_moon','drone'));
                 vals.n = vals.b * (1 + (vals.d));
             }
             else {
@@ -209,7 +216,7 @@ export function production(id,val,wiki){
             if (share <= 0){ return 1; }
             // Colonists counted exactly as the graphene factory above counts them, AI colonists included.
             let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-            let pool = 0.01 * titan_colonists * works;
+            let pool = 0.01 * titan_colonists * works * (wiki ? 1 : infiltratorFactor('spc_titan','metalworks'));
             if (global.race['high_pop']){
                 pool = highPopAdjust(pool);
             }
@@ -303,6 +310,20 @@ export function production(id,val,wiki){
         case 'mineshaft':
         {
             return 9.8;
+        }
+        case 'mercury_mine':
+        {
+            switch (val){
+                case 'tungsten':
+                    return 0.5;
+                case 'stone':
+                    return 2.1;
+                case 'chrysotile':
+                    return global.resource.Chrysotile.display ? 0.8 : 0;
+                case 'unobtainium':
+                    return 0.008;
+            }
+            return 0;
         }
         case 'orichalcum_mine':
         {
@@ -631,6 +652,70 @@ export function production(id,val,wiki){
             }
         }
     }
+}
+
+
+// --- Infiltrators ----------------------------------------------------------------------------------
+// Apply each building's hidden infiltrator production penalty.
+
+// Knowledge-cap structures that use the reduced infiltrator penalty.
+const knowledgeCapTargets = {
+    city: ['university','library','wardenclyffe','biolab'],
+    spc_moon: ['observatory'],
+    spc_red: ['exotic_lab'],
+    spc_hell: ['seismic'],
+    spc_titan: ['decoder'],
+    spc_enceladus: ['zero_g_lab'],
+    tau_home: ['infectious_disease_lab','alien_outpost'],
+    tau_red: ['womling_lab']
+};
+
+// Return a structure's output fraction for its Counter Espionage zone.
+export function infiltratorFactor(zone, building){
+    const planted = global.race['alien'] && global.race.alien['infiltrators'];
+    const count = planted && planted[zone] ? (planted[zone][building] || 0) : 0;
+    if (count <= 0){ return 1; }
+    const penalty = knowledgeCapTargets[zone] && knowledgeCapTargets[zone].includes(building) ? 0.01 : 0.05;
+    return Math.max(0, 1 - count * penalty);
+}
+
+// Return a capacity-weighted infiltrator factor for shared output.
+export function weightedInfiltration(sources){
+    let total = 0, kept = 0;
+    for (const [zone, building, weight] of sources){
+        if (!(weight > 0)){ continue; }
+        total += weight;
+        kept += weight * infiltratorFactor(zone, building);
+    }
+    return total > 0 ? kept / total : 1;
+}
+
+// Map production rates to their Counter Espionage zones.
+const infiltratedRates = {
+    oil_well: 'city',
+    iridium_mine: 'spc_moon', helium_mine: 'spc_moon',
+    red_mine: 'spc_red',
+    oil_extractor: 'spc_gas_moon',
+    elerium_ship: 'spc_belt', iridium_ship: 'spc_belt', iron_ship: 'spc_belt',
+    g_factory: 'spc_titan', titan_mine: 'spc_titan',
+    mercury_mine: 'spc_hell',
+    orichalcum_mine: 'spc_makemake', uranium_mine: 'spc_makemake', neutronium_mine: 'spc_makemake', elerium_mine: 'spc_makemake',
+    mining_pit: 'tau_home', alien_outpost: 'tau_home',
+    womling_mine: 'tau_red'
+};
+
+// Apply infiltrator penalties to per-structure production.
+export function production(id,val,wiki){
+    const value = baseProduction(id,val,wiki);
+    if (wiki || !infiltratedRates[id]){ return value; }
+    const factor = infiltratorFactor(infiltratedRates[id], id);
+    if (factor === 1){ return value; }
+    if (typeof value === 'number'){ return value * factor; }
+    // Scale output fields; leave the government relation bonus unchanged.
+    if (value && typeof value === 'object' && typeof value.f === 'number'){
+        return { ...value, b: value.b * factor, f: value.f * factor };
+    }
+    return value;
 }
 
 export function technicianCount(){
