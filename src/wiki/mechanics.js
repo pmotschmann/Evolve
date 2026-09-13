@@ -10,7 +10,7 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, detectorSegments, fleetVars } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, detectorSegments, fleetVars, containmentCaptureChance, interrogationDuration, sensorUpgrade, improvedSensors, shipPartKey } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1026,12 +1026,14 @@ export function mechanicsPage(content){
         let swar = infoBoxBuilder(mainContent,{ name: 'swar', template: 'mechanics', label: loc('wiki_mechanics_swar'), paragraphs: 4, break: [3], h_level: 2,
             para_data: {
                 1: [loc('tech_syndicate_threat_analysis')],
-                2: [s.watchDays,loc('outer_shipyard_class_freighter')],
-                3: [pct(s.stealth),loc('outer_shipyard_sensors')],
+                2: [loc('tech_ship_patrols'),loc('outer_shipyard_class_freighter')],
+                3: [pct(s.stealth),loc('outer_shipyard_sensors'),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                 4: [loc('wiki_mechanics_tp_ships')]
             },
             data_link: {
+                3: [false,false,false,'wiki.html#shadow_war-tp_tech-improved_sensors'],
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
+                2: ['wiki.html#shadow_war-tp_tech-ship_patrols'],
                 4: ['wiki.html#mechanics-gameplay-tp_ships']
             }
         });
@@ -1059,11 +1061,12 @@ export function mechanicsPage(content){
                 para_data: {
                     1: [loc('outer_shipyard_class_freighter')],
                     2: [loc('outer_shipyard_fleet')],
-                    3: [pct(s.stealth),s.evade],
+                    3: [pct(s.stealth),s.evade,pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                     5: [s.rounds]
                 },
                 data_link: {
-                    2: ['wiki.html#mechanics-gameplay-tp_ships_fleets']
+                    2: ['wiki.html#mechanics-gameplay-tp_ships_fleets'],
+                    3: [false,false,false,'wiki.html#shadow_war-tp_tech-improved_sensors']
                 }
             });
         }
@@ -1072,10 +1075,13 @@ export function mechanicsPage(content){
             infoBoxBuilder(swar,{ name: 'swar_patrol', template: 'mechanics', label: loc('wiki_mechanics_swar_patrol'), paragraphs: 7, break: [3,5], h_level: 2,
                 para_data: {
                     1: [loc('tech_ship_patrols')],
-                    3: [pct(s.stealth)],
+                    3: [pct(s.stealth),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                     4: [detectorSegments(),s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
                     5: [s.chaseDays,pct(s.chaseSpeed - 1)],
                     7: [s.rounds]
+                },
+                data_link: {
+                    3: [false,false,'wiki.html#shadow_war-tp_tech-improved_sensors']
                 }
             });
         }
@@ -1147,11 +1153,11 @@ export function mechanicsPage(content){
                 1: [loc('tech_syndicate_base_data'),loc('counter_espionage')],
                 2: [loc('counter_espionage')],
                 3: [5,20],
-                5: [sWarfare.containmentStops,loc('tech_alien_containment'),loc('space_dwarf_alien_containment_title'),sWarfare.containmentCapture * 100,sWarfare.interrogationTime,sWarfare.intelMin,sWarfare.intelMax,loc('resource_Alien_Intel_name')]
+                5: [sWarfare.containmentStops,loc('tech_alien_containment'),loc('space_dwarf_alien_containment_title'),+(containmentCaptureChance(false) * 100).toFixed(1),interrogationDuration(false),sWarfare.intelMin,sWarfare.intelMax,loc('resource_Alien_Intel_name'),sWarfare.containmentCapacity,+(containmentCaptureChance(true) * 100).toFixed(1),loc('tech_takedown_tactics'),interrogationDuration(true),loc('tech_we_have_ways')]
             },
             data_link: {
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_base_data',false],
-                5: ['wiki.html#shadow_war-tp_tech-alien_containment']
+                5: [false,'wiki.html#shadow_war-tp_tech-alien_containment',false,false,false,false,false,false,false,false,'wiki.html#shadow_war-tp_tech-takedown_tactics',false,'wiki.html#shadow_war-tp_tech-we_have_ways']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`infiltrators`,loc('wiki_mechanics_infiltrators'));
@@ -3635,7 +3641,7 @@ function tpShipsCostsCalc(info){
                 return num !== undefined ? num : loc('wiki_calc_tp_ships_costs_' + type);
             },
             genericLabel(type, val){
-                return val ? loc(`outer_shipyard_${type}_${val}`) : loc(`outer_shipyard_${type}`);
+                return val ? loc(shipPartKey(type, val)) : loc(`outer_shipyard_${type}`);
             },
             getBase(val, type, resource){
                 if (!val){
@@ -4096,7 +4102,7 @@ function tpShipsPowerCalc(info){
                 }
             },
             genericLabel(type, val){
-                return val ? loc(`outer_shipyard_${type}_${val}`) : loc(`outer_shipyard_${type}`);
+                return val ? loc(shipPartKey(type, val)) : loc(`outer_shipyard_${type}`);
             },
             genericVal(val, type){
                 if (!val){
@@ -4505,7 +4511,7 @@ function tpShipsScanCalc(info){
             sensorVal(sensor){
                 switch (sensor){
                     case 'visual':
-                        return 1;
+                        return improvedSensors() ? sensorUpgrade.passiveRange : 1;
                     case 'radar':
                         return 10;
                     case 'lidar':
@@ -4534,7 +4540,7 @@ function tpShipsScanCalc(info){
                 }
             },
             sensorLabel(sensor){
-                return sensor ? loc('outer_shipyard_sensor_' + sensor) : loc('outer_shipyard_sensor');
+                return sensor ? loc(shipPartKey('sensor', sensor)) : loc('outer_shipyard_sensor');
             },
             classLabel(shipClass){
                 return shipClass ? loc('outer_shipyard_class_' + shipClass) : loc('outer_shipyard_class');

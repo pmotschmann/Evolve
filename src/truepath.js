@@ -6850,7 +6850,6 @@ function zBlockadeDay(fleet){
 
 // Shared Syndicate Warfare settings, also used by the wiki.
 export const sWarfare = {
-    watchDays: 25,          // Days before corsairs appear after prerequisites.
     lostMin: 25,            // Minimum respawn delay after a loss.
     lostMax: 50,            // Maximum respawn delay after a loss.
     repair: 4,              // Hull repair per day.
@@ -6888,8 +6887,11 @@ export const sWarfare = {
     // Alien Containment settings.
     containmentStops: 10,       // Infiltrators stopped to unlock Alien Containment.
     containmentSegments: 25,    // Construction segments required.
-    containmentCapture: 0.25,   // Capture chance per successful officer action.
+    containmentCapacity: 25,    // Captives the completed facility can hold.
+    containmentCapture: 0.1,    // Capture chance per successful officer action.
+    takedownCapture: 2,         // Capture chance multiplier from Takedown Tactics.
     interrogationTime: 600,     // Seconds per captive interrogation.
+    interrogationCut: 0.25,     // Share of interrogation time removed by We Have Ways.
     intelMin: 50,               // Minimum Alien Intel per interrogation.
     intelMax: 100               // Maximum Alien Intel per interrogation.
 };
@@ -7078,8 +7080,8 @@ export function counterEspionageDay(){
                 if (Object.keys(alien.infiltrators[zone.id]).length === 0){ delete alien.infiltrators[zone.id]; }
             }
             alien.caught++;
-            if (containmentActive() && seededRandom(0,1,true) < sWarfare.containmentCapture){
-                const facility = containmentBuilt();
+            const facility = containmentActive() && containmentBuilt();
+            if (facility && facility.captives < sWarfare.containmentCapacity && seededRandom(0,1,true) < containmentCaptureChance()){
                 facility.captives++;
                 messageQueue(loc('counter_espionage_captured',[zone.name,loc('space_dwarf_alien_containment_title')]),'success',false,['combat']);
             }
@@ -7091,11 +7093,22 @@ export function counterEspionageDay(){
     // Unlock Alien Containment after enough infiltrators are stopped.
     if (global.tech['shadow'] === 13 && alien.caught >= sWarfare.containmentStops){
         global.tech.shadow = 14;
+        global.resource.Alien_Intel.display = true;
         drawTech();
     }
 }
 
 // --- Alien Containment ---------------------------------------------------------------------------
+// Chance a successful officer takes an infiltrator alive; Takedown Tactics (spy 6) multiplies it.
+export function containmentCaptureChance(takedown = global.tech['spy'] >= 6){
+    return sWarfare.containmentCapture * (takedown ? sWarfare.takedownCapture : 1);
+}
+
+// Seconds to interrogate one captive; We Have Ways (spy 7) shortens it.
+export function interrogationDuration(ways = global.tech['spy'] >= 7){
+    return sWarfare.interrogationTime * (ways ? 1 - sWarfare.interrogationCut : 1);
+}
+
 // Manage captured infiltrators and convert them to Alien Intel.
 
 // Return the completed facility state, or false.
@@ -7105,6 +7118,7 @@ export function containmentBuilt(){
     for (const field of ['captives','p']){
         if (typeof facility[field] !== 'number' || !Number.isFinite(facility[field])){ facility[field] = 0; }
     }
+    facility.captives = Math.min(sWarfare.containmentCapacity, Math.max(0, Math.floor(facility.captives)));
     return facility;
 }
 
@@ -7135,8 +7149,9 @@ export function alienContainmentTick(seconds){
         return;
     }
     facility.p += seconds;
-    while (facility.captives > 0 && facility.p >= sWarfare.interrogationTime){
-        facility.p -= sWarfare.interrogationTime;
+    const duration = interrogationDuration();
+    while (facility.captives > 0 && facility.p >= duration){
+        facility.p -= duration;
         facility.captives--;
         const intel = Math.floor(seededRandom(sWarfare.intelMin,sWarfare.intelMax + 1,true));
         if (!global.resource.Alien_Intel.display){ global.resource.Alien_Intel.display = true; }
@@ -7179,18 +7194,18 @@ export function syndicateShips(){
         .filter(ship => ship && ship.damage < 100);
 }
 
-// Start the corsair watch once its prerequisites are met.
+// Start the corsair offensive for saves with Ship Patrols.
 function syndicateWatch(){
-    if (corsairsActive()){ return; }
-    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){
-        delete global.race['sy_watch'];
-        return;
-    }
-    // Advance corsair timers using game days.
-    if (typeof global.race['sy_watch'] !== 'number'){ global.race['sy_watch'] = global.stats.days; }
-    if (global.stats.days - global.race.sy_watch < sWarfare.watchDays){ return; }
-
     delete global.race['sy_watch'];
+    if (corsairsActive()){ return; }
+    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){ return; }
+    startCorsairs();
+    drawTech();
+}
+
+// Launch the corsair offensive. Researching Ship Patrols calls this directly.
+export function startCorsairs(){
+    if (corsairsActive()){ return; }
     global.tech['shadow'] = 6;
     // Choose each corsair base from seeded world data.
     let home = seededRandom(0,2) < 1 ? 'spc_pluto' : 'spc_haumea';
@@ -7210,7 +7225,6 @@ function syndicateWatch(){
         };
     });
     messageQueue(loc('syndicate_corsairs_msg'),'danger',false,['combat','progress']);
-    drawTech();
 }
 
 function corsairHull(region){
@@ -7369,7 +7383,7 @@ function corsairEngageDrive(corsair){
 
 // The escort's chance of seeing one coming.
 function corsairSpotted(group){
-    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
+    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * sensorStealth();
     if (scan <= 0){ return false; }
     return seededRandom(0,1,true) < scan / (scan + sWarfare.evade);
 }
@@ -7397,7 +7411,7 @@ function corsairFight(corsair,group,where,sneak){
 
     for (let round = 0; round < sWarfare.rounds && corsair.damage < 100; round++){
         // Apply corsair stealth to defender sensor range.
-        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
+        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * sensorStealth();
         group.forEach(function(ship){
             if (ship.damage >= 100 || corsair.damage >= 100){ return; }
             if (seededRandom(0,1,true) >= playerAccuracy(scan,corsair)){ return; }
@@ -7723,7 +7737,7 @@ function patrolHunt(){
         for (const corsair of corsairs){
             const away = dist3(at,shipPoint(corsair));
             if (away >= near){ continue; }
-            if (away <= sensorRangeAU(lead) * sWarfare.stealth || detectorCue(at,corsair)){ quarry = corsair; near = away; }
+            if (away <= sensorRangeAU(lead) * sensorStealth() || detectorCue(at,corsair)){ quarry = corsair; near = away; }
         }
         if (!quarry){ continue; }
 
@@ -8319,7 +8333,7 @@ export function drawShipYard(){
         Object.keys(shipParts).forEach(function(k){
             let values = ``;
             shipParts[k].forEach(function(v,idx){
-                values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
+                values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">{{ lbl('${v}', '${k}') }}</b-dropdown-item>`;
             });
 
             // The special mount is not part of a hull until it has been researched, so the whole
@@ -8492,7 +8506,7 @@ export function drawShipYard(){
                     drawShips();
                 },
                 lbl(l,c){
-                    return loc(`outer_shipyard_${c}_${l}`);
+                    return loc(shipPartKey(c,l));
                 }
             }
         });
@@ -8504,7 +8518,7 @@ export function drawShipYard(){
                     if (type === 'armor'){ return armorDesc(val); }
                     if (val === 'fuel_tanker'){ return loc(`outer_shipyard_special_fuel_tanker_desc`,[tankerFuelRange]); }
                     if (val === 'mobile_storage'){ return loc(`outer_shipyard_special_mobile_storage_desc`); }
-                    return loc(`outer_shipyard_${type}_${val}_desc`);
+                    return loc(`${shipPartKey(type,val)}_desc`);
                 },
                 {
                     elm: `#shipPlans .${type}.a${i}`,
@@ -8536,7 +8550,7 @@ export function TPShipDesc(parent,obj){
     });
 
     var desc = $(`<div class="shipPopper"></div>`);
-    var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(`outer_shipyard_sensor_${ship.sensor}`)}</div>`);
+    var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(shipPartKey('sensor',ship.sensor))}</div>`);
     parent.append(desc);
 
     desc.append(shipPattern);
@@ -8985,15 +8999,16 @@ export function shipPower(ship, wiki){
             break;
     }
 
+    const sensorDraw = improvedSensors() ? 1 - sensorUpgrade.powerCut : 1;
     switch (ship.sensor){
         case 'radar':
-            watts -= Math.round(10 * use_inflate);
+            watts -= Math.round(10 * sensorDraw * use_inflate);
             break;
         case 'lidar':
-            watts -= Math.round(25 * use_inflate);
+            watts -= Math.round(25 * sensorDraw * use_inflate);
             break;
         case 'quantum':
-            watts -= Math.round(75 * use_inflate);
+            watts -= Math.round(75 * sensorDraw * use_inflate);
             break;
     }
 
@@ -10693,7 +10708,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(shipPartKey('sensor',ship.sensor))}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -11359,7 +11374,7 @@ export function sensorRange(s){
     }
     switch (s.sensor){
         case 'visual':
-            return 1;
+            return improvedSensors() ? sensorUpgrade.passiveRange : 1;
         case 'radar':
             return 10 * hf;
         case 'lidar':
@@ -11367,6 +11382,28 @@ export function sensorRange(s){
         case 'quantum':
             return 32 * hf;
     }
+}
+
+// Improved Sensors values used by ship sensor calculations.
+export const sensorUpgrade = {
+    powerCut: 0.25,     // Share of sensor power draw removed.
+    passiveRange: 5,    // Passive Radar reach in Gm; visual sightings reach 1.
+    stealth: 0.5        // Sensor-range multiplier against stealth hulls, up from sWarfare.stealth.
+};
+
+export function improvedSensors(){
+    return global.tech['syard_sensor'] >= 5 ? true : false;
+}
+
+// Return a ship-part locale key, including the Passive Radar upgrade.
+export function shipPartKey(part, val){
+    return part === 'sensor' && val === 'visual' && improvedSensors() ? 'outer_shipyard_sensor_passive' : `outer_shipyard_${part}_${val}`;
+}
+
+// Return the sensor-range multiplier against a target.
+export function sensorStealth(foe){
+    const stealth = foe ? (foe.stealth || 1) : sWarfare.stealth;
+    return stealth < 1 && improvedSensors() ? Math.max(stealth, sensorUpgrade.stealth) : stealth;
 }
 
 // Sensor ratings are gigameters; the map works in AU. A quantum set on a frigate reads 64 Gm, which is a shade over 0.42 AU
@@ -11389,7 +11426,7 @@ function sensorContact(foe){
     if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
     for (let ship of global.space.shipyard.ships){
         if (!ship.location || !ship.location.position){ continue; }
-        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * (foe.stealth || 1)){ return true; }
+        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * sensorStealth(foe)){ return true; }
     }
     return false;
 }
@@ -13038,7 +13075,7 @@ function shipRefitModal(id, modal){
             // Show the original part when the plan changes this slot.
             let fitted = part === 'special' ? shipSpecial(design) : design[part];
             let held = part === 'special' ? shipSpecial(ship) : ship[part];
-            let was = held === fitted ? `` : ` <span class="refitWas has-text-info">${loc('outer_shipyard_refit_was',[loc(`outer_shipyard_${part}_${held}`)])}</span>`;
+            let was = held === fitted ? `` : ` <span class="refitWas has-text-info">${loc('outer_shipyard_refit_was',[loc(shipPartKey(part,held))])}</span>`;
             let row = $(`<div class="refitSlot"><span class="refitLabel has-text-warning">${loc(`outer_shipyard_${part}`)}</span>${was}</div>`);
             let offered = 0;
             shipParts[part].forEach(function(v,idx){
@@ -13046,13 +13083,13 @@ function shipRefitModal(id, modal){
                 offered++;
                 // Mark the selected part visually and for assistive technology.
                 let on = fitted === v;
-                $(`<button class="button is-small ${on ? `is-success refitOn` : `is-info`}" aria-pressed="${on}">${on ? `&#10003; ` : ``}${loc(`outer_shipyard_${part}_${v}`)}</button>`)
+                $(`<button class="button is-small ${on ? `is-success refitOn` : `is-info`}" aria-pressed="${on}">${on ? `&#10003; ` : ``}${loc(shipPartKey(part,v))}</button>`)
                     .on('click', function(){ plan[part] = v; paint(); })
                     .appendTo(row);
             });
             // Show fixed slots that have no available alternatives.
             if (offered === 0){
-                row.append(`<span class="refitFixed has-text-caution">${loc(`outer_shipyard_${part}_${fitted}`)} <span class="has-text-info">(${loc('outer_shipyard_refit_fixed')})</span></span>`);
+                row.append(`<span class="refitFixed has-text-caution">${loc(shipPartKey(part,fitted))} <span class="has-text-info">(${loc('outer_shipyard_refit_fixed')})</span></span>`);
             }
             bay.append(row);
         });

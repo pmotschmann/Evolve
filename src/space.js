@@ -8,7 +8,7 @@ import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt, interrogationDuration } from './truepath.js';
 import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -3273,10 +3273,11 @@ const spaceProjects = {
                 }
                 const facility = containmentBuilt();
                 if (!wiki && facility){
-                    desc += `<div>${loc('space_dwarf_alien_containment_captives',[facility.captives])}</div>`;
+                    desc += `<div>${loc('space_dwarf_alien_containment_captives',[facility.captives,sWarfare.containmentCapacity])}</div>`;
                     if (facility.captives > 0){
-                        const pct = Math.floor(facility.p / sWarfare.interrogationTime * 100);
-                        const left = timeFormat(Math.max(0, sWarfare.interrogationTime - facility.p));
+                        const duration = interrogationDuration();
+                        const pct = Math.min(100, Math.floor(facility.p / duration * 100));
+                        const left = timeFormat(Math.max(0, duration - facility.p));
                         desc += `<div>${loc('space_dwarf_alien_containment_progress',[pct,left])}</div>`;
                     }
                 }
