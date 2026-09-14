@@ -4332,7 +4332,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[this.knowVal()])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
 
                 // How far along the Womlings are is only legible to someone who has ruled them before.
@@ -8766,6 +8766,10 @@ export function shipyardPayer(){
 function buildTPShip(ship, queue){
     let locationName = shipyardZone();
     TPShipInitTransit(ship, locationName);
+    // A queued Supply Ship may carry a fit that is no longer offered.
+    if (ship.class === 'supply_ship' && !shipSpecialAllowed(shipSpecial(ship),ship.class)){
+        ship.special = shipDefaultSpecial(ship.class);
+    }
 
     ship.damage = 0;
     // A hull leaves the yard fuelled. Fuelling it is part of building it, and a ship delivered dry
@@ -9029,12 +9033,14 @@ function explorerRetired(){
 const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster','mobile_storage','fuel_tanker','repair_ship'];
 const freighterSpecials = ['extra_fuel','extra_cargo','extra_thruster'];
 // A Supply Ship is nothing but the fit it carries, so its slot is never empty. Mobile Storage leads
-// the list because it is what an unconfigured hull is built as.
+// the list because it is what an unconfigured hull is built as once supply zones exist.
 export const supplyShipSpecials = ['mobile_storage','fuel_tanker','repair_ship'];
 
 // Ships allowed to carry mass drivers
 const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
 export function shipSpecialAllowed(special,shipClass){
+    // Mobile Storage stocks a supply zone, so it is not offered until the zones exist.
+    if (special === 'mobile_storage' && supplyMode() === 'global'){ return false; }
     if (supplyShipSpecials.includes(special)){ return shipClass === 'supply_ship'; }
     // Supply Ships require a supported fit.
     if (shipClass === 'supply_ship'){ return false; }
@@ -9046,7 +9052,8 @@ export function shipSpecialAllowed(special,shipClass){
 // What a hull falls back to when its current special does not fit it — a class change in the yard, or
 // a copied design whose fit the new class cannot carry.
 export function shipDefaultSpecial(shipClass){
-    return shipClass === 'supply_ship' ? 'mobile_storage' : 'none';
+    if (shipClass !== 'supply_ship'){ return 'none'; }
+    return shipSpecialAllowed('mobile_storage',shipClass) ? 'mobile_storage' : 'fuel_tanker';
 }
 
 // --- Hull slots ---------------------------------------------------------------------------------
@@ -9078,7 +9085,7 @@ function shipPartAvailable(part, idx, value, shipClass){
     }
     if (part === 'special'){
         // Supply Ship fits do not require special-slot technology.
-        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value); }
+        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value) && shipSpecialAllowed(value,shipClass); }
         if (shipClass === 'freighter'){ return freighterSpecials.includes(value); }
         // Do not offer specials unsupported by this hull.
         if (!shipSpecialAllowed(value,shipClass)){ return false; }
@@ -9982,6 +9989,14 @@ function advanceTradeRoutes(step){
     });
 }
 
+// Supply ship cost creep tracked seperatly per module type
+function sameCostTier(ship, bp){
+    if (ship.class !== bp.class){ return false; }
+    if (bp.class !== 'supply_ship'){ return true; }
+    const fit = s => supplyShipSpecials.includes(shipSpecial(s)) ? shipSpecial(s) : supplyShipSpecials[0];
+    return fit(ship) === fit(bp);
+}
+
 export function shipCosts(bp){
     let costs = {};
 
@@ -10179,7 +10194,7 @@ export function shipCosts(bp){
 
     let typeCount = 0;
     global.space.shipyard.ships.forEach(function(ship){
-        if (ship.class === bp.class){
+        if (sameCostTier(ship,bp)){
             typeCount++;
         }
     });
