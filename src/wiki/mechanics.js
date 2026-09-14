@@ -1026,14 +1026,14 @@ export function mechanicsPage(content){
         let swar = infoBoxBuilder(mainContent,{ name: 'swar', template: 'mechanics', label: loc('wiki_mechanics_swar'), paragraphs: 4, break: [3], h_level: 2,
             para_data: {
                 1: [loc('tech_syndicate_threat_analysis')],
-                2: [loc('tech_ship_patrols'),loc('outer_shipyard_class_freighter')],
+                2: [s.startMin,s.startMax,s.homeBerths,loc('outer_shipyard_class_freighter'),getSolarName('venus'),loc('tech_syndicate_tactics'),s.venusBerths],
                 3: [pct(s.stealth),loc('outer_shipyard_sensors'),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                 4: [loc('wiki_mechanics_tp_ships')]
             },
             data_link: {
                 3: [false,false,false,'wiki.html#shadow_war-tp_tech-improved_sensors'],
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
-                2: ['wiki.html#shadow_war-tp_tech-ship_patrols'],
+                2: [false,false,false,false,false,'wiki.html#shadow_war-tp_tech-syndicate_tactics'],
                 4: ['wiki.html#mechanics-gameplay-tp_ships']
             }
         });
@@ -1074,13 +1074,14 @@ export function mechanicsPage(content){
         { // Standing patrols
             infoBoxBuilder(swar,{ name: 'swar_patrol', template: 'mechanics', label: loc('wiki_mechanics_swar_patrol'), paragraphs: 7, break: [3,5], h_level: 2,
                 para_data: {
-                    1: [loc('tech_ship_patrols')],
+                    1: [loc('space_gas_sector_command_title'),getSolarName('gas'),loc('tech_ship_patrols')],
                     3: [pct(s.stealth),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                     4: [detectorSegments(),s.detectorRange,s.detectorStealthRange,loc('tech_stealth_detection')],
                     5: [s.chaseDays,pct(s.chaseSpeed - 1)],
                     7: [s.rounds]
                 },
                 data_link: {
+                    1: ['wiki.html#space-tp_structures-sector_command',false,'wiki.html#shadow_war-tp_tech-ship_patrols'],
                     3: [false,false,'wiki.html#shadow_war-tp_tech-improved_sensors']
                 }
             });
@@ -1106,12 +1107,15 @@ export function mechanicsPage(content){
     }
 
     { // Supply Zones
-        let supply = infoBoxBuilder(mainContent,{ name: 'supply', template: 'mechanics', label: loc('wiki_mechanics_supply'), paragraphs: 3, break: [2,3], h_level: 2,
+        let supply = infoBoxBuilder(mainContent,{ name: 'supply', template: 'mechanics', label: loc('wiki_mechanics_supply'), paragraphs: 4, break: [2,3,4], h_level: 2,
             para_data: {
-                1: [loc('tech_syndicate_threat_analysis')]
+                1: [loc('tech_syndicate_threat_analysis')],
+                2: [loc('supply_zone_sol'),loc('supply_zone_tauceti'),global.resource.Unobtainium.name],
+                3: [loc('tech_syndicate_tactics'),loc('supply_zone_sol')]
             },
             data_link: {
-                1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis']
+                1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
+                3: ['wiki.html#shadow_war-tp_tech-syndicate_tactics']
             }
         });
 

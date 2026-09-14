@@ -8,7 +8,7 @@ import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt, interrogationDuration } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt, interrogationDuration, sectorCommandBuilt, sectorCommandComplete } from './truepath.js';
 import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -792,6 +792,8 @@ const spaceProjects = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.colonist.workers += hired;
+                        // Raise the job's target too, or a later dip in population never refills these seats.
+                        global.civic.colonist.assigned = (global.civic.colonist.assigned || 0) + hired;
                     }
                     return true;
                 }
@@ -2326,6 +2328,71 @@ const spaceProjects = {
                 };
             }
         },
+        sector_command: {
+            id: 'space-sector_command',
+            title(){ return loc('space_gas_sector_command_title'); },
+            desc(wiki){
+                let head = `<div>${loc('space_gas_sector_command_desc',[planetName().gas])}</div>`;
+                if (!sectorCommandBuilt() || wiki){
+                    return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.commandSegments])}</div>`;
+                }
+                return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            category: 'military',
+            reqs: { syard_fleet: 3 },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return sWarfare.commandSegments - (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0); },
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 250000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 750000 : 0; },
+                Mythril(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 2500000 : 0; },
+                Nano_Tube(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 25000000 : 0; },
+                Graphene(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 15000000 : 0; },
+                Positronium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 20000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0)) < sWarfare.commandSegments ? 500000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('sector_command') ? global.space.sector_command.count : 0);
+                if (count < sWarfare.commandSegments){
+                    return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.commandSegments - count])}</div>`;
+                }
+                let fit = sWarfare.commandFit;
+                let desc = `<div>${loc('space_gas_sector_command_effect',[planetName().gas,loc(`outer_shipyard_class_${fit.class}`),loc(`outer_shipyard_weapon_${fit.weapon}`),loc(`outer_shipyard_sensor_${fit.sensor}`),planetName().gas_moon,Math.round(sWarfare.commandMoonFire * 100)])}</div>`;
+                desc += `<div>${loc('space_gas_sector_command_patrols',[loc('tech_ship_patrols')])}</div>`;
+                const command = sectorCommandBuilt();
+                if (!wiki && command){
+                    desc += command.down
+                        ? `<div class="has-text-danger">${loc('space_gas_sector_command_repairing',[Math.ceil(command.damage / sWarfare.commandRepair)])}</div>`
+                        : `<div>${loc('space_gas_sector_command_hull',[Math.round(100 - command.damage)])}</div>`;
+                }
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(sWarfare.commandPower); },
+            // Enable power controls after construction.
+            switchable(){ return sectorCommandBuilt() ? true : false; },
+            on_cap(){ return sectorCommandBuilt() ? 1 : 0; },
+            action(args){
+                if (!sectorCommandBuilt() && payCosts(this)){
+                    incrementStruct(this);
+                    if (global.space.sector_command.count >= sWarfare.commandSegments){
+                        global.space.sector_command.on = 1;
+                        sectorCommandComplete();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, damage: 0 },
+                    p: ['sector_command','space']
+                };
+            }
+        },
     },
     spc_gas_moon: {
         info: {
@@ -2574,6 +2641,7 @@ const spaceProjects = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.space_miner.workers += hired;
+                        global.civic.space_miner.assigned = (global.civic.space_miner.assigned || 0) + hired;
                     }
                     if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 1000){
                         global.race.orbit_decay = global.stats.days + 1000;
@@ -7363,6 +7431,7 @@ const structDefinitions = {
     gas_mining: { count: 0, on: 0 },
     gas_storage: { count: 0 },
     star_dock: { count: 0, ship: 0, probe: 0, template: 'human' },
+    sector_command: { count: 0, on: 0, damage: 0 },
     outpost: { count: 0, on: 0 },
     drone: { count: 0 },
     oil_extractor: { count: 0, on: 0 },

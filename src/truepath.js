@@ -231,6 +231,8 @@ const outerTruth = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.titan_colonist.workers += hired;
+                        // Raise the job's target too, or a later dip in population never refills these seats.
+                        global.civic.titan_colonist.assigned = (global.civic.titan_colonist.assigned || 0) + hired;
                     }
                     if (global.space.titan_quarters.count === 1){
                         renderSpace();
@@ -2888,6 +2890,7 @@ const tauCetiModules = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.pit_miner.workers += hired;
+                        global.civic.pit_miner.assigned = (global.civic.pit_miner.assigned || 0) + hired;
                     }
                     drawShips();
                     return true;
@@ -3264,6 +3267,7 @@ const tauCetiModules = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.pit_miner.workers += hired;
+                        global.civic.pit_miner.assigned = (global.civic.pit_miner.assigned || 0) + hired;
                     }
                     return true;
                 }
@@ -3527,6 +3531,9 @@ const tauCetiModules = {
                         list['Stanene'] = 1000;
                         list['Bolognium'] = 750;
                         list['Orichalcum'] = 750;
+                        if (global.tech.shadow >= 5){
+                            list['Unobtainium'] = 1500;
+                        }
                     }
                     if (global.resource.Tungsten.display){
                         list['Tungsten'] = 2000;
@@ -6245,7 +6252,8 @@ const zOvermindDamage = 10;
 
 // Firepower turned into hull damage.
 function combatDamage(attacker,defender){
-    let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
+    // A station firing beyond its own orbit lands only part of its firepower.
+    let raw = shipAttackPower(attacker) * (attacker.fire ?? 1) / zCombatDamageDivisor;
     // Apply corsair weapons independently from horde weapon bonuses.
     if (attacker.enemy && !attacker.syn && zEndless()){ raw *= zOvermindDamage; }
     return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender) * (1 - fleetDamageSoak(defender))));
@@ -6253,12 +6261,19 @@ function combatDamage(attacker,defender){
 
 // Your ships holding a location, able to shoot.
 function guardsAt(locationName){
-    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return []; }
-    return global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
+    let guards = [];
+    if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+        guards = global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
+    }
+    // Sector Command defends Jupiter and Ganymede alongside anything in orbit.
+    const station = sectorCommandGuard(locationName);
+    if (station){ guards.push(station); }
+    return guards;
 }
 
 // A ship shot out from under its crew. The ship is gone from the roster and the crew with it.
 function destroyPlayerShip(ship,locationName){
+    if (ship.station){ sectorCommandDown(locationName); return; }
     let crew = shipCrewSize(ship);
     // Losing the flagship scatters the fleet it was holding together, so stand it down before the hull
     // leaves the roster and the fleet id goes with it.
@@ -6850,6 +6865,10 @@ function zBlockadeDay(fleet){
 
 // Shared Syndicate Warfare settings, also used by the wiki.
 export const sWarfare = {
+    startMin: 10,           // Earliest day after Syndicate Threat Analysis that corsairs appear.
+    startMax: 25,           // Latest day after Syndicate Threat Analysis that corsairs appear.
+    homeBerths: 2,          // Corsairs the outer base fields at once, until shadow 12.
+    venusBerths: 1,         // Corsairs the Venus base fields once Syndicate Tactics wakes it.
     lostMin: 25,            // Minimum respawn delay after a loss.
     lostMax: 50,            // Maximum respawn delay after a loss.
     repair: 4,              // Hull repair per day.
@@ -6893,7 +6912,13 @@ export const sWarfare = {
     interrogationTime: 600,     // Seconds per captive interrogation.
     interrogationCut: 0.25,     // Share of interrogation time removed by We Have Ways.
     intelMin: 50,               // Minimum Alien Intel per interrogation.
-    intelMax: 100               // Maximum Alien Intel per interrogation.
+    intelMax: 100,              // Maximum Alien Intel per interrogation.
+    // Sector Command at Jupiter.
+    commandSegments: 10,        // Construction segments required.
+    commandPower: 10,           // Power draw once complete.
+    commandMoonFire: 0.5,       // Share of its firepower that reaches Ganymede.
+    commandRepair: 2,           // Hull repaired per day while powered.
+    commandFit: { class: 'dreadnought', power: 'none', engine: 'none', weapon: 'disruptor', armor: 'neutronium', sensor: 'quantum', special: 'none' }
 };
 
 const counterEspionageZoneDefs = [
@@ -7171,6 +7196,12 @@ export function syndicateBases(){
     return corsairsActive() ? ['spc_venus', global.race.sy_base.home] : [];
 }
 
+// Return whether a corsair base is active; Venus awaits Syndicate Tactics.
+function corsairBaseAwake(region){
+    if (region !== sWarfare.guardRegion){ return true; }
+    return global.tech['shadow'] && global.tech.shadow >= 8 ? true : false;
+}
+
 // Return a base's corsair fleet, migrating legacy saves.
 function corsairFleet(base){
     if (!base){ return []; }
@@ -7183,8 +7214,8 @@ function corsairFleet(base){
 
 // Return a base's concurrent corsair capacity.
 function corsairBerths(region){
-    if (region === sWarfare.guardRegion){ return 1; }
-    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : 1;
+    if (region === sWarfare.guardRegion){ return sWarfare.venusBerths; }
+    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : sWarfare.homeBerths;
 }
 
 // Every corsair currently off its dock, for the map and for anything hunting them.
@@ -7194,16 +7225,23 @@ export function syndicateShips(){
         .filter(ship => ship && ship.damage < 100);
 }
 
-// Start the corsair offensive for saves with Ship Patrols.
+// Start the corsair offensive a seeded 10–25 days after Syndicate Threat Analysis.
 function syndicateWatch(){
     delete global.race['sy_watch'];
-    if (corsairsActive()){ return; }
-    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){ return; }
+    if (corsairsActive() || !global.tech['shadow'] || global.tech.shadow < 5){
+        delete global.race['sy_start'];
+        return;
+    }
+    if (typeof global.race['sy_start'] !== 'number'){
+        global.race['sy_start'] = global.stats.days + Math.floor(seededRandom(sWarfare.startMin,sWarfare.startMax + 1,true));
+    }
+    if (global.stats.days < global.race.sy_start){ return; }
+    delete global.race['sy_start'];
     startCorsairs();
     drawTech();
 }
 
-// Launch the corsair offensive. Researching Ship Patrols calls this directly.
+// Launch the corsair offensive from the outer base; the Venus base is set up but stays dormant.
 export function startCorsairs(){
     if (corsairsActive()){ return; }
     global.tech['shadow'] = 6;
@@ -7647,6 +7685,9 @@ function corsairStalk(corsair){
 
     // Resolve interception as a robbery or escort fight.
     const company = shipFleet(quarry).filter(s => s.class !== 'freighter' && s.damage < 100);
+    // A freighter docked under Sector Command's guns is defended by it.
+    const station = quarry.inTransit ? false : sectorCommandGuard(quarry.location.name);
+    if (station){ company.push(station); }
     if (company.length > 0){ corsairAmbush(corsair,company,quarry); }
     else { corsairRaid(corsair,quarry); }
 }
@@ -7666,7 +7707,7 @@ function corsairBaseDay(region){
     const fleet = corsairFleet(base);
 
     // Launch a corsair into an available berth.
-    if (fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
+    if (corsairBaseAwake(region) && fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
         const ship = corsairHull(region);
         fleet.push(ship);
         base.launched++;
@@ -7680,6 +7721,12 @@ function corsairBaseDay(region){
 // Process one corsair's daily state.
 function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
+    const awake = corsairBaseAwake(region);
+    // A dormant base recalls anything it already had out.
+    if (!awake && !corsair.home && (corsair.inTransit || corsair.location.name !== region)){
+        corsairGoHome(corsair);
+        return;
+    }
     if (corsair.inTransit){
         // Interrupt prowling for a reachable hunt.
         if (corsair.prowl){ corsairHunt(corsair); }
@@ -7694,7 +7741,7 @@ function corsairBaseShipDay(corsair,region,elapsed){
             if (corsair.damage > 0){ return; }
         }
         corsair.haul = 0;
-        corsairHunt(corsair) || corsairProwl(corsair);
+        if (awake){ corsairHunt(corsair) || corsairProwl(corsair); }
         return;
     }
 
@@ -7702,13 +7749,15 @@ function corsairBaseShipDay(corsair,region,elapsed){
     if (corsairAssault(corsair)){ return; }
 
     // Hunt, prowl, or return home when idle.
-    if (!corsairHunt(corsair) && !corsairProwl(corsair)){ corsairGoHome(corsair); }
+    if (!awake || (!corsairHunt(corsair) && !corsairProwl(corsair))){ corsairGoHome(corsair); }
 }
 
 // --- Your patrols hunting for enemies --------------------------------------------------------------
 
 // A patrolling fleet that sees a corsair goes after it.
 function patrolHunt(){
+    // Patrol orders saved before Sector Command existed wait for it to be built.
+    if (!patrolsUnlocked()){ return; }
     const ships = global.space.shipyard?.ships || [];
     const corsairs = syndicateShips().filter(c => c.inTransit && shipPoint(c));
     if (corsairs.length === 0){ return; }
@@ -7892,6 +7941,7 @@ function syndicateGuardDay(){
 // Advance Syndicate bases, guard post, and patrols each day.
 export function syndicateDay(){
     counterEspionageDay();
+    sectorCommandDay();
     syndicateWatch();
     if (!corsairsActive()){ return; }
     syndicateBases().forEach(corsairBaseDay);
@@ -8622,9 +8672,9 @@ function TPShipInitTransit(ship, locationName) {
     ship.totalTime = 0;
 }
 
-// Grant one configured freighter per active supply region.
+// Return a freighter dock for a region or its supply zone.
 function freightDock(region){
-    return supplyPool(region);
+    return starData[resolveBody(region)] ? region : supplyPool(region);
 }
 
 export function repairSupplyFreighters(){
@@ -9619,7 +9669,14 @@ function tradeFleet(ship){
     return fleet.length ? fleet : [ship];
 }
 function tradeFreighters(group){ return group.filter(ship => ship.class === 'freighter'); }
-function tradeRoute(ship){ return ship && ship.tradeRoute && Array.isArray(ship.tradeRoute.stops) && ship.tradeRoute.stops.length > 1 ? ship.tradeRoute : false; }
+function tradeRoute(ship){
+    if (!ship || !ship.tradeRoute || !Array.isArray(ship.tradeRoute.stops) || ship.tradeRoute.stops.length <= 1){ return false; }
+    // A stop saved against a zone key ships cannot fly to (Tau Ceti's star, before its dock moved) follows its pool.
+    ship.tradeRoute.stops.forEach(function(stop){
+        if (stop && stop.zone && !starData[resolveBody(stop.zone)]){ stop.zone = supplyPool(stop.zone); }
+    });
+    return ship.tradeRoute;
+}
 function setTradeRoute(group, route){ group.forEach(ship => { ship.tradeRoute = deepClone(route); }); }
 function clearTradeRoute(group){ group.forEach(ship => { delete ship.tradeRoute; }); }
 // Use the earliest shipyard entry as a stable fleet route leader.
@@ -9640,8 +9697,9 @@ function tradeLeader(group){
 // the stops and how far along them the fleet has got. Like a trade route it lives on every ship of
 // the fleet, so any row of the shipyard can be asked about it.
 
+// Patrols need Sector Command, whose completion raises syard_fleet to 4.
 export function patrolsUnlocked(){
-    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 3 ? true : false;
+    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 4 ? true : false;
 }
 
 export function shipPatrol(ship){
@@ -11438,12 +11496,80 @@ export function foeDetected(foe){
 // Anything of yours with the point inside its sensor bubble. A hull built to be hard to see shrinks
 // that bubble rather than hiding outright: `stealth` is what is left of a set's reach against it.
 function sensorContact(foe){
+    // Sector Command watches from Jupiter by the same rules as a ship parked there.
+    const station = sectorCommandGuard('spc_gas');
+    if (station && dist3(station.location.position, foe.location.position) <= sensorRangeAU(station) * sensorStealth(foe)){ return true; }
     if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
     for (let ship of global.space.shipyard.ships){
         if (!ship.location || !ship.location.position){ continue; }
         if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * sensorStealth(foe)){ return true; }
     }
     return false;
+}
+
+// --- Sector Command ----------------------------------------------------------------------------------
+// Combat, sensor, and repair helpers for the Jupiter defense platform.
+
+// Return the completed structure, or false.
+export function sectorCommandBuilt(){
+    const command = global.space['sector_command'];
+    if (!command || !(command.count >= sWarfare.commandSegments)){ return false; }
+    if (typeof command.damage !== 'number' || !Number.isFinite(command.damage)){ command.damage = 0; }
+    return command;
+}
+
+// Whether it is complete, powered, and not knocked out.
+export function sectorCommandActive(){
+    const command = sectorCommandBuilt();
+    return command && !command.down && p_on['sector_command'] > 0 ? true : false;
+}
+
+// Return Sector Command as a defending ship at one of its supported locations.
+function sectorCommandGuard(where){
+    if (where !== 'spc_gas' && where !== 'spc_gas_moon'){ return false; }
+    if (!sectorCommandActive()){ return false; }
+    const command = sectorCommandBuilt();
+    const hull = Object.assign({}, sWarfare.commandFit, {
+        name: loc('space_gas_sector_command_title'),
+        station: true,
+        fire: where === 'spc_gas' ? 1 : sWarfare.commandMoonFire,
+        inTransit: false,
+        location: { name: 'spc_gas', position: genXYZcoord('spc_gas') }
+    });
+    Object.defineProperty(hull, 'damage', {
+        get(){ return command.damage; },
+        set(v){ command.damage = v; },
+        enumerable: true
+    });
+    return hull;
+}
+
+// Knocked out in combat: it stays offline until fully repaired.
+function sectorCommandDown(where){
+    const command = sectorCommandBuilt();
+    if (!command || command.down){ return; }
+    command.damage = 100;
+    command.down = true;
+    messageQueue(loc('space_gas_sector_command_lost',[loc('space_gas_sector_command_title'),regionName(where)]),'danger',false,['combat']);
+}
+
+// Daily repairs while powered.
+function sectorCommandDay(){
+    const command = sectorCommandBuilt();
+    if (!command || command.damage <= 0 || !(p_on['sector_command'] > 0)){ return; }
+    command.damage = Math.max(0, command.damage - sWarfare.commandRepair);
+    if (command.down && command.damage === 0){
+        command.down = false;
+        messageQueue(loc('space_gas_sector_command_restored',[loc('space_gas_sector_command_title'),planetName().gas]),'success',false,['combat']);
+    }
+}
+
+// Construction finished: patrols can now be ordered.
+export function sectorCommandComplete(){
+    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 4){ global.tech['syard_fleet'] = 4; }
+    messageQueue(loc('space_gas_sector_command_complete'),'warning',false,['progress','combat']);
+    drawTech();
+    drawShipYard();
 }
 
 // --- Detectors -----------------------------------------------------------------------------------

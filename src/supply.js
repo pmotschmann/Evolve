@@ -10,8 +10,21 @@ import { loc } from './locale.js';
 
 // 'global'   one combined pool, exactly as the game has always worked
 // 'regional' one pool per region, or per group of linked regions
+// Regional only once the stockpile has actually been divided. Research unlocks the zones mid-tick, and
+// until the next storage pass divides the stock every zone would read as empty: support structures
+// could draw no fuel, housing collapsed, and citizens were turned out of their homes.
 export function supplyMode(){
-    return global.tech['shadow'] && global.tech.shadow >= 5 ? 'regional' : 'global';
+    return supplyUnlocked() && global.race['supplySplit'] ? 'regional' : 'global';
+}
+
+// Whether Syndicate Threat Analysis has unlocked supply zones.
+export function supplyUnlocked(){
+    return global.tech['shadow'] && global.tech.shadow >= 5 ? true : false;
+}
+
+// Return whether Syndicate Tactics has split Sol into regional supply zones.
+export function supplyFragmented(){
+    return global.tech['shadow'] && global.tech.shadow >= 8 ? true : false;
 }
 
 // Resources split by supply zone
@@ -155,6 +168,9 @@ export function supplyRegionName(region, raw = false){
     if (!raw && group && group.p && group.r[0] === region){
         const named = planetName()[group.p];
         if (named){ return named; }
+        // A zone named for something that is not a world, such as the whole Sol system.
+        const zone = loc(`supply_zone_${group.p}`);
+        if (zone !== `supply_zone_${group.p}`){ return zone; }
     }
     if (region === CAPITAL && actions.space && actions.space.spc_home && actions.space.spc_home.info){
         const info = actions.space.spc_home.info;
@@ -202,6 +218,14 @@ function links(){
     for (let i = 0; i < groups.length; i++){
         if (Array.isArray(groups[i])){ groups[i] = { r: groups[i] }; }
         if (!groups[i].r){ groups[i].r = []; }
+        // Tau Ceti groups saved before its dock moved lead with the star, which ships cannot fly to.
+        const dock = TAU_ZONE.r[0];
+        const at = groups[i].r.indexOf(dock);
+        // Put the dock first before regional pools are initialized.
+        if (at > 0 && groups[i].r.includes('tau_star')){
+            groups[i].r.splice(at, 1);
+            groups[i].r.unshift(dock);
+        }
         // Add missing starting-zone names to legacy supply groups.
         if (!groups[i].p){
             const zone = STARTING_ZONES.find(z => z.p && z.r[0] === groups[i].r[0]);
@@ -479,7 +503,7 @@ export function splitByStorage(res){
     syncTotal(res);
 }
 
-// Starting zones for the initial supply split.
+// Supply zones after Syndicate Tactics; before then, Sol is one zone.
 const STARTING_ZONES = [
     // The home world and its moon.
     { r: [CAPITAL, 'spc_moon'] },
@@ -491,38 +515,131 @@ const STARTING_ZONES = [
     { r: ['spc_gas', 'spc_gas_moon'] },
     // Two moons of Saturn, grouped as "Saturn".
     { r: ['spc_titan', 'spc_enceladus'], p: 'saturn' },
-    // Tau Ceti is considered a single zone.
-    { r: ['tau_star', 'tau_home', 'tau_red', 'tau_gas', 'tau_roid', 'tau_gas2'] },
+    // Tau Ceti is considered a single zone. Its first region is where freighters pick up and drop off.
+    { r: ['tau_red', 'tau_star', 'tau_home', 'tau_gas', 'tau_roid', 'tau_gas2'], p: 'tauceti' },
 ];
 
-export function splitSupply(){
-    for (const zone of STARTING_ZONES){
-        // Skip the destroyed capital zone when splitting supplies.
-        if (capitalGone() && zone.r[0] === CAPITAL){ continue; }
-        // Joined to the first one in turn, so the zone keeps that region's name however many
-        // worlds it ends up holding.
-        for (let i = 1; i < zone.r.length; i++){
-            linkSupply(zone.r[0], zone.r[i], zone.p);
-        }
+// The Tau Ceti zone, which is the same at every stage.
+const TAU_ZONE = STARTING_ZONES.find(zone => zone.r.includes('tau_home'));
+
+// Whether a region belongs to the Sol system's stockpile.
+function solRegion(region){
+    return region.startsWith('spc_');
+}
+
+// Return zones for a 'sol' or 'full' supply stage.
+function stageZones(stage){
+    if (stage === 'full'){
+        // Skip the destroyed capital zone.
+        return STARTING_ZONES.filter(zone => !(capitalGone() && zone.r[0] === CAPITAL));
     }
+    const home = capitalZone();
+    const worlds = supplyRegions().filter(region => solRegion(region) && region !== home && !(capitalGone() && region === CAPITAL));
+    return [{ r: [home, ...worlds], p: 'sol' }, TAU_ZONE];
+}
+
+// Replace Sol and Tau Ceti groups for the requested supply stage.
+function applyZones(stage){
+    const groups = links();
+    const kept = groups.filter(group => !group.r.some(region => solRegion(region) || region.startsWith('tau_')));
+    const zones = stageZones(stage).map(zone => zone.p ? { r: zone.r.slice(), p: zone.p } : { r: zone.r.slice() });
+    groups.splice(0, groups.length, ...kept, ...zones);
+    poolsChanged();
+}
+
+// First division of the stockpile when supply zones unlock.
+export function splitSupply(stage = supplyFragmented() ? 'full' : 'sol'){
+    // Marked first, so the zones are regional while they are laid out.
+    global.race['supplySplit'] = stage;
+    applyZones(stage);
     for (const res in atomic_mass){
         if (!global.resource[res]){ continue; }
         splitStacks(res);
-        // Don't divide crafted resources.
-        if (uncapped(res)){
-            //delete global.resource[res].regDeal;   // clears the mark off a save that carries a stale one
-            //continue;
-        }
         const reg = regLedger(res);
         for (const pool in reg){ delete reg[pool]; }
-        // Marked as owed a division rather than divided here.
-        global.resource[res].regDeal = true;
+        // Marked as owed a division rather than divided here. Unobtainium is kept at Tau Ceti.
+        global.resource[res].regDeal = res === 'Unobtainium' && stage === 'sol' ? 'tau' : true;
     }
+}
+
+// Break the Sol stockpile into the full set of zones. Its stock is divided by storage on the next pass.
+function fragmentSupply(){
+    const from = supplyPool(capitalZone());
+    applyZones('full');
+    for (const res in atomic_mass){
+        if (!global.resource[res]){ continue; }
+        if (regAmount(res, from) > 0){ global.resource[res].regDeal = { from: from }; }
+    }
+    global.race['supplySplit'] = 'full';
+}
+
+// Synchronize supply zones with research and return the resulting change, if any.
+export function syncSupplyZones(){
+    if (!supplyUnlocked()){ return false; }
+    const want = supplyFragmented() ? 'full' : 'sol';
+    // Saves from before the Sol stage were always fully split.
+    const have = global.race['supplySplit'] === true ? 'full' : global.race['supplySplit'];
+    if (have === want){
+        global.race['supplySplit'] = want;
+        return false;
+    }
+    if (!have){
+        splitSupply(want);
+        return 'split';
+    }
+    if (want === 'full'){
+        fragmentSupply();
+        return 'fragment';
+    }
+    // Pools merged this way fold their ledgers together on the next pass, so nothing is lost.
+    applyZones('sol');
+    global.race['supplySplit'] = 'sol';
+    return 'merge';
 }
 
 // Whether this resource is still waiting to be divided between the worlds.
 function awaitingDeal(res){
     return !!global.resource[res].regDeal;
+}
+
+// Settle a pending regional resource division.
+function settleDeal(res, deal){
+    if (deal && deal.from){
+        dealSol(res, deal.from);
+        return;
+    }
+    if (deal === 'tau'){
+        const tau = supplyPool(TAU_ZONE.r[0]);
+        if (supplyPools().includes(tau)){
+            const reg = regLedger(res);
+            for (const pool in reg){ delete reg[pool]; }
+            reg[tau] = global.resource[res].amount;
+            syncTotal(res);
+            return;
+        }
+    }
+    splitByStorage(res);
+}
+
+// Divide a Sol supply pool by regional storage share.
+function dealSol(res, from){
+    const reg = regLedger(res);
+    const amount = reg[from] || 0;
+    if (amount <= 0){ return; }
+    const caps = regMaxLedger(res);
+    const open = uncapped(res);
+    const targets = supplyPools().filter(pool => poolRegions(pool).some(solRegion) && (open || caps[pool] > 0));
+    if (!targets.length){ return; }
+    let room = 0;
+    for (const pool of targets){ room += open ? 1 : caps[pool]; }
+    delete reg[from];
+    let left = amount;
+    targets.forEach(function(pool, i){
+        const give = i === targets.length - 1 ? left : amount * (open ? 1 : caps[pool]) / room;
+        reg[pool] = (reg[pool] || 0) + give;
+        left -= give;
+    });
+    syncTotal(res);
 }
 
 // Deal a resource's crates and containers evenly over the pools, remainder first-come.
@@ -841,9 +958,10 @@ function reclaimCapital(res){
 // it — and since linked regions are one pool, linking is what stops it being lost.
 export function clampPools(res){
     // Distribute pending resources after capacities are known.
-    if (awaitingDeal(res) && capsKnown(res)){
+    if (awaitingDeal(res) && (capsKnown(res) || uncapped(res))){
+        const deal = global.resource[res].regDeal;
         delete global.resource[res].regDeal;
-        splitByStorage(res);
+        settleDeal(res, deal);
     }
     ensureLedger(res);
     repool(res);
@@ -964,12 +1082,16 @@ const REGION_BASE_STORAGE = {
 };
 
 export function regionBaseStorage(res, region){
+    console.log(region);
     let base = REGION_BASE_STORAGE[res] || 0;
-    if (region === CAPITAL){
+    if (region === CAPITAL && global.tech?.shadow >= 8){
         base *= 2; // Homeworld has double base storage capacity
     }
     if (global.tech['tp_depot']){
         base *= 1 + global.tech.tp_depot / 50;
+    }
+    if (global.tech?.shadow < 8 && ['spc_home', 'spc_moon', 'spc_red', 'spc_hell', 'spc_sun', 'spc_gas', 'spc_gas_moon', 'spc_belt', 'spc_dwarf', 'spc_titan', 'spc_enceladus', 'spc_makemake'].includes(region)){
+        base *= 0.35; // Space colonies have 1/3 base storage capacity if shadow tech is below 8
     }
     return base;
 }
