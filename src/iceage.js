@@ -2499,6 +2499,7 @@ const iceAgeModules = {
                 type: 'military',
                 reqs: { military: 1, perk_underground: 1 },
                 not_trait: ['lone_survivor'],
+                condition(){ return !global.tech['isolation'] || global.tech['womling_military']; },
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('hunting_lodge_perk', r.offset, 250, 4); },
                     Lumber(r={}){ return undergroundCostMultiplier('hunting_lodge_perk', r.offset, 180, 4); },
@@ -3809,7 +3810,9 @@ const iceAgeModules = {
                                 }
                             }
                             else{
-                                messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_herbivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                if (!global.settings.aberrantWinMsg){
+                                    messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_herbivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                }
                                 global.underground['arena'].herbivores_trophy += stats.loot_mult;
                             }
 
@@ -3898,7 +3901,9 @@ const iceAgeModules = {
                                 }
                             }
                             else{
-                                messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_carnivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                if (!global.settings.aberrantWinMsg){
+                                    messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_carnivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                }
                                 global.underground['arena'].carnivores_trophy += stats.loot_mult;
                             }
                             
@@ -3978,7 +3983,7 @@ const iceAgeModules = {
                             let stats = aberrant_stats('scavengers');
                             if (global.race['iceage']){
                                 if (!global.settings.aberrantWinMsg){
-                                    messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_carnivores_single'), Math.floor(10 * stats.loot_mult), global.resource.Power_Bones.name]),'success',false, ['combat']);
+                                    messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_scavengers_single'), Math.floor(10 * stats.loot_mult), global.resource.Power_Bones.name]),'success',false, ['combat']);
                                 }
                                 global.resource.Power_Bones.display = true;
                                 modRes('Power_Bones', Math.floor(10 * stats.loot_mult), true);
@@ -3987,7 +3992,9 @@ const iceAgeModules = {
                                 }
                             }
                             else{
-                                messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_scavengers_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                if (!global.settings.aberrantWinMsg){
+                                    messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_scavengers_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                }
                                 global.underground['arena'].scavengers_trophy += stats.loot_mult;
                             }
                             
