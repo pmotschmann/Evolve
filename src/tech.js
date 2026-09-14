@@ -10,7 +10,7 @@ import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCounterEspionage } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators, containmentCaptureChance, interrogationDuration, sWarfare, sensorUpgrade } from './truepath.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
@@ -3779,6 +3779,56 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    takedown_tactics: {
+        id: 'tech-takedown_tactics',
+        title(){ return loc('tech_takedown_tactics'); },
+        desc(){ return loc('tech_takedown_tactics'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 15, spy: 5 },
+        grant: ['spy',6],
+        cost: {
+            Knowledge(){ return 26000000; },
+            Alien_Intel(){ return 225; }
+        },
+        effect(){
+            let pct = v => +(v * 100).toFixed(1);
+            return `<div>${loc('tech_takedown_tactics_effect',[pct(containmentCaptureChance(false)),pct(containmentCaptureChance(true))])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    we_have_ways: {
+        id: 'tech-we_have_ways',
+        title(){ return loc('tech_we_have_ways'); },
+        desc(){ return loc('tech_we_have_ways'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { spy: 6 },
+        grant: ['spy',7],
+        cost: {
+            Knowledge(){ return 27000000; },
+            Alien_Intel(){ return 450; }
+        },
+        effect(){
+            return `<div>${loc('tech_we_have_ways_effect',[+(sWarfare.interrogationCut * 100).toFixed(1)])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_we_have_ways_flair');
         }
     },
     currency: {
@@ -15035,13 +15085,15 @@ const techs = {
         title(){ return loc('tech_ship_gauss'); },
         desc(){ return loc('tech_ship_gauss'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_weapon: 6, resettle: 13 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_weapon: 6, resettle: 13 } : { syard_weapon: 6, shadow: 15 }; },
         grant: ['syard_weapon',7],
         cost: {
             Knowledge(){ return 26250000; },
-            Cipher(){ return 250000; }
+            Alien_Intel(){ return global.tech['shadow'] ? 750 : 0; },
+            Cipher(){ return global.tech['shadow'] ? 175000 : 250000; }
         },
         effect: loc('tech_ship_gauss_effect'),
         action(){
@@ -15056,14 +15108,16 @@ const techs = {
         title(){ return loc('tech_ship_capacitor'); },
         desc(){ return loc('tech_ship_capacitor'); },
         category: 'space_militarization',
-        era: 'matrioshka',
+        era: ['matrioshka','shadow_war'],
+        era_a(){ return global.tech['shadow'] ? 'shadow_war' : 'matrioshka'; },
         path: ['truepath'],
-        reqs: { syard_weapon: 1, resettle: 13 },
+        reqs(r){ return r.era === 'matrioshka' ? { syard_weapon: 1, resettle: 13 } : { syard_weapon: 1, shadow: 15 }; },
         grant: ['syard_capacitor',1],
         cost: {
-            Knowledge(){ return 25000000; },
+            Knowledge(){ return global.tech['shadow'] ? 26500000 : 25000000; },
+            Alien_Intel(){ return global.tech['shadow'] ? 500 : 0; },
             Positronium(){ return 22500; },
-            Cipher(){ return 175000; }
+            Cipher(){ return global.tech['shadow'] ? 125000 : 175000; },
         },
         effect(){ return loc('tech_ship_capacitor_effect',[shipCapacitorSaving()]); },
         action(){
@@ -15390,6 +15444,33 @@ const techs = {
             return false;
         }
     },
+    improved_sensors: {
+        id: 'tech-improved_sensors',
+        title(){ return loc('tech_improved_sensors'); },
+        desc(){ return loc('tech_improved_sensors'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 15, syard_sensor: 4 },
+        grant: ['syard_sensor',5],
+        cost: {
+            Knowledge(){ return 27000000; },
+            Alien_Intel(){ return 600; },
+        },
+        effect(){
+            let pct = v => +(v * 100).toFixed(1);
+            return `<div>${loc('tech_improved_sensors_effect',[pct(sensorUpgrade.powerCut),loc('outer_shipyard_sensor_visual'),loc('outer_shipyard_sensor_passive'),sensorUpgrade.passiveRange,pct(sWarfare.stealth),pct(sensorUpgrade.stealth)])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            drawShipYard();
+        }
+    },
     aerographene_armor: {
         id: 'tech-aerographene_armor',
         title(){ return loc('tech_aerographene_armor'); },
@@ -15500,7 +15581,7 @@ const techs = {
             Knowledge(){ return 21250000; }
         },
         effect(){
-            return `<div>${loc('tech_ship_patrols_effect')}</div>`;
+            return `<div>${loc('tech_ship_patrols_effect',[loc('space_gas_sector_command_title'),planetName().gas])}</div>`;
         },
         action(){
             if (payCosts(this)){
@@ -16217,10 +16298,10 @@ const techs = {
         },
         effect(){ return `<div>${loc('tech_isolation_protocol_effect',[loc('tab_tauceti')])}</div><div class="has-text-special">${loc('tech_isolation_protocol_warning')}</div>`; },
         action(){
+            if (checkAffordable(this) && !global['sim']){
+                writeBackup();
+            }
             if (payCosts(this)){
-                if (!global['sim']){
-                    writeBackup();
-                }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();
                 return true;
@@ -16952,10 +17033,10 @@ const techs = {
         },
         effect(){ return loc('tech_sever_uplink_effect',[actions.space.spc_venus.alien_facility.title(),planetName().venus]); },
         action(){
+            if (checkAffordable(this) && !global['sim']){
+                writeBackup();
+            }
             if (payCosts(this)){
-                if (!global['sim']){
-                    writeBackup();
-                }
                 messageQueue(loc('tech_sever_uplink_msg',[planetName().home]),'info',false,['progress']);
                 return true;
             }
@@ -16985,10 +17066,10 @@ const techs = {
             return desc + prestige;
         },
         action(){
+            if (checkAffordable(this) && !global['sim']){
+                writeBackup();
+            }
             if (payCosts(this)){
-                if (!global['sim']){
-                    writeBackup();
-                }
                 global.tech['overmind'] = 1;
                 global.race['r_data'] = { c: global.resource[global.race.species].amount || 0, s: global.civic.garrison.workers || 0 };
                 return true;
@@ -18770,6 +18851,9 @@ const techs = {
             return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div>`;
         },
         action(){
+            if (checkAffordable(this) && !global['sim']){
+                writeBackup();
+            }
             if (payCosts(this)){
                 initStruct(actions.space.spc_dwarf.c_warehouse);
                 initStruct(actions.space.spc_hell.m_warehouse);
@@ -18788,7 +18872,7 @@ const techs = {
         category: 'progress',
         era: 'shadow_war',
         path: ['truepath'],
-        reqs: { shadow: 7 },
+        reqs: { shadow: 7, syard_fleet: 4 },
         grant: ['shadow',8],
         cost: {
             Knowledge(){ return 22500000; }
@@ -18797,8 +18881,13 @@ const techs = {
             return `<div>${loc('tech_syndicate_tactics_effect')}</div>`;
         },
         action(){
+            if (checkAffordable(this) && !global['sim']){
+                writeBackup();
+            }
             if (payCosts(this)){
                 messageQueue(loc('tech_syndicate_tactics_msg',[loc(`outer_shipyard_class_corsair`),loc(`outer_shipyard_class_destroyer`),loc(`outer_shipyard_class_cruiser`)]),'info',false,['progress']);
+                // Granting shadow 8 wakes the Venus base and breaks the Sol system into its supply zones.
+                messageQueue(loc('syndicate_venus_active',[planetName().venus]),'danger',false,['combat','progress']);
                 return true;
             }
             return false;
@@ -18892,6 +18981,30 @@ const techs = {
             if (payCosts(this)){
                 revealAlienInfiltrators();
                 defineCounterEspionage();
+                return true;
+            }
+            return false;
+        }
+    },
+    alien_plans: {
+        id: 'tech-alien_plans',
+        title(){ return loc('tech_alien_plans'); },
+        desc(){ return loc('tech_alien_plans'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 14 },
+        grant: ['shadow',15],
+        cost: {
+            Knowledge(){ return 25500000; },
+            Alien_Intel(){ return 101; }
+        },
+        effect(){
+            return `<div>${loc('tech_alien_plans_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                messageQueue(loc('tech_alien_plans_msg'),'info',false,['progress']);
                 return true;
             }
             return false;

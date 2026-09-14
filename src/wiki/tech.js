@@ -2804,6 +2804,10 @@ const extraRequirements = {
         title: loc('wiki_tech_req_building',[loc('outer_shipyard_title')]),
         link: 'wiki.html#space-tp_structures-shipyard'
     },
+    syard_fleet4 : {
+        title: loc('wiki_tech_req_building',[loc('space_gas_sector_command_title')]),
+        link: 'wiki.html#space-structures-sector_command'
+    },
     syndicate1 : {
         title: loc('wiki_tech_req_syndicate1')
     },

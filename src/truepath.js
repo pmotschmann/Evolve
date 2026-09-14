@@ -231,6 +231,8 @@ const outerTruth = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.titan_colonist.workers += hired;
+                        // Raise the job's target too, or a later dip in population never refills these seats.
+                        global.civic.titan_colonist.assigned = (global.civic.titan_colonist.assigned || 0) + hired;
                     }
                     if (global.space.titan_quarters.count === 1){
                         renderSpace();
@@ -2888,6 +2890,7 @@ const tauCetiModules = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.pit_miner.workers += hired;
+                        global.civic.pit_miner.assigned = (global.civic.pit_miner.assigned || 0) + hired;
                     }
                     drawShips();
                     return true;
@@ -3264,6 +3267,7 @@ const tauCetiModules = {
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
                         global.civic[global.civic.d_job].workers -= hired;
                         global.civic.pit_miner.workers += hired;
+                        global.civic.pit_miner.assigned = (global.civic.pit_miner.assigned || 0) + hired;
                     }
                     return true;
                 }
@@ -3527,6 +3531,9 @@ const tauCetiModules = {
                         list['Stanene'] = 1000;
                         list['Bolognium'] = 750;
                         list['Orichalcum'] = 750;
+                        if (global.tech.shadow >= 5){
+                            list['Unobtainium'] = 1500;
+                        }
                     }
                     if (global.resource.Tungsten.display){
                         list['Tungsten'] = 2000;
@@ -4333,7 +4340,7 @@ const tauCetiModules = {
             effect(){
                 let know = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[this.knowVal()])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
 
                 // How far along the Womlings are is only legible to someone who has ruled them before.
@@ -6246,7 +6253,8 @@ const zOvermindDamage = 10;
 
 // Firepower turned into hull damage.
 function combatDamage(attacker,defender){
-    let raw = shipAttackPower(attacker) / zCombatDamageDivisor;
+    // A station firing beyond its own orbit lands only part of its firepower.
+    let raw = shipAttackPower(attacker) * (attacker.fire ?? 1) / zCombatDamageDivisor;
     // Apply corsair weapons independently from horde weapon bonuses.
     if (attacker.enemy && !attacker.syn && zEndless()){ raw *= zOvermindDamage; }
     return Math.max(1,Math.round(raw * shipArmorFactor(defender) * shipClassFactor(defender) * (1 - fleetDamageSoak(defender))));
@@ -6254,12 +6262,19 @@ function combatDamage(attacker,defender){
 
 // Your ships holding a location, able to shoot.
 function guardsAt(locationName){
-    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return []; }
-    return global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
+    let guards = [];
+    if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+        guards = global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
+    }
+    // Sector Command defends Jupiter and Ganymede alongside anything in orbit.
+    const station = sectorCommandGuard(locationName);
+    if (station){ guards.push(station); }
+    return guards;
 }
 
 // A ship shot out from under its crew. The ship is gone from the roster and the crew with it.
 function destroyPlayerShip(ship,locationName){
+    if (ship.station){ sectorCommandDown(locationName); return; }
     let crew = shipCrewSize(ship);
     // Losing the flagship scatters the fleet it was holding together, so stand it down before the hull
     // leaves the roster and the fleet id goes with it.
@@ -6851,7 +6866,10 @@ function zBlockadeDay(fleet){
 
 // Shared Syndicate Warfare settings, also used by the wiki.
 export const sWarfare = {
-    watchDays: 25,          // Days before corsairs appear after prerequisites.
+    startMin: 10,           // Earliest day after Syndicate Threat Analysis that corsairs appear.
+    startMax: 25,           // Latest day after Syndicate Threat Analysis that corsairs appear.
+    homeBerths: 2,          // Corsairs the outer base fields at once, until shadow 12.
+    venusBerths: 1,         // Corsairs the Venus base fields once Syndicate Tactics wakes it.
     lostMin: 25,            // Minimum respawn delay after a loss.
     lostMax: 50,            // Maximum respawn delay after a loss.
     repair: 4,              // Hull repair per day.
@@ -6889,10 +6907,19 @@ export const sWarfare = {
     // Alien Containment settings.
     containmentStops: 10,       // Infiltrators stopped to unlock Alien Containment.
     containmentSegments: 25,    // Construction segments required.
-    containmentCapture: 0.25,   // Capture chance per successful officer action.
+    containmentCapacity: 25,    // Captives the completed facility can hold.
+    containmentCapture: 0.1,    // Capture chance per successful officer action.
+    takedownCapture: 2,         // Capture chance multiplier from Takedown Tactics.
     interrogationTime: 600,     // Seconds per captive interrogation.
+    interrogationCut: 0.25,     // Share of interrogation time removed by We Have Ways.
     intelMin: 50,               // Minimum Alien Intel per interrogation.
-    intelMax: 100               // Maximum Alien Intel per interrogation.
+    intelMax: 100,              // Maximum Alien Intel per interrogation.
+    // Sector Command at Jupiter.
+    commandSegments: 10,        // Construction segments required.
+    commandPower: 10,           // Power draw once complete.
+    commandMoonFire: 0.5,       // Share of its firepower that reaches Ganymede.
+    commandRepair: 2,           // Hull repaired per day while powered.
+    commandFit: { class: 'dreadnought', power: 'none', engine: 'none', weapon: 'disruptor', armor: 'neutronium', sensor: 'quantum', special: 'none' }
 };
 
 const counterEspionageZoneDefs = [
@@ -7079,8 +7106,8 @@ export function counterEspionageDay(){
                 if (Object.keys(alien.infiltrators[zone.id]).length === 0){ delete alien.infiltrators[zone.id]; }
             }
             alien.caught++;
-            if (containmentActive() && seededRandom(0,1,true) < sWarfare.containmentCapture){
-                const facility = containmentBuilt();
+            const facility = containmentActive() && containmentBuilt();
+            if (facility && facility.captives < sWarfare.containmentCapacity && seededRandom(0,1,true) < containmentCaptureChance()){
                 facility.captives++;
                 messageQueue(loc('counter_espionage_captured',[zone.name,loc('space_dwarf_alien_containment_title')]),'success',false,['combat']);
             }
@@ -7092,11 +7119,22 @@ export function counterEspionageDay(){
     // Unlock Alien Containment after enough infiltrators are stopped.
     if (global.tech['shadow'] === 13 && alien.caught >= sWarfare.containmentStops){
         global.tech.shadow = 14;
+        global.resource.Alien_Intel.display = true;
         drawTech();
     }
 }
 
 // --- Alien Containment ---------------------------------------------------------------------------
+// Chance a successful officer takes an infiltrator alive; Takedown Tactics (spy 6) multiplies it.
+export function containmentCaptureChance(takedown = global.tech['spy'] >= 6){
+    return sWarfare.containmentCapture * (takedown ? sWarfare.takedownCapture : 1);
+}
+
+// Seconds to interrogate one captive; We Have Ways (spy 7) shortens it.
+export function interrogationDuration(ways = global.tech['spy'] >= 7){
+    return sWarfare.interrogationTime * (ways ? 1 - sWarfare.interrogationCut : 1);
+}
+
 // Manage captured infiltrators and convert them to Alien Intel.
 
 // Return the completed facility state, or false.
@@ -7106,6 +7144,7 @@ export function containmentBuilt(){
     for (const field of ['captives','p']){
         if (typeof facility[field] !== 'number' || !Number.isFinite(facility[field])){ facility[field] = 0; }
     }
+    facility.captives = Math.min(sWarfare.containmentCapacity, Math.max(0, Math.floor(facility.captives)));
     return facility;
 }
 
@@ -7136,8 +7175,9 @@ export function alienContainmentTick(seconds){
         return;
     }
     facility.p += seconds;
-    while (facility.captives > 0 && facility.p >= sWarfare.interrogationTime){
-        facility.p -= sWarfare.interrogationTime;
+    const duration = interrogationDuration();
+    while (facility.captives > 0 && facility.p >= duration){
+        facility.p -= duration;
         facility.captives--;
         const intel = Math.floor(seededRandom(sWarfare.intelMin,sWarfare.intelMax + 1,true));
         if (!global.resource.Alien_Intel.display){ global.resource.Alien_Intel.display = true; }
@@ -7157,6 +7197,12 @@ export function syndicateBases(){
     return corsairsActive() ? ['spc_venus', global.race.sy_base.home] : [];
 }
 
+// Return whether a corsair base is active; Venus awaits Syndicate Tactics.
+function corsairBaseAwake(region){
+    if (region !== sWarfare.guardRegion){ return true; }
+    return global.tech['shadow'] && global.tech.shadow >= 8 ? true : false;
+}
+
 // Return a base's corsair fleet, migrating legacy saves.
 function corsairFleet(base){
     if (!base){ return []; }
@@ -7169,8 +7215,8 @@ function corsairFleet(base){
 
 // Return a base's concurrent corsair capacity.
 function corsairBerths(region){
-    if (region === sWarfare.guardRegion){ return 1; }
-    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : 1;
+    if (region === sWarfare.guardRegion){ return sWarfare.venusBerths; }
+    return global.tech['shadow'] && global.tech.shadow >= 12 ? 3 : sWarfare.homeBerths;
 }
 
 // Every corsair currently off its dock, for the map and for anything hunting them.
@@ -7180,18 +7226,25 @@ export function syndicateShips(){
         .filter(ship => ship && ship.damage < 100);
 }
 
-// Start the corsair watch once its prerequisites are met.
+// Start the corsair offensive a seeded 10–25 days after Syndicate Threat Analysis.
 function syndicateWatch(){
-    if (corsairsActive()){ return; }
-    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 3 || !global.tech['shadow'] || global.tech.shadow < 5){
-        delete global.race['sy_watch'];
+    delete global.race['sy_watch'];
+    if (corsairsActive() || !global.tech['shadow'] || global.tech.shadow < 5){
+        delete global.race['sy_start'];
         return;
     }
-    // Advance corsair timers using game days.
-    if (typeof global.race['sy_watch'] !== 'number'){ global.race['sy_watch'] = global.stats.days; }
-    if (global.stats.days - global.race.sy_watch < sWarfare.watchDays){ return; }
+    if (typeof global.race['sy_start'] !== 'number'){
+        global.race['sy_start'] = global.stats.days + Math.floor(seededRandom(sWarfare.startMin,sWarfare.startMax + 1,true));
+    }
+    if (global.stats.days < global.race.sy_start){ return; }
+    delete global.race['sy_start'];
+    startCorsairs();
+    drawTech();
+}
 
-    delete global.race['sy_watch'];
+// Launch the corsair offensive from the outer base; the Venus base is set up but stays dormant.
+export function startCorsairs(){
+    if (corsairsActive()){ return; }
     global.tech['shadow'] = 6;
     // Choose each corsair base from seeded world data.
     let home = seededRandom(0,2) < 1 ? 'spc_pluto' : 'spc_haumea';
@@ -7211,7 +7264,6 @@ function syndicateWatch(){
         };
     });
     messageQueue(loc('syndicate_corsairs_msg'),'danger',false,['combat','progress']);
-    drawTech();
 }
 
 function corsairHull(region){
@@ -7370,7 +7422,7 @@ function corsairEngageDrive(corsair){
 
 // The escort's chance of seeing one coming.
 function corsairSpotted(group){
-    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
+    const scan = group.reduce((t,s) => t + (sensorRange(s) || 0),0) * sensorStealth();
     if (scan <= 0){ return false; }
     return seededRandom(0,1,true) < scan / (scan + sWarfare.evade);
 }
@@ -7398,7 +7450,7 @@ function corsairFight(corsair,group,where,sneak){
 
     for (let round = 0; round < sWarfare.rounds && corsair.damage < 100; round++){
         // Apply corsair stealth to defender sensor range.
-        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * sWarfare.stealth;
+        const scan = group.filter(s => s.damage < 100).reduce((t,s) => t + (sensorRange(s) || 0),0) * sensorStealth();
         group.forEach(function(ship){
             if (ship.damage >= 100 || corsair.damage >= 100){ return; }
             if (seededRandom(0,1,true) >= playerAccuracy(scan,corsair)){ return; }
@@ -7634,6 +7686,9 @@ function corsairStalk(corsair){
 
     // Resolve interception as a robbery or escort fight.
     const company = shipFleet(quarry).filter(s => s.class !== 'freighter' && s.damage < 100);
+    // A freighter docked under Sector Command's guns is defended by it.
+    const station = quarry.inTransit ? false : sectorCommandGuard(quarry.location.name);
+    if (station){ company.push(station); }
     if (company.length > 0){ corsairAmbush(corsair,company,quarry); }
     else { corsairRaid(corsair,quarry); }
 }
@@ -7653,7 +7708,7 @@ function corsairBaseDay(region){
     const fleet = corsairFleet(base);
 
     // Launch a corsair into an available berth.
-    if (fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
+    if (corsairBaseAwake(region) && fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
         const ship = corsairHull(region);
         fleet.push(ship);
         base.launched++;
@@ -7667,6 +7722,12 @@ function corsairBaseDay(region){
 // Process one corsair's daily state.
 function corsairBaseShipDay(corsair,region,elapsed){
     if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
+    const awake = corsairBaseAwake(region);
+    // A dormant base recalls anything it already had out.
+    if (!awake && !corsair.home && (corsair.inTransit || corsair.location.name !== region)){
+        corsairGoHome(corsair);
+        return;
+    }
     if (corsair.inTransit){
         // Interrupt prowling for a reachable hunt.
         if (corsair.prowl){ corsairHunt(corsair); }
@@ -7681,7 +7742,7 @@ function corsairBaseShipDay(corsair,region,elapsed){
             if (corsair.damage > 0){ return; }
         }
         corsair.haul = 0;
-        corsairHunt(corsair) || corsairProwl(corsair);
+        if (awake){ corsairHunt(corsair) || corsairProwl(corsair); }
         return;
     }
 
@@ -7689,13 +7750,15 @@ function corsairBaseShipDay(corsair,region,elapsed){
     if (corsairAssault(corsair)){ return; }
 
     // Hunt, prowl, or return home when idle.
-    if (!corsairHunt(corsair) && !corsairProwl(corsair)){ corsairGoHome(corsair); }
+    if (!awake || (!corsairHunt(corsair) && !corsairProwl(corsair))){ corsairGoHome(corsair); }
 }
 
 // --- Your patrols hunting for enemies --------------------------------------------------------------
 
 // A patrolling fleet that sees a corsair goes after it.
 function patrolHunt(){
+    // Patrol orders saved before Sector Command existed wait for it to be built.
+    if (!patrolsUnlocked()){ return; }
     const ships = global.space.shipyard?.ships || [];
     const corsairs = syndicateShips().filter(c => c.inTransit && shipPoint(c));
     if (corsairs.length === 0){ return; }
@@ -7724,7 +7787,7 @@ function patrolHunt(){
         for (const corsair of corsairs){
             const away = dist3(at,shipPoint(corsair));
             if (away >= near){ continue; }
-            if (away <= sensorRangeAU(lead) * sWarfare.stealth || detectorCue(at,corsair)){ quarry = corsair; near = away; }
+            if (away <= sensorRangeAU(lead) * sensorStealth() || detectorCue(at,corsair)){ quarry = corsair; near = away; }
         }
         if (!quarry){ continue; }
 
@@ -7879,6 +7942,7 @@ function syndicateGuardDay(){
 // Advance Syndicate bases, guard post, and patrols each day.
 export function syndicateDay(){
     counterEspionageDay();
+    sectorCommandDay();
     syndicateWatch();
     if (!corsairsActive()){ return; }
     syndicateBases().forEach(corsairBaseDay);
@@ -8320,7 +8384,7 @@ export function drawShipYard(){
         Object.keys(shipParts).forEach(function(k){
             let values = ``;
             shipParts[k].forEach(function(v,idx){
-                values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
+                values += `<b-dropdown-item aria-role="listitem" @click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">{{ lbl('${v}', '${k}') }}</b-dropdown-item>`;
             });
 
             // The special mount is not part of a hull until it has been researched, so the whole
@@ -8493,7 +8557,7 @@ export function drawShipYard(){
                     drawShips();
                 },
                 lbl(l,c){
-                    return loc(`outer_shipyard_${c}_${l}`);
+                    return loc(shipPartKey(c,l));
                 }
             }
         });
@@ -8505,7 +8569,7 @@ export function drawShipYard(){
                     if (type === 'armor'){ return armorDesc(val); }
                     if (val === 'fuel_tanker'){ return loc(`outer_shipyard_special_fuel_tanker_desc`,[tankerFuelRange]); }
                     if (val === 'mobile_storage'){ return loc(`outer_shipyard_special_mobile_storage_desc`); }
-                    return loc(`outer_shipyard_${type}_${val}_desc`);
+                    return loc(`${shipPartKey(type,val)}_desc`);
                 },
                 {
                     elm: `#shipPlans .${type}.a${i}`,
@@ -8537,7 +8601,7 @@ export function TPShipDesc(parent,obj){
     });
 
     var desc = $(`<div class="shipPopper"></div>`);
-    var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(`outer_shipyard_sensor_${ship.sensor}`)}</div>`);
+    var shipPattern = $(`<div class="divider">${loc(`outer_shipyard_class_${ship.class}`)} | ${loc(`outer_shipyard_engine_${ship.engine}`)} | ${loc(`outer_shipyard_weapon_${ship.weapon}`)} | ${loc(`outer_shipyard_power_${ship.power}`)} | ${loc(shipPartKey('sensor',ship.sensor))}</div>`);
     parent.append(desc);
 
     desc.append(shipPattern);
@@ -8609,9 +8673,9 @@ function TPShipInitTransit(ship, locationName) {
     ship.totalTime = 0;
 }
 
-// Grant one configured freighter per active supply region.
+// Return a freighter dock for a region or its supply zone.
 function freightDock(region){
-    return supplyPool(region);
+    return starData[resolveBody(region)] ? region : supplyPool(region);
 }
 
 export function repairSupplyFreighters(){
@@ -8753,6 +8817,10 @@ export function shipyardPayer(){
 function buildTPShip(ship, queue){
     let locationName = shipyardZone();
     TPShipInitTransit(ship, locationName);
+    // A queued Supply Ship may carry a fit that is no longer offered.
+    if (ship.class === 'supply_ship' && !shipSpecialAllowed(shipSpecial(ship),ship.class)){
+        ship.special = shipDefaultSpecial(ship.class);
+    }
 
     ship.damage = 0;
     // A hull leaves the yard fuelled. Fuelling it is part of building it, and a ship delivered dry
@@ -8986,15 +9054,16 @@ export function shipPower(ship, wiki){
             break;
     }
 
+    const sensorDraw = improvedSensors() ? 1 - sensorUpgrade.powerCut : 1;
     switch (ship.sensor){
         case 'radar':
-            watts -= Math.round(10 * use_inflate);
+            watts -= Math.round(10 * sensorDraw * use_inflate);
             break;
         case 'lidar':
-            watts -= Math.round(25 * use_inflate);
+            watts -= Math.round(25 * sensorDraw * use_inflate);
             break;
         case 'quantum':
-            watts -= Math.round(75 * use_inflate);
+            watts -= Math.round(75 * sensorDraw * use_inflate);
             break;
     }
 
@@ -9015,12 +9084,14 @@ function explorerRetired(){
 const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster','mobile_storage','fuel_tanker','repair_ship'];
 const freighterSpecials = ['extra_fuel','extra_cargo','extra_thruster'];
 // A Supply Ship is nothing but the fit it carries, so its slot is never empty. Mobile Storage leads
-// the list because it is what an unconfigured hull is built as.
+// the list because it is what an unconfigured hull is built as once supply zones exist.
 export const supplyShipSpecials = ['mobile_storage','fuel_tanker','repair_ship'];
 
 // Ships allowed to carry mass drivers
 const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
 export function shipSpecialAllowed(special,shipClass){
+    // Mobile Storage stocks a supply zone, so it is not offered until the zones exist.
+    if (special === 'mobile_storage' && supplyMode() === 'global'){ return false; }
     if (supplyShipSpecials.includes(special)){ return shipClass === 'supply_ship'; }
     // Supply Ships require a supported fit.
     if (shipClass === 'supply_ship'){ return false; }
@@ -9032,7 +9103,8 @@ export function shipSpecialAllowed(special,shipClass){
 // What a hull falls back to when its current special does not fit it — a class change in the yard, or
 // a copied design whose fit the new class cannot carry.
 export function shipDefaultSpecial(shipClass){
-    return shipClass === 'supply_ship' ? 'mobile_storage' : 'none';
+    if (shipClass !== 'supply_ship'){ return 'none'; }
+    return shipSpecialAllowed('mobile_storage',shipClass) ? 'mobile_storage' : 'fuel_tanker';
 }
 
 // --- Hull slots ---------------------------------------------------------------------------------
@@ -9064,7 +9136,7 @@ function shipPartAvailable(part, idx, value, shipClass){
     }
     if (part === 'special'){
         // Supply Ship fits do not require special-slot technology.
-        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value); }
+        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value) && shipSpecialAllowed(value,shipClass); }
         if (shipClass === 'freighter'){ return freighterSpecials.includes(value); }
         // Do not offer specials unsupported by this hull.
         if (!shipSpecialAllowed(value,shipClass)){ return false; }
@@ -9598,7 +9670,14 @@ function tradeFleet(ship){
     return fleet.length ? fleet : [ship];
 }
 function tradeFreighters(group){ return group.filter(ship => ship.class === 'freighter'); }
-function tradeRoute(ship){ return ship && ship.tradeRoute && Array.isArray(ship.tradeRoute.stops) && ship.tradeRoute.stops.length > 1 ? ship.tradeRoute : false; }
+function tradeRoute(ship){
+    if (!ship || !ship.tradeRoute || !Array.isArray(ship.tradeRoute.stops) || ship.tradeRoute.stops.length <= 1){ return false; }
+    // A stop saved against a zone key ships cannot fly to (Tau Ceti's star, before its dock moved) follows its pool.
+    ship.tradeRoute.stops.forEach(function(stop){
+        if (stop && stop.zone && !starData[resolveBody(stop.zone)]){ stop.zone = supplyPool(stop.zone); }
+    });
+    return ship.tradeRoute;
+}
 function setTradeRoute(group, route){ group.forEach(ship => { ship.tradeRoute = deepClone(route); }); }
 function clearTradeRoute(group){ group.forEach(ship => { delete ship.tradeRoute; }); }
 // Use the earliest shipyard entry as a stable fleet route leader.
@@ -9619,8 +9698,9 @@ function tradeLeader(group){
 // the stops and how far along them the fleet has got. Like a trade route it lives on every ship of
 // the fleet, so any row of the shipyard can be asked about it.
 
+// Patrols need Sector Command, whose completion raises syard_fleet to 4.
 export function patrolsUnlocked(){
-    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 3 ? true : false;
+    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 4 ? true : false;
 }
 
 export function shipPatrol(ship){
@@ -9968,6 +10048,14 @@ function advanceTradeRoutes(step){
     });
 }
 
+// Supply ship cost creep tracked seperatly per module type
+function sameCostTier(ship, bp){
+    if (ship.class !== bp.class){ return false; }
+    if (bp.class !== 'supply_ship'){ return true; }
+    const fit = s => supplyShipSpecials.includes(shipSpecial(s)) ? shipSpecial(s) : supplyShipSpecials[0];
+    return fit(ship) === fit(bp);
+}
+
 export function shipCosts(bp){
     let costs = {};
 
@@ -10165,7 +10253,7 @@ export function shipCosts(bp){
 
     let typeCount = 0;
     global.space.shipyard.ships.forEach(function(ship){
-        if (ship.class === bp.class){
+        if (sameCostTier(ship,bp)){
             typeCount++;
         }
     });
@@ -10694,7 +10782,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(shipPartKey('sensor',ship.sensor))}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -11360,7 +11448,7 @@ export function sensorRange(s){
     }
     switch (s.sensor){
         case 'visual':
-            return 1;
+            return improvedSensors() ? sensorUpgrade.passiveRange : 1;
         case 'radar':
             return 10 * hf;
         case 'lidar':
@@ -11368,6 +11456,28 @@ export function sensorRange(s){
         case 'quantum':
             return 32 * hf;
     }
+}
+
+// Improved Sensors values used by ship sensor calculations.
+export const sensorUpgrade = {
+    powerCut: 0.25,     // Share of sensor power draw removed.
+    passiveRange: 5,    // Passive Radar reach in Gm; visual sightings reach 1.
+    stealth: 0.5        // Sensor-range multiplier against stealth hulls, up from sWarfare.stealth.
+};
+
+export function improvedSensors(){
+    return global.tech['syard_sensor'] >= 5 ? true : false;
+}
+
+// Return a ship-part locale key, including the Passive Radar upgrade.
+export function shipPartKey(part, val){
+    return part === 'sensor' && val === 'visual' && improvedSensors() ? 'outer_shipyard_sensor_passive' : `outer_shipyard_${part}_${val}`;
+}
+
+// Return the sensor-range multiplier against a target.
+export function sensorStealth(foe){
+    const stealth = foe ? (foe.stealth || 1) : sWarfare.stealth;
+    return stealth < 1 && improvedSensors() ? Math.max(stealth, sensorUpgrade.stealth) : stealth;
 }
 
 // Sensor ratings are gigameters; the map works in AU. A quantum set on a frigate reads 64 Gm, which is a shade over 0.42 AU
@@ -11387,12 +11497,80 @@ export function foeDetected(foe){
 // Anything of yours with the point inside its sensor bubble. A hull built to be hard to see shrinks
 // that bubble rather than hiding outright: `stealth` is what is left of a set's reach against it.
 function sensorContact(foe){
+    // Sector Command watches from Jupiter by the same rules as a ship parked there.
+    const station = sectorCommandGuard('spc_gas');
+    if (station && dist3(station.location.position, foe.location.position) <= sensorRangeAU(station) * sensorStealth(foe)){ return true; }
     if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
     for (let ship of global.space.shipyard.ships){
         if (!ship.location || !ship.location.position){ continue; }
-        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * (foe.stealth || 1)){ return true; }
+        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * sensorStealth(foe)){ return true; }
     }
     return false;
+}
+
+// --- Sector Command ----------------------------------------------------------------------------------
+// Combat, sensor, and repair helpers for the Jupiter defense platform.
+
+// Return the completed structure, or false.
+export function sectorCommandBuilt(){
+    const command = global.space['sector_command'];
+    if (!command || !(command.count >= sWarfare.commandSegments)){ return false; }
+    if (typeof command.damage !== 'number' || !Number.isFinite(command.damage)){ command.damage = 0; }
+    return command;
+}
+
+// Whether it is complete, powered, and not knocked out.
+export function sectorCommandActive(){
+    const command = sectorCommandBuilt();
+    return command && !command.down && p_on['sector_command'] > 0 ? true : false;
+}
+
+// Return Sector Command as a defending ship at one of its supported locations.
+function sectorCommandGuard(where){
+    if (where !== 'spc_gas' && where !== 'spc_gas_moon'){ return false; }
+    if (!sectorCommandActive()){ return false; }
+    const command = sectorCommandBuilt();
+    const hull = Object.assign({}, sWarfare.commandFit, {
+        name: loc('space_gas_sector_command_title'),
+        station: true,
+        fire: where === 'spc_gas' ? 1 : sWarfare.commandMoonFire,
+        inTransit: false,
+        location: { name: 'spc_gas', position: genXYZcoord('spc_gas') }
+    });
+    Object.defineProperty(hull, 'damage', {
+        get(){ return command.damage; },
+        set(v){ command.damage = v; },
+        enumerable: true
+    });
+    return hull;
+}
+
+// Knocked out in combat: it stays offline until fully repaired.
+function sectorCommandDown(where){
+    const command = sectorCommandBuilt();
+    if (!command || command.down){ return; }
+    command.damage = 100;
+    command.down = true;
+    messageQueue(loc('space_gas_sector_command_lost',[loc('space_gas_sector_command_title'),regionName(where)]),'danger',false,['combat']);
+}
+
+// Daily repairs while powered.
+function sectorCommandDay(){
+    const command = sectorCommandBuilt();
+    if (!command || command.damage <= 0 || !(p_on['sector_command'] > 0)){ return; }
+    command.damage = Math.max(0, command.damage - sWarfare.commandRepair);
+    if (command.down && command.damage === 0){
+        command.down = false;
+        messageQueue(loc('space_gas_sector_command_restored',[loc('space_gas_sector_command_title'),planetName().gas]),'success',false,['combat']);
+    }
+}
+
+// Construction finished: patrols can now be ordered.
+export function sectorCommandComplete(){
+    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 4){ global.tech['syard_fleet'] = 4; }
+    messageQueue(loc('space_gas_sector_command_complete'),'warning',false,['progress','combat']);
+    drawTech();
+    drawShipYard();
 }
 
 // --- Detectors -----------------------------------------------------------------------------------
@@ -13039,7 +13217,7 @@ function shipRefitModal(id, modal){
             // Show the original part when the plan changes this slot.
             let fitted = part === 'special' ? shipSpecial(design) : design[part];
             let held = part === 'special' ? shipSpecial(ship) : ship[part];
-            let was = held === fitted ? `` : ` <span class="refitWas has-text-info">${loc('outer_shipyard_refit_was',[loc(`outer_shipyard_${part}_${held}`)])}</span>`;
+            let was = held === fitted ? `` : ` <span class="refitWas has-text-info">${loc('outer_shipyard_refit_was',[loc(shipPartKey(part,held))])}</span>`;
             let row = $(`<div class="refitSlot"><span class="refitLabel has-text-warning">${loc(`outer_shipyard_${part}`)}</span>${was}</div>`);
             let offered = 0;
             shipParts[part].forEach(function(v,idx){
@@ -13047,13 +13225,13 @@ function shipRefitModal(id, modal){
                 offered++;
                 // Mark the selected part visually and for assistive technology.
                 let on = fitted === v;
-                $(`<button class="button is-small ${on ? `is-success refitOn` : `is-info`}" aria-pressed="${on}">${on ? `&#10003; ` : ``}${loc(`outer_shipyard_${part}_${v}`)}</button>`)
+                $(`<button class="button is-small ${on ? `is-success refitOn` : `is-info`}" aria-pressed="${on}">${on ? `&#10003; ` : ``}${loc(shipPartKey(part,v))}</button>`)
                     .on('click', function(){ plan[part] = v; paint(); })
                     .appendTo(row);
             });
             // Show fixed slots that have no available alternatives.
             if (offered === 0){
-                row.append(`<span class="refitFixed has-text-caution">${loc(`outer_shipyard_${part}_${fitted}`)} <span class="has-text-info">(${loc('outer_shipyard_refit_fixed')})</span></span>`);
+                row.append(`<span class="refitFixed has-text-caution">${loc(shipPartKey(part,fitted))} <span class="has-text-info">(${loc('outer_shipyard_refit_fixed')})</span></span>`);
             }
             bay.append(row);
         });
