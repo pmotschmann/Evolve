@@ -2332,7 +2332,7 @@ const spaceProjects = {
             id: 'space-sector_command',
             title(){ return loc('space_gas_sector_command_title'); },
             desc(wiki){
-                let head = `<div>${loc('space_gas_sector_command_desc',[planetName().gas])}</div>`;
+                let head = `<div>${loc('space_gas_sector_command_desc')}</div>`;
                 if (!sectorCommandBuilt() || wiki){
                     return head + `<div class="has-text-special">${loc('requires_segments',[sWarfare.commandSegments])}</div>`;
                 }
@@ -2358,8 +2358,7 @@ const spaceProjects = {
                 if (count < sWarfare.commandSegments){
                     return `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[sWarfare.commandSegments - count])}</div>`;
                 }
-                let fit = sWarfare.commandFit;
-                let desc = `<div>${loc('space_gas_sector_command_effect',[planetName().gas,loc(`outer_shipyard_class_${fit.class}`),loc(`outer_shipyard_weapon_${fit.weapon}`),loc(`outer_shipyard_sensor_${fit.sensor}`),planetName().gas_moon,Math.round(sWarfare.commandMoonFire * 100)])}</div>`;
+                let desc = `<div>${loc('space_gas_sector_command_effect',[planetName().gas,planetName().gas_moon])}</div>`;
                 desc += `<div>${loc('space_gas_sector_command_patrols',[loc('tech_ship_patrols')])}</div>`;
                 const command = sectorCommandBuilt();
                 if (!wiki && command){
@@ -2370,7 +2369,6 @@ const spaceProjects = {
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             powered(){ return powerCostMod(sWarfare.commandPower); },
-            // Enable power controls after construction.
             switchable(){ return sectorCommandBuilt() ? true : false; },
             on_cap(){ return sectorCommandBuilt() ? 1 : 0; },
             action(args){
