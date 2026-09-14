@@ -10503,6 +10503,7 @@
   "underground_apartment_perk": "Cave Apartment",
   "underground_hunting_lodge_effect_perk": "+%0% Combat rating, soldier healing and hunting production.",
   "underground_blacksmith_effect_perk": "+%0% improved crafting",
+  "underground_building_refund": "Underground operations have been moved, underground buildings and Spent Fossils have been refunded.",
   "cave_arena": "Cave Arena",
   "cave_arena_desc": "Fight aberrants for rewards.",
   "cave_arena_effect1": "Arenas increase abberant appearance rate",

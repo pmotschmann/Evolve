@@ -18,6 +18,7 @@ import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
 import { loc } from './locale.js';
 import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions, capitalGone } from './supply.js';
+import { refundUnderground } from './iceage.js';
 
 const outerTruth = {
     spc_titan: {
@@ -12206,6 +12207,7 @@ export function jumpGateShutdown(){
     }
 
     clearShipDrag();
+    refundUnderground();
     clearElement($('#shipList'));
     
     Object.keys(actions.city).forEach(function (k){

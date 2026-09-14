@@ -18,7 +18,7 @@ import { techList, techPath } from './tech.js';
 import { defineGovernor, govActive, removeTask, gov_tasks } from './governor.js';
 import { bioseed, blast_away } from './resets.js';
 import { loadTab } from './index.js';
-import { undergroundTech, surfaceTech, renderUnderground, renderSurface, fightLogModal, thrusterOrbitProjection, fossilCount } from './iceage.js';
+import { undergroundTech, surfaceTech, renderUnderground, renderSurface, fightLogModal, thrusterOrbitProjection, fossilCount, refundUnderground } from './iceage.js';
 import { partitioned, supplyOf, supplyPool, poolMod, regAmount, regMax, syncTotal, drawPools, ANYWHERE } from './supply.js';
 
 export const actions = {
@@ -8484,6 +8484,8 @@ export function orbitDecayed(){
         else {
             messageQueue(loc('evo_challenge_orbit_decayed_msg',[races[global.race.species].home]),'info',false,['progress']);
         }
+
+        refundUnderground();
 
         if (global.race.universe === 'magic'){
             if (global.city['pylon']){

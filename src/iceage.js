@@ -6377,6 +6377,30 @@ export function drawPerkUnderground(){
     }
 }
 
+export function refundUnderground(){
+    if (global.tech['perk_underground']){
+        global.resource.Spent_Fossil.amount = 0;
+        for(let [index, entry] of Object.entries(actions.underground.cave_perk)){
+            if (entry.arena && global.underground[index]?.count){
+                global.underground[index].count = 1;
+            }
+            else if (global.underground[index]){
+                global.underground[index].count = 0;
+            }
+            if (global.underground[index]?.razed){
+                global.underground[index].razed = 0;
+            }
+        }
+        if (global.aberrants){
+            global.aberrants.herbivores.count = 0;
+            global.aberrants.carnivores.count = 0;
+            global.aberrants.scavengers.count = 0;
+        }
+        messageQueue(loc('underground_building_refund'),'info',false,['progress']);
+        drawPerkUnderground();
+    }
+}
+
 export function fossilCount(){
     let count = global.prestige.Fossil.count;
     count *= actions.underground.cave_perk.arena.trophy_effect('scavengers');
