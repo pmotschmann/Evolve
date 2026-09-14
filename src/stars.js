@@ -4664,15 +4664,15 @@ function drawGate(ctx, x, y, r, color, seed, frame){
 
     const prof = high && px >= 14 ? starConstants.GATE_PROFILE : starConstants.GATE_PROFILE_LOW;
     const steps = high ? Math.max(12, Math.min(48, Math.round(px * 0.45)))
-                       : Math.max(10, Math.min(20, Math.round(px * 0.3)));
+                       : Math.max(10, Math.min(18, Math.round(px * 0.3)));
     let faces = [];
-    // Add a projected facet; sort overrides its mean depth.
-    const facet = (corners, a, nr, nt, nk, fill, sort) => {
+    // Add a projected facet; sort overrides its mean depth; forceDraw enables faces drawn from behind
+    const facet = (corners, a, nr, nt, nk, fill, sort, forceDraw) => {
         const ca = Math.cos(a), sa = Math.sin(a);
         const rx = cu.x*ca + cv.x*sa, ry = cu.y*ca + cv.y*sa, rz = cu.z*ca + cv.z*sa;
         const tx = cv.x*ca - cu.x*sa, ty = cv.y*ca - cu.y*sa, tz = cv.z*ca - cu.z*sa;
         const nz = rz*nr + tz*nt + cn.z*nk;
-        if (nz > 0){ return; }                     // turned away from the camera
+        if (!forceDraw && nz > 0){ return; }                     // turned away from the camera
         let pts = [], d = 0;
         for (const c of corners){
             const rad = ri + band * c[1];
@@ -4710,17 +4710,17 @@ function drawGate(ctx, x, y, r, color, seed, frame){
                 const i0 = a - wi, i1 = a + wi, o0 = a - wo, o1 = a + wo;
                 const at = cu.z*Math.cos(a) + cv.z*Math.sin(a);
                 const block = at * (ri + band * 0.7) + cn.z * top * t;
-                facet([[i0,p0,foot],[i1,p0,foot],[i1,p0,top],[i0,p0,top]], a, -0.9, 0, 0.44*side, false, block);           // its inner end
-                facet([[o0,p1,top],[o1,p1,top],[o1,p1,hold],[o0,p1,hold]], a, 0.99, 0, 0.14*side, false, block - nudge);   // the grip over the rim
+                facet([[i0,p0,foot],[i1,p0,foot],[i1,p0,top],[i0,p0,top]], a, -0.9, 0, 0.44*side, false, undefined, !high);           // its inner end
+                facet([[o0,p1,top],[o1,p1,top],[o1,p1,hold],[o0,p1,hold]], a, 0.99, 0, 0.14*side, false, undefined, !high);   // the grip over the rim
                 if (high){
-                    facet([[i0,p0,foot],[o0,p1,hold],[o0,p1,top],[i0,p0,top]], a, 0.12, -0.99, 0.08*side, false, block - nudge);
-                    facet([[i1,p0,foot],[o1,p1,hold],[o1,p1,top],[i1,p0,top]], a, 0.12, 0.99, 0.08*side, false, block - nudge);
+                    facet([[i0,p0,foot],[o0,p1,hold],[o0,p1,top],[i0,p0,top]], a, 0.12, -0.99, 0.08*side, false, undefined);
+                    facet([[i1,p0,foot],[o1,p1,hold],[o1,p1,top],[i1,p0,top]], a, 0.12, 0.99, 0.08*side, false, undefined);
                 }
-                facet([[i0,p0,top],[i1,p0,top],[o1,p1,top],[o0,p1,top]], a, 0, 0, side, false, block - nudge * 2);         // the plate
+                facet([[i0,p0,top],[i1,p0,top],[o1,p1,top],[o0,p1,top]], a, 0, 0, side, false, undefined, !high);         // the plate
                 // Add a colored inset to each clamp.
                 const lit = side * (raise + 0.03);
                 facet([[a-wi*0.62,p0+0.20,lit],[a+wi*0.62,p0+0.20,lit],
-                       [a+wo*0.52,p0+0.56,lit],[a-wo*0.52,p0+0.56,lit]], a, 0, 0, side, lamp, block - nudge * 3);
+                       [a+wo*0.52,p0+0.56,lit],[a-wo*0.52,p0+0.56,lit]], a, 0, 0, side, lamp, -1);
             }
         }
     }
