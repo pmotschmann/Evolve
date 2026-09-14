@@ -5,7 +5,10 @@ import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} fr
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
-import { syndicate, womlingArtisans, freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter, startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes, deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip } from './truepath.js';
+import { syndicate, womlingArtisans } from './truepath.js';
+import { freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter,
+         startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes,
+         deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip } from './ships.js';
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';

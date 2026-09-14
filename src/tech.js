@@ -10,7 +10,9 @@ import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCounterEspionage } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators, containmentCaptureChance, interrogationDuration, sWarfare, sensorUpgrade } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, surveyTheme, stealthStudied, revealAlienInfiltrators,
+         containmentCaptureChance, interrogationDuration, sWarfare } from './truepath.js';
+import { aerographeneSpeedBonus, shipCapacitorSaving, grantSupplyFreighters, sensorUpgrade } from './ships.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';

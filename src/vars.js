@@ -1,5 +1,6 @@
 import { $ } from './dom.js';
 import { encodeSaveString, decodeSaveString } from './save.js';
+import { eachStoredShip, upgradeShip } from './shipsave.js';
 
 export var save = window.localStorage;
 export var global = {
@@ -1410,10 +1411,7 @@ if (convertVersion(global['version']) <= 105000){
         }
     }
 
-    // Skilled servant capacity is now a permanent allowance (sbase) plus whatever temporary help is on
-    // loan, so Womling artisans can add to it without the total compounding every tick. A save from before
-    // that has the whole figure in smax, and got its servants from the prestige grant — mark both so the
-    // grant does not pay out a second time.
+// Migrate skilled-servant capacity without duplicating prior grants.
     if (global['race'] && global.race['servants']){
         if (!global.race.servants.hasOwnProperty('sbase')){
             global.race.servants['sbase'] = global.race.servants['smax'] || 0;
@@ -1443,16 +1441,13 @@ if (convertVersion(global['version']) <= 105000){
         });
     }
 
-    // The Tau Ceti refueling station used to store its graphene fuel allocation on the Titan graphene
-    // factory and mirror its count/on onto it every tick, which only held up while isolation kept Titan
-    // unreachable.
+// Move legacy Tau Ceti graphene allocation from Titan storage.
     if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
         global.tauceti.refueling_station['Lumber'] = 0;
         global.tauceti.refueling_station['Coal'] = 0;
         global.tauceti.refueling_station['Oil'] = 0;
 
-        // Only an isolation save ever parked the station's allocation on the factory. Without isolation the
-        // station makes no graphene at all and the factory's allocation is genuinely Titan's — leave it be.
+// Apply the Tau Ceti allocation migration only to isolation saves.
         let old = (global.tech && global.tech['isolation'] && global['space'] && global.space['g_factory']) ? global.space.g_factory : false;
         if (old){
             global.tauceti.refueling_station['Lumber'] = old['Lumber'] || 0;
@@ -1466,8 +1461,7 @@ if (convertVersion(global['version']) <= 105000){
         }
     }
 
-    // Truepath ships got their navigation reworked, notably changing 2D space to 3D. 
-    // Reconstruct what we can with the info we have, keep rest blank to refill itself over time
+// Legacy ship migration for 3D navigation.
     if (global.space && global.space.shipyard && global.space.shipyard.ships && Array.isArray(global.space.shipyard.ships)){
         let fn = (ship) => {
             if (ship.transit > 0) {
@@ -1538,6 +1532,9 @@ if (convertVersion(global['version']) <= 105000){
         global.space.shipyard.ships.forEach(fn);
         (global?.race?.inactive?.ships ?? []).forEach(fn);
     }
+
+    // Migrate stored ships to movement legs and flat location points.
+    eachStoredShip(global, upgradeShip);
 
     // Medium frames went from one weapon bay to two at half the damage per shot.
     if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay')
@@ -1613,9 +1610,7 @@ if (convertVersion(global['version']) <= 105000){
         global.genes['geneReset'] = { p: phage, g: genes };
     }
 
-    // The Mutation line was repriced. Anyone who bought a rank at the old price is handed the difference
-    // back, once. Ranks are counted rather than a total stored, so a save part-way up the line refunds
-    // only what it actually paid for.
+// Refund the Mutation-line price difference for existing purchased ranks.
     if (!global.genes['evolveReprice']){
         // Ranks 1 to 8 only. Rank 9 is new with this change, so nobody ever paid an old price for it.
         let wasCost = [10,35,70,175,440,1100,2750,6875];
@@ -1668,7 +1663,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 50;
+global['beta'] = 51;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2673,16 +2668,12 @@ export function sizeApproximation(value, precision = 1, precise = false, exact =
     // Explicitly avoid adding anything to either -0 or +0 to avoid altering the sign
     value = value<0 ? -absValue : value>0 ? absValue : value;
 
-    // Exact mode:
-    //  The number of significant figures is not limited in any way.
-    //  The number of fractional digits is limited by the precision argument.
+// Exact mode limits fractional digits to the requested precision.
     if (exact){
         return value.toLocaleString(undefined, {maximumFractionDigits: precision, roundingMode: 'trunc'});
     }
 
-    // Fixed mode:
-    //  The number of significant figures is at least 5, but may increase for large values.
-    //  The number of fractional digits is limited by the precision argument, but may be reduced for large values.
+// Fixed mode keeps at least five significant figures within the requested precision.
     else if (oom < 4 || precise){
         // The objective here is to provide high precision for both large and small numbers,
         // while preventing excess precision for large numbers that also have many fractional digits.

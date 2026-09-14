@@ -11,7 +11,10 @@ import { jobScale } from './jobs.js';
 import { templeCount, actions } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
-import { fleetCmd, fleetCmdUnlocked, fleetCmdRange, battleLogModal, counterEspionage, counterEspionageZones, intelligenceOfficerCost, intelligenceOfficerTrainingTime, intelligenceOfficerRecoveryTime, trainIntelligenceOfficer, dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
+import { battleLogModal, counterEspionage, counterEspionageZones, intelligenceOfficerCost,
+         intelligenceOfficerTrainingTime, intelligenceOfficerRecoveryTime, trainIntelligenceOfficer,
+         dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
+import { fleetCmd, fleetCmdUnlocked, fleetCmdRange } from './ships.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){

@@ -8,7 +8,9 @@ import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip, salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare, containmentBuilt, interrogationDuration, sectorCommandBuilt, sectorCommandComplete } from './truepath.js';
+import { outerTruthTech, syndicate, syndicateActive, drawShipYard, infestationLabel, infestationMethods, salvageShip,
+         salvagePin, zAssaultBanner, zAssaultMethods, blockadeBanner, blockadeMethods, detectorTemplate, sWarfare,
+         containmentBuilt, interrogationDuration, sectorCommandBuilt, sectorCommandComplete } from './truepath.js';
 import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -1882,7 +1884,7 @@ const spaceProjects = {
             title(){ return loc('space_mine',[planetName().hell]); },
             desc(){ return `<div>${loc('space_mine',[planetName().hell])}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
             type: 'mining',
-            reqs: { hell: 2 },
+            reqs: { hell: 2, shadow: 1 },
             path: ['truepath'],
             cost: {
                 Money(r={}){ return spaceCostMultiplier('mercury_mine', r.offset, 18500000, 1.26); },

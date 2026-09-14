@@ -3,12 +3,14 @@
 import { $ } from './dom.js';
 import { global, webWorker } from './vars.js';
 import { clearElement } from './functions.js';
+import { foeDetected, moveTempCoordinates, resolveBody, syndicate, syndicateGuardHeld, syndicateShips, tempCoord,
+         tempOffset, tempParent, venusBlockade } from './truepath.js';
+import { shipMoving, shipLeg, shipLegs, legEnd, moveShips, shipPatrol, shipPointAhead, shipRefStar } from './ships.js';
 import { races, orbitLength } from './races.js';
 import { actions } from './actions.js';
 import { planetName } from './space.js';
 import { unlockFeat } from './achieve.js';
 import { createGLContext, webglSupported } from './glmap.js';
-import { foeDetected, moveShips, moveTempCoordinates, resolveBody, shipPatrol, shipPointAhead, shipRefStar, syndicate, syndicateGuardHeld, syndicateShips, tempCoord, tempOffset, tempParent, venusBlockade } from './truepath.js';
 import { loc } from './locale.js';
 
 // Every fixed figure the star table and the solar map are tuned by, gathered in one place. Values
@@ -5248,8 +5250,9 @@ function drawShipHull(ctx, cls, px){
 // Which way a hull points: along the leg it is flying, in screen space so the arrow agrees with the
 // trail drawn under it whatever the camera is doing.
 function shipHeading(ship, ref, here){
-    if (!ship.path || !ship.path.length){ return 0; }
-    const to = rel(ship.path[0].destination.position, ref);
+    const leg = shipLeg(ship);
+    if (!leg){ return 0; }
+    const to = rel(legEnd(leg), ref);
     const dx = pX(to) - pX(here), dy = pY(to) - pY(here);
     return dx || dy ? Math.atan2(dy, dx) : 0;
 }
@@ -5820,7 +5823,7 @@ function drawMapFrame() {
     if (mapView().ships) {
         let fleets = {};
         for (let ship of global.space.shipyard.ships) {
-            if (!ship.inTransit){ continue; }
+            if (!shipMoving(ship)){ continue; }
             if (global.tech['syard_fleet'] && ship.fid){
                 // Keyed on the fleet itself, so two fleets crossing to the same place on the same
                 // schedule stay two marks rather than collapsing into one.
@@ -5843,7 +5846,7 @@ function drawMapFrame() {
         }
         // Plot detected syndicate corsairs on the solar map.
         for (let corsair of syndicateShips()){
-            if (!corsair.inTransit || !foeDetected(corsair)){ continue; }
+            if (!shipMoving(corsair) || !foeDetected(corsair)){ continue; }
             shipMarks.push({ ship: corsair, count: 1, foe: true });
         }
         // Infested hulls inbound from Earth. They never fleet up, and they are drawn in red so a raid
@@ -5853,7 +5856,7 @@ function drawMapFrame() {
             // yours is rather than stacking dot, trail and name on the one pixel.
             let raids = {};
             for (let ship of global.race.zfleet.s){
-                if (!ship.inTransit){ continue; }
+                if (!shipMoving(ship)){ continue; }
                 // Nothing of yours can see it, so nothing of yours plots it.
                 if (!foeDetected(ship)){ continue; }
                 if (!ship.zf){
@@ -5885,10 +5888,11 @@ function drawMapFrame() {
         ctx.beginPath();
         let here = rel(shipPointAhead(ship, drawAhead), ref);
 
+        let legs = shipLegs(ship);
         let span = 0;
         let prev = here;
-        for (let i=0; i<ship.path.length; i++){
-            let q = rel(ship.path[i].destination.position, ref);
+        for (let leg of legs){
+            let q = rel(legEnd(leg), ref);
             span += Math.sqrt((q.x-prev.x)**2 + (q.y-prev.y)**2 + (q.z-prev.z)**2);
             prev = q;
         }
@@ -5897,8 +5901,8 @@ function drawMapFrame() {
 
         ctx.moveTo(pX(here), pY(here));
         // Draw the full remaining flight path through each waypoint still ahead of the ship.
-        for (let i=0; i<ship.path.length; i++){
-            let q = rel(ship.path[i].destination.position, ref);
+        for (let leg of legs){
+            let q = rel(legEnd(leg), ref);
             ctx.lineTo(pX(q), pY(q));
         }
         ctx.stroke();

@@ -3,36 +3,35 @@ import { adjustCosts } from './functions.js';
 import { actions } from './actions.js';
 import { spaceSectors } from './space.js';
 import { atomic_mass } from './resources.js';
-import { supplyMode, supplyPools, supplyPool, supplyZone, regAmount, regMax, regDiff } from './supply.js';
-import { shipFleet, startFreightRoute, stopFreightRoute, dispatchFreighter, canAutoRefuelAt,
-         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals, shipCosts, shipyardZone, fleetCanReach } from './truepath.js';
+import { supplyMode, supplyPools, supplyPool, supplyZone, regAmount, regMax, regDiff, regLedger, regMaxLedger, uncapped, capsKnown } from './supply.js';
+import { shipFleet, shipFleets, startFreightRoute, stopFreightRoute, dispatchFreighter, canAutoRefuelAt,
+         freightCapacity, tradeLegDays, tradeRouteViable, freightArrivals, freightArrivalTable, shipCosts,
+         shipyardZone, fleetCanReach, shipMoving, shipPort } from './ships.js';
 
 // Freighter routes planned by the governor.
 
 // --- Tuning ---------------------------------------------------------------------------------------
 
-// Nothing starves and nothing stops moving: food first, then the fuels that keep reactors and ships
-// running, then everything else in shortage order. Shared with the Market Trader.
+// Priority resources for automatic routes and Market Trader.
 export const PRIORITY = ['Food','Oil','Helium_3','Elerium','Coal'];
 
-// One game day is five seconds of production — the long loop runs on a 5000ms timer against
-// per-second rates. Every reckoning below is in days, so this is how a rate becomes one.
+// Production seconds per game day.
 const SECONDS_PER_DAY = 5;
 
-// How far ahead a shortage is worth acting on. Beyond this a world has time to solve it by building
-// something, and a freighter is better spent elsewhere.
+// Shortage horizon in game days.
 const HORIZON = 400;
 
-// A world is only worth robbing if it is both making a surplus and sitting on a decent pile of it.
-// Expressed in days of the shortage's own burn, so a small colony's spare food still counts.
+// Minimum surplus measured in days of consumption.
 const SURPLUS_DAYS = 30;
 
-// At most this many shortages in one route. A freighter that tries to solve everything spends its
-// life in transit and arrives everywhere late.
+// Maximum shortages per relief route.
 export const MAX_STOPS = 3;
 
 // A balance route is only worth setting up for a stockpile this close to overflowing.
 const FULL_FRACTION = 0.92;
+
+// Days an idle fleet waits before replanning.
+const IDLE_DAYS = 5;
 
 // --- Opting in ------------------------------------------------------------------------------------
 
@@ -54,66 +53,112 @@ export function toggleAutoRoute(ship){
         if (on){ member.autoRoute = true; }
         else { delete member.autoRoute; }
     });
-    // Opting out hands the fleet back to the player exactly as it is. A route the governor set up is
-    // left running rather than cancelled — stopping it is the player's call now, not ours.
+    // A fleet opted back in looks for work straight away.
+    wake(group);
+// Opting out leaves the current route under player control.
     return on;
+}
+
+// --- One pass --------------------------------------------------------------------------------------
+
+// Per-run auto-route cache.
+let pass = false;
+
+function rawOf(obj){
+    return typeof Vue !== 'undefined' && Vue && typeof Vue.toRaw === 'function' ? Vue.toRaw(obj) : obj;
+}
+
+// Live resource ledgers without Vue proxy overhead.
+function ledgers(res){
+    let entry = pass.ledgers.get(res);
+    if (!entry){
+        entry = {
+            reg: rawOf(regLedger(res)),
+            diff: rawOf(regDiff(res)),
+            // Uncapped, or caps not yet worked out: regMax reads both as no limit.
+            caps: uncapped(res) || !capsKnown(res) ? false : rawOf(regMaxLedger(res))
+        };
+        pass.ledgers.set(res, entry);
+    }
+    return entry;
+}
+
+function amountOf(res, pool){
+    if (!pass){ return regAmount(res, pool); }
+    const reg = ledgers(res).reg;
+    return reg.hasOwnProperty(pool) ? reg[pool] : 0;
+}
+
+function capOf(res, pool){
+    if (!pass){ return regMax(res, pool); }
+    const caps = ledgers(res).caps;
+    if (!caps){ return -1; }
+    return caps.hasOwnProperty(pool) ? caps[pool] : 0;
+}
+
+// Invalidate cached overflow routes after a departure.
+function departed(){
+    if (pass){ pass.overflow = false; }
 }
 
 // --- Reading the situation --------------------------------------------------------------------------
 
 // Everything that can be shipped. Resources with no mass are not split between worlds at all.
 function shippable(){
-    return Object.keys(atomic_mass).filter(res => global.resource[res] && global.resource[res].display);
+    if (pass && pass.shippable){ return pass.shippable; }
+    const goods = Object.keys(atomic_mass).filter(res => global.resource[res] && global.resource[res].display);
+    if (pass){ pass.shippable = goods; }
+    return goods;
 }
 
 // A pool's net rate for a resource, in units per day.
 function perDay(res, pool){
-    return (regDiff(res)[pool] || 0) * SECONDS_PER_DAY;
-}
-
-// How long until a pool runs out, in days. Infinity when it is not losing ground.
-function daysToEmpty(res, pool){
-    const rate = perDay(res, pool);
-    if (rate >= 0){ return Infinity; }
-    return regAmount(res, pool) / -rate;
+    const diff = pass ? ledgers(res).diff : regDiff(res);
+    return (diff[pool] || 0) * SECONDS_PER_DAY;
 }
 
 // What a pool can spare: the stock it holds over and above a month of its own consumption.
 function sparable(res, pool){
     const rate = perDay(res, pool);
     if (rate < 0){ return 0; }
-    return Math.max(0, regAmount(res, pool) - Math.max(0, -rate) * SURPLUS_DAYS);
+    return Math.max(0, amountOf(res, pool) - Math.max(0, -rate) * SURPLUS_DAYS);
 }
 
 // Room left in a pool's store. An uncapped resource has room without limit.
 function roomIn(res, pool){
-    const cap = regMax(res, pool);
+    const cap = capOf(res, pool);
     if (cap < 0){ return Infinity; }
-    return Math.max(0, cap - regAmount(res, pool));
+    return Math.max(0, cap - amountOf(res, pool));
 }
 
 // --- What help is already coming ----------------------------------------------------------------
 
-// Every fleet currently flying a route, as one entry per fleet rather than one per hull.
-function activeRoutes(){
+// Return routes carried by active freighters.
+function routes(){
     const ships = (global.space.shipyard && global.space.shipyard.ships) || [];
-    const seen = new Set(), out = [];
-    for (const ship of ships){
-        if (seen.has(ship) || !ship.tradeRoute || !Array.isArray(ship.tradeRoute.stops)){ continue; }
-        const group = routeFleet(ship).filter(member => member.tradeRoute);
-        group.forEach(member => seen.add(member));
-        out.push({ group, route: ship.tradeRoute, lead: ship });
-    }
-    return out;
+    return ships.filter(ship => ship.tradeRoute && Array.isArray(ship.tradeRoute.stops)).map(ship => ship.tradeRoute);
 }
 
 function fleetCapacity(group){
     return group.reduce((total, ship) => total + freightCapacity(ship), 0);
 }
 
+// What a freighter would load at a stop on the way to the world that wants it.
+function loadable(res, zone, capacity){
+    return Math.min(capacity, sparable(res, zone));
+}
+
 // How much of a resource is already on its way to a pool and lands within so many days.
 function reliefComing(res, pool, within){
-    const arrivals = freightArrivals(res, pool, (r, zone, capacity) => Math.min(capacity, sparable(r, zone)));
+    let arrivals;
+    if (pass){
+        // Every route walked once for the whole pass, rather than once for every world and resource.
+        if (!pass.arrivals){ pass.arrivals = freightArrivalTable(loadable); }
+        arrivals = pass.arrivals.get(`${pool}|${res}`) || [];
+    }
+    else {
+        arrivals = freightArrivals(res, pool, loadable);
+    }
     let coming = 0;
     for (const drop of arrivals){
         if (drop.at <= within){ coming += drop.amount; }
@@ -130,8 +175,9 @@ function priorityOf(res){
 
 // Shortages a fleet has already been sent to answer.
 function claimed(){
+    if (pass && pass.claimed){ return pass.claimed; }
     const taken = new Set();
-    for (const { route } of activeRoutes()){
+    for (const route of routes()){
         // A surplus move is not an answer to anything and claims nothing; a delivery is.
         if (route.auto !== 'relief' && route.auto !== 'build'){ continue; }
         const stops = route.stops;
@@ -144,6 +190,7 @@ function claimed(){
             }
         }
     }
+    if (pass){ pass.claimed = taken; }
     return taken;
 }
 
@@ -151,11 +198,15 @@ function claimed(){
 export function findShortages(horizon = HORIZON){
     const shortages = [];
     const spokenFor = claimed();
+    const goods = shippable();
     for (const pool of supplyPools()){
-        for (const res of shippable()){
-            const empty = daysToEmpty(res, pool);
+        for (const res of goods){
+            const rate = perDay(res, pool);
+            // Not losing ground at all.
+            if (rate >= 0){ continue; }
+            const empty = amountOf(res, pool) / -rate;
             if (empty > horizon){ continue; }
-            const need = Math.min(-perDay(res, pool) * horizon, roomIn(res, pool));
+            const need = Math.min(-rate * horizon, roomIn(res, pool));
             if (need <= 0){ continue; }
             // A freighter is already on its way to this one.
             if (spokenFor.has(`${pool}:${res}`)){ continue; }
@@ -208,8 +259,15 @@ function queuedBill(item){
 export function findBuildNeeds(){
     const queue = global.queue && Array.isArray(global.queue.queue) ? global.queue.queue : [];
     const wanted = {};
+    // The same building queued several times costs the same each time; it is priced once.
+    const bills = new Map();
     for (const item of queue){
-        const bill = queuedBill(item);
+        const key = item ? `${item.action}|${item.type}|${item.id}` : '';
+        let bill = bills.get(key);
+        if (bill === undefined){
+            bill = queuedBill(item);
+            bills.set(key, bill);
+        }
         if (!bill){ continue; }
         for (const res in bill.costs){
             if (!atomic_mass[res] || !global.resource[res]){ continue; }
@@ -223,7 +281,7 @@ export function findBuildNeeds(){
     const needs = [];
     for (const zone in wanted){
         for (const res in wanted[zone]){
-            const short = wanted[zone][res] - regAmount(res, zone);
+            const short = wanted[zone][res] - amountOf(res, zone);
             if (short <= 0){ continue; }
             if (spokenFor.has(`${zone}:${res}`)){ continue; }
             const room = roomIn(res, zone);
@@ -252,37 +310,52 @@ function findSupplier(group, res, want, exclude){
     return best;
 }
 
-// Stockpiles about to overflow, with somewhere better to put them. Only worth doing when nothing is
-// actually short: this is tidying, not rescue.
-export function findOverflow(group){
+// Find overflowing stockpiles and candidate destination pools.
+function overflowPiles(){
+    if (pass && pass.overflow){ return pass.overflow; }
     // A pile already being carried away by another fleet is not a pile that needs moving.
     const beingMoved = new Set();
-    for (const { route } of activeRoutes()){
+    for (const route of routes()){
         // Do not plan a second pickup for any active route.
         for (const stop of route.stops){
             for (const res of stop.pickups || []){ beingMoved.add(`${stop.zone}:${res}`); }
         }
     }
-    const moves = [];
-    for (const from of supplyPools()){
+    const pools = supplyPools();
+    const piles = [];
+    for (const from of pools){
         for (const res of shippable()){
-            const cap = regMax(res, from);
+            const cap = capOf(res, from);
             if (cap <= 0){ continue; }                              // uncapped or unknown: never overflows
             if (perDay(res, from) <= 0){ continue; }                // not filling up
-            if (regAmount(res, from) < cap * FULL_FRACTION){ continue; }
+            if (amountOf(res, from) < cap * FULL_FRACTION){ continue; }
             if (beingMoved.has(`${from}:${res}`)){ continue; }
-            // Somewhere that is not making its own and has room to take it.
-            let best = false;
-            for (const to of supplyPools()){
+            // Somewhere that is not making its own.
+            const sinks = [];
+            for (const to of pools){
                 if (to === from || perDay(res, to) > 0){ continue; }
-                const room = roomIn(res, to);
-                if (room < fleetCapacity(group)){ continue; }
-                const days = tradeLegDays(group, from, to);
-                if (!isFinite(days)){ continue; }
-                if (!best || room > best.room){ best = { to, room, days }; }
+                sinks.push({ to, room: roomIn(res, to) });
             }
-            if (best){ moves.push({ res, from, to: best.to, room: best.room }); }
+            piles.push({ res, from, sinks });
         }
+    }
+    if (pass){ pass.overflow = piles; }
+    return piles;
+}
+
+// Find overflow transfers when no shortages remain.
+export function findOverflow(group){
+    const capacity = fleetCapacity(group);
+    const moves = [];
+    for (const pile of overflowPiles()){
+        let best = false;
+        for (const sink of pile.sinks){
+            // Room enough to take a full load, and somewhere this fleet can get to.
+            if (sink.room < capacity){ continue; }
+            if (!isFinite(tradeLegDays(group, pile.from, sink.to))){ continue; }
+            if (!best || sink.room > best.room){ best = sink; }
+        }
+        if (best){ moves.push({ res: pile.res, from: pile.from, to: best.to, room: best.room }); }
     }
     moves.sort((a,b) => b.room - a.room);
     return moves;
@@ -290,8 +363,7 @@ export function findOverflow(group){
 
 // --- Building the route ----------------------------------------------------------------------------
 
-// A route has to come home to somewhere the fleet can top up, or it strands itself on the second
-// loop. The nearest such world is added even when there is nothing to load or unload there.
+// Append a reachable refuelling stop when needed.
 function withRefuelling(group, stops){
     if (stops.some(stop => group.every(ship => canAutoRefuelAt(ship, stop.zone)))){ return stops; }
     const last = stops[stops.length - 1].zone;
@@ -302,8 +374,7 @@ function withRefuelling(group, stops){
         if (!isFinite(days)){ continue; }
         if (!best || days < best.days){ best = { pool, days }; }
     }
-    // Nowhere refuels this fleet; the route may still be flyable on the tank it has, and
-    // validateTradeRoute is the judge of that.
+// Use current fuel when no refuelling stop exists.
     if (!best){ return stops; }
     return stops.concat([{ zone: best.pool, pickups: [] }]);
 }
@@ -326,22 +397,22 @@ function tidy(stops){
     return out;
 }
 
-// Turn a list of shortages into a route the fleet can fly: collect at the suppliers, deliver at the worlds that
-// are short, and be able to refuel somewhere along the way.
-function planRelief(group, shortages){
+// Plan a refuelled relief route for shortages.
+function planRelief(group, shortages, suppliers){
     const stops = [];
-    let solved = 0;
+    const used = [];
     for (const short of shortages){
-        const supplier = findSupplier(group, short.res, short.pool, []);
+        if (!suppliers.has(short)){ suppliers.set(short, findSupplier(group, short.res, short.pool, [])); }
+        const supplier = suppliers.get(short);
         if (!supplier){ continue; }
-        // Loading happens at the supplier and unloading happens at every stop, so the pickup is
-        // written against the supplier's stop and the world that is short simply follows it.
+// List pickups at suppliers; later stops unload.
         stops.push({ zone: supplier.pool, pickups: [short.res] });
         stops.push({ zone: short.pool, pickups: [] });
-        if (++solved >= MAX_STOPS){ break; }
+        used.push(short);
+        if (used.length >= MAX_STOPS){ break; }
     }
-    if (!solved){ return false; }
-    return { stops: tidy(withRefuelling(group, tidy(stops))), solved };
+    if (!used.length){ return false; }
+    return { stops: tidy(withRefuelling(group, tidy(stops))), used };
 }
 
 function planBalance(group, move){
@@ -356,12 +427,14 @@ function planBalance(group, move){
 // Fleets that have opted in, are sitting still, and are the governor's to command.
 function managedFleets(){
     const ships = (global.space.shipyard && global.space.shipyard.ships) || [];
+    const fleets = shipFleets();
     const seen = new Set(), out = [];
     for (const ship of ships){
         if (seen.has(ship) || ship.class !== 'freighter' || !autoRouteOn(ship)){ continue; }
-        const group = routeFleet(ship).filter(member => member.class === 'freighter');
+        const fleet = fleets.get(ship);
+        const group = (fleet && fleet.length ? fleet : [ship]).filter(member => member.class === 'freighter');
         group.forEach(member => seen.add(member));
-        if (!group.length || group.some(member => member.inTransit)){ continue; }
+        if (!group.length || group.some(shipMoving)){ continue; }
         out.push(group);
     }
     return out;
@@ -376,35 +449,77 @@ function availableFor(group, wanting){
     return RANK[wanting] > (RANK[route.auto] || 0);
 }
 
-// Put a fleet onto a planned route.
-function dispatch(group, home, stops, kind){
-    if (!tradeRouteViable(group, stops)){ return false; }
+// Per-hull replanning cooldown; discarded on reload.
+const idle = new WeakMap();
+
+// State used to invalidate a fleet's replanning cooldown.
+function idleMark(group){
+    const route = group[0].tradeRoute;
+    return route ? `route:${RANK[route.auto] || 0}` : `at:${shipPort(group[0])}`;
+}
+
+function resting(group){
+    const today = global.stats.days;
+    const mark = idleMark(group);
+    // A hull that has just joined has not looked yet, so the fleet looks again.
+    return group.every(function(ship){
+        const since = idle.get(ship);
+        return since && since.mark === mark && today >= since.day && today - since.day < IDLE_DAYS;
+    });
+}
+
+function rest(group){
+    const since = { day: global.stats.days, mark: idleMark(group) };
+    group.forEach(ship => idle.set(ship, since));
+}
+
+function wake(group){
+    group.forEach(ship => idle.delete(ship));
+}
+
+// Start a route and avoid retrying failed courses this pass.
+function dispatch(group, home, stops, kind, tried){
+    const course = stops.map(stop => stop.zone).join('>');
+    if (tried.has(course)){ return false; }
     if (stops[0].zone !== home){
+// Validate a replacement before cancelling the current route.
+        if (!tradeRouteViable(group, stops) || !fleetCanReach(group, stops[0].zone)){
+            tried.add(course);
+            return false;
+        }
         if (group[0].tradeRoute){ stopFreightRoute(group[0]); }
-        // Require enough fuel to reach the first route stop.
-        if (!fleetCanReach(group, stops[0].zone)){ return false; }
-        return dispatchFreighter(group[0], stops[0].zone);
+        const sent = dispatchFreighter(group[0], stops[0].zone);
+        if (!sent){ tried.add(course); }
+        return sent;
     }
-    if (group[0].tradeRoute){ stopFreightRoute(group[0]); }
-    if (!startFreightRoute(group[0], stops)){ return false; }
+// startFreightRoute validates before replacing the current route.
+    if (!startFreightRoute(group[0], stops)){
+        tried.add(course);
+        return false;
+    }
     group.forEach(ship => { if (ship.tradeRoute){ ship.tradeRoute.auto = kind; } });
     return true;
 }
 
-// Try the ambitious route first and fall back: a fleet that cannot manage three errands may well
-// manage one, and one shortage answered beats none. Returns how many of the shortages it took on.
-function commit(group, home, wants, kind){
+// Try shorter relief routes when longer routes cannot launch.
+function commit(group, home, wants, kind, tried){
+    const suppliers = new Map();
     for (let take = Math.min(MAX_STOPS, wants.length); take >= 1; take--){
-        const plan = planRelief(group, wants.slice(0, take));
-        if (plan && dispatch(group, home, plan.stops, kind)){ return take; }
+        const plan = planRelief(group, wants.slice(0, take), suppliers);
+        if (plan && dispatch(group, home, plan.stops, kind, tried)){ return plan.used; }
     }
-    return 0;
+    return [];
 }
 
-function commitBalance(group, home, moves){
+function commitBalance(group, home, moves, tried){
+// Remember failed source/destination pairs for this pass.
+    const failed = new Set();
     for (const move of moves){
+        const pair = `${move.from}>${move.to}`;
+        if (failed.has(pair)){ continue; }
         const stops = planBalance(group, move);
-        if (stops && dispatch(group, home, stops, 'balance')){ return move; }
+        if (stops && dispatch(group, home, stops, 'balance', tried)){ return move; }
+        failed.add(pair);
     }
     return false;
 }
@@ -412,32 +527,44 @@ function commitBalance(group, home, moves){
 // One pass of the governor's freight task.
 export function runAutoRoutes(config){
     if (supplyMode() === 'global' || !global.space || !global.space.shipyard){ return; }
-    const fleets = managedFleets();
+    const fleets = managedFleets().filter(group => !resting(group));
     if (!fleets.length){ return; }
     const horizon = config && config.horizon > 0 ? config.horizon : HORIZON;
     const balance = !config || config.balance;
 
-    // Worked out once for the whole pass rather than per fleet: both walk every route in the system, and the answer
-    // does not change between two fleets being given orders on the same day.
-    let shortages = findShortages(horizon);
-    let builds = findBuildNeeds();
+    pass = { ledgers: new Map() };
+    try {
+// Compute shortages once per pass when an eligible fleet exists.
+        const shortages = fleets.some(group => availableFor(group, 'relief')) ? findShortages(horizon) : [];
+        const builds = fleets.some(group => availableFor(group, 'build')) ? findBuildNeeds() : [];
 
-    for (const group of fleets){
-        const home = supplyPool(group[0].location.name);
-        let busy = false;
-        for (const [kind, work] of [['relief', shortages], ['build', builds]]){
-            if (!work.length || !availableFor(group, kind)){ continue; }
-            const taken = commit(group, home, work, kind);
-            if (taken){
-                // Struck off the list so the next fleet is sent after something else rather than
-                // piling onto a job that now has a freighter of its own.
-                work.splice(0, taken);
-                busy = true;
-                break;
+        for (const group of fleets){
+            const home = supplyPool(shipPort(group[0]));
+            const tried = new Set();
+            let moved = false;
+            for (const [kind, work] of [['relief', shortages], ['build', builds]]){
+                if (!work.length || !availableFor(group, kind)){ continue; }
+                const taken = commit(group, home, work, kind, tried);
+                if (taken.length){
+// Remove assigned shortages before planning the next fleet.
+                    taken.forEach(item => work.splice(work.indexOf(item), 1));
+                    moved = true;
+                    break;
+                }
+            }
+            if (!moved && balance && availableFor(group, 'balance')){
+                moved = !!commitBalance(group, home, findOverflow(group), tried);
+            }
+            if (moved){
+                departed();
+                wake(group);
+            }
+            else {
+                rest(group);
             }
         }
-        if (!busy && balance && availableFor(group, 'balance')){
-            commitBalance(group, home, findOverflow(group));
-        }
+    }
+    finally {
+        pass = false;
     }
 }

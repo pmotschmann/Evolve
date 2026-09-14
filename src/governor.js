@@ -12,7 +12,8 @@ import { loc } from './locale.js';
 import { jobScale } from './jobs.js';
 import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
-import { shipCosts, checkPathRequirements, titanReclaimed } from './truepath.js';
+import { checkPathRequirements, titanReclaimed } from './truepath.js';
+import { shipCosts } from './ships.js';
 import { runAutoRoutes, PRIORITY } from './autoroute.js';
 import { checkEdenRequirements } from './edenic.js';
 

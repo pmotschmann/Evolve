@@ -13,7 +13,13 @@ import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMul
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, hellguard, buildMechQueue, mechCost } from './portal.js';
 import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
-import { renderTauCeti, syndicate, syndicateActive, autoRefuelShip, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, tauEnabled, shipCosts, buildTPShipQueue, trackInfestation, salvageShip, atShipyard, pinSalvage, shipyardZone, beaconsActive, finalBeacons, checkTungstenSurvey, womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes, driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork,tankerRefuel, repairShipYards, supplyShipElerium, seedStarterSupplyRoutes } from './truepath.js';
+import { renderTauCeti, syndicate, syndicateActive, tpStorageMultiplier, tritonWar, erisWar, calcAIDrift, tauEnabled,
+         trackInfestation, salvageShip, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey,
+         womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes,
+         driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork } from './truepath.js';
+import { autoRefuelShip, shipCrewSize, sensorRange, shipCosts, buildTPShipQueue, atShipyard, shipyardZone,
+         tankerRefuel, repairShipYards, supplyShipElerium, seedStarterSupplyRoutes, shipMoving, shipPort, shipDockedAt,
+         shipBound, refreshDock } from './ships.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -14002,19 +14008,19 @@ function longLoop(){
 
                 // Ships under way are advanced by moveShips (see truepath.js)
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (!ship.inTransit){
-                        ship.location.position = genXYZcoord(ship.location.name);
+                    if (!shipMoving(ship)){
+                        refreshDock(ship, genXYZcoord(shipPort(ship)));
                     }
                     // Repair ships provide docked hull repair.
-                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || (!ship.inTransit && repairShipYards().includes(ship.location.name)))){
+                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || repairShipYards().includes(shipDockedAt(ship)))){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
                         // anywhere else it is patched up every other day (see the cadence above).
                         ship.damage -= atShipyard(ship) ? yardRepair * day_step : fieldRepair * fieldDays;
                         if (ship.damage < 0){ ship.damage = 0; }
                     }
                     // Wear and tear from fighting syndicate.
-                    if (syndicateActive() && !atShipyard(ship) && !ship.inTransit && Math.rand(0, 10) === 0){
-                        let dm = (ship.inTransit ? ship.destination.name : ship.location.name) === 'spc_triton' ? 2 : 1;
+                    if (syndicateActive() && !atShipyard(ship) && !shipMoving(ship) && Math.rand(0, 10) === 0){
+                        let dm = shipBound(ship) === 'spc_triton' ? 2 : 1;
                         switch (ship.armor){
                             case 'steel':
                                 ship.damage += Math.rand(1, 8 * dm);
@@ -14028,10 +14034,10 @@ function longLoop(){
                         }
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
-                    if (global.tech.hasOwnProperty('eris_scan') && !ship.inTransit && ship.location.name === 'spc_eris'){
+                    if (global.tech.hasOwnProperty('eris_scan') && shipDockedAt(ship) === 'spc_eris'){
                         eScan += sensorRange(ship);
                     }
-                    if (global.tech.hasOwnProperty('tauceti') && !ship.inTransit && ship.location.name === 'tauceti'){
+                    if (global.tech.hasOwnProperty('tauceti') && shipDockedAt(ship) === 'tauceti'){
                         tScan += sensorRange(ship);
                         tShip = ship.name;
                     }
@@ -14489,7 +14495,7 @@ function longLoop(){
             trackInfestation();
 
             // Scout Sun Gate
-            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_sun_gate')){
+            if (global.tech.resettle === 3 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_sun_gate')){
                 global.tech.resettle = 4;
                 global.settings.showSpace = true;
                 global.settings.spaceTabs = 1;
@@ -14498,7 +14504,7 @@ function longLoop(){
             }
 
             // Scout Earth
-            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_home')){
+            if (global.tech.resettle === 7 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_home')){
                 global.tech.resettle = 8;
                 global.settings.space.home = true;
                 renderSpace();
@@ -14506,7 +14512,7 @@ function longLoop(){
             }
 
             // Scout Moon
-            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_moon')){
+            if (global.tech.resettle >= 7 && !global.race['orbit_decayed'] && global.tech.luna === 2 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_moon')){
                 global.tech.luna = 3;
                 global.settings.space.moon = true;
                 renderSpace();
@@ -14514,7 +14520,7 @@ function longLoop(){
             }
 
             // Scout Mars
-            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_red')){
+            if (global.tech.resettle >= 7 && global.tech['mars'] && global.tech.mars === 5 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_red')){
                 global.tech.mars = 6;
                 global.settings.space.red = true;
                 renderSpace();
@@ -14530,7 +14536,7 @@ function longLoop(){
             }
 
             // Scout Mercury
-            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_hell')){
+            if (global.tech.resettle >= 9 && global.tech['hell'] && global.tech.hell === 1 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_hell')){
                 global.tech.hell = 2;
                 global.settings.space.hell = true;
                 // Reserve the wreck the Mercury salvage will offer, the same way the sun gate one is
@@ -14542,7 +14548,7 @@ function longLoop(){
             }
 
             // Scout Ceres
-            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_dwarf')){
+            if (global.tech.resettle >= 14 && global.tech['dwarf'] && global.tech.dwarf === 1 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_dwarf')){
                 global.tech.dwarf = 2;
                 global.settings.space.dwarf = true;
                 // Reserve the wreck the Ceres salvage will offer, the same way the sun gate one is
@@ -14566,8 +14572,8 @@ function longLoop(){
 
             // Scout Venus
             // A quantum scanner is required to pin point the location of the anomoly.
-            if (global.tech['venus'] && global.tech.venus < 3 && global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus')){
-                if (global.space.shipyard.ships.some(s => !s.inTransit && s.location.name === 'spc_venus' && s.sensor === 'quantum')){
+            if (global.tech['venus'] && global.tech.venus < 3 && global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_venus')){
+                if (global.space.shipyard.ships.some(s => shipDockedAt(s) === 'spc_venus' && s.sensor === 'quantum')){
                     global.tech.venus = 3;
                     messageQueue(loc('scout_venus_outpost',[planetName().venus,planetName().home,loc('tech_alien_outpost')]),'info',false,['progress']);
                 }
@@ -14600,12 +14606,13 @@ function longLoop(){
             }
             else if (global.tech.resettle >= 9){
                 global.space.shipyard.ships.forEach(s => {
-                    if (!s.inTransit && s.location.name.startsWith('beacon') 
-                                     && global.race.tempCoordinates.hasOwnProperty(s.location.name) 
-                                     && global.race.tempCoordinates[s.location.name].a){
-                                        
-                        global.race.tempCoordinates[s.location.name].a = false;
-                        salvageShip(1,global.race.tempCoordinates[s.location.name].n,'tau_gas2',true,global.race.tempCoordinates[s.location.name].d);
+                    const at = shipDockedAt(s);
+                    if (at !== false && at.startsWith('beacon')
+                                     && global.race.tempCoordinates.hasOwnProperty(at)
+                                     && global.race.tempCoordinates[at].a){
+
+                        global.race.tempCoordinates[at].a = false;
+                        salvageShip(1,global.race.tempCoordinates[at].n,'tau_gas2',true,global.race.tempCoordinates[at].d);
                     }
                 });
             }

@@ -10,7 +10,9 @@ import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
-import { shipAttackPower, sensorRange, shipCrewSize, shipPower, zWarfareVars, sWarfare, detectorSegments, fleetVars, containmentCaptureChance, interrogationDuration, sensorUpgrade, improvedSensors, shipPartKey } from './../truepath.js';
+import { zWarfareVars, sWarfare, detectorSegments, containmentCaptureChance, interrogationDuration } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower, fleetVars, sensorUpgrade, improvedSensors, shipPartKey,
+         shipDockedAt } from './../ships.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -3085,7 +3087,7 @@ function syndicatePenaltyCalc(info){
                     inputs.ship_security.val = 0;
                     inputs.intel.val = 0;
                     global.space.shipyard.ships.forEach(function(ship){
-                        if (!ship.inTransit && ship.location.name === 'spc_'+inputs.region.val && ship.fueled){
+                        if (shipDockedAt(ship) === 'spc_'+inputs.region.val && ship.fueled){
                             let rating = shipAttackPower(ship);
                             inputs.ship_security.val += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                             inputs.intel.val += sensorRange(ship);

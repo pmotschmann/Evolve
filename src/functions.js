@@ -14,7 +14,8 @@ import { highPopAdjust, hugeAdjust } from './prod.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
-import { shipCosts, TPShipDesc, freightArrivals, shipyardZone } from './truepath.js';
+import { TPShipDesc } from './truepath.js';
+import { shipCosts, freightArrivals, shipyardZone } from './ships.js';
 import { mechCost, mechDesc } from './portal.js';
 
 var popperRef = false;
