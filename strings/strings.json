@@ -10470,6 +10470,7 @@
   "underground_core_refinery_effect2": "+%0% Iron, Copper, Uranium and Coal Production",
   "underground_perk_fossils": "Available Fossils: ",
   "underground_core_tap_perk": "Deep Core Tap",
+  "underground_core_tap_perk_effect": "+%0% all generated power",
   "underground_stone_slab_perk": "Cave Slab",
   "underground_hunting_lodge_perk": "Hunting Guild",
   "underground_smelter_perk": "Cave Forge",

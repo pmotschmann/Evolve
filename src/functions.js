@@ -1877,6 +1877,10 @@ export function powerModifier(energy){
         energy *= 1 + (astroVal('leo')[0] / 100);
         energy = +energy.toFixed(2);
     }
+    if (global.underground['core_tap_perk']){
+        energy *= 1 + (global.underground['core_tap_perk'].count / 100);
+        energy = +energy.toFixed(2);
+    }
     return energy;
 }
 

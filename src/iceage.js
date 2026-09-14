@@ -2404,7 +2404,7 @@ const iceAgeModules = {
                     Spent_Fossil(r={}){ return fossilCostMultiplier(1, r.offset); }
                 },
                 effect(wiki){
-                    return `<span>+${-(this.powered())}MW.</span>`;
+                    return `<div>${loc('underground_core_tap_perk_effect', [1])}</div><span>+${-(this.powered())}MW</span>`;
                 },
                 powered(wiki){
                     return (powerModifier(-25)).toFixed(2);
@@ -2476,7 +2476,6 @@ const iceAgeModules = {
                 citizens(){
                     let extraVal = govActive('extravagant',2);
                     let pop = extraVal ? 5 + extraVal : 5;
-                    pop += Math.floor(global.resource[global.race.species].amount / 250);
                     return jobScale(pop);
                 },
                 action(args){
@@ -2681,9 +2680,9 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<div>${loc('cave_arena_effect1')}</div>`;
-                    desc += `<div>${loc('cave_arena_effect2', [+((this.trophy_effect('herbivores')-1)*100).toFixed(2), global.underground.arena?.herbivores_trophy || 0])}</div>`;
-                    desc += `<div>${loc('cave_arena_effect3', [+((this.trophy_effect('carnivores')-1)*100).toFixed(2), global.underground.arena?.carnivores_trophy || 0])}</div>`;
-                    desc += `<div>${loc('cave_arena_effect4', [+((this.trophy_effect('scavengers')-1)*100).toFixed(2), global.underground.arena?.scavengers_trophy || 0])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect2', [+((this.trophy_effect('herbivores')-1)*100).toFixed(2), +(global.underground.arena?.herbivores_trophy || 0).toFixed(1)])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect3', [+((this.trophy_effect('carnivores')-1)*100).toFixed(2), +(global.underground.arena?.carnivores_trophy || 0).toFixed(1)])}</div>`;
+                    desc += `<div>${loc('cave_arena_effect4', [+((this.trophy_effect('scavengers')-1)*100).toFixed(2), +(global.underground.arena?.scavengers_trophy || 0).toFixed(1)])}</div>`;
                     return desc;
                 },
                 trophy_effect(creature){
@@ -2691,13 +2690,13 @@ const iceAgeModules = {
                         return 1;
                     }
                     if (creature === 'herbivores'){
-                        return 1 + (global.underground['arena'].herbivores_trophy ** 0.25) / 100;
+                        return 1 + (global.underground['arena'].herbivores_trophy ** 0.4) / 200;
                     }
                     else if (creature === 'carnivores'){
-                        return 1 + (global.underground['arena'].carnivores_trophy ** 0.25) / 30;
+                        return 1 + (global.underground['arena'].carnivores_trophy ** 0.4) / 50;
                     }
                     else if (creature === 'scavengers'){
-                        return 1 + (global.underground['arena'].scavengers_trophy ** 0.25) / 10;
+                        return 1 + (global.underground['arena'].scavengers_trophy ** 0.4) / 20;
                     }
                     return 1;
                 },
@@ -3811,6 +3810,7 @@ const iceAgeModules = {
                             }
                             else{
                                 messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_herbivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                global.underground['arena'].herbivores_trophy += stats.loot_mult;
                             }
 
                             if (global.tech['ecoMutate'] && Math.floor(seededRandom(0, 8, true)) === 0){
@@ -3899,6 +3899,7 @@ const iceAgeModules = {
                             }
                             else{
                                 messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_carnivores_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                global.underground['arena'].carnivores_trophy += stats.loot_mult;
                             }
                             
                             if (global.tech['ecoMutate'] && Math.floor(seededRandom(0, 8, true)) === 0){
@@ -3987,6 +3988,7 @@ const iceAgeModules = {
                             }
                             else{
                                 messageQueue(loc('surface_aberrant_combat_success', [result.deaths, result.injuries, loc('surface_scavengers_single'), Math.floor(stats.loot_mult), loc('cave_arena_trophy_plural')]),'success',false, ['combat']);
+                                global.underground['arena'].scavengers_trophy += stats.loot_mult;
                             }
                             
                             if (global.tech['ecoMutate'] && Math.floor(seededRandom(0, 8, true)) === 0){
@@ -4725,7 +4727,7 @@ const iceAgeModules = {
 }
 
 export function drawEcology(id){
-    if (global.surface.overview){
+    if (global.surface.overview || global.underground['arena']?.count){
         if (id){
             $(`#surface-${id} .button .count`).html(actions.surface.ecosystem[id].count());
         }
@@ -6044,15 +6046,15 @@ export function ecoGainMajorTrait(lifeform, trait, suppress, force){
 export function thrusterOrbitProjection(){
     let min = 200;
     let max = 800;
-    let variance = Math.floor(50000 / (global.surface.thruster_fuel?.count || 1));
-    max += Math.floor((global.surface.thruster_fuel?.count || 0) / 100);
+    let variance = Math.floor(50000 / (global.surface.thruster_fuel?.count || 1)); //100 day variance at 500, 10 day variance at 5000
+    max += Math.floor(((global.surface.thruster_fuel?.count || 0) - 500) / 90); //800 day cap at 500, 850 cap at 5000
+    min -= Math.floor(((global.surface.thruster_fuel?.count || 0) - 500) / 90); //200 day min cap at 500, 150 day min cap at 5000
     if (global.race['truepath']){
-        max += 49;
-        min -= 5;
-        variance -= 2;
+        max += 49; //up to 899
+        min -= 5; //down to 145
+        variance -= 2; //8 day variance at best
     }
-    min -= Math.floor(((global.surface.thruster_fuel?.count || 0) - 500) / 90);
-    return {min:min, max:max, variance:variance }
+    return { min:min, max:max, variance:variance };
 }
 
 export function undergroundTech(){
@@ -6312,6 +6314,9 @@ export function ice_fuel_adjust(fuel){
 }
 
 export function drawPerkUnderground(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
+        return;
+    }
     clearElement($('#perkUnderground'));
     if (global.tech['perk_underground']){
         $(`<div id="underground-dist-perkUnderground" class="space"><div id="srperkUnderground"><h3 class="name has-text-warning">${loc('underground_cave')}</h3>
