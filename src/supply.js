@@ -1082,7 +1082,6 @@ const REGION_BASE_STORAGE = {
 };
 
 export function regionBaseStorage(res, region){
-    console.log(region);
     let base = REGION_BASE_STORAGE[res] || 0;
     if (region === CAPITAL && global.tech?.shadow >= 8){
         base *= 2; // Homeworld has double base storage capacity
