@@ -1877,6 +1877,10 @@ export function powerModifier(energy){
         energy *= 1 + (astroVal('leo')[0] / 100);
         energy = +energy.toFixed(2);
     }
+    if (global.underground['core_tap_perk']){
+        energy *= 1 + (global.underground['core_tap_perk'].count / 100);
+        energy = +energy.toFixed(2);
+    }
     return energy;
 }
 
@@ -2579,7 +2583,7 @@ function loneAdjust(costs, args){
     if (global.race['lone_survivor']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Spent_Fossil','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](args); }
             }
             else if (['Knowledge'].includes(res)){
@@ -2607,7 +2611,7 @@ function truthAdjust(costs, c_action, args){
             if (res === 'Money'){
                 newCosts[res] = function(){ return Math.round(costs[res](args) * 3); }
             }
-            else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Spent_Fossil','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](args); }
             }
             else {
@@ -2663,7 +2667,7 @@ function technoAdjust(costs, args){
                 let kAdjust = 1 - (govEffect.technocracy()[0] / 100);
                 newCosts[res] = function(){ return Math.round(costs[res](args) * kAdjust); }
             }
-            else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
+            else if (['Custom', 'Structs', 'Money', 'Spent_Fossil'].includes(res)){
                 newCosts[res] = function(){ return costs[res](args); }
             }
             else {
@@ -2716,7 +2720,7 @@ function smolderAdjust(costs, args){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
             }
-            else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
+            else if (['HellArmy','Army','Troops','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Spent_Fossi','Supercoiled','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
                 newCosts[res] = function(){ return costs[res](args); }
             }
             else {
@@ -2739,13 +2743,13 @@ function kindlingAdjust(costs, args){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
-            if (global.race['kindling_kindred'] && res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
+            if (global.race['kindling_kindred'] && !['Lumber', 'Plywood', 'Structs', 'Spent_Fossil'].includes(res)){
                 newCosts[res] = function(){ return Math.round(costs[res](args) * adjustRate) || 0; }
             }
             else if (global.race['iron_wood'] && res !== 'Plywood'){
                 newCosts[res] = function(){ return costs[res](args); }
             }
-            else if (res === 'Structs'){
+            else if (res === 'Structs' || res === 'Spent_Fossil'){
                 newCosts[res] = function(){ return costs[res](args); }
             }
         });

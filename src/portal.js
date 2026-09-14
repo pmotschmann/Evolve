@@ -6436,7 +6436,7 @@ function checkBossResist(boss,weapon){
 }
 
 export function drawMechLab(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
         return;
     }
     clearElement($('#mechLab'));

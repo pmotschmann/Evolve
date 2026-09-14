@@ -2672,7 +2672,7 @@ export function tradeSellPrice(res){
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
     // Cunning drives the buying price down. The selling price is untouched by it.
-    rate /= 1 + geneBonus('cunning');
+    rate /= geneBonus('cunning');
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);
     }

@@ -18,6 +18,7 @@ import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
 import { loc } from './locale.js';
 import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions, capitalGone } from './supply.js';
+import { refundUnderground } from './iceage.js';
 
 const outerTruth = {
     spc_titan: {
@@ -4338,6 +4339,7 @@ const tauCetiModules = {
                 Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
+                let know = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[this.knowVal()])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
@@ -8313,7 +8315,7 @@ export function renderTauCeti(){
 }
 
 export function drawShipYard(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
     setOrbits();
@@ -10613,7 +10615,7 @@ function copyShipDesign(ship){
 }
 
 function drawShips(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
     clearShipDrag();
@@ -12205,6 +12207,7 @@ export function jumpGateShutdown(){
     }
 
     clearShipDrag();
+    refundUnderground();
     clearElement($('#shipList'));
     
     Object.keys(actions.city).forEach(function (k){
