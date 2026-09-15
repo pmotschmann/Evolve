@@ -5,7 +5,7 @@ import { spatialReasoning } from './resources.js';
 import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
 import { mechRating, checkWarlordAchieve } from './portal.js';
-import { jobScale, workerScale } from './jobs.js';
+import { jobScale, jobStack, workerScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 import { armyRating, armorCalc, garrisonSize, mercCost, soldierDeath } from './civics.js';
@@ -917,7 +917,7 @@ const edenicModules = {
             },
             cost: {
                 Troops(){
-                    return jobScale(100);
+                    return jobStack(100);
                 },
             },
             effect(){ 
@@ -931,14 +931,14 @@ const edenicModules = {
                 return desc;
             },
             action(args){
-                let armySize = jobScale(100);
+                let armySize = jobStack(100);
                 if (garrisonSize() < armySize){
                     return false;
                 }
 
                 let armory = (global.eden.fortress.armory + 20) / 20; 
                 let enemy_pats = global.eden.fortress.patrols * armory;
-                let remain = jobScale(100 - enemy_pats < 0 ? 0 : 100 - enemy_pats);
+                let remain = jobStack(100 - enemy_pats < 0 ? 0 : 100 - enemy_pats);
 
                 if (remain <= 0){
                     global.eden.fortress['siege'] = { loss: armySize, damage: 0 };
@@ -995,7 +995,7 @@ const edenicModules = {
             },
             cost: {
                 Troops(){
-                    return jobScale(50);
+                    return jobStack(50);
                 },
             },
             effect(){ 
@@ -1009,7 +1009,7 @@ const edenicModules = {
                 return desc;
             },
             action(args){
-                let armySize = jobScale(50);
+                let armySize = jobStack(50);
                 if (garrisonSize() < armySize){
                     return false;
                 }
@@ -1061,7 +1061,7 @@ const edenicModules = {
             },
             cost: {
                 Troops(){
-                    return jobScale(25);
+                    return jobStack(25);
                 },
             },
             effect(){ 
@@ -1075,7 +1075,7 @@ const edenicModules = {
                 return desc;
             },
             action(args){
-                let armySize = jobScale(25);
+                let armySize = jobStack(25);
                 if (garrisonSize() < armySize){
                     return false;
                 }
@@ -1137,15 +1137,15 @@ const edenicModules = {
                 Money(){ return 10000000000; },
                 Oil(){ return 9000000; },
                 Helium_3(){ return 6000000; },
-                Troops(){ return jobScale(100); },
+                Troops(){ return jobStack(100); },
             },
             effect: loc('eden_scout_elysium_effect'),
             action(args){
                 if (payCosts(this)){
                     messageQueue(loc('eden_scout_elysium_result'),'info',false,['progress']);
                     global.settings.eden.isle = true;
-                    global.civic.garrison.protest += jobScale(50);
-                    soldierDeath(jobScale(50));
+                    global.civic.garrison.protest += jobStack(50);
+                    soldierDeath(jobStack(50));
                     return true;
                 }
                 return false;

@@ -2,9 +2,9 @@ import { $ } from './dom.js';
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
 import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
 import { loc, lastLocalization } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars} from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier} from './races.js';
 import { actions, actionDesc } from './actions.js';
-import { jobScale } from './jobs.js';
+import { jobScale, jobStack } from './jobs.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
@@ -2313,7 +2313,7 @@ export function calcPrestige(type,inputs){
         let garrisoned = global.race['r_data'] ? global.race.r_data.s : (global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0);
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].occ){
-                garrisoned += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
+                garrisoned += jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
             }
         }
         let citizens = global.race['r_data'] ? global.race.r_data.c : global.resource[global.race.species].amount;
@@ -2812,7 +2812,7 @@ function craftAdjust(costs, args){
                         cost *= 1 - (traits.hollow_bones.vars()[0] / 100);
                     }
                     if (fathom > 0){
-                        cost *= 1 - (traits.hollow_bones.vars(3)[0] / 100 * fathom);
+                        cost *= 1 - (traits.hollow_bones.vars(1.67)[0] / 100 * fathom);
                     }
                     return Math.round(cost);
                 }
@@ -2896,10 +2896,7 @@ export function undergroundTradeAdjust(costs, c_action, args){
 }
 
 export function popCost(p){
-    if (global.race['high_pop']){
-        p *= traits.high_pop.vars()[0];
-    }
-    return p;
+    return jobStack(p);
 }
 
 function heavyAdjust(costs, args){
@@ -3482,19 +3479,35 @@ export function getWeaselTechLevelRequirement(level){
     return Math.round((level + 2) ** exponent);
 }
 
+// Scale custom-race lab values to twentieths of a gene unit.
+export const genomeScale = 20;
+
+// Return a custom-race trait cost at a fractional rank.
+export function genomeRankCost(cost, rank, positive){
+    if (rank < 1){
+        cost -= Math.round(3 * genomeScale * (1 - rank) / 0.9);
+    }
+    else if (rank > 1){
+        let f = Math.min(1, rank - 1);
+        let add = Math.round(3 * genomeScale * f);
+        cost = positive ? Math.max(Math.round(cost * (1 + 1.5 * f)), cost + add) : cost + add;
+    }
+    return positive ? Math.max(cost, genomeScale) : cost;
+}
+
 export function calcGenomeScore(genome,wiki,tRanks){
     if (!tRanks){ tRanks = genome.ranks || {}; }
     let genes = 0;
 
     if (wiki){
         Object.keys(wiki.ascended).forEach(function (uni){
-            genes += wiki.ascended[uni];
+            genes += wiki.ascended[uni] * genomeScale;
         });
     }
     else if (global.stats.achieve[`ascended`]){
         for (let i=0; i<universe_affixes.length; i++){
             if (global.stats.achieve.ascended.hasOwnProperty(universe_affixes[i])){
-                genes += global.stats.achieve.ascended[universe_affixes[i]];
+                genes += global.stats.achieve.ascended[universe_affixes[i]] * genomeScale;
             }
         }
     }
@@ -3508,12 +3521,12 @@ export function calcGenomeScore(genome,wiki,tRanks){
         });
         oppose_genus = oppose_genus.concat(genus_def[g].oppose);
     });
-    
+
     if (wiki){
-        genes += wiki.technophobe * 4;
+        genes += wiki.technophobe * 4 * genomeScale;
     }
     else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
-        genes += global.stats.achieve.technophobe.l * 4;
+        genes += global.stats.achieve.technophobe.l * 4 * genomeScale;
     }
 
     let max_complexity = 1;
@@ -3526,68 +3539,24 @@ export function calcGenomeScore(genome,wiki,tRanks){
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
-                gene_cost -= max_complexity - complexity[taxonomy];
+                gene_cost -= (max_complexity - complexity[taxonomy]) * genomeScale;
             }
             complexity[taxonomy]++;
         }
         else {
             if (neg_complexity[taxonomy] >= max_complexity){
-                gene_cost += neg_complexity[taxonomy];
+                gene_cost += neg_complexity[taxonomy] * genomeScale;
             }
             neg_complexity[taxonomy]++;
         }
 
         if (tRanks[genome.traitlist[i]]){
-            if (traits[genome.traitlist[i]].val >= 0){
-                switch (tRanks[genome.traitlist[i]]){
-                    case 0.1:
-                        gene_cost -= 3;
-                        break;
-                    case 0.25:
-                        gene_cost -= 2;
-                        break;
-                    case 0.5:
-                        gene_cost--;
-                        break;
-                    case 2:
-                        gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);;
-                        break;
-                    case 3:
-                        gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);;
-                        break;
-                    case 4:
-                        gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);;
-                        break;
-                }
-                if (gene_cost < 1){ gene_cost = 1; }
-            }
-            else {
-                switch (tRanks[genome.traitlist[i]]){
-                    case 0.1:
-                        gene_cost -= 3;
-                        break;
-                    case 0.25:
-                        gene_cost -= 2;
-                        break;
-                    case 0.5:
-                        gene_cost--;
-                        break;
-                    case 2:
-                        gene_cost++;
-                        break;
-                    case 3:
-                        gene_cost += 2;
-                        break;
-                    case 4:
-                        gene_cost += 3;
-                        break
-                }
-            }
+            gene_cost = genomeRankCost(gene_cost, tRanks[genome.traitlist[i]], traits[genome.traitlist[i]].val >= 0);
         }
 
         let genus_origin = races[traits[genome.traitlist[i]].origin].type === 'hybrid' ? races[traits[genome.traitlist[i]].origin].hybrid : [races[traits[genome.traitlist[i]].origin].type];
-        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
-        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+        if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ gene_cost -= (active_genus.filter(x => genus_origin.includes(x)).length === 1 ? 1 : 2) * genomeScale; }
+        if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ gene_cost += (oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? 1 : 2) * genomeScale; }
 
         genes -= gene_cost;
     }
@@ -4033,7 +4002,8 @@ function getTraitVals(trait, rank, species){
             }
         }
         else if (trait === 'catnip' || trait === 'anise'){
-            vals = rank <= 2 ? [] : (rank === 3  ? [vals[0]] : [vals[0],vals[1]]);
+            let tier = rank ? rankTier(rank) : 1;
+            vals = tier <= 2 ? [] : (tier === 3  ? [vals[0]] : [vals[0],vals[1]]);
         }
         else if (trait === 'musical' && global.race['iceage']){
             vals = [+(vals[0] / 3).toFixed(1)];
@@ -4058,7 +4028,15 @@ function getTraitVals(trait, rank, species){
                 break;
         }
     }
-    return vals;
+    return vals.map(v => typeof v === 'number' ? traitFigure(v) : v);
+}
+
+// Format fractional trait values for descriptions.
+function traitFigure(v){
+    if (v === 0 || Math.abs(v) >= 1){
+        return +v.toFixed(1);
+    }
+    return +v.toFixed(Math.max(1, 1 - Math.floor(Math.log10(Math.abs(v)))));
 }
 
 export function hoovedRename(style, species=global.race.species){
@@ -4257,7 +4235,7 @@ export function getTraitDesc(info, trait, opts){
                 trait_desc = loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, trank, species));
             }
             else if (['catnip','anise'].includes(trait)){
-                let rank = trank;
+                let rank = trank ? rankTier(trank) : trank;
                 trait_desc = loc(`wiki_trait_effect_${trait}${rank}`, getTraitVals(trait, trank, species));
             }
             else {
@@ -4283,7 +4261,8 @@ export function getTraitDesc(info, trait, opts){
     }
 
     if (tpage && ['genus','major'].includes(traits[trait].type)){
-        let data = { rank: global.race[trait] || 1 };
+// Use a reactive rank value so arrow clicks update the popover.
+        let data = Vue.reactive({ rank: global.race[trait] || 1 });
         vBind({
             el: `#${traits[trait].type}_${trait}`,
             data: data,
@@ -4293,7 +4272,7 @@ export function getTraitDesc(info, trait, opts){
                         return loc(`wiki_trait_effect_${trait}_${traits.elemental.vars()[0]}`, getTraitVals(trait, rk, species));
                     }
                     else if (['catnip','anise'].includes(trait)){
-                        return loc(`wiki_trait_effect_${trait}${rk}`, getTraitVals(trait, rk, species));
+                        return loc(`wiki_trait_effect_${trait}${rankTier(rk)}`, getTraitVals(trait, rk, species));
                     }
                     else if (global?.race?.universe === 'evil' && global?.civic?.govern?.type != 'theocracy' && ['spiritual','blasphemous'].includes(trait)){
                         let alt_trait = trait === 'spiritual' ? 'manipulator' : 'blasphemous_evil';
@@ -4303,54 +4282,10 @@ export function getTraitDesc(info, trait, opts){
                     return loc(`wiki_trait_${key}_${trait}`, getTraitVals(trait, rk, species));
                 },
                 up(){
-                    switch (data.rank){
-                        case 0.1:
-                            data.rank = 0.25;
-                            break;
-                        case 0.25:
-                            data.rank = 0.5;
-                            break;
-                        case 0.5:
-                            data.rank =  1;
-                            break;
-                        case 1:
-                            data.rank =  2;
-                            break;
-                        case 2:
-                            data.rank =  3;
-                            break;
-                        case 3:
-                            data.rank =  4;
-                            break;
-                        case 4:
-                            data.rank =  4;
-                            break;
-                    }
+                    data.rank = +Math.min(2, data.rank + 0.1).toFixed(2);
                 },
                 down(){
-                    switch (data.rank){
-                        case 0.1:
-                            data.rank = 0.1;
-                            break;
-                        case 0.25:
-                            data.rank = 0.1;
-                            break;
-                        case 0.5:
-                            data.rank =  0.25;
-                            break;
-                        case 1:
-                            data.rank =  0.5;
-                            break;
-                        case 2:
-                            data.rank =  1;
-                            break;
-                        case 3:
-                            data.rank =  2;
-                            break;
-                        case 4:
-                            data.rank =  3;
-                            break;
-                    }
+                    data.rank = +Math.max(0.1, data.rank - 0.1).toFixed(2);
                 },
             },
         });

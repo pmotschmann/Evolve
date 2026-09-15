@@ -1,10 +1,10 @@
 import { $ } from './dom.js';
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus} from './races.js';
+import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank} from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale, workerScale, job_data } from './jobs.js';
+import { loadFoundry, jobScale, jobStack, jobStackStep, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle, rivalCollapsed } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
@@ -786,9 +786,9 @@ const spaceProjects = {
                     incrementStruct('living_quarters');
                     global.civic.colonist.display = true;
                     if (powerOnNewStruct(this)){
-                        global.resource[global.race.species].max += jobScale(1);
+                        let hiredMax = jobStackStep(global.space.living_quarters.on);
+                        global.resource[global.race.species].max += hiredMax;
 
-                        let hiredMax = jobScale(1);
                         global.civic.colonist.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
@@ -2635,7 +2635,7 @@ const spaceProjects = {
                         global.tech['asteroid'] = 3;
                     }
                     if (powerOnNewStruct(this)){
-                        let hiredMax = jobScale(3);
+                        let hiredMax = jobStackStep(global.space.space_station.on, 3);
                         global.civic.space_miner.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
@@ -5711,7 +5711,7 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -1; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
+                civ(){ return jobStack(2); },
                 mil(){ return 0; },
                 helium: 5
             },
@@ -5755,9 +5755,9 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -1; },
             ship: {
-                civ(){ return global.race['grenadier'] ? 0 : global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                civ(){ return global.race['grenadier'] ? 0 : jobStack(1); },
                 mil(){
-                    let base = global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1;
+                    let base = jobStack(1);
                     return global.race['grenadier'] ? Math.ceil(base / 2) : base;
                 },
                 helium: 6,
@@ -5808,10 +5808,10 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -1; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
+                civ(){ return jobStack(2); },
                 mil(){
                     let base = global.race['grenadier'] ? 2 : 3;
-                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                    return jobStack(base);
                 },
                 helium: 10,
                 rating(){ 
@@ -5861,10 +5861,10 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -2; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
+                civ(){ return jobStack(3); },
                 mil(){
                     let base = global.race['grenadier'] ? 3 : 5;
-                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                    return jobStack(base);
                 },
                 helium: 25,
                 rating(){ 
@@ -5916,10 +5916,10 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -3; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 6 : 6; },
+                civ(){ return jobStack(6); },
                 mil(){
                     let base = global.race['grenadier'] ? 6 : 10;
-                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                    return jobStack(base);
                 },
                 deuterium: 25,
                 rating(){ 
@@ -5971,10 +5971,10 @@ const galaxyProjects = {
             s_type: 'gateway',
             support(){ return -5; },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
+                civ(){ return jobStack(10); },
                 mil(){
                     let base = global.race['grenadier'] ? 12 : 20;
-                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                    return jobStack(base);
                 },
                 deuterium: 80,
                 rating(){ 
@@ -6477,7 +6477,7 @@ const galaxyProjects = {
                 return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_embassy')])}</div><div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
+                civ(){ return jobStack(3); },
                 mil(){ return 0; },
                 helium: 12
             },
@@ -6662,7 +6662,7 @@ const galaxyProjects = {
                 return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_embassy')])}</div><div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 5 : 5; },
+                civ(){ return jobStack(5); },
                 mil(){ return 0; },
                 helium: 25
             },
@@ -6842,8 +6842,8 @@ const galaxyProjects = {
                 return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[this.ship.rating()])}</div><div>${loc('gain',[bolognium,global.resource.Bolognium.name])}</div><div>${loc('gain',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('gain',[iridium,global.resource.Iridium.name])}</div><div class="has-text-caution">${loc('galaxy_alien2_support',[this.support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                civ(){ return jobStack(2); },
+                mil(){ return jobStack(1); },
                 helium: 10,
                 rating(){ 
                     let rating = global.race['banana'] ? 4 : 5;
@@ -6933,7 +6933,7 @@ const galaxyProjects = {
                 return gain;
             },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
+                civ(){ return jobStack(1); },
                 mil(){ return 0; },
                 helium: 12,
             },
@@ -7071,7 +7071,7 @@ const galaxyProjects = {
             ship: {
                 civ(){ return 0; },
                 mil(){
-                    let base = global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1;
+                    let base = jobStack(1);
                     return global.race['grenadier'] ? Math.ceil(base / 2) : base;
                 },
                 helium: 8,
@@ -7166,7 +7166,7 @@ const galaxyProjects = {
                 civ(){ return 0; },
                 mil(){
                     let base = global.race['grenadier'] ? 1 : 2;
-                    return global.race['high_pop'] ? traits.high_pop.vars()[0] * base : base;
+                    return jobStack(base);
                 },
                 helium: 18,
                 rating(){ 
@@ -8963,7 +8963,7 @@ export function ascendLab(hybrid,wiki){
                                             if (traits[t]){
                                                 let des = $(`<div></div>`);
                                                 let opts = {
-                                                    trank: genus_trank,
+                                                    trank: labPreviewRank(t, genus_trank),
                                                     wiki: isWiki
                                                 }
                                                 getTraitDesc(des, t, opts);
@@ -9057,6 +9057,10 @@ export function ascendLab(hybrid,wiki){
                             }
                         }
                         tRanks = importCustom.hasOwnProperty('ranks') ? importCustom.ranks : {};
+                        // An export from before ranks ran 0.1 to 2 carries no rank version
+                        if (importCustom['rankVersion'] !== 2){
+                            Object.keys(tRanks).forEach(function(t){ tRanks[t] = legacyTraitRank(tRanks[t]); });
+                        }
                         genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
@@ -9072,6 +9076,7 @@ export function ascendLab(hybrid,wiki){
             customExport(){
                 let exportGenome = deepClone(genome);
                 exportGenome['ranks'] = tRanks;
+                exportGenome['rankVersion'] = 2;
                 const downloadToFile = (content, filename, contentType) => {
                     const a = document.createElement('a');
                     const file = new Blob([content], {type: contentType});
@@ -9087,7 +9092,8 @@ export function ascendLab(hybrid,wiki){
             },
             untapped(genes){
                 if (!genome.traitlist.includes(genome.fanaticism)){ genome.fanaticism = false; }
-                let num = genes > 0 ? +((genes / (genes + 20) / 10 + 0.00024) * 100).toFixed(3) : 0;
+                let left = genes / genomeScale;
+                let num = left > 0 ? +((left / (left + 20) / 10 + 0.00024) * 100).toFixed(3) : 0;
                 return `+${num}%`;
             },
             fanaticism(trait){
@@ -9097,13 +9103,13 @@ export function ascendLab(hybrid,wiki){
                 return typeof i === 'undefined' ? loc(`genelab_genus_${g}`) : loc(`genelab_genus_${g[i]}`);
             },
             empower(e,t){
-                let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
+                let valid_empower = !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
                 return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
             }
         }
     });
 
-    let genus_trank = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
+    let genus_trank = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 1.25 : 1;
     if (hybrid){
         ['A','B'].forEach(function(g){
             popover(`geneLabGenus${g}`, function(){
@@ -9113,7 +9119,7 @@ export function ascendLab(hybrid,wiki){
                     if (traits[t]){
                         let des = $(`<div></div>`);
                         let opts = {
-                            trank: genus_trank,
+                            trank: labPreviewRank(t, genus_trank),
                             wiki: isWiki
                         }
                         getTraitDesc(des, t, opts);
@@ -9136,7 +9142,7 @@ export function ascendLab(hybrid,wiki){
                 if (traits[t]){
                     let des = $(`<div></div>`);
                     let opts = {
-                        trank: genus_trank,
+                        trank: labPreviewRank(t, genus_trank),
                         wiki: isWiki
                     }
                     getTraitDesc(des, t, opts);
@@ -9163,7 +9169,7 @@ export function ascendLab(hybrid,wiki){
                 popover(`celestialLabtraitSelection${trait}`, function(){
                     let desc = $(`<div></div>`);
                     let opts = {
-                        trank: tRanks[trait] || 1,
+                        trank: labPreviewRank(trait, tRanks[trait] || 1),
                         wiki: isWiki
                     }
                     getTraitDesc(desc, trait, opts);
@@ -9176,6 +9182,31 @@ export function ascendLab(hybrid,wiki){
             });
         }
     });
+
+// Return the lab popover rank, including Empowered bonuses.
+    function labPreviewRank(t, rank){
+        if (genome.traitlist.includes('empowered') && !['empowered','catnip','anise'].includes(t)){
+            return +(rank + traits.empowered.vars(tRanks['empowered'] || 1)[traits[t].type === 'genus' ? 1 : 0]).toFixed(6);
+        }
+        return rank;
+    }
+
+// Move lab ranks by 0.05, subject to extinction-achievement gates away from rank 1.
+    function stepLabRank(t, down){
+        let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
+        let now = tRanks[t] || 1;
+        let rank = +Math.min(2, Math.max(0.1, now + (down ? -0.05 : 0.05))).toFixed(2);
+        let need = 0;
+        if (rank < 1){
+            need = rank >= 0.5 ? 3 : (rank >= 0.25 ? 4 : 5);
+        }
+        else if (rank > 1){
+            need = rank <= 1.33 ? 3 : (rank <= 1.67 ? 4 : 5);
+        }
+        if (Math.abs(rank - 1) < Math.abs(now - 1) || unlock >= need){
+            tRanks[t] = rank;
+        }
+    }
 
     function summaryTab(tab){
         if (tab === 4 || tab == 5){
@@ -9224,33 +9255,7 @@ export function ascendLab(hybrid,wiki){
                         genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
                     },
                     reduce(t){
-                        let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
-                        switch (tRanks[t]){
-                            case 0.25:
-                                if (unlock >= 5){
-                                    tRanks[t] = 0.1;
-                                }
-                                break;
-                            case 0.5:
-                                if (unlock >= 4){
-                                    tRanks[t] = 0.25;
-                                }
-                                break;
-                            case 1:
-                                if (unlock >= 3){
-                                    tRanks[t] = 0.5;
-                                }
-                                break;
-                            case 2:
-                                tRanks[t] = 1;
-                                break;
-                            case 3:
-                                tRanks[t] = 2;
-                                break;
-                            case 4:
-                                tRanks[t] = 3;
-                                break;
-                        }
+                        stepLabRank(t, true);
                         if (tab === 4 ){
                             vBind({el: `#traitSummary .trait_selection`},'update');
                         }
@@ -9260,39 +9265,13 @@ export function ascendLab(hybrid,wiki){
                         let desc = $(`#traitLabActiveDesc`);
                         clearElement(desc);
                         let opts = {
-                            trank: tRanks[t] || 1,
+                            trank: labPreviewRank(t, tRanks[t] || 1),
                             wiki: isWiki
                         }
                         getTraitDesc(desc, t, opts);
                     },
                     increase(t){
-                        let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
-                        switch (tRanks[t]){
-                            case 0.1:
-                                tRanks[t] = 0.25;
-                                break;
-                            case 0.25:
-                                tRanks[t] = 0.5;
-                                break;
-                            case 0.5:
-                                tRanks[t] = 1;
-                                break;
-                            case 1:
-                                if (unlock >= 3){
-                                    tRanks[t] = 2;
-                                }
-                                break;
-                            case 2:
-                                if (unlock >= 4){
-                                    tRanks[t] = 3;
-                                }
-                                break;
-                            case 3:
-                                if (unlock >= 5){
-                                    tRanks[t] = 4;
-                                }
-                                break;
-                        }
+                        stepLabRank(t, false);
                         if (tab === 4 ){
                             vBind({el: `#traitSummary .trait_selection`},'update');
                         }
@@ -9302,7 +9281,7 @@ export function ascendLab(hybrid,wiki){
                         let desc = $(`#traitLabActiveDesc`);
                         clearElement(desc);
                         let opts = {
-                            trank: tRanks[t] || 1,
+                            trank: labPreviewRank(t, tRanks[t] || 1),
                             wiki: isWiki
                         }
                         getTraitDesc(desc, t, opts);
@@ -9314,7 +9293,7 @@ export function ascendLab(hybrid,wiki){
                         return tRanks[trait];
                     },
                     empower(e,t){
-                        let valid_empower = traits[t].val >= traits.empowered.vars(tRanks['empowered'] || 1)[0] && traits[t].val <= traits.empowered.vars(tRanks['empowered'] || 1)[1] && !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
+                        let valid_empower = !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
                         return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
                     }
                 }
@@ -9327,7 +9306,7 @@ export function ascendLab(hybrid,wiki){
                     popover(`celestialLabtraitSelection${trait}Sum`, function(){
                         let desc = $(`<div id="traitLabActiveDesc"></div>`);
                         let opts = {
-                            trank: tRanks[trait] || 1,
+                            trank: labPreviewRank(trait, tRanks[trait] || 1),
                             wiki: isWiki
                         }
                         getTraitDesc(desc, trait, opts);
@@ -9370,7 +9349,7 @@ function geneCost(genome,trait,tRanks){
             complexity[taxonomy]--;
         }
         if (complexity[taxonomy] > max_complexity){
-            gene_cost += complexity[taxonomy] - max_complexity;
+            gene_cost += (complexity[taxonomy] - max_complexity) * genomeScale;
         }
     }
     else {
@@ -9378,61 +9357,17 @@ function geneCost(genome,trait,tRanks){
             neg_complexity[taxonomy]--;
         }
         if (neg_complexity[taxonomy] >= max_complexity){
-            gene_cost += neg_complexity[taxonomy];
+            gene_cost += neg_complexity[taxonomy] * genomeScale;
         }
     }
 
     if (tRanks[trait] && tRanks[trait] !== 1){
-        if (traits[trait].val >= 0){
-            switch (tRanks[trait]){
-                case 0.1:
-                    gene_cost -= 3;
-                    break;
-                case 0.25:
-                    gene_cost -= 2;
-                    break;
-                case 0.5:
-                    gene_cost--;
-                    break;
-                case 2:
-                    gene_cost = Math.max(Math.round(gene_cost * 1.5), gene_cost + 1);
-                    break;
-                case 3:
-                    gene_cost = Math.max(Math.round(gene_cost * 2), gene_cost + 2);
-                    break;
-                case 4:
-                    gene_cost = Math.max(Math.round(gene_cost * 2.5), gene_cost + 3);
-                    break;
-            }
-            if (gene_cost < 1){ gene_cost = 1; }
-        }
-        else {
-            switch (tRanks[trait]){
-                case 0.1:
-                    gene_cost -= 3;
-                    break;
-                case 0.25:
-                    gene_cost -= 2;
-                    break;
-                case 0.5:
-                    gene_cost--;
-                    break;
-                case 2:
-                    gene_cost++;
-                    break;
-                case 3:
-                    gene_cost += 2;
-                    break;
-                case 4:
-                    gene_cost += 3;
-                    break
-            }
-        }
+        gene_cost = genomeRankCost(gene_cost, tRanks[trait], traits[trait].val >= 0);
     }
 
     let genus_origin = races[traits[trait].origin].type === 'hybrid' ? races[traits[trait].origin].hybrid : [races[traits[trait].origin].type];
-    if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ active_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost-- : gene_cost -= 2; }
-    if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? gene_cost++ : gene_cost += 2; }
+    if (active_genus.filter(x => genus_origin.includes(x)).length > 0){ gene_cost -= (active_genus.filter(x => genus_origin.includes(x)).length === 1 ? 1 : 2) * genomeScale; }
+    if (oppose_genus.filter(x => genus_origin.includes(x)).length > 0){ gene_cost += (oppose_genus.filter(x => genus_origin.includes(x)).length === 1 ? 1 : 2) * genomeScale; }
 
     return gene_cost;
 }

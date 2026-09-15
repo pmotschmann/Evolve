@@ -7,7 +7,7 @@ import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberF
 import { defineGovernor, govActive, removeTask } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
-import { jobScale } from './jobs.js';
+import { jobScale, jobStack } from './jobs.js';
 import { templeCount, actions } from './actions.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
@@ -1532,7 +1532,7 @@ export function buildGarrison(garrison,full){
                                                 case 3:
                                                     return loc('civics_garrison_tactic_assault_desc');
                                                 case 4:
-                                                    return loc('civics_garrison_tactic_siege_desc',[jobScale(global.civic.govern.type === 'federation' ? 15 : 20)]);
+                                                    return loc('civics_garrison_tactic_siege_desc',[jobStack(global.civic.govern.type === 'federation' ? 15 : 20)]);
                                             }
                                         }
                                     case 'bat':
@@ -1700,8 +1700,8 @@ function battleAssessment(gov){
 function war_campaign(gov){
     if (global.civic.foreign[`gov${gov}`].occ){
         global.civic.foreign[`gov${gov}`].occ = false;
-        global.civic.garrison.max += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
-        global.civic.garrison.workers += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
+        global.civic.garrison.max += jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
+        global.civic.garrison.workers += jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
         return;
     }
     if (global.civic.foreign[`gov${gov}`].buy || global.civic.foreign[`gov${gov}`].anx){
@@ -2074,7 +2074,7 @@ function war_campaign(gov){
             }
         }
 
-        let occCost = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
+        let occCost = jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
         if (gov <= 2 && global.civic.garrison.tactic === 4 && global.civic.garrison.workers >= occCost){
             let drawTechs = !global.tech['gov_fed'] && !checkControlling();
             global.civic.garrison.max -= occCost;

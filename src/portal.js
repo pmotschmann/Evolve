@@ -4,7 +4,7 @@ import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, 
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus, citizenDeath } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
-import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
+import { loadFoundry, jobScale, jobStack, jobStackStep, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
@@ -1585,7 +1585,7 @@ const fortressModules = {
                 Wrought_Iron(r={}){ return spaceCostMultiplier('gun_emplacement', r.offset, 200000, 1.25, 'portal'); },
             },
             effect(){
-                let soldiers = global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1);
+                let soldiers = jobStack(global.tech.hell_gun >= 2 ? 2 : 1);
                 let min = global.tech.hell_gun >= 2 ? 35 : 20;
                 let max = global.tech.hell_gun >= 2 ? 75 : 40;
                 let soldierEffect = loc('portal_gun_emplacement_effect',[soldiers]);
@@ -1954,7 +1954,7 @@ const fortressModules = {
                             army -= forge;
                         }
                     }
-                    if (army >= jobScale(global.portal.guard_post.on + 1)){
+                    if (army >= jobStack(global.portal.guard_post.on + 1)){
                         // Don't power on unless there are enough guards
                         powerOnNewStruct(this);
                     }
@@ -2090,7 +2090,7 @@ const fortressModules = {
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
                     if (powerOnNewStruct(this)){
-                        let hiredMax = jobScale(2);
+                        let hiredMax = jobStackStep(global.portal.archaeology.on, 2);
                         global.civic.archaeologist.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
@@ -2764,7 +2764,7 @@ const fortressModules = {
             },
             ship: {
                 civ(){ return 0; },
-                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
+                mil(){ return jobStack(2); },
             },
             action(args){
                 if (payCosts(this)){
@@ -2816,7 +2816,7 @@ const fortressModules = {
                 }
             },
             ship: {
-                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
+                civ(){ return jobStack(3); },
                 mil(){ return 0; },
             },
             action(args){
@@ -3682,7 +3682,7 @@ function towerPrice(cost, wiki){
 export function soulForgeSoldiers(wiki){
     let base = global.race['warlord'] ? 400 : 650;
     let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
-    let num_soldiers_saved = num_gun_emplacement * (global.tech.hell_gun >= 2 ? jobScale(2) : jobScale(1));
+    let num_soldiers_saved = jobStack(num_gun_emplacement * (global.tech.hell_gun >= 2 ? 2 : 1));
 
     // To avoid divide-by-0 type issues, force the average soldier combat rating to be at least 1
     let avg_rating = Math.max(armyRating(1, 'hellArmy'), highPopAdjust(1));
@@ -3993,7 +3993,7 @@ export function buildFortress(parent,full){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    min += jobScale(global.portal.guard_post.on);
+                    min += jobStack(global.portal.guard_post.on);
                 }
                 if (global.portal.fortress.garrison > min){
                     global.portal.fortress.garrison -= dec;
@@ -4107,7 +4107,7 @@ export function buildFortress(parent,full){
                     }
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    stationed -= jobScale(global.portal.guard_post.on);
+                    stationed -= jobStack(global.portal.guard_post.on);
                 }
                 return stationed;
             },
@@ -4183,7 +4183,7 @@ function fortressDefenseRating(v){
         }
     }
     if (global.portal.hasOwnProperty('guard_post')){
-        army -= jobScale(global.portal.guard_post.on);
+        army -= jobStack(global.portal.guard_post.on);
     }
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
@@ -4194,7 +4194,7 @@ function fortressDefenseRating(v){
     }
     if (p_on['war_droid']){
         let droids = p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
-        army += global.tech['hdroid'] ? jobScale(droids * 2) : jobScale(droids);
+        army += jobStack(global.tech['hdroid'] ? droids * 2 : droids);
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
     return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
@@ -4410,7 +4410,7 @@ export function bloodwar(report = true){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
                 patrol_report.droid = true;
-                pat_size += global.tech['hdroid'] ? jobScale(2) : jobScale(1);
+                pat_size += jobStack(global.tech['hdroid'] ? 2 : 1);
                 terminators--;
             }
             let pat_armor = armor;
@@ -5120,7 +5120,7 @@ export function hellSupression(area, val, wiki){
         case 'ruins':
             {
                 let guard_posts_on = wiki ? (global.portal?.guard_post?.on ?? 0) : p_on['guard_post'];
-                let army = val || jobScale(guard_posts_on);
+                let army = val || jobStack(guard_posts_on);
                 let arc = (wiki ? (global.portal?.arcology?.on ?? 0) : p_on['arcology']) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){

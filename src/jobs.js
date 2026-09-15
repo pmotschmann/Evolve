@@ -795,6 +795,16 @@ export function jobScale(num){
     return num;
 }
 
+// Scale and round a whole stack of people.
+export function jobStack(num){
+    return Math.round(jobScale(num));
+}
+
+// Return people added by the next building in a stack.
+export function jobStackStep(count, per = 1){
+    return jobStack(count * per) - jobStack((count - 1) * per);
+}
+
 function loadJob(job, define){
     let servant = false;
     if (define === 'servant'){
@@ -1055,7 +1065,7 @@ export function teamsterCap(){
 // the same way the buildings scale theirs, so a high_pop race gets the matching number of bodies.
 export function craftsmanMax(){
     let bonus = geneFlat('guildmaster');
-    return global.civic.craftsman.max + (bonus > 0 ? jobScale(bonus) : 0);
+    return global.civic.craftsman.max + (bonus > 0 ? jobStack(bonus) : 0);
 }
 
 // Return active crafting capacity grouped by supply zone.
@@ -1067,41 +1077,41 @@ export function craftsmanCapacityByZone(){
         by[at] = (by[at] || 0) + seats;
     };
     if (global.city['foundry']){
-        add('city:foundry', jobScale(global.city.foundry.count));
+        add('city:foundry', jobStack(global.city.foundry.count));
     }
     if (global.underground['under_foundry']){
-        add('underground:under_foundry', jobScale(global.underground['under_foundry'].count));
+        add('underground:under_foundry', jobStack(global.underground['under_foundry'].count));
     }
     if (p_on['core_blacksmith']){
-        add('underground:core_blacksmith', jobScale(global.underground['core_blacksmith'].count * 2));
+        add('underground:core_blacksmith', jobStack(global.underground['core_blacksmith'].count * 2));
     }
     if (support_on['crater_fabrication']){
-        add('surface:crater_fabrication', jobScale(support_on['crater_fabrication']) * 2);
+        add('surface:crater_fabrication', jobStack(support_on['crater_fabrication'] * 2));
     }
     if (global.underground['blacksmith_perk']){
-        add('underground:blacksmith_perk', jobScale(global.underground['blacksmith_perk'].count));
+        add('underground:blacksmith_perk', jobStack(global.underground['blacksmith_perk'].count));
     }
     if (support_on['fabrication']){
-        add('space:fabrication', jobScale(support_on['fabrication']));
+        add('space:fabrication', jobStack(support_on['fabrication']));
     }
     if (global.tech['isolation'] && support_on['tau_factory']){
-        add('tauceti:tau_factory', jobScale(support_on['tau_factory'] * 5));
+        add('tauceti:tau_factory', jobStack(support_on['tau_factory'] * 5));
     }
     // Surface works reached by the descender: nobody is at the bench while the tether is stopped.
     if (actions.space.spc_venus.descender.operating() && support_on['workshop']){
-        add('space:workshop', jobScale(support_on['workshop'] * actions.space.spc_venus.workshop.crafters()));
+        add('space:workshop', jobStack(support_on['workshop'] * actions.space.spc_venus.workshop.crafters()));
     }
     if (p_on['womling_station']){
-        add('tauceti:womling_station', jobScale(p_on['womling_station'] * 1));
+        add('tauceti:womling_station', jobStack(p_on['womling_station'] * 1));
     }
     if (p_on['stellar_forge']){
-        add('interstellar:stellar_forge', jobScale(p_on['stellar_forge'] * 2));
+        add('interstellar:stellar_forge', jobStack(p_on['stellar_forge'] * 2));
     }
     if (p_on['demon_forge']){
-        add('portal:demon_forge', jobScale(p_on['demon_forge'] * actions.portal.prtl_wasteland.demon_forge.crafters()));
+        add('portal:demon_forge', jobStack(p_on['demon_forge'] * actions.portal.prtl_wasteland.demon_forge.crafters()));
     }
     if (global.tech['elysium'] && global.tech.elysium >= 18 && p_on['sacred_smelter']){
-        add('eden:sacred_smelter', jobScale(p_on['sacred_smelter'] * 3));
+        add('eden:sacred_smelter', jobStack(p_on['sacred_smelter'] * 3));
     }
     return by;
 }
@@ -1118,14 +1128,14 @@ export function craftBenchByZone(res){
     if (res === 'Quantium'){
         if (global.tech['isolation']){
             if (global.tech['resettle'] && global.tech.resettle >= 12 && global.space.hasOwnProperty('zero_g_lab')){
-                add('space:zero_g_lab', jobScale(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
+                add('space:zero_g_lab', jobStack(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
             }
             if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
-                add('tauceti:infectious_disease_lab', jobScale(getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab)));
+                add('tauceti:infectious_disease_lab', jobStack(getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab)));
             }
         }
         else if (global.space.hasOwnProperty('zero_g_lab')){
-            add('space:zero_g_lab', jobScale(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
+            add('space:zero_g_lab', jobStack(getStructNumActive(actions.space.spc_enceladus.zero_g_lab)));
         }
     }
     return by;
@@ -1144,7 +1154,7 @@ export function craftsmanCap(res){
         case 'Scarletite':
             if (global.portal.hasOwnProperty('hell_forge')){
                 let cap = getStructNumActive(actions.portal.prtl_ruins.hell_forge);
-                return jobScale(cap);
+                return jobStack(cap);
             }
             return 0;
 
@@ -1161,13 +1171,13 @@ export function craftsmanCap(res){
             else if (global.space.hasOwnProperty('zero_g_lab')){
                 cap = getStructNumActive(actions.space.spc_enceladus.zero_g_lab);
             }
-            return jobScale(cap || 0);
+            return jobStack(cap || 0);
 
         
         case 'Super_Fuel':
             if (global.surface.hasOwnProperty('fuel_refinery')){
                 let cap = getStructNumActive(actions.surface.crater.fuel_refinery);
-                return jobScale(cap);
+                return jobStack(cap);
             }
             return 0;
         // This function isn't used to limit normal craftsmen

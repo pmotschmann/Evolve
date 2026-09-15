@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
-import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, powerModifier } from './../functions.js';
+import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, genomeScale, powerModifier } from './../functions.js';
 import { job_data } from './../jobs.js';
 import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
@@ -1596,8 +1596,8 @@ function jobStressCalc(info){
                 <b-dropdown-item v-on:click="pickTrait(0.25, 'freespirit')">{{ traitLabel(0.25) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(0.5, 'freespirit')">{{ traitLabel(0.5) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(1, 'freespirit')">{{ traitLabel(1) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(2, 'freespirit')">{{ traitLabel(2) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(3, 'freespirit')">{{ traitLabel(3) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.33, 'freespirit')">{{ traitLabel(1.33) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.67, 'freespirit')">{{ traitLabel(1.67) }}</b-dropdown-item>
             </b-dropdown></div>
         </div>
         <div>
@@ -1626,8 +1626,8 @@ function jobStressCalc(info){
                 <b-dropdown-item v-on:click="pickTrait(0.25, 'high_pop')">{{ traitLabel(0.25) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(0.5, 'high_pop')">{{ traitLabel(0.5) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(1, 'high_pop')">{{ traitLabel(1) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(2, 'high_pop')">{{ traitLabel(2) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(3, 'high_pop')">{{ traitLabel(3) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.33, 'high_pop')">{{ traitLabel(1.33) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.67, 'high_pop')">{{ traitLabel(1.67) }}</b-dropdown-item>
             </b-dropdown></div>
             <div class="calcInput"><span>${loc('trait_emotionless_name')}</span> <b-dropdown hoverable>
                 <template #trigger><button class="button is-primary">
@@ -1638,8 +1638,8 @@ function jobStressCalc(info){
                 <b-dropdown-item v-on:click="pickTrait(0.25, 'emotionless')">{{ traitLabel(0.25) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(0.5, 'emotionless')">{{ traitLabel(0.5) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(1, 'emotionless')">{{ traitLabel(1) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(2, 'emotionless')">{{ traitLabel(2) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(3, 'emotionless')">{{ traitLabel(3) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.33, 'emotionless')">{{ traitLabel(1.33) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.67, 'emotionless')">{{ traitLabel(1.67) }}</b-dropdown-item>
             </b-dropdown></div>
         </div>
         <div class="calcButton">
@@ -2348,8 +2348,8 @@ function quantumLevelCalc(info){
                 <b-dropdown-item v-on:click="pickTrait(0.25, 'linked')">{{ traitLabel(0.25) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(0.5, 'linked')">{{ traitLabel(0.5) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickTrait(1, 'linked')">{{ traitLabel(1) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(2, 'linked')">{{ traitLabel(2) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickTrait(3, 'linked')">{{ traitLabel(3) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.33, 'linked')">{{ traitLabel(1.33) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1.67, 'linked')">{{ traitLabel(1.67) }}</b-dropdown-item>
             </b-dropdown></div>
             <div class="calcInput" v-show="i.linked.val"><span>${loc('wiki_calc_citizens')}</span> <b-numberinput :input="val('citizens')" min="0" v-model="i.citizens.val" :controls="false"></b-numberinput></div>
         </div>
@@ -2785,7 +2785,7 @@ function untappedCalc(info){
     
     formula.append(`
         <div>
-            <span>({{ generic(i.genes.val) }} / ({{ generic(i.genes.val) }} + 20) / 10) + 0.00024</span><span v-show="s.result.vis"> = {{ calc(false) }} = +{{ calc(true) }}%</span>
+            <span>({{ generic(i.genes.val) }} / ${genomeScale} / ({{ generic(i.genes.val) }} / ${genomeScale} + 20) / 10) + 0.00024</span><span v-show="s.result.vis"> = {{ calc(false) }} = +{{ calc(true) }}%</span>
         </div>
     `);
     
@@ -2829,7 +2829,8 @@ function untappedCalc(info){
                 show.result.vis = inputs.genes.val;
                 
                 if (show.result.vis){
-                    show.result.val = +(inputs.genes.val / (inputs.genes.val + 20) / 10 + 0.00024).toFixed(5);
+                    let left = inputs.genes.val / genomeScale;
+                    show.result.val = +(left / (left + 20) / 10 + 0.00024).toFixed(5);
                     
                     return show.result.val;
                 }

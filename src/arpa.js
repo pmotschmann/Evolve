@@ -7,7 +7,7 @@ import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction,
 import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
          geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
          geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneBreakUnlocked, geneSlotExtra, geneSlotLabel, geneSuited,
-         geneSlotBase, geneSlotMatched, geneSlotAnswers, geneRankStart, geneEffectiveBase, geneVars, geneEmergentList, geneEmergentRank} from './races.js';
+         geneSlotBase, geneSlotMatched, geneSlotAnswers, geneRankStart, geneEffectiveBase, geneVars, geneEmergentList, geneEmergentRank, rankTier} from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -2097,13 +2097,13 @@ function genetics(){
                     remove_list.push(trait);
 
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[traitRank(trait)])})</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[+traitRank(trait).toFixed(2)])})</span>`));
 
                     traitListing.append(major);
                 }
                 else {
                     null_list.push(trait);
-                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[traitRank(trait)])})</div></div>`);
+                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[+traitRank(trait).toFixed(2)])})</div></div>`);
                 }
             }
         });
@@ -2181,13 +2181,14 @@ function genetics(){
         }
 
 
+// Convert scaled trait values to the legacy removal-cost unit.
         let rmCost = function(t,label){
-            let cost = traits[t].val * 5;
+            let cost = traits[t].val / 4;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }
             if (global.race[t] && traits[t].val < 0){
-                switch(global.race[t]){
+                switch(rankTier(global.race[t])){
                     case 0.1:
                         cost *= 4;
                         break;
@@ -2213,7 +2214,7 @@ function genetics(){
         };
 
         let addCost = function(t,label){
-            let cost = traits[t].val * 5;
+            let cost = traits[t].val / 4;
             if (['custom','hybrid','sludge','ultra_sludge'].includes(global.race.species)){
                 cost *= 10;
             }

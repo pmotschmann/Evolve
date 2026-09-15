@@ -7,7 +7,7 @@ import { races, traits, geneBonus, traitCostMod, fathomCheck, orbitLength } from
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
 import { armyRating, garrisonSize, govEffect, soldierDeath, soldierTrainingRate, soldierRecoveryRate, buildGarrison,
          rivalCollapsed, govTitle } from './civics.js';
-import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
+import { jobScale, jobStackStep, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, drawTech, bank_vault, structName, initStruct, getStructNumActive,
          buildTemplate, casinoEffect, housingLabel, setAction, drawCity } from './actions.js';
@@ -245,9 +245,9 @@ const outerTruth = {
                     incrementStruct('titan_quarters');
                     global.civic.titan_colonist.display = true;
                     if (powerOnNewStruct(this)){
-                        global.resource[global.race.species].max += jobScale(1);
+                        let hiredMax = jobStackStep(global.space.titan_quarters.on);
+                        global.resource[global.race.species].max += hiredMax;
 
-                        let hiredMax = jobScale(1);
                         global.civic.titan_colonist.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);

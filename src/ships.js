@@ -4,7 +4,7 @@ import { global, p_on } from './vars.js';
 import { deepClone, powerModifier, modRes, messageQueue } from './functions.js';
 import { traits, geneBonus } from './races.js';
 import { atomic_mass } from './resources.js';
-import { jobScale } from './jobs.js';
+import { jobStack } from './jobs.js';
 import { payCosts } from './actions.js';
 import { spaceTech } from './space.js';
 import { genXYZcoord, starData, dist3, nearestStar, orbitAngle, orbitPoint, rel, orbitDist, orbitEcc, orbitPeriod,
@@ -500,24 +500,24 @@ function randomWord(){
 export function shipCrewSize(ship){
     switch (ship.class){
         case 'corvette':
-            return global.race['grenadier'] ? jobScale(1) : jobScale(2);
+            return global.race['grenadier'] ? jobStack(1) : jobStack(2);
         case 'frigate':
-            return global.race['grenadier'] ? jobScale(2) : jobScale(3);
+            return global.race['grenadier'] ? jobStack(2) : jobStack(3);
         case 'destroyer':
         case 'corsair':
-            return global.race['grenadier'] ? jobScale(3) : jobScale(4);
+            return global.race['grenadier'] ? jobStack(3) : jobStack(4);
         case 'cruiser':
-            return global.race['grenadier'] ? jobScale(4) : jobScale(6);
+            return global.race['grenadier'] ? jobStack(4) : jobStack(6);
         case 'battlecruiser':
-            return global.race['grenadier'] ? jobScale(5) : jobScale(8);
+            return global.race['grenadier'] ? jobStack(5) : jobStack(8);
         case 'dreadnought':
-            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
+            return global.race['grenadier'] ? jobStack(6) : jobStack(10);
         case 'explorer':
-            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
+            return global.race['grenadier'] ? jobStack(6) : jobStack(10);
         case 'freighter':
         // Supply Ships use light crew requirements.
         case 'supply_ship':
-            return jobScale(1);
+            return jobStack(1);
     }
 }
 

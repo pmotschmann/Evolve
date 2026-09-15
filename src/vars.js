@@ -1655,6 +1655,59 @@ if (convertVersion(global['version']) <= 105000){
         global.underground = global.underground || {};
         global.surface = global.surface || {};
     }
+
+    // Migrate legacy fixed trait ranks to the 0.1–2 scale.
+    if (!global['rankScale']){
+        const ranked = [
+        'adaptable','wasteful','carnivore','beast','cautious','instinct','forager','small','weak','large',
+        'strong','cold_blooded','scales','flier','hollow_bones','sky_lover','rigid','high_pop','fast_growth',
+        'high_metabolism','photosynth','sappy','asymmetrical','detritivore','spores','low_light','elusive',
+        'iron_allergy','smoldering','cold_intolerance','chilled','heat_intolerance','scavenger','immoral',
+        'blissful','pompous','holy','artifical','powered','psychic','tormented','darkness','unfathomable',
+        'creative','diverse','studious','arrogant','brute','angry','lazy','curious','pack_mentality','tracker',
+        'playful','freespirit','sniper','hooved','rage','heavy','gnawer','calm','pack_rat','paranoid','greedy',
+        'merchant','smart','puny','dumb','tough','nearsighted','intelligent','regenerative','gluttony','slow',
+        'armored','optimistic','chameleon','slow_digestion','astrologer','hard_of_hearing','resourceful',
+        'selenophobia','leathery','pessimistic','hoarder','solitary','kindling_kindred','iron_wood','pyrophobia',
+        'catnip','hyper','skittish','fragrant','sticky','anise','infectious','parasite','toxic','nyctophilia',
+        'infiltrator','hibernator','cannibalize','frail','malnutrition','claws','atrophy','hivemind','tunneler',
+        'blood_thirst','apex_predator','invertebrate','suction_grip','befuddle','environmentalist','unorganized',
+        'musical','revive','slow_regen','forge','autoignition','blurry','snowy','ravenous','ghostly','lawless',
+        'mistrustful','humpback','unfavored','fiery','terrifying','slaver','compact','conniving','pathetic',
+        'spiritual','truthful','unified','rainbow','gloomy','magnificent','noble','imitation','emotionless',
+        'logical','shapeshifter','deconstructor','linked','dark_dweller','swift','anthropophagite','living_tool',
+        'bloated','artisan','stubborn','rogue','untrustworthy','living_materials','unstable','elemental',
+        'chicken','tusk','blubber','ocular_power','floating','wish','devious','grenadier','aggressive',
+        'empowered','blasphemous','deep_power','ancient','scrounger','nostalgic','humongous','limited','wooly',
+        'mourning','ooze',
+        'xenophobic','herbivore','spongy','submerged','nomadic','evil','beast_of_burden','thalassophobia'
+        ];
+        const rescale = { 2: 1.33, 3: 1.67, 4: 2 };
+        let convert = function(list){
+            if (!list || typeof list !== 'object'){ return; }
+            ranked.forEach(function(t){
+                if (rescale.hasOwnProperty(list[t])){ list[t] = rescale[list[t]]; }
+            });
+        };
+        if (global['race']){
+            convert(global.race);
+            // Traits parked while another trait stands in for them, and the ranks Imitation will restore.
+            convert(global.race['inactiveTraits']);
+            convert(global.race['iTraits']);
+        }
+        // The race put aside for the length of a simulation, restored when it ends.
+        if (global['sim'] && global.sim['race']){
+            convert(global.sim.race);
+            convert(global.sim.race['inactiveTraits']);
+            convert(global.sim.race['iTraits']);
+        }
+        if (global['custom']){
+            ['race0','race1'].forEach(function(slot){
+                if (global.custom[slot]){ convert(global.custom[slot]['ranks']); }
+            });
+        }
+        global['rankScale'] = true;
+    }
 }
 
 if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnProperty('battles')){
