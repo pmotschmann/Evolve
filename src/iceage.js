@@ -7,7 +7,7 @@ import { addSmelter, defineIndustry, factoryData } from './industry.js';
 import { govActive } from './governor.js';
 import { production, highPopAdjust, hugeAdjust } from './prod.js';
 import { spatialReasoning, faithTempleCount } from './resources.js';
-import { jobScale, workerScale, loadFoundry, limitCraftsmen } from './jobs.js';
+import { jobScale, jobStack, jobStackStep, workerScale, loadFoundry, limitCraftsmen } from './jobs.js';
 import { garrisonSize, armorCalc, armyRating, soldierDeath } from './civics.js';
 import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait, servantTrait, geneVars, geneBonus } from './races.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -615,7 +615,7 @@ const iceAgeModules = {
                     }
                     let fathom = fathomCheck('cath');
                     if (fathom > 0){
-                        multiplier *= 1 + (traits.curious.vars(3)[0] * fathom);
+                        multiplier *= 1 + (traits.curious.vars(1.67)[0] * fathom);
                     }
                     let teachVal = govActive('teacher',0);
                     if (teachVal){
@@ -2140,7 +2140,7 @@ const iceAgeModules = {
                         global.resource.Iridium.display = true;
                         global.civic.core_miner.display = true;
                         if(powerOnNewStruct(this)){
-                            let hired = Math.min(jobScale(1), global.civic[global.civic.d_job].workers);
+                            let hired = Math.min(jobStackStep(global.underground.core_mine.on), global.civic[global.civic.d_job].workers);
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.core_miner.workers += hired;
                         }
@@ -4157,7 +4157,7 @@ const iceAgeModules = {
                         incrementStruct(this);
                         global.civic.crater_worker.display = true;
                         if(powerOnNewStruct(this)){
-                            let hired = Math.min(jobScale(1), global.civic[global.civic.d_job].workers);
+                            let hired = Math.min(jobStackStep(global.surface.work_station.on), global.civic[global.civic.d_job].workers);
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.crater_worker.workers += hired;
                         }
@@ -4787,7 +4787,7 @@ function cave_fight(real=false, seed=global['warseed']){
         ambushing_max -= Math.round(3 * traits.ocular_power.vars()[1] / 100);
     }
     let ambushing = Math.floor(rand(ambushing_max / 5, ambushing_max,true) / 1400 * creatures); //by default, between 1% and 5% of creatures ambush
-    let deaths = global.race['high_pop'] ? traits.high_pop.vars()[0] * ambushing : ambushing;
+    let deaths = jobStack(ambushing);
     let armor = armorCalc(deaths); //can be more than deaths
     let armor_reduce = Math.floor(Math.min(deaths, armor, army-injuries));
     injuries += armor_reduce;
@@ -4807,7 +4807,7 @@ function cave_fight(real=false, seed=global['warseed']){
         creatures -= Math.ceil(rand(rating * 0.3, rating,true));
         if (creatures > 0){
             let new_deaths = Math.ceil(rand(creatures / 15, creatures / 5,true));
-            new_deaths = global.race['high_pop'] ? traits.high_pop.vars()[0] * new_deaths : new_deaths;
+            new_deaths = jobStack(new_deaths);
             let armor = armorCalc(new_deaths);
             let armor_reduce = Math.floor(Math.min(new_deaths, armor, army-injuries));
             injuries += armor_reduce;

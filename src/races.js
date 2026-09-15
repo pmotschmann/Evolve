@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
-import { jobScale, loadFoundry } from './jobs.js';
+import { jobScale, jobStack, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
@@ -253,24 +253,9 @@ export const traits = {
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){ 
-            switch (r || traitRank('adaptable') || 1){
-                case 0.1:
-                    return [2];
-                case 0.25:
-                    return [3];
-                case 0.5:
-                    return [5];
-                case 1:
-                    return [10];
-                case 2:
-                    return [15];
-                case 3:
-                    return [20];
-                case 4:
-                    return [25];
-            }
+            return traitScale(r || traitRank('adaptable') || 1, [2], [10], [25]);
         },
     },
     wasteful: { // Craftings cost more materials
@@ -279,24 +264,9 @@ export const traits = {
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){ 
-            switch (r || traitRank('wasteful') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [6];
-                case 3:
-                    return [4];
-                case 4:
-                    return [2];
-            }
+            return traitScale(r || traitRank('wasteful') || 1, [16], [10], [2]);
         },
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
@@ -305,7 +275,7 @@ export const traits = {
         type: 'genus',
         genus: 'humanoid',
         taxonomy: 'resource',
-        val: -5,
+        val: -100,
     },
     carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
         name(){ return loc('trait_carnivore_name'); },
@@ -313,25 +283,10 @@ export const traits = {
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'resource',
-        val: 3,
+        val: 60,
         vars(r){ 
             // [Rot Percent]
-            switch (r || traitRank('carnivore') || 1){
-                case 0.1:
-                    return [70];
-                case 0.25:
-                    return [65];
-                case 0.5:
-                    return [60];
-                case 1:
-                    return [50];
-                case 2:
-                    return [40];
-                case 3:
-                    return [35];
-                case 4:
-                    return [30];
-            }
+            return traitScale(r || traitRank('carnivore') || 1, [70], [50], [30]);
         },
     },
     beast: { // Improved hunting and soldier training
@@ -340,25 +295,10 @@ export const traits = {
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'resource',
-        val: 2,
+        val: 40,
         vars(r){
             // [Hunting, Windy Hunting, Training Speed]
-            switch (r || traitRank('beast') || 1){
-                case 0.1:
-                    return [3,6,3];
-                case 0.25:
-                    return [4,8,4];
-                case 0.5:
-                    return [5,10,5];
-                case 1:
-                    return [8,15,10];
-                case 2:
-                    return [10,20,15];
-                case 3:
-                    return [12,24,20];
-                case 4:
-                    return [14,28,25];
-            }
+            return traitScale(r || traitRank('beast') || 1, [3,6,3], [8,15,10], [14,28,25]);
         },
     },
     cautious: { // Rain reduces combat rating
@@ -367,24 +307,9 @@ export const traits = {
         type: 'genus',
         origin: 'carnivore',
         taxonomy: 'combat',
-        val: -2,
+        val: -40,
         vars(r){ 
-            switch (r || traitRank('cautious') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('cautious') || 1, [16], [10], [4]);
         },
     },
     herbivore: { // No food is gained from hunting
@@ -393,7 +318,7 @@ export const traits = {
         type: 'genus',
         origin: 'herbivore',
         taxonomy: 'resource',
-        val: -7,
+        val: -140,
     },
     instinct: { // Avoids Danger
         name(){ return loc('trait_instinct_name'); },
@@ -401,25 +326,10 @@ export const traits = {
         type: 'genus',
         genus: 'herbivore',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
             // [Surveyor Survival Boost, Reduce Combat Deaths %]
-            switch (r || traitRank('instinct') || 1){
-                case 0.1:
-                    return [2,10];
-                case 0.25:
-                    return [3,15];
-                case 0.5:
-                    return [5,25];
-                case 1:
-                    return [10,50];
-                case 2:
-                    return [15,60];
-                case 3:
-                    return [20,65];
-                case 4:
-                    return [25,70];
-            }
+            return traitScale(r || traitRank('instinct') || 1, [2,10], [10,50], [25,70]);
         },
     },
     forager: { // Will eat just about anything
@@ -428,25 +338,10 @@ export const traits = {
         type: 'genus',
         origin: 'hybrid',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
             // [Foraging Strength]
-            switch (r || traitRank('forager') || 1){
-                case 0.1:
-                    return [70];
-                case 0.25:
-                    return [80];
-                case 0.5:
-                    return [90];
-                case 1:
-                    return [100];
-                case 2:
-                    return [110];
-                case 3:
-                    return [120];
-                case 4:
-                    return [130];
-            }
+            return traitScale(r || traitRank('forager') || 1, [70], [100], [130]);
         },
     },
     small: { // Reduces cost creep multipliers by 0.01
@@ -455,25 +350,10 @@ export const traits = {
         type: 'genus',
         origin: 'small',
         taxonomy: 'utility',
-        val: 6,
+        val: 120,
         vars(r){
             // [Planet Creep, Space Creep]
-            switch (r || traitRank('small') || 1){
-                case 0.1:
-                    return [0.0015,0.001];
-                case 0.25:
-                    return [0.0025,0.0015];
-                case 0.5:
-                    return [0.005,0.0025];
-                case 1:
-                    return [0.01,0.005];
-                case 2:
-                    return [0.0125,0.006];
-                case 3:
-                    return [0.015,0.0075];
-                case 4:
-                    return [0.016,0.008];
-            }
+            return traitScale(r || traitRank('small') || 1, [0.0015,0.001], [0.01,0.005], [0.016,0.008]);
         },
     },
     weak: { // Lumberjacks, miners, and quarry workers are 10% less effective
@@ -482,24 +362,9 @@ export const traits = {
         type: 'genus',
         origin: 'small',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('weak') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('weak') || 1, [16], [10], [4]);
         },
     },
     large: { // Increases plantery cost creep multipliers by 0.005
@@ -508,24 +373,9 @@ export const traits = {
         type: 'genus',
         origin: 'giant',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
         vars(r){
-            switch (r || traitRank('large') || 1){
-                case 0.1:
-                    return [0.008];
-                case 0.25:
-                    return [0.007];
-                case 0.5:
-                    return [0.006];
-                case 1:
-                    return [0.005];
-                case 2:
-                    return [0.004];
-                case 3:
-                    return [0.003];
-                case 4:
-                    return [0.002];
-            }
+            return traitScale(r || traitRank('large') || 1, [0.008], [0.005], [0.002]);
         },
     },
     strong: { // Increased manual resource gain
@@ -534,25 +384,10 @@ export const traits = {
         type: 'genus',
         origin: 'giant',
         taxonomy: 'resource',
-        val: 5,
+        val: 100,
         vars(r){
             // [Manual Gathering, Basic Jobs]
-            switch (r || traitRank('strong') || 1){
-                case 0.1:
-                    return [2,1.1];
-                case 0.25:
-                    return [2,1.25];
-                case 0.5:
-                    return [3,1.5];
-                case 1:
-                    return [4,2];
-                case 2:
-                    return [5,2.25];
-                case 3:
-                    return [6,2.5];
-                case 4:
-                    return [7,2.75];
-            }
+            return traitScale(r || traitRank('strong') || 1, [2,1.1], [4,2], [7,2.75]);
         },
     },
     cold_blooded: { // Weather affects productivity
@@ -561,23 +396,10 @@ export const traits = {
         type: 'genus',
         origin: 'reptilian',
         taxonomy: 'production',
-        val: -2,
+        val: -40,
         vars(r){
             // [Weather Penalty, Weather Bonus]
-            switch (r || traitRank('cold_blooded') || 1){
-                case 0.25:
-                    return [30,6];
-                case 0.5:
-                    return [25,8];
-                case 1:
-                    return [20,10];
-                case 2:
-                    return [15,15];
-                case 3:
-                    return [12,18];
-                case 4:
-                    return [10,20];
-            }
+            return traitScale(r || traitRank('cold_blooded') || 1, [35,4], [20,10], [10,20]);
         },
     },
     scales: { // Minor decrease of soldiers killed in combat
@@ -586,10 +408,10 @@ export const traits = {
         type: 'genus',
         origin: 'reptilian',
         taxonomy: 'combat',
-        val: 5,
+        val: 100,
         vars(r){
             // [Win, Loss, Hell]
-            switch (r || traitRank('scales') || 1){
+            switch (rankTier(r || traitRank('scales') || 1)){
                 case 0.1:
                     return [1,0,0];
                 case 0.25:
@@ -613,25 +435,11 @@ export const traits = {
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
-        val: 3,
+        val: 60,
         vars(r){
             // [Reduce Stone Costs, Extra Trade Post Route]
-            switch (r || traitRank('flier') || 1){
-                case 0.1:
-                    return [5,0];
-                case 0.25:
-                    return [10,0];
-                case 0.5:
-                    return [15,0];
-                case 1:
-                    return [25,1];
-                case 2:
-                    return [40,1];
-                case 3:
-                    return [50,2];
-                case 4:
-                    return [60,2];
-            }
+            let rank = r || traitRank('flier') || 1;
+            return [traitScale(rank, [5], [25], [60])[0], rankStep(rank, [[0,0],[1,1],[1.67,2]])];
         },
     },
     hollow_bones: { // Less Crafted Materials Needed
@@ -640,24 +448,9 @@ export const traits = {
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
-        val: 2,
+        val: 40,
         vars(r){
-            switch (r || traitRank('hollow_bones') || 1){
-                case 0.1:
-                    return [1];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [5];
-                case 2:
-                    return [8];
-                case 3:
-                    return [10];
-                case 4:
-                    return [12]
-            }
+            return traitScale(r || traitRank('hollow_bones') || 1, [1], [5], [12]);
         },
     },
     sky_lover: { // Mining type jobs more stressful
@@ -666,24 +459,9 @@ export const traits = {
         type: 'genus',
         origin: 'avian',
         taxonomy: 'utility',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('sky_lover') || 1){
-                case 0.1:
-                    return [50];
-                case 0.25:
-                    return [40];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [20];
-                case 2:
-                    return [15];
-                case 3:
-                    return [10];
-                case 4:
-                    return [8];
-            }
+            return traitScale(r || traitRank('sky_lover') || 1, [50], [20], [8]);
         },
     },
     rigid: { // Crafting production lowered slightly
@@ -692,24 +470,9 @@ export const traits = {
         type: 'genus',
         origin: 'avian',
         taxonomy: 'resource',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('rigid') || 1){
-                case 0.1:
-                    return [4];
-                case 0.25:
-                    return [3];
-                case 0.5:
-                    return [2];
-                case 1:
-                    return [1];
-                case 2:
-                    return [0.5];
-                case 3:
-                    return [0.4];
-                case 4:
-                    return [0.3];
-            }
+            return traitScale(r || traitRank('rigid') || 1, [4], [1], [0.3]);
         },
     },
     high_pop: { // Population is higher, but less productive
@@ -718,25 +481,10 @@ export const traits = {
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
-            switch (r || traitRank('high_pop') || 1){
-                case 0.1:
-                    return [2, 50, 1.2];
-                case 0.25:
-                    return [2, 50, 1.5];
-                case 0.5:
-                    return [3, 34, 2.5];
-                case 1:
-                    return [4, 26, 3.5];
-                case 2:
-                    return [5, 21.2, 4.5];
-                case 3:
-                    return [6, 18, 5.5];
-                case 4:
-                    return [7, 15.8, 6.5];
-            }
+            return traitScale(r || traitRank('high_pop') || 1, [2, 50, 1.2], [4, 26, 3.5], [7, 15.8, 6.5]);
         },
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
@@ -745,25 +493,10 @@ export const traits = {
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
-        val: 2,
+        val: 40,
         vars(r){
             // [bound multi, bound add]
-            switch (r || traitRank('fast_growth') || 1){
-                case 0.1:
-                    return [1.2,1];
-                case 0.25:
-                    return [1.5,1];
-                case 0.5:
-                    return [2,1];
-                case 1:
-                    return [2,2];
-                case 2:
-                    return [2.5,3];
-                case 3:
-                    return [3,3];
-                case 4:
-                    return [3.5,3];
-            }
+            return traitScale(r || traitRank('fast_growth') || 1, [1.2,1], [2,2], [3.5,3]);
         },
     },
     high_metabolism: { // Food requirements increased by 5%
@@ -772,24 +505,9 @@ export const traits = {
         type: 'genus',
         origin: 'insectoid',
         taxonomy: 'utility',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('high_metabolism') || 1){
-                case 0.1:
-                    return [12];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [5];
-                case 2:
-                    return [3];
-                case 3:
-                    return [2];
-                case 4:
-                    return [1];
-            }
+            return traitScale(r || traitRank('high_metabolism') || 1, [12], [5], [1]);
         },
     },
     photosynth: { // Reduces food requirements dependant on sunshine.
@@ -798,25 +516,10 @@ export const traits = {
         type: 'genus',
         origin: 'plant',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){
             // [Sunny, Cloudy, Rainy]
-            switch (r || traitRank('photosynth') || 1){
-                case 0.1:
-                    return [5,4,3];
-                case 0.25:
-                    return [10,5,4];
-                case 0.5:
-                    return [20,10,5];
-                case 1:
-                    return [40,20,10];
-                case 2:
-                    return [50,30,15];
-                case 3:
-                    return [60,35,20];
-                case 4:
-                    return [70,40,25];
-            }
+            return traitScale(r || traitRank('photosynth') || 1, [5,4,3], [40,20,10], [70,40,25]);
         },
     },
     sappy: { // Stone is replaced with Amber.
@@ -825,24 +528,9 @@ export const traits = {
         type: 'genus',
         origin: 'plant',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('sappy') || 1){
-                case 0.1:
-                    return [0.3];
-                case 0.25:
-                    return [0.4];
-                case 0.5:
-                    return [0.5];
-                case 1:
-                    return [0.6];
-                case 2:
-                    return [0.65];
-                case 3:
-                    return [0.7];
-                case 4:
-                    return [0.75];
-            }
+            return traitScale(r || traitRank('sappy') || 1, [0.3], [0.6], [0.75]);
         },
     },
     asymmetrical: { // Trade selling prices are slightly worse then normal
@@ -851,24 +539,9 @@ export const traits = {
         type: 'genus',
         origin: 'plant',
         taxonomy: 'utility',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('asymmetrical') || 1){
-                case 0.1:
-                    return [35];
-                case 0.25:
-                    return [30];
-                case 0.5:
-                    return [25];
-                case 1:
-                    return [20];
-                case 2:
-                    return [15];
-                case 3:
-                    return [10];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('asymmetrical') || 1, [35], [20], [5]);
         },
     },
     detritivore: { // You eat dead matter
@@ -877,24 +550,9 @@ export const traits = {
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
-        val: 2,
+        val: 40,
         vars(r){
-            switch (r || traitRank('detritivore') || 1){
-                case 0.1:
-                    return [60];
-                case 0.25:
-                    return [65];
-                case 0.5:
-                    return [72];
-                case 1:
-                    return [80];
-                case 2:
-                    return [85];
-                case 3:
-                    return [90];
-                case 4:
-                    return [95];
-            }
+            return traitScale(r || traitRank('detritivore') || 1, [60], [80], [95]);
         },
     },
     spores: { // Birthrate increased when it's windy
@@ -903,25 +561,10 @@ export const traits = {
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
-        val: 2,
+        val: 40,
         vars(r){
             // [Bound Add, Bound Multi, Bound Add Parasite]
-            switch (r || traitRank('spores') || 1){
-                case 0.1:
-                    return [1,1.2,1];
-                case 0.25:
-                    return [1,1.5,1];
-                case 0.5:
-                    return [2,1.5,1];
-                case 1:
-                    return [2,2,1];
-                case 2:
-                    return [2,2.5,2];
-                case 3:
-                    return [2,3,2];
-                case 4:
-                    return [3,3.5,2];
-            }
+            return traitScale(r || traitRank('spores') || 1, [1,1.2,1], [2,2,1], [3,3.5,2]);
         },
     },
     spongy: { // Birthrate decreased when it's raining
@@ -930,7 +573,7 @@ export const traits = {
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
-        val: -2,
+        val: -40,
     },
     submerged: { // Immune to weather effects
         name(){ return loc('trait_submerged_name'); },
@@ -938,7 +581,7 @@ export const traits = {
         type: 'genus',
         origin: 'aquatic',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
     },
     low_light: { // Farming effectiveness decreased
         name(){ return loc('trait_low_light_name'); },
@@ -946,24 +589,9 @@ export const traits = {
         type: 'genus',
         origin: 'aquatic',
         taxonomy: 'resource',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('low_light') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('low_light') || 1, [16], [10], [4]);
         },
     },
     elusive: { // Spies are never caught
@@ -972,24 +600,9 @@ export const traits = {
         type: 'genus',
         origin: 'fey',
         taxonomy: 'utility',
-        val: 7,
+        val: 140,
         vars(r){
-            switch (r || traitRank('elusive') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [20];
-                case 2:
-                    return [25];
-                case 3:
-                    return [30];
-                case 4:
-                    return [35];
-            }
+            return traitScale(r || traitRank('elusive') || 1, [5], [20], [35]);
         },
     },
     iron_allergy: { // Iron mining reduced
@@ -998,24 +611,9 @@ export const traits = {
         type: 'genus',
         origin: 'fey',
         taxonomy: 'resource',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('iron_allergy') || 1){
-                case 0.1:
-                    return [45];
-                case 0.25:
-                    return [40];
-                case 0.5:
-                    return [35];
-                case 1:
-                    return [25];
-                case 2:
-                    return [18];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('iron_allergy') || 1, [45], [25], [12]);
         },
     },
     smoldering: { // Hot weather is a bonus
@@ -1024,25 +622,10 @@ export const traits = {
         type: 'genus',
         origin: 'heat',
         taxonomy: 'production',
-        val: 7,
+        val: 140,
         vars(r){
             // [Seasonal Morale, Hot Bonus, High Hot Bonus]
-            switch (r || traitRank('smoldering') || 1){
-                case 0.1:
-                    return [2,0.1,0.06];
-                case 0.25:
-                    return [3,0.14,0.08];
-                case 0.5:
-                    return [4,0.18,0.1];
-                case 1:
-                    return [5,0.35,0.2];
-                case 2:
-                    return [10,0.38,0.22];
-                case 3:
-                    return [12,0.4,0.24];
-                case 4:
-                    return [14,0.42,0.25];
-            }
+            return traitScale(r || traitRank('smoldering') || 1, [2,0.1,0.06], [5,0.35,0.2], [14,0.42,0.25]);
         },
     },
     cold_intolerance: { // Cold weather is a detriment
@@ -1051,24 +634,9 @@ export const traits = {
         type: 'genus',
         origin: 'heat',
         taxonomy: 'production',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('cold_intolerance') || 1){
-                case 0.1:
-                    return [0.4];
-                case 0.25:
-                    return [0.35];
-                case 0.5:
-                    return [0.3];
-                case 1:
-                    return [0.25];
-                case 2:
-                    return [0.2];
-                case 3:
-                    return [0.18];
-                case 4:
-                    return [0.16];
-            }
+            return traitScale(r || traitRank('cold_intolerance') || 1, [0.4], [0.25], [0.16]);
         },
     },
     chilled: { // Cold weather is a bonus
@@ -1077,25 +645,10 @@ export const traits = {
         type: 'genus',
         origin: 'polar',
         taxonomy: 'production',
-        val: 7,
+        val: 140,
         vars(r){
             // [Seasonal Morale, Cold Bonus, High Cold Bonus, Snow Food Bonus, Cold Food Bonus, Sun Food Penalty]
-            switch (r || traitRank('chilled') || 1){
-                case 0.1:
-                    return [1,0.12,0.06,3,2,22];
-                case 0.25:
-                    return [1,0.14,0.08,5,2,20];
-                case 0.5:
-                    return [2,0.18,0.1,10,5,18];
-                case 1:
-                    return [5,0.35,0.2,20,10,15];
-                case 2:
-                    return [10,0.38,0.22,25,12,10];
-                case 3:
-                    return [12,0.4,0.24,30,14,8];
-                case 4:
-                    return [14,0.42,0.25,35,15,6];
-            }
+            return traitScale(r || traitRank('chilled') || 1, [1,0.12,0.06,3,2,22], [5,0.35,0.2,20,10,15], [14,0.42,0.25,35,15,6]);
         },
     },
     heat_intolerance: { // Hot weather is a detriment
@@ -1104,24 +657,9 @@ export const traits = {
         type: 'genus',
         origin: 'polar',
         taxonomy: 'production',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('heat_intolerance') || 1){
-                case 0.1:
-                    return [0.4];
-                case 0.25:
-                    return [0.35];
-                case 0.5:
-                    return [0.3];
-                case 1:
-                    return [0.25];
-                case 2:
-                    return [0.2];
-                case 3:
-                    return [0.18];
-                case 4:
-                    return [0.16];
-            }
+            return traitScale(r || traitRank('heat_intolerance') || 1, [0.4], [0.25], [0.16]);
         },
     },
     scavenger: { // scavenger job is always available
@@ -1130,25 +668,10 @@ export const traits = {
         type: 'genus',
         origin: 'sand',
         taxonomy: 'production',
-        val: 3,
+        val: 60,
         vars(r){
             // [impact, duel bonus]
-            switch (r || traitRank('scavenger') || 1){
-                case 0.1:
-                    return [0.05,18];
-                case 0.25:
-                    return [0.08,20];
-                case 0.5:
-                    return [0.1,22];
-                case 1:
-                    return [0.12,25];
-                case 2:
-                    return [0.14,30];
-                case 3:
-                    return [0.16,32];
-                case 4:
-                    return [0.18,34];
-            }
+            return traitScale(r || traitRank('scavenger') || 1, [0.05,18], [0.12,25], [0.18,34]);
         },
     },
     nomadic: { // -1 Trade route from trade post
@@ -1157,7 +680,7 @@ export const traits = {
         type: 'genus',
         origin: 'sand',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
     },
     immoral: { // Warmonger is a bonus instead of a penalty
         name(){ return loc('trait_immoral_name'); },
@@ -1165,24 +688,9 @@ export const traits = {
         type: 'genus',
         origin: 'demonic',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('immoral') || 1){
-                case 0.1:
-                    return [-40];
-                case 0.25:
-                    return [-30];
-                case 0.5:
-                    return [-20];
-                case 1:
-                    return [0];
-                case 2:
-                    return [20];
-                case 3:
-                    return [30];
-                case 4:
-                    return [40];
-            }
+            return traitScale(r || traitRank('immoral') || 1, [-40], [0], [40]);
         },
     },
     evil: { // You are pure evil
@@ -1199,24 +707,9 @@ export const traits = {
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('blissful') || 1){
-                case 0.1:
-                    return [75];
-                case 0.25:
-                    return [70];
-                case 0.5:
-                    return [60];
-                case 1:
-                    return [50];
-                case 2:
-                    return [40];
-                case 3:
-                    return [30];
-                case 4:
-                    return [25];
-            }
+            return traitScale(r || traitRank('blissful') || 1, [75], [50], [25]);
         },
     },
     pompous: { // Professors are less effective
@@ -1225,24 +718,9 @@ export const traits = {
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'utility',
-        val: -6,
+        val: -120,
         vars(r){
-            switch (r || traitRank('pompous') || 1){
-                case 0.1:
-                    return [90];
-                case 0.25:
-                    return [85];
-                case 0.5:
-                    return [80];
-                case 1:
-                    return [75];
-                case 2:
-                    return [65];
-                case 3:
-                    return [58];
-                case 4:
-                    return [50];
-            }
+            return traitScale(r || traitRank('pompous') || 1, [90], [75], [50]);
         },
     },
     holy: { // Combat Bonus in Hell
@@ -1251,25 +729,10 @@ export const traits = {
         type: 'genus',
         origin: 'angelic',
         taxonomy: 'combat',
-        val: 4,
+        val: 80,
         vars(r){
             // [Hell Army Bonus, Hell Suppression Bonus]
-            switch (r || traitRank('holy') || 1){
-                case 0.1:
-                    return [20,5];
-                case 0.25:
-                    return [25,10];
-                case 0.5:
-                    return [30,15];
-                case 1:
-                    return [50,25];
-                case 2:
-                    return [60,35];
-                case 3:
-                    return [65,40];
-                case 4:
-                    return [70,45];
-            }
+            return traitScale(r || traitRank('holy') || 1, [20,5], [50,25], [70,45]);
         },
     },
     artifical: {
@@ -1278,25 +741,10 @@ export const traits = {
         type: 'genus',
         origin: 'synthetic',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
             // [Science Bonus]
-            switch (r || traitRank('artifical') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [5];
-                case 0.5:
-                    return [10];
-                case 1:
-                    return [20];
-                case 2:
-                    return [25];
-                case 3:
-                    return [30];
-                case 4:
-                    return [35];
-            }
+            return traitScale(r || traitRank('artifical') || 1, [3], [20], [35]);
         },
     },
     powered: {
@@ -1305,25 +753,10 @@ export const traits = {
         type: 'genus',
         origin: 'synthetic',
         taxonomy: 'utility',
-        val: -6,
+        val: -120,
         vars(r){
             // [Power Req, Labor Boost]
-            switch (r || traitRank('powered') || 1){
-                case 0.1:
-                    return [0.4,4];
-                case 0.25:
-                    return [0.35,5];
-                case 0.5:
-                    return [0.3,8];
-                case 1:
-                    return [0.2,16];
-                case 2:
-                    return [0.1,20];
-                case 3:
-                    return [0.05,24];
-                case 4:
-                    return [0.05,28];
-            }
+            return traitScale(r || traitRank('powered') || 1, [0.4,4], [0.2,16], [0.05,28]);
         },
     },
     psychic: {
@@ -1332,25 +765,10 @@ export const traits = {
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
-        val: 10,
+        val: 200,
         vars(r){
             // [Mind Break Modifer, Thrall Modifer, Recharge Rate, Effect Strength]
-            switch (r || traitRank('psychic') || 1){
-                case 0.1:
-                    return [0.2,4,0.01,15];
-                case 0.25:
-                    return [0.35,5,0.01,20];
-                case 0.5:
-                    return [0.65,10,0.025,30];
-                case 1:
-                    return [1,15,0.05,40];
-                case 2:
-                    return [1.25,20,0.075,50];
-                case 3:
-                    return [1.5,25,0.1,60];
-                case 4:
-                    return [1.65,30,0.12,65];
-            }
+            return traitScale(r || traitRank('psychic') || 1, [0.2,4,0.01,15], [1,15,0.05,40], [1.65,30,0.12,65]);
         },
     },
     tormented: {
@@ -1359,25 +777,10 @@ export const traits = {
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
-        val: -25,
+        val: -500,
         vars(r){
             // [Morale above 100% is greatly reduced]
-            switch (r || traitRank('tormented') || 1){
-                case 0.1:
-                    return [99];
-                case 0.25:
-                    return [98];
-                case 0.5:
-                    return [95];
-                case 1:
-                    return [90];
-                case 2:
-                    return [80];
-                case 3:
-                    return [75];
-                case 4:
-                    return [70];
-            }
+            return traitScale(r || traitRank('tormented') || 1, [99], [90], [70]);
         },
     },
     darkness: {
@@ -1386,25 +789,10 @@ export const traits = {
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
-        val: 1,
+        val: 20,
         vars(r){
             // [Sunny Days less frequent]
-            switch (r || traitRank('darkness') || 1){
-                case 0.1:
-                    return [0];
-                case 0.25:
-                    return [1];
-                case 0.5:
-                    return [2];
-                case 1:
-                    return [3];
-                case 2:
-                    return [4];
-                case 3:
-                    return [5];
-                case 4:
-                    return [6];
-            }
+            return traitScale(r || traitRank('darkness') || 1, [0], [3], [6]);
         },
     },
     unfathomable: {
@@ -1413,25 +801,12 @@ export const traits = {
         type: 'genus',
         origin: 'eldritch',
         taxonomy: 'utility',
-        val: 15,
+        val: 300,
         vars(r){
             // [Thrall Races, Catch Modifer, Thrall Effectiveness]
-            switch (r || traitRank('unfathomable') || 1){
-                case 0.1:
-                    return [1,0.4,0.03];
-                case 0.25:
-                    return [1,0.5,0.05];
-                case 0.5:
-                    return [1,0.65,0.08];
-                case 1:
-                    return [2,0.8,0.1];
-                case 2:
-                    return [2,0.9,0.12];
-                case 3:
-                    return [3,1,0.13];
-                case 4:
-                    return [3,1.1,0.14];
-            }
+            let rank = r || traitRank('unfathomable') || 1;
+            let scaled = traitScale(rank, [1,0.4,0.03], [2,0.8,0.1], [3,1.1,0.14]);
+            return [rankStep(rank, [[0,1],[1,2],[1.67,3]]), scaled[1], scaled[2]];
         },
     },
     creative: { // A.R.P.A. Projects are cheaper
@@ -1440,24 +815,9 @@ export const traits = {
         type: 'major',
         origin: 'human',
         taxonomy: 'resource',
-        val: 8,
+        val: 160,
         vars(r){
-            switch (r || traitRank('creative') || 1){
-                case 0.1:
-                    return [0.001,3];
-                case 0.25:
-                    return [0.0015,5];
-                case 0.5:
-                    return [0.0025,10];
-                case 1:
-                    return [0.005,20];
-                case 2:
-                    return [0.006,22];
-                case 3:
-                    return [0.0065,24];
-                case 4:
-                    return [0.0068,26];
-            }
+            return traitScale(r || traitRank('creative') || 1, [0.001,3], [0.005,20], [0.0068,26]);
         },
     },
     diverse: { // Training soldiers takes longer
@@ -1466,24 +826,9 @@ export const traits = {
         type: 'major',
         origin: 'human',
         taxonomy: 'combat',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('diverse') || 1){
-                case 0.1:
-                    return [40];
-                case 0.25:
-                    return [35];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [25];
-                case 2:
-                    return [20];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('diverse') || 1, [40], [25], [12]);
         },
     },
     studious: { // Professors generate an extra 0.25 Knowledge per second, Libraries provide 10% more knowledge cap
@@ -1492,25 +837,10 @@ export const traits = {
         type: 'major',
         origin: 'elven',
         taxonomy: 'utility',
-        val: 2,
+        val: 40,
         vars(r){
             // [Prof Bonus, Library Bonus]
-            switch (r || traitRank('studious') || 1){
-                case 0.1:
-                    return [0.08,4];
-                case 0.25:
-                    return [0.1,6];
-                case 0.5:
-                    return [0.15,8];
-                case 1:
-                    return [0.25,10];
-                case 2:
-                    return [0.35,12];
-                case 3:
-                    return [0.4,14];
-                case 4:
-                    return [0.45,16];
-            }
+            return traitScale(r || traitRank('studious') || 1, [0.08,4], [0.25,10], [0.45,16]);
         },
     },
     arrogant: { // Market prices are higher
@@ -1519,24 +849,9 @@ export const traits = {
         type: 'major',
         origin: 'elven',
         taxonomy: 'resource',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('arrogant') || 1){
-                case 0.1:
-                    return [16]
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('arrogant') || 1, [16], [10], [5]);
         },
     },
     brute: { // Recruitment costs are 1/2 price
@@ -1545,25 +860,10 @@ export const traits = {
         type: 'major',
         origin: 'orc',
         taxonomy: 'combat',
-        val: 7,
+        val: 140,
         vars(r){
             // [Merc Discount, Training Bonus]
-            switch (r || traitRank('brute') || 1){
-                case 0.1:
-                    return [15,40];
-                case 0.25:
-                    return [20,50];
-                case 0.5:
-                    return [25,60];
-                case 1:
-                    return [50,100];
-                case 2:
-                    return [60,120];
-                case 3:
-                    return [65,140];
-                case 4:
-                    return [70,150];
-            }
+            return traitScale(r || traitRank('brute') || 1, [15,40], [50,100], [70,150]);
         },
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
@@ -1572,24 +872,9 @@ export const traits = {
         type: 'major',
         origin: 'orc',
         taxonomy: 'production',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('angry') || 1){
-                case 0.1:
-                    return [40];
-                case 0.25:
-                    return [35];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [25];
-                case 2:
-                    return [20];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('angry') || 1, [40], [25], [12]);
         },
     },
     lazy: { // All production is lowered when the temperature is hot
@@ -1598,24 +883,9 @@ export const traits = {
         type: 'major',
         origin: 'cath',
         taxonomy: 'production',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('lazy') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('lazy') || 1, [16], [10], [5]);
         },
     },
     curious: { // University cap boosted by citizen count, curious random events
@@ -1624,24 +894,9 @@ export const traits = {
         type: 'major',
         origin: 'cath',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('curious') || 1){
-                case 0.1:
-                    return [0.02];
-                case 0.25:
-                    return [0.03];
-                case 0.5:
-                    return [0.05];
-                case 1:
-                    return [0.1];
-                case 2:
-                    return [0.12];
-                case 3:
-                    return [0.13];
-                case 4:
-                    return [0.14];
-            }
+            return traitScale(r || traitRank('curious') || 1, [0.02], [0.1], [0.14]);
         },
     },
     pack_mentality: { // Cabins cost more, but cottages cost less.
@@ -1650,25 +905,10 @@ export const traits = {
         type: 'major',
         origin: 'wolven',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
             // [Cabin Creep penatly, Cottage Creep bonus]
-            switch (r || traitRank('pack_mentality') || 1){
-                case 0.1:
-                    return [0.03,0.014];
-                case 0.25:
-                    return [0.03,0.016];
-                case 0.5:
-                    return [0.03,0.018];
-                case 1:
-                    return [0.03,0.02];
-                case 2:
-                    return [0.026,0.022];
-                case 3:
-                    return [0.024,0.023];
-                case 4:
-                    return [0.022,0.024];
-            }
+            return traitScale(r || traitRank('pack_mentality') || 1, [0.03,0.014], [0.03,0.02], [0.022,0.024]);
         },
     },
     tracker: { // 20% increased gains from hunting
@@ -1677,24 +917,9 @@ export const traits = {
         type: 'major',
         origin: 'wolven',
         taxonomy: 'resource',
-        val: 2,
+        val: 40,
         vars(r){
-            switch (r || traitRank('tracker') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [20];
-                case 2:
-                    return [25];
-                case 3:
-                    return [30];
-                case 4:
-                    return [35];
-            }
+            return traitScale(r || traitRank('tracker') || 1, [5], [20], [35]);
         },
     },
     playful: { // Hunters are Happy
@@ -1703,24 +928,9 @@ export const traits = {
         type: 'major',
         origin: 'vulpine',
         taxonomy: 'production',
-        val: 5,
+        val: 100,
         vars(r){
-            switch (r || traitRank('playful') || 1){
-                case 0.1:
-                    return [0.2];
-                case 0.25:
-                    return [0.3];
-                case 0.5:
-                    return [0.4];
-                case 1:
-                    return [0.5];
-                case 2:
-                    return [0.6];
-                case 3:
-                    return [0.7];
-                case 4:
-                    return [0.8];
-            }
+            return traitScale(r || traitRank('playful') || 1, [0.2], [0.5], [0.8]);
         },
     },
     freespirit: { // Job Stress is higher for those who must work mundane jobs
@@ -1729,24 +939,9 @@ export const traits = {
         type: 'major',
         origin: 'vulpine',
         taxonomy: 'production',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('freespirit') || 1){
-                case 0.1:
-                    return [70];
-                case 0.25:
-                    return [65];
-                case 0.5:
-                    return [60];
-                case 1:
-                    return [50];
-                case 2:
-                    return [35];
-                case 3:
-                    return [25];
-                case 4:
-                    return [20];
-            }
+            return traitScale(r || traitRank('freespirit') || 1, [70], [50], [20]);
         },
     },
     beast_of_burden: { // Gains more loot during raids
@@ -1755,7 +950,7 @@ export const traits = {
         type: 'major',
         origin: 'centaur',
         taxonomy: 'combat',
-        val: 3
+        val: 60
     },
     sniper: { // Weapon upgrades are more impactful
         name(){ return loc('trait_sniper_name'); },
@@ -1763,24 +958,9 @@ export const traits = {
         type: 'major',
         origin: 'centaur',
         taxonomy: 'combat',
-        val: 6,
+        val: 120,
         vars(r){
-            switch (r || traitRank('sniper') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [6];
-                case 1:
-                    return [8];
-                case 2:
-                    return [9];
-                case 3:
-                    return [10];
-                case 4:
-                    return [11];
-            }
+            return traitScale(r || traitRank('sniper') || 1, [3], [8], [11]);
         },
     },
     hooved: { // You require special footwear
@@ -1789,25 +969,10 @@ export const traits = {
         type: 'major',
         origin: 'centaur',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
             // [Cost Adjustment]
-            switch (r || traitRank('hooved') || 1){
-                case 0.1:
-                    return [140];
-                case 0.25:
-                    return [130];
-                case 0.5:
-                    return [120];
-                case 1:
-                    return [100];
-                case 2:
-                    return [80];
-                case 3:
-                    return [70];
-                case 4:
-                    return [60];
-            }
+            return traitScale(r || traitRank('hooved') || 1, [140], [100], [60]);
         },
     },
     rage: { // Wounded soldiers rage with extra power
@@ -1816,25 +981,10 @@ export const traits = {
         type: 'major',
         origin: 'rhinotaur',
         taxonomy: 'combat',
-        val: 4,
+        val: 80,
         vars(r){
             // [Rage Bonus, Wounded Bonus]
-            switch (r || traitRank('rage') || 1){
-                case 0.1:
-                    return [0.2,10];
-                case 0.25:
-                    return [0.3,20];
-                case 0.5:
-                    return [0.5,30];
-                case 1:
-                    return [1,50];
-                case 2:
-                    return [1.25,60];
-                case 3:
-                    return [1.4,65];
-                case 4:
-                    return [1.5,70];
-            }
+            return traitScale(r || traitRank('rage') || 1, [0.2,10], [1,50], [1.5,70]);
         },
     },
     heavy: { // Some costs increased
@@ -1843,25 +993,10 @@ export const traits = {
         type: 'major',
         origin: 'rhinotaur',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
             // [Fuel Costs, Stone Cement and Wrought Iron Costs]
-            switch (r || traitRank('heavy') || 1){
-                case 0.1:
-                    return [20,12];
-                case 0.25:
-                    return [18,10];
-                case 0.5:
-                    return [15,8];
-                case 1:
-                    return [10,5];
-                case 2:
-                    return [8,4];
-                case 3:
-                    return [6,3];
-                case 4:
-                    return [5,2];
-            }
+            return traitScale(r || traitRank('heavy') || 1, [20,12], [10,5], [5,2]);
         },
     },
     gnawer: { // Population destroys lumber by chewing on it
@@ -1870,24 +1005,9 @@ export const traits = {
         type: 'major',
         origin: 'capybara',
         taxonomy: 'resource',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('gnawer') || 1){
-                case 0.1:
-                    return [0.6];
-                case 0.25:
-                    return [0.5];
-                case 0.5:
-                    return [0.4];
-                case 1:
-                    return [0.25];
-                case 2:
-                    return [0.2];
-                case 3:
-                    return [0.15];
-                case 4:
-                    return [0.12];
-            }
+            return traitScale(r || traitRank('gnawer') || 1, [0.6], [0.25], [0.12]);
         },
     },
     calm: { // Your are very calm, almost zen like
@@ -1896,24 +1016,9 @@ export const traits = {
         type: 'major',
         origin: 'capybara',
         taxonomy: 'production',
-        val: 6,
+        val: 120,
         vars(r){
-            switch (r || traitRank('calm') || 1){
-                case 0.1:
-                    return [6];
-                case 0.25:
-                    return [7];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [10];
-                case 2:
-                    return [12];
-                case 3:
-                    return [13];
-                case 4:
-                    return [14];
-            }
+            return traitScale(r || traitRank('calm') || 1, [6], [10], [14]);
         },
     },
     pack_rat: { // Storage space is increased
@@ -1922,25 +1027,10 @@ export const traits = {
         type: 'major',
         origin: 'kobold',
         taxonomy: 'resource',
-        val: 3,
+        val: 60,
         vars(r){
             // [Crate Bonus, Storage Bonus]
-            switch (r || traitRank('pack_rat') || 1){
-                case 0.1:
-                    return [4,1];
-                case 0.25:
-                    return [5,2];
-                case 0.5:
-                    return [6,3];
-                case 1:
-                    return [10,5];
-                case 2:
-                    return [15,8];
-                case 3:
-                    return [20,10];
-                case 4:
-                    return [25,12];
-            }
+            return traitScale(r || traitRank('pack_rat') || 1, [4,1], [10,5], [25,12]);
         },
     },
     paranoid: { // Bank capacity reduced by 10%
@@ -1949,24 +1039,9 @@ export const traits = {
         type: 'major',
         origin: 'kobold',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('paranoid') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('paranoid') || 1, [16], [10], [5]);
         },
     },
     greedy: { // Lowers income from taxes
@@ -1975,24 +1050,9 @@ export const traits = {
         type: 'major',
         origin: 'goblin',
         taxonomy: 'resource',
-        val: -5,
+        val: -100,
         vars(r){
-            switch (r || traitRank('greedy') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [17.5];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [12.5];
-                case 2:
-                    return [10];
-                case 3:
-                    return [8];
-                case 4:
-                    return [6];
-            }
+            return traitScale(r || traitRank('greedy') || 1, [20], [12.5], [6]);
         },
     },
     merchant: { // Better commodity selling prices
@@ -2001,25 +1061,10 @@ export const traits = {
         type: 'major',
         origin: 'goblin',
         taxonomy: 'resource',
-        val: 3,
+        val: 60,
         vars(r){
             // [Sell Price, Galactic Buy Volume]
-            switch (r || traitRank('merchant') || 1){
-                case 0.1:
-                    return [5,2];
-                case 0.25:
-                    return [10,3];
-                case 0.5:
-                    return [15,5];
-                case 1:
-                    return [25,10];
-                case 2:
-                    return [35,12];
-                case 3:
-                    return [40,13];
-                case 4:
-                    return [45,14];
-            }
+            return traitScale(r || traitRank('merchant') || 1, [5,2], [25,10], [45,14]);
         },
     },
     smart: { // Knowledge costs reduced by 10%
@@ -2028,24 +1073,9 @@ export const traits = {
         type: 'major',
         origin: 'gnome',
         taxonomy: 'utility',
-        val: 6,
+        val: 120,
         vars(r){
-            switch (r || traitRank('smart') || 1){
-                case 0.1:
-                    return [2];
-                case 0.25:
-                    return [3];
-                case 0.5:
-                    return [5];
-                case 1:
-                    return [10];
-                case 2:
-                    return [12];
-                case 3:
-                    return [13];
-                case 4:
-                    return [14];
-            }
+            return traitScale(r || traitRank('smart') || 1, [2], [10], [14]);
         },
     },
     puny: { // Lowers minium bound for army score roll
@@ -2054,24 +1084,9 @@ export const traits = {
         type: 'major',
         origin: 'gnome',
         taxonomy: 'combat',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('puny') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [18];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [10];
-                case 2:
-                    return [6];
-                case 3:
-                    return [4];
-                case 4:
-                    return [3];
-            }
+            return traitScale(r || traitRank('puny') || 1, [20], [10], [3]);
         },
     },
     dumb: { // Knowledge costs increased by 5%
@@ -2080,24 +1095,9 @@ export const traits = {
         type: 'major',
         origin: 'ogre',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
         vars(r){
-            switch (r || traitRank('dumb') || 1){
-                case 0.1:
-                    return [8];
-                case 0.25:
-                    return [7];
-                case 0.5:
-                    return [6];
-                case 1:
-                    return [5];
-                case 2:
-                    return [4];
-                case 3:
-                    return [3];
-                case 4:
-                    return [2];
-            }
+            return traitScale(r || traitRank('dumb') || 1, [8], [5], [2]);
         },
     },
     tough: { // Mining output increased by 25%
@@ -2106,24 +1106,9 @@ export const traits = {
         type: 'major',
         origin: 'ogre',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('tough') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [25];
-                case 2:
-                    return [35];
-                case 3:
-                    return [40];
-                case 4:
-                    return [45];
-            }
+            return traitScale(r || traitRank('tough') || 1, [5], [25], [45]);
         },
     },
     nearsighted: { // Libraries are less effective
@@ -2132,24 +1117,9 @@ export const traits = {
         type: 'major',
         origin: 'cyclops',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('nearsighted') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [18];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [12];
-                case 2:
-                    return [10];
-                case 3:
-                    return [8];
-                case 4:
-                    return [6];
-            }
+            return traitScale(r || traitRank('nearsighted') || 1, [20], [12], [6]);
         },
     },
     intelligent: { // Professors and Scientists add a global production bonus
@@ -2158,25 +1128,10 @@ export const traits = {
         type: 'major',
         origin: 'cyclops',
         taxonomy: 'production',
-        val: 7,
+        val: 140,
         vars(r){
             // [Prof Bonus, Scientist Bonus]
-            switch (r || traitRank('intelligent') || 1){
-                case 0.1:
-                    return [0.05,0.1];
-                case 0.25:
-                    return [0.08,0.15];
-                case 0.5:
-                    return [0.1,0.2];
-                case 1:
-                    return [0.125,0.25];
-                case 2:
-                    return [0.14,0.3];
-                case 3:
-                    return [0.15,0.32];
-                case 4:
-                    return [0.16,0.34];
-            }
+            return traitScale(r || traitRank('intelligent') || 1, [0.05,0.1], [0.125,0.25], [0.16,0.34]);
         },
     },
     regenerative: { // Wounded soldiers heal 4x as fast
@@ -2185,24 +1140,9 @@ export const traits = {
         type: 'major',
         origin: 'troll',
         taxonomy: 'combat',
-        val: 8,
+        val: 160,
         vars(r){
-            switch (r || traitRank('regenerative') || 1){
-                case 0.1:
-                    return [1];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [4];
-                case 2:
-                    return [5];
-                case 3:
-                    return [6];
-                case 4:
-                    return [7];
-            }
+            return traitScale(r || traitRank('regenerative') || 1, [1], [4], [7]);
         },
     },
     gluttony: { // Eats 10% more food per rank
@@ -2211,24 +1151,9 @@ export const traits = {
         type: 'major',
         origin: 'troll',
         taxonomy: 'resource',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('gluttony') || 1){
-                case 0.1:
-                    return [25];
-                case 0.25:
-                    return [20];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('gluttony') || 1, [25], [10], [5]);
         },
     },
     slow: { // The game moves at a 10% slower pace
@@ -2237,24 +1162,9 @@ export const traits = {
         type: 'major',
         origin: 'tortoisan',
         taxonomy: 'utility',
-        val: -6,
+        val: -120,
         vars(r){
-            switch (r || traitRank('slow') || 1){
-                case 0.1:
-                    return [14];
-                case 0.25:
-                    return [13];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('slow') || 1, [14], [10], [5]);
         },
     },
     armored: { // Less soldiers die in combat
@@ -2263,25 +1173,11 @@ export const traits = {
         type: 'major',
         origin: 'tortoisan',
         taxonomy: 'combat',
-        val: 4,
+        val: 80,
         vars(r){
             // [Solder % death prevention, Hell Armor Bonus]
-            switch (r || traitRank('armored') || 1){
-                case 0.1:
-                    return [10,0];
-                case 0.25:
-                    return [15,1];
-                case 0.5:
-                    return [25,1];
-                case 1:
-                    return [50,2];
-                case 2:
-                    return [70,2];
-                case 3:
-                    return [80,2];
-                case 4:
-                    return [85,2];
-            }
+            let rank = r || traitRank('armored') || 1;
+            return [traitScale(rank, [10], [50], [85])[0], rankStep(rank, [[0,0],[0.25,1],[1,2]])];
         },
     },
     optimistic: { // Minor reduction to stress
@@ -2290,24 +1186,9 @@ export const traits = {
         type: 'major',
         origin: 'gecko',
         taxonomy: 'production',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('optimistic') || 1){
-                case 0.1:
-                    return [3,4];
-                case 0.25:
-                    return [4,6];
-                case 0.5:
-                    return [5,8];
-                case 1:
-                    return [10,10];
-                case 2:
-                    return [15,13];
-                case 3:
-                    return [18,15];
-                case 4:
-                    return [20,16];
-            }
+            return traitScale(r || traitRank('optimistic') || 1, [3,4], [10,10], [20,16]);
         },
     },
     chameleon: { // Barracks have less soldiers
@@ -2316,25 +1197,10 @@ export const traits = {
         type: 'major',
         origin: 'gecko',
         taxonomy: 'combat',
-        val: 6,
+        val: 120,
         vars(r){
             // [Combat Rating Bonus, Ambush Avoid, Zombie Avoid]
-            switch (r || traitRank('chameleon') || 1){
-                case 0.1:
-                    return [3,5,2];
-                case 0.25:
-                    return [5,10,4];
-                case 0.5:
-                    return [10,15,6];
-                case 1:
-                    return [20,20,8];
-                case 2:
-                    return [25,25,10];
-                case 3:
-                    return [30,30,12];
-                case 4:
-                    return [35,35,14];
-            }
+            return traitScale(r || traitRank('chameleon') || 1, [3,5,2], [20,20,8], [35,35,14]);
         },
     },
     slow_digestion: { // Your race is more resilient to starvation
@@ -2343,24 +1209,9 @@ export const traits = {
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'production',
-        val: 1,
+        val: 20,
         vars(r){
-            switch (r || traitRank('slow_digestion') || 1){
-                case 0.1:
-                    return [0.2];
-                case 0.25:
-                    return [0.3];
-                case 0.5:
-                    return [0.5];
-                case 1:
-                    return [0.75];
-                case 2:
-                    return [1];
-                case 3:
-                    return [1.25];
-                case 4:
-                    return [1.4];
-            }
+            return traitScale(r || traitRank('slow_digestion') || 1, [0.2], [0.75], [1.4]);
         },
     },
     astrologer: { // Improved astrological effects
@@ -2369,24 +1220,9 @@ export const traits = {
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('astrologer') || 1){
-                case 0.1:
-                    return [10];
-                case 0.25:
-                    return [20];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [40];
-                case 2:
-                    return [50];
-                case 3:
-                    return [60];
-                case 4:
-                    return [70];
-            }
+            return traitScale(r || traitRank('astrologer') || 1, [10], [40], [70]);
         },
     },
     hard_of_hearing: { // University science cap gain reduced by 5%
@@ -2395,24 +1231,9 @@ export const traits = {
         type: 'major',
         origin: 'slitheryn',
         taxonomy: 'utility',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('hard_of_hearing') || 1){
-                case 0.1:
-                    return [8];
-                case 0.25:
-                    return [7];
-                case 0.5:
-                    return [6];
-                case 1:
-                    return [5];
-                case 2:
-                    return [4];
-                case 3:
-                    return [3];
-                case 4:
-                    return [2];
-            }
+            return traitScale(r || traitRank('hard_of_hearing') || 1, [8], [5], [2]);
         },
     },
     resourceful: { // Crafting costs are reduced slightly
@@ -2421,24 +1242,9 @@ export const traits = {
         type: 'major',
         origin: 'arraak',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('resourceful') || 1){
-                case 0.1:
-                    return [4];
-                case 0.25:
-                    return [6];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [12];
-                case 2:
-                    return [16];
-                case 3:
-                    return [18];
-                case 4:
-                    return [20];
-            }
+            return traitScale(r || traitRank('resourceful') || 1, [4], [12], [20]);
         },
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
@@ -2447,25 +1253,10 @@ export const traits = {
         type: 'major',
         origin: 'arraak',
         taxonomy: 'production',
-        val: -6,
+        val: -120,
         vars(r){
             // [Max bonus]
-            switch (r || traitRank('selenophobia') || 1){
-                case 0.1:
-                    return [1];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [4];
-                case 2:
-                    return [5];
-                case 3:
-                    return [6];
-                case 4:
-                    return [7];
-            }
+            return traitScale(r || traitRank('selenophobia') || 1, [1], [4], [7]);
         },
     },
     leathery: { // Morale penalty from some weather conditions are reduced.
@@ -2474,25 +1265,10 @@ export const traits = {
         type: 'major',
         origin: 'pterodacti',
         taxonomy: 'production',
-        val: 2,
+        val: 40,
         vars(r){
             // Morale loss (Base value is 5)
-            switch (r || traitRank('leathery') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [2];
-                case 2:
-                    return [1];
-                case 3:
-                    return [0];
-                case 4:
-                    return [-1];
-            }
+            return traitScale(r || traitRank('leathery') || 1, [5], [2], [-1]);
         },
     },
     pessimistic: { // Minor increase to stress
@@ -2501,24 +1277,9 @@ export const traits = {
         type: 'major',
         origin: 'pterodacti',
         taxonomy: 'production',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('pessimistic') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [2];
-                case 2:
-                    return [1];
-                case 3:
-                    return [1];
-                case 4:
-                    return [0];
-            }
+            return traitScale(r || traitRank('pessimistic') || 1, [5], [2], [0]);
         },
     },
     hoarder: { // Banks can store 20% more money
@@ -2527,24 +1288,9 @@ export const traits = {
         type: 'major',
         origin: 'dracnid',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('hoarder') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [5];
-                case 0.5:
-                    return [10];
-                case 1:
-                    return [20];
-                case 2:
-                    return [25];
-                case 3:
-                    return [30];
-                case 4:
-                    return [35];
-            }
+            return traitScale(r || traitRank('hoarder') || 1, [3], [20], [35]);
         },
     },
     solitary: { // Cabins are cheaper however cottages cost more
@@ -2553,25 +1299,10 @@ export const traits = {
         type: 'major',
         origin: 'dracnid',
         taxonomy: 'utility',
-        val: -1,
+        val: -20,
         vars(r){
             // [Cabin Creep bonus, Cottage Creep malus]
-            switch (r || traitRank('solitary') || 1){
-                case 0.1:
-                    return [0.01,0.03];
-                case 0.25:
-                    return [0.01,0.025];
-                case 0.5:
-                    return [0.01,0.02];
-                case 1:
-                    return [0.02,0.02];
-                case 2:
-                    return [0.025,0.02];
-                case 3:
-                    return [0.025,0.015];
-                case 4:
-                    return [0.028,0.012];
-            }
+            return traitScale(r || traitRank('solitary') || 1, [0.01,0.03], [0.02,0.02], [0.028,0.012]);
         },
     },
     kindling_kindred: { // Lumber is no longer a resource, however other costs are increased for anything that would have used lumber to compensate.
@@ -2580,24 +1311,9 @@ export const traits = {
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
-        val: 8,
+        val: 160,
         vars(r){
-            switch (r || traitRank('kindling_kindred') || 1){
-                case 0.1:
-                    return [12];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [5];
-                case 2:
-                    return [4];
-                case 3:
-                    return [3];
-                case 4:
-                    return [2];
-            }
+            return traitScale(r || traitRank('kindling_kindred') || 1, [12], [5], [2]);
         },
     },
     iron_wood: { // Removes Plywood as a resource, adds attack bonus
@@ -2606,24 +1322,9 @@ export const traits = {
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('iron_wood') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [6];
-                case 0.5:
-                    return [9];
-                case 1:
-                    return [12];
-                case 2:
-                    return [15];
-                case 3:
-                    return [18];
-                case 4:
-                    return [21];
-            }
+            return traitScale(r || traitRank('iron_wood') || 1, [3], [12], [21]);
         },
     },
     pyrophobia: { // Smelter productivity is reduced
@@ -2632,24 +1333,9 @@ export const traits = {
         type: 'major',
         origin: 'entish',
         taxonomy: 'resource',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('pyrophobia') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [5];
-            }
+            return traitScale(r || traitRank('pyrophobia') || 1, [16], [10], [5]);
         }
     },
     catnip: { // Attract Cats
@@ -2658,9 +1344,9 @@ export const traits = {
         type: 'major',
         origin: 'entish',
         taxonomy: 'production',
-        val: 1,
+        val: 20,
         vars(r){
-            switch (r || traitRank('catnip') || 1){
+            switch (rankTier(r || traitRank('catnip') || 1)){
                 case 0.1:
                     return [1,2];
                 case 0.25:
@@ -2684,24 +1370,9 @@ export const traits = {
         type: 'major',
         origin: 'cacti',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('hyper') || 1){
-                case 0.1:
-                    return [1];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [5];
-                case 2:
-                    return [6];
-                case 3:
-                    return [7];
-                case 4:
-                    return [8];
-            }
+            return traitScale(r || traitRank('hyper') || 1, [1], [5], [8]);
         }
     },
     skittish: { // Thunderstorms lower all production
@@ -2710,24 +1381,9 @@ export const traits = {
         type: 'major',
         origin: 'cacti',
         taxonomy: 'production',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('skittish') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [18];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [12];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('skittish') || 1, [20], [12], [4]);
         }
     },
     fragrant: { // Reduced Hunting effectiveness
@@ -2736,24 +1392,9 @@ export const traits = {
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('fragrant') || 1){
-                case 0.1:
-                    return [40];
-                case 0.25:
-                    return [35];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [20];
-                case 2:
-                    return [15];
-                case 3:
-                    return [12];
-                case 4:
-                    return [10];
-            }
+            return traitScale(r || traitRank('fragrant') || 1, [40], [20], [10]);
         }
     },
     sticky: { // Food req lowered, Increase Combat Rating
@@ -2762,25 +1403,10 @@ export const traits = {
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'combat',
-        val: 3,
+        val: 60,
         vars(r){
             // [Food Consumption, Army Bonus]
-            switch (r || traitRank('sticky') || 1){
-                case 0.1:
-                    return [3,3];
-                case 0.25:
-                    return [5,5];
-                case 0.5:
-                    return [10,8];
-                case 1:
-                    return [20,15];
-                case 2:
-                    return [25,18];
-                case 3:
-                    return [30,20];
-                case 4:
-                    return [35,22];
-            }
+            return traitScale(r || traitRank('sticky') || 1, [3,3], [20,15], [35,22]);
         }
     },
     anise: { // Attract Dogs
@@ -2789,9 +1415,9 @@ export const traits = {
         type: 'major',
         origin: 'pinguicula',
         taxonomy: 'production',
-        val: 1,
+        val: 20,
         vars(r){
-            switch (r || traitRank('anise') || 1){
+            switch (rankTier(r || traitRank('anise') || 1)){
                 case 0.1:
                     return [1,1];
                 case 0.25:
@@ -2815,25 +1441,10 @@ export const traits = {
         type: 'major',
         origin: 'sporgar',
         taxonomy: 'combat',
-        val: 4,
+        val: 80,
         vars(r){
             // [Ambush, Raid, Pillage, Assault, Siege]
-            switch (r || traitRank('infectious') || 1){
-                case 0.1:
-                    return [1,2,3,6,15];
-                case 0.25:
-                    return [1,2,3,7,18];
-                case 0.5:
-                    return [1,2,4,8,20];
-                case 1:
-                    return [2,3,5,10,25];
-                case 2:
-                    return [2,4,6,12,30];
-                case 3:
-                    return [3,4,7,13,32];
-                case 4:
-                    return [3,5,8,14,34];
-            }
+            return traitScale(r || traitRank('infectious') || 1, [1,2,3,6,15], [2,3,5,10,25], [3,5,8,14,34]);
         }
     },
     parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
@@ -2842,24 +1453,10 @@ export const traits = {
         type: 'major',
         origin: 'sporgar',
         taxonomy: 'combat',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('parasite') || 1){
-                case 0.1:
-                    return [0,12];
-                case 0.25:
-                    return [1,10];
-                case 0.5:
-                    return [1,8];
-                case 1:
-                    return [2,6];
-                case 2:
-                    return [2,4];
-                case 3:
-                    return [3,2];
-                case 4:
-                    return [3,0];
-            }
+            // [Starting Soldiers, Loot Penalty, Assembly Cooldown Days]
+            return traitScale(r || traitRank('parasite') || 1, [0,12,6], [2,6,3], [3,0,0]);
         }
     },
     toxic: { // Factory type jobs are more productive
@@ -2868,25 +1465,10 @@ export const traits = {
         type: 'major',
         origin: 'shroomi',
         taxonomy: 'resource',
-        val: 5,
+        val: 100,
         vars(r){
             // [Lux Fur Alloy Polymer, Nano Stanene, Cement]
-            switch (r || traitRank('toxic') || 1){
-                case 0.1:
-                    return [3,2,8];
-                case 0.25:
-                    return [5,3,10];
-                case 0.5:
-                    return [10,5,15];
-                case 1:
-                    return [20,8,30];
-                case 2:
-                    return [25,10,40];
-                case 3:
-                    return [30,12,45];
-                case 4:
-                    return [35,14,50];
-            }
+            return traitScale(r || traitRank('toxic') || 1, [3,2,8], [20,8,30], [35,14,50]);
         }
     },
     nyctophilia: { // Productivity is lost when it is sunny
@@ -2895,25 +1477,10 @@ export const traits = {
         type: 'major',
         origin: 'shroomi',
         taxonomy: 'production',
-        val: -3,
+        val: -60,
         vars(r){
             // [Sunny, Cloudy]
-            switch (r || traitRank('nyctophilia') || 1){
-                case 0.1:
-                    return [12,6];
-                case 0.25:
-                    return [10,6];
-                case 0.5:
-                    return [8,5];
-                case 1:
-                    return [5,2];
-                case 2:
-                    return [3,1];
-                case 3:
-                    return [2,1];
-                case 4:
-                    return [1,1];
-            }
+            return traitScale(r || traitRank('nyctophilia') || 1, [12,6], [5,2], [1,1]);
         }
     },
     infiltrator: { // Cheap spies and sometimes steal tech from rivals
@@ -2922,24 +1489,9 @@ export const traits = {
         type: 'major',
         origin: 'moldling',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){ // [Steal Cap]
-            switch (r || traitRank('infiltrator') || 1){
-                case 0.1:
-                    return [120];
-                case 0.25:
-                    return [110];
-                case 0.5:
-                    return [100];
-                case 1:
-                    return [90];
-                case 2:
-                    return [85];
-                case 3:
-                    return [80];
-                case 4:
-                    return [75];
-            }
+            return traitScale(r || traitRank('infiltrator') || 1, [120], [90], [75]);
         }
     },
     hibernator: { // Lower activity during winter
@@ -2948,25 +1500,10 @@ export const traits = {
         type: 'major',
         origin: 'moldling',
         taxonomy: 'production',
-        val: -3,
+        val: -60,
         vars(r){
             // [Food Consumption, Production]
-            switch (r || traitRank('hibernator') || 1){
-                case 0.1:
-                    return [10,10];
-                case 0.25:
-                    return [15,9];
-                case 0.5:
-                    return [20,8];
-                case 1:
-                    return [25,8];
-                case 2:
-                    return [30,6];
-                case 3:
-                    return [35,5];
-                case 4:
-                    return [40,4];
-            }
+            return traitScale(r || traitRank('hibernator') || 1, [10,10], [25,8], [40,4]);
         }
     },
     cannibalize: { // Eat your own for buffs
@@ -2975,24 +1512,9 @@ export const traits = {
         type: 'major',
         origin: 'mantis',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
-            switch (r || traitRank('cannibalize') || 1){
-                case 0.1:
-                    return [6];
-                case 0.25:
-                    return [8];
-                case 0.5:
-                    return [10];
-                case 1:
-                    return [15];
-                case 2:
-                    return [20];
-                case 3:
-                    return [22];
-                case 4:
-                    return [24];
-            }
+            return traitScale(r || traitRank('cannibalize') || 1, [6], [15], [24]);
         }
     },
     frail: { // More soldiers die in combat
@@ -3001,10 +1523,10 @@ export const traits = {
         type: 'major',
         origin: 'mantis',
         taxonomy: 'combat',
-        val: -2,
+        val: -40,
         vars(r){
             // [Win Deaths, Loss Deaths]
-            switch (r || traitRank('frail') || 1){
+            switch (rankTier(r || traitRank('frail') || 1)){
                 case 0.1:
                     return [3,4];
                 case 0.25:
@@ -3028,24 +1550,9 @@ export const traits = {
         type: 'major',
         origin: 'mantis',
         taxonomy: 'production',
-        val: 1,
+        val: 20,
         vars(r){
-            switch (r || traitRank('malnutrition') || 1){
-                case 0.1:
-                    return [8];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [25];
-                case 2:
-                    return [40];
-                case 3:
-                    return [50];
-                case 4:
-                    return [60];
-            }
+            return traitScale(r || traitRank('malnutrition') || 1, [8], [25], [60]);
         }
     },
     claws: { // Raises maximum bound for army score roll
@@ -3054,24 +1561,9 @@ export const traits = {
         type: 'major',
         origin: 'scorpid',
         taxonomy: 'combat',
-        val: 5,
+        val: 100,
         vars(r){
-            switch (r || traitRank('claws') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [8];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [25];
-                case 2:
-                    return [32];
-                case 3:
-                    return [35];
-                case 4:
-                    return [38];
-            }
+            return traitScale(r || traitRank('claws') || 1, [5], [25], [38]);
         }
     },
     atrophy: { // More prone to starvation
@@ -3080,24 +1572,9 @@ export const traits = {
         type: 'major',
         origin: 'scorpid',
         taxonomy: 'production',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('atrophy') || 1){
-                case 0.1:
-                    return [0.4];
-                case 0.25:
-                    return [0.35];
-                case 0.5:
-                    return [0.25];
-                case 1:
-                    return [0.15];
-                case 2:
-                    return [0.1];
-                case 3:
-                    return [0.08];
-                case 4:
-                    return [0.06];
-            }
+            return traitScale(r || traitRank('atrophy') || 1, [0.4], [0.15], [0.06]);
         }
     },
     hivemind: { // Jobs with low citizen counts assigned to them have reduced output, but those with high numbers have increased output.
@@ -3106,24 +1583,9 @@ export const traits = {
         type: 'major',
         origin: 'antid',
         taxonomy: 'production',
-        val: 9,
+        val: 180,
         vars(r){
-            switch (r || traitRank('hivemind') || 1){
-                case 0.1:
-                    return [13];
-                case 0.25:
-                    return [12];
-                case 0.5:
-                    return [11];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [7];
-                case 4:
-                    return [6];
-            }
+            return traitScale(r || traitRank('hivemind') || 1, [13], [10], [6]);
         }
     },
     tunneler: { // Mines and Coal Mines are cheaper.
@@ -3132,24 +1594,9 @@ export const traits = {
         type: 'major',
         origin: 'antid',
         taxonomy: 'utility',
-        val: 2,
+        val: 40,
         vars(r){
-            switch (r || traitRank('tunneler') || 1){
-                case 0.1:
-                    return [0.001];
-                case 0.25:
-                    return [0.002];
-                case 0.5:
-                    return [0.005];
-                case 1:
-                    return [0.01];
-                case 2:
-                    return [0.015];
-                case 3:
-                    return [0.018];
-                case 4:
-                    return [0.02];
-            }
+            return traitScale(r || traitRank('tunneler') || 1, [0.001], [0.01], [0.02]);
         }
     },
     blood_thirst: { // Combat causes a temporary increase in morale
@@ -3158,25 +1605,10 @@ export const traits = {
         type: 'major',
         origin: 'sharkin',
         taxonomy: 'combat',
-        val: 5,
+        val: 100,
         vars(r){
             // [Cap]
-            switch (r || traitRank('blood_thirst') || 1){
-                case 0.1:
-                    return [150000];
-                case 0.25:
-                    return [250000];
-                case 0.5:
-                    return [500000];
-                case 1:
-                    return [1000000];
-                case 2:
-                    return [2000000];
-                case 3:
-                    return [4000000];
-                case 4:
-                    return [5000000];
-            }
+            return traitScale(r || traitRank('blood_thirst') || 1, [150000], [1000000], [5000000]);
         }
     },
     apex_predator: { // Hunting and Combat ratings are significantly higher, but you can't use armor
@@ -3185,25 +1617,10 @@ export const traits = {
         type: 'major',
         origin: 'sharkin',
         taxonomy: 'combat',
-        val: 6,
+        val: 120,
         vars(r){
             // [Combat, Hunting]
-            switch (r || traitRank('apex_predator') || 1){
-                case 0.1:
-                    return [10,15];
-                case 0.25:
-                    return [15,20];
-                case 0.5:
-                    return [20,30];
-                case 1:
-                    return [30,50];
-                case 2:
-                    return [40,60];
-                case 3:
-                    return [45,65];
-                case 4:
-                    return [50,70];
-            }
+            return traitScale(r || traitRank('apex_predator') || 1, [10,15], [30,50], [50,70]);
         }
     },
     invertebrate: { // You have no bones
@@ -3212,24 +1629,9 @@ export const traits = {
         type: 'major',
         origin: 'octigoran',
         taxonomy: 'combat',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('invertebrate') || 1){
-                case 0.1:
-                    return [30];
-                case 0.25:
-                    return [25];
-                case 0.5:
-                    return [20];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [5];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('invertebrate') || 1, [30], [10], [4]);
         }
     },
     suction_grip: { // Global productivity boost
@@ -3238,24 +1640,9 @@ export const traits = {
         type: 'major',
         origin: 'octigoran',
         taxonomy: 'production',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('suction_grip') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [5];
-                case 0.5:
-                    return [6];
-                case 1:
-                    return [8];
-                case 2:
-                    return [12];
-                case 3:
-                    return [14];
-                case 4:
-                    return [15];
-            }
+            return traitScale(r || traitRank('suction_grip') || 1, [3], [8], [15]);
         }
     },
     befuddle: { // Spy actions complete in 1/2 time
@@ -3264,24 +1651,9 @@ export const traits = {
         type: 'major',
         origin: 'dryad',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('befuddle') || 1){
-                case 0.1:
-                    return [10];
-                case 0.25:
-                    return [20];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [50];
-                case 2:
-                    return [75];
-                case 3:
-                    return [85];
-                case 4:
-                    return [90];
-            }
+            return traitScale(r || traitRank('befuddle') || 1, [10], [50], [90]);
         }
     },
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
@@ -3290,25 +1662,10 @@ export const traits = {
         type: 'major',
         origin: 'dryad',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
         vars(r){
             // [power adjustment, windmill power]
-            switch (r || traitRank('environmentalist') || 1){
-                case 0.1:
-                    return [-2.5,1];
-                case 0.25:
-                    return [-2,1.15];
-                case 0.5:
-                    return [-1.5,1.25];
-                case 1:
-                    return [-1,1.35];
-                case 2:
-                    return [-0.5,1.4];
-                case 3:
-                    return [-0.25,1.45];
-                case 4:
-                    return [0,1.5];
-            }
+            return traitScale(r || traitRank('environmentalist') || 1, [-2.5,1], [-1,1.35], [0,1.5]);
         }
     },
     unorganized: { // Increased time between revolutions
@@ -3317,24 +1674,9 @@ export const traits = {
         type: 'major',
         origin: 'satyr',
         taxonomy: 'utility',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('unorganized') || 1){
-                case 0.1:
-                    return [100];
-                case 0.25:
-                    return [90];
-                case 0.5:
-                    return [80];
-                case 1:
-                    return [50];
-                case 2:
-                    return [40];
-                case 3:
-                    return [30];
-                case 4:
-                    return [25];
-            }
+            return traitScale(r || traitRank('unorganized') || 1, [100], [50], [25]);
         }
     },
     musical: { // Entertainers are more effective
@@ -3343,24 +1685,9 @@ export const traits = {
         type: 'major',
         origin: 'satyr',
         taxonomy: 'production',
-        val: 5,
+        val: 100,
         vars(r){
-            switch (r || traitRank('musical') || 1){
-                case 0.1:
-                    return [0.15];
-                case 0.25:
-                    return [0.25];
-                case 0.5:
-                    return [0.5];
-                case 1:
-                    return [1];
-                case 2:
-                    return [1.1];
-                case 3:
-                    return [1.2];
-                case 4:
-                    return [1.25];
-            }
+            return traitScale(r || traitRank('musical') || 1, [0.15], [1], [1.25]);
         }
     },
     revive: { // Soldiers sometimes self res
@@ -3369,25 +1696,10 @@ export const traits = {
         type: 'major',
         origin: 'phoenix',
         taxonomy: 'combat',
-        val: 4,
+        val: 80,
         vars(r){
             // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
-            switch (r || traitRank('revive') || 1){
-                case 0.1:
-                    return [8,6,2,9,7,3.5,4];
-                case 0.25:
-                    return [7,5,2,8,6,3,4];
-                case 0.5:
-                    return [6,4,2,7,5,2.5,4];
-                case 1:
-                    return [5,3,1.5,6,4,2,3];
-                case 2:
-                    return [4,2,1,5,3,1.5,2];
-                case 3:
-                    return [3,1.5,1,4,2.5,1,2];
-                case 4:
-                    return [2.5,1.2,1,3.5,2,1,2];
-            }
+            return traitScale(r || traitRank('revive') || 1, [8,6,2,9,7,3.5,4], [5,3,1.5,6,4,2,3], [2.5,1.2,1,3.5,2,1,2]);
         }
     },
     slow_regen: { // Your soldiers wounds heal slower.
@@ -3396,24 +1708,9 @@ export const traits = {
         type: 'major',
         origin: 'phoenix',
         taxonomy: 'combat',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('slow_regen') || 1){
-                case 0.1:
-                    return [45];
-                case 0.25:
-                    return [40];
-                case 0.5:
-                    return [35];
-                case 1:
-                    return [25];
-                case 2:
-                    return [20];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('slow_regen') || 1, [45], [25], [12]);
         }
     },
     forge: { // Smelters do not require fuel, boosts geothermal power
@@ -3422,24 +1719,9 @@ export const traits = {
         type: 'major',
         origin: 'salamander',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('forge') || 1){
-                case 0.1:
-                    return [0.25];
-                case 0.25:
-                    return [0.5];
-                case 0.5:
-                    return [1];
-                case 1:
-                    return [2];
-                case 2:
-                    return [2.5];
-                case 3:
-                    return [3];
-                case 4:
-                    return [3.5];
-            }
+            return traitScale(r || traitRank('forge') || 1, [0.25], [2], [3.5]);
         }
     },
     autoignition: { // Library knowledge bonus reduced
@@ -3448,24 +1730,9 @@ export const traits = {
         type: 'major',
         origin: 'salamander',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('autoignition') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [2];
-                case 2:
-                    return [1.5];
-                case 3:
-                    return [1];
-                case 4:
-                    return [0.5];
-            }
+            return traitScale(r || traitRank('autoignition') || 1, [5], [2], [0.5]);
         }
     },
     blurry: { // Increased success chance of spies // Warlord improves Reapers
@@ -3474,24 +1741,9 @@ export const traits = {
         type: 'major',
         origin: 'yeti',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
-            switch (r || traitRank('blurry') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [10];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [25];
-                case 2:
-                    return [35];
-                case 3:
-                    return [40];
-                case 4:
-                    return [45];
-            }
+            return traitScale(r || traitRank('blurry') || 1, [5], [25], [45]);
         }
     },
     snowy: { // You lose morale if it's not snowing
@@ -3500,25 +1752,10 @@ export const traits = {
         type: 'major',
         origin: 'yeti',
         taxonomy: 'production',
-        val: -3,
+        val: -60,
         vars(r){
             // [Not Hot, Hot]
-            switch (r || traitRank('snowy') || 1){
-                case 0.1:
-                    return [5,12];
-                case 0.25:
-                    return [4,10];
-                case 0.5:
-                    return [3,8];
-                case 1:
-                    return [2,5];
-                case 2:
-                    return [2,4];
-                case 3:
-                    return [1,3];
-                case 4:
-                    return [1,2];
-            }
+            return traitScale(r || traitRank('snowy') || 1, [5,12], [2,5], [1,2]);
         }
     },
     ravenous: { // Drastically increases food consumption
@@ -3527,25 +1764,10 @@ export const traits = {
         type: 'major',
         origin: 'wendigo',
         taxonomy: 'resource',
-        val: -5,
+        val: -100,
         vars(r){
             // [Extra Food Consumed, Stockpile Divisor]
-            switch (r || traitRank('ravenous') || 1){
-                case 0.1:
-                    return [35,2];
-                case 0.25:
-                    return [30,2];
-                case 0.5:
-                    return [25,2];
-                case 1:
-                    return [20,3];
-                case 2:
-                    return [15,4];
-                case 3:
-                    return [10,4];
-                case 4:
-                    return [8,4];
-            }
+            return traitScale(r || traitRank('ravenous') || 1, [35,2], [20,3], [8,4]);
         }
     },
     ghostly: { // More souls from hunting and soul wells, increased soul gem drop chance
@@ -3554,25 +1776,10 @@ export const traits = {
         type: 'major',
         origin: 'wendigo',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
             // [Hunting Food, Soul Well Food, Soul Gem Adjust]
-            switch (r || traitRank('ghostly') || 1){
-                case 0.1:
-                    return [15,1.1,2];
-                case 0.25:
-                    return [20,1.2,5];
-                case 0.5:
-                    return [25,1.25,10];
-                case 1:
-                    return [50,1.5,15];
-                case 2:
-                    return [60,1.6,20];
-                case 3:
-                    return [65,1.7,22];
-                case 4:
-                    return [70,1.8,23];
-            }
+            return traitScale(r || traitRank('ghostly') || 1, [15,1.1,2], [50,1.5,15], [70,1.8,23]);
         }
     },
     lawless: { // Government lockout timer is reduced by 90%
@@ -3581,24 +1788,9 @@ export const traits = {
         type: 'major',
         origin: 'tuskin',
         taxonomy: 'utility',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('lawless') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [30];
-                case 0.5:
-                    return [50];
-                case 1:
-                    return [90];
-                case 2:
-                    return [95];
-                case 3:
-                    return [98];
-                case 4:
-                    return [99];
-            }
+            return traitScale(r || traitRank('lawless') || 1, [20], [90], [99]);
         }
     },
     mistrustful: { // Lose standing with rival cities quicker
@@ -3607,24 +1799,9 @@ export const traits = {
         type: 'major',
         origin: 'tuskin',
         taxonomy: 'utility',
-        val: -1,
+        val: -20,
         vars(r){
-            switch (r || traitRank('mistrustful') || 1){
-                case 0.1:
-                    return [5];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [3];
-                case 1:
-                    return [2];
-                case 2:
-                    return [2];
-                case 3:
-                    return [1];
-                case 4:
-                    return [1];
-            }
+            return traitScale(r || traitRank('mistrustful') || 1, [5], [2], [1]);
         }
     },
     humpback: { // Starvation resistance and miner/lumberjack boost
@@ -3633,25 +1810,10 @@ export const traits = {
         type: 'major',
         origin: 'kamel',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
             // [Starve Resist, Miner/Lumber boost]
-            switch (r || traitRank('humpback') || 1){
-                case 0.1:
-                    return [0.15, 5];
-                case 0.25:
-                    return [0.2, 8];
-                case 0.5:
-                    return [0.25, 10];
-                case 1:
-                    return [0.5, 20];
-                case 2:
-                    return [0.75, 25];
-                case 3:
-                    return [0.8, 30];
-                case 4:
-                    return [0.85, 35];
-            }
+            return traitScale(r || traitRank('humpback') || 1, [0.15, 5], [0.5, 20], [0.85, 35]);
         }
     },
     thalassophobia: { // Wharves are unavailable
@@ -3660,7 +1822,7 @@ export const traits = {
         type: 'major',
         origin: 'kamel',
         taxonomy: 'utility',
-        val: -4
+        val: -80
     },
     unfavored: { // Zodiac Signs give negative Effects
         name(){ return loc('trait_unfavored_name'); },
@@ -3668,25 +1830,10 @@ export const traits = {
         type: 'major',
         origin: 'kamel',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
             // [Negative Sign Intensity]
-            switch (r || traitRank('unfavored') || 1){
-                case 0.1:
-                    return [175];
-                case 0.25:
-                    return [150];
-                case 0.5:
-                    return [125];
-                case 1:
-                    return [100];
-                case 2:
-                    return [75];
-                case 3:
-                    return [50];
-                case 4:
-                    return [25];
-            }
+            return traitScale(r || traitRank('unfavored') || 1, [175], [100], [25]);
         }
     },
     fiery: { // Major war bonus
@@ -3695,25 +1842,10 @@ export const traits = {
         type: 'major',
         origin: 'balorg',
         taxonomy: 'combat',
-        val: 10,
+        val: 200,
         vars(r){
             // [Combat Bonus, Hunting Bonus]
-            switch (r || traitRank('fiery') || 1){
-                case 0.1:
-                    return [20,12];
-                case 0.25:
-                    return [30,15];
-                case 0.5:
-                    return [40,18];
-                case 1:
-                    return [65,25];
-                case 2:
-                    return [70,35];
-                case 3:
-                    return [72,38];
-                case 4:
-                    return [74,40];
-            }
+            return traitScale(r || traitRank('fiery') || 1, [20,12], [65,25], [74,40]);
         }
     },
     terrifying: { // No one will trade with you
@@ -3722,25 +1854,10 @@ export const traits = {
         type: 'major',
         origin: 'balorg',
         taxonomy: 'resource',
-        val: 6,
+        val: 120,
         vars(r){
             // [Titanium Low Roll, Titanium High Roll]
-            switch (r || traitRank('terrifying') || 1){
-                case 0.1:
-                    return [6,15];
-                case 0.25:
-                    return [8,20];
-                case 0.5:
-                    return [10,25];
-                case 1:
-                    return [12,32];
-                case 2:
-                    return [13,34];
-                case 3:
-                    return [14,36];
-                case 4:
-                    return [15,38];
-            }
+            return traitScale(r || traitRank('terrifying') || 1, [6,15], [12,32], [15,38]);
         }
     },
     slaver: { // You capture victims and force them to work for you
@@ -3749,24 +1866,9 @@ export const traits = {
         type: 'major',
         origin: 'balorg',
         taxonomy: 'production',
-        val: 12,
+        val: 240,
         vars(r){
-            switch (r || traitRank('slaver') || 1){
-                case 0.1:
-                    return [0.05];
-                case 0.25:
-                    return [0.1];
-                case 0.5:
-                    return [0.14];
-                case 1:
-                    return [0.28];
-                case 2:
-                    return [0.3];
-                case 3:
-                    return [0.32];
-                case 4:
-                    return [0.33];
-            }
+            return traitScale(r || traitRank('slaver') || 1, [0.05], [0.28], [0.33]);
         }
     },
     compact: { // You hardly take up any space at all
@@ -3775,25 +1877,10 @@ export const traits = {
         type: 'major',
         origin: 'imp',
         taxonomy: 'utility',
-        val: 10,
+        val: 200,
         vars(r){
             // [Planet Creep, Space Creep]
-            switch (r || traitRank('compact') || 1){
-                case 0.1:
-                    return [0.003,0.002];
-                case 0.25:
-                    return [0.005,0.003];
-                case 0.5:
-                    return [0.01,0.005];
-                case 1:
-                    return [0.015,0.0075];
-                case 2:
-                    return [0.018,0.0085];
-                case 3:
-                    return [0.02,0.009];
-                case 4:
-                    return [0.021,0.0092];
-            }
+            return traitScale(r || traitRank('compact') || 1, [0.003,0.002], [0.015,0.0075], [0.021,0.0092]);
         }
     },
     conniving: { // Better trade deals
@@ -3802,25 +1889,10 @@ export const traits = {
         type: 'major',
         origin: 'imp',
         taxonomy: 'resource',
-        val: 4,
+        val: 80,
         vars(r){
             // [Buy Price, Sell Price]
-            switch (r || traitRank('conniving') || 1){
-                case 0.1:
-                    return [1,6];
-                case 0.25:
-                    return [2,8];
-                case 0.5:
-                    return [3,10];
-                case 1:
-                    return [5,15];
-                case 2:
-                    return [8,20];
-                case 3:
-                    return [10,24];
-                case 4:
-                    return [12,28];
-            }
+            return traitScale(r || traitRank('conniving') || 1, [1,6], [5,15], [12,28]);
         }
     },
     pathetic: { // You suck at combat
@@ -3829,24 +1901,9 @@ export const traits = {
         type: 'major',
         origin: 'imp',
         taxonomy: 'combat',
-        val: -5,
+        val: -100,
         vars(r){
-            switch (r || traitRank('pathetic') || 1){
-                case 0.1:
-                    return [40];
-                case 0.25:
-                    return [35];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [25];
-                case 2:
-                    return [20];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('pathetic') || 1, [40], [25], [12]);
         }
     },
     spiritual: { // Temples are 13% more effective
@@ -3855,24 +1912,9 @@ export const traits = {
         type: 'major',
         origin: 'seraph',
         taxonomy: 'production',
-        val: 4,
+        val: 80,
         vars(r){
-            switch (r || traitRank('spiritual') || 1){
-                case 0.1:
-                    return [6];
-                case 0.25:
-                    return [8];
-                case 0.5:
-                    return [10];
-                case 1:
-                    return [13];
-                case 2:
-                    return [15];
-                case 3:
-                    return [18];
-                case 4:
-                    return [20];
-            }
+            return traitScale(r || traitRank('spiritual') || 1, [6], [13], [20]);
         }
     },
     truthful: { // Bankers are less effective
@@ -3881,24 +1923,9 @@ export const traits = {
         type: 'major',
         origin: 'seraph',
         taxonomy: 'resource',
-        val: -7,
+        val: -140,
         vars(r){
-            switch (r || traitRank('truthful') || 1){
-                case 0.1:
-                    return [85];
-                case 0.25:
-                    return [75];
-                case 0.5:
-                    return [65];
-                case 1:
-                    return [50];
-                case 2:
-                    return [30];
-                case 3:
-                    return [20];
-                case 4:
-                    return [15];
-            }
+            return traitScale(r || traitRank('truthful') || 1, [85], [50], [15]);
         }
     },
     unified: { // Start with unification
@@ -3907,25 +1934,10 @@ export const traits = {
         type: 'major',
         origin: 'seraph',
         taxonomy: 'production',
-        val: 4,
+        val: 80,
         vars(r){
             // [Bonus to unification]
-            switch (r || traitRank('unified') || 1){
-                case 0.1:
-                    return [0];
-                case 0.25:
-                    return [1];
-                case 0.5:
-                    return [2];
-                case 1:
-                    return [3];
-                case 2:
-                    return [5];
-                case 3:
-                    return [7];
-                case 4:
-                    return [8];
-            }
+            return traitScale(r || traitRank('unified') || 1, [0], [3], [8]);
         }
     },
     rainbow: { // Gain a bonus if sunny after raining
@@ -3934,24 +1946,9 @@ export const traits = {
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'production',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('rainbow') || 1){
-                case 0.1:
-                    return [10];
-                case 0.25:
-                    return [20];
-                case 0.5:
-                    return [30];
-                case 1:
-                    return [50];
-                case 2:
-                    return [80];
-                case 3:
-                    return [100];
-                case 4:
-                    return [120];
-            }
+            return traitScale(r || traitRank('rainbow') || 1, [10], [50], [120]);
         }
     },
     gloomy: { // Gain a bonus if cloudy
@@ -3960,24 +1957,9 @@ export const traits = {
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'production',
-        val: 3,
+        val: 60,
         vars(r){
-            switch (r || traitRank('gloomy') || 1){
-                case 0.1:
-                    return [3];
-                case 0.25:
-                    return [5];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [10];
-                case 2:
-                    return [12];
-                case 3:
-                    return [13];
-                case 4:
-                    return [14];
-            }
+            return traitScale(r || traitRank('gloomy') || 1, [3], [10], [14]);
         }
     },
     magnificent: { // construct shrines to receive boons
@@ -3986,25 +1968,10 @@ export const traits = {
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'utility',
-        val: 6,
+        val: 120,
         vars(r){
             // [Knowledge Base, Knowledge Scale, Tax Bonus, Metal Bonus, Morale Bonus]
-            switch (r || traitRank('magnificent') || 1){
-                case 0.1:
-                    return [250, 1, 0.35, 0.65, 0.5];
-                case 0.25:
-                    return [300, 1, 0.5, 0.75, 1];
-                case 0.5:
-                    return [350, 2, 0.75, 0.8, 1];
-                case 1:
-                    return [400, 3, 1, 1, 1];
-                case 2:
-                    return [450, 3, 1.5, 1.5, 1.5];
-                case 3:
-                    return [500, 3, 2, 2, 2];
-                case 4:
-                    return [520, 3, 2.5, 2.5, 2.5];
-            }
+            return traitScale(r || traitRank('magnificent') || 1, [250, 1, 0.35, 0.65, 0.5], [400, 3, 1, 1, 1], [520, 3, 2.5, 2.5, 2.5]);
         }
     },
     noble: { // Unable to raise taxes above base value or set very low taxes
@@ -4013,25 +1980,10 @@ export const traits = {
         type: 'major',
         origin: 'unicorn',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
             // [min tax, max tax]
-            switch (r || traitRank('noble') || 1){
-                case 0.1:
-                    return [18,20];
-                case 0.25:
-                    return [15,20];
-                case 0.5:
-                    return [12,20];
-                case 1:
-                    return [10,20];
-                case 2:
-                    return [10,24];
-                case 3:
-                    return [10,28];
-                case 4:
-                    return [10,30];
-            }
+            return traitScale(r || traitRank('noble') || 1, [18,20], [10,20], [10,30]);
         }
     },
     imitation: { // You are an imitation of another species
@@ -4040,25 +1992,10 @@ export const traits = {
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
-        val: 9,
+        val: 180,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            switch (r || traitRank('imitation') || 1){
-                case 0.1:
-                    return [0.5,0.1]
-                case 0.25:
-                    return [0.5,0.25];
-                case 0.5:
-                    return [0.5,0.5];
-                case 1:
-                    return [0.5,1];
-                case 2:
-                    return [0.5,2];
-                case 3:
-                    return [0.5,3];
-                case 4:
-                    return [0.5,4];
-            }
+            return [0.5, r || traitRank('imitation') || 1];
         }
     },
     emotionless: { // You have no emotions, cold logic dictates your decisions
@@ -4067,25 +2004,10 @@ export const traits = {
         type: 'major',
         origin: 'synth',
         taxonomy: 'production',
-        val: -4,
+        val: -80,
         vars(r){
             // [Entertainer Reduction, Stress Reduction]
-            switch (r || traitRank('emotionless') || 1){
-                case 0.1:
-                    return [55,8];
-                case 0.25:
-                    return [50,10];
-                case 0.5:
-                    return [45,10];
-                case 1:
-                    return [35,13];
-                case 2:
-                    return [25,15];
-                case 3:
-                    return [20,15];
-                case 4:
-                    return [18,16];
-            }
+            return traitScale(r || traitRank('emotionless') || 1, [55,8], [35,13], [18,16]);
         }
     },
     logical: { // Citizens add Knowledge
@@ -4094,25 +2016,10 @@ export const traits = {
         type: 'major',
         origin: 'synth',
         taxonomy: 'utility',
-        val: 8,
+        val: 160,
         vars(r){
             // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
-            switch (r || traitRank('logical') || 1){
-                case 0.1:
-                    return [10,5];
-                case 0.25:
-                    return [25,10];
-                case 0.5:
-                    return [50,15];
-                case 1:
-                    return [100,25];
-                case 2:
-                    return [125,30];
-                case 3:
-                    return [150,32];
-                case 4:
-                    return [160,33];
-            }
+            return traitScale(r || traitRank('logical') || 1, [10,5], [100,25], [160,33]);
         }
     },
     shapeshifter: {
@@ -4121,25 +2028,10 @@ export const traits = {
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
-        val: 10,
+        val: 200,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            switch (r || traitRank('shapeshifter') || 1){
-                case 0.1:
-                    return [0.5,0.1];
-                case 0.25:
-                    return [0.5,0.25];
-                case 0.5:
-                    return [0.5,0.5];
-                case 1:
-                    return [0.5,1];
-                case 2:
-                    return [0.5,2];
-                case 3:
-                    return [0.5,3];
-                case 4:
-                    return [0.5,4];
-            }
+            return [0.5, r || traitRank('shapeshifter') || 1];
         }
     },
     deconstructor: {
@@ -4148,24 +2040,9 @@ export const traits = {
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
-            switch (r || traitRank('deconstructor') || 1){
-                case 0.1:
-                    return [25]
-                case 0.25:
-                    return [40];
-                case 0.5:
-                    return [60];
-                case 1:
-                    return [100];
-                case 2:
-                    return [125];
-                case 3:
-                    return [140];
-                case 4:
-                    return [150];
-            }
+            return traitScale(r || traitRank('deconstructor') || 1, [25], [100], [150]);
         }
     },
     linked: {
@@ -4174,25 +2051,10 @@ export const traits = {
         type: 'major',
         origin: 'nano',
         taxonomy: 'utility',
-        val: 4,
+        val: 80,
         vars(r){
             // [Quantum Bonus per Citizen, Softcap]
-            switch (r || traitRank('linked') || 1){
-                case 0.1:
-                    return [0.02,40];
-                case 0.25:
-                    return [0.03,40];
-                case 0.5:
-                    return [0.05,40];
-                case 1:
-                    return [0.1,80];
-                case 2:
-                    return [0.12,100];
-                case 3:
-                    return [0.14,100];
-                case 4:
-                    return [0.15,100];
-            }
+            return traitScale(r || traitRank('linked') || 1, [0.02,40], [0.1,80], [0.15,100]);
         }
     },
     dark_dweller: {
@@ -4201,24 +2063,9 @@ export const traits = {
         type: 'major',
         origin: 'ghast',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
-            switch (r || traitRank('dark_dweller') || 1){
-                case 0.1:
-                    return [99];
-                case 0.25:
-                    return [90];
-                case 0.5:
-                    return [75];
-                case 1:
-                    return [60];
-                case 2:
-                    return [45];
-                case 3:
-                    return [30];
-                case 4:
-                    return [25];
-            }
+            return traitScale(r || traitRank('dark_dweller') || 1, [99], [60], [25]);
         }
     },
     swift: {
@@ -4227,25 +2074,10 @@ export const traits = {
         type: 'major',
         origin: 'ghast',
         taxonomy: 'combat',
-        val: 10,
+        val: 200,
         vars(r){
             // [Combat Bonus, Thrall Catch Bonus]
-            switch (r || traitRank('swift') || 1){
-                case 0.1:
-                    return [20,8];
-                case 0.25:
-                    return [35,15];
-                case 0.5:
-                    return [55,30];
-                case 1:
-                    return [75,45];
-                case 2:
-                    return [85,55];
-                case 3:
-                    return [90,65];
-                case 4:
-                    return [92,70];
-            }
+            return traitScale(r || traitRank('swift') || 1, [20,8], [75,45], [92,70]);
         }
     },
     anthropophagite: {
@@ -4254,24 +2086,9 @@ export const traits = {
         type: 'major',
         origin: 'ghast',
         taxonomy: 'utility',
-        val: -2,
+        val: -40,
         vars(r){
-            switch (r || traitRank('anthropophagite') || 1){
-                case 0.1:
-                    return [0.25];
-                case 0.25:
-                    return [0.4];
-                case 0.5:
-                    return [0.65];
-                case 1:
-                    return [1];
-                case 2:
-                    return [1.5];
-                case 3:
-                    return [2];
-                case 4:
-                    return [2.5];
-            }
+            return traitScale(r || traitRank('anthropophagite') || 1, [0.25], [1], [2.5]);
         }
     },
     living_tool: {
@@ -4280,25 +2097,10 @@ export const traits = {
         type: 'major',
         origin: 'shoggoth',
         taxonomy: 'resource',
-        val: 12,
+        val: 240,
         vars(r){
             // [Tool Factor, Crafting Factor]
-            switch (r || traitRank('living_tool') || 1){
-                case 0.1:
-                    return [0.5,2];
-                case 0.25:
-                    return [0.65,5];
-                case 0.5:
-                    return [0.8,12];
-                case 1:
-                    return [1,25];
-                case 2:
-                    return [1.1,35];
-                case 3:
-                    return [1.2,42];
-                case 4:
-                    return [1.25,45];
-            }
+            return traitScale(r || traitRank('living_tool') || 1, [0.5,2], [1,25], [1.25,45]);
         }
     },
     bloated: {
@@ -4307,25 +2109,10 @@ export const traits = {
         type: 'major',
         origin: 'shoggoth',
         taxonomy: 'utility',
-        val: -10,
+        val: -200,
         vars(r){
             // [Costs are higher]
-            switch (r || traitRank('bloated') || 1){
-                case 0.1:
-                    return [30];
-                case 0.25:
-                    return [25];
-                case 0.5:
-                    return [20];
-                case 1:
-                    return [15];
-                case 2:
-                    return [10];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('bloated') || 1, [30], [15], [4]);
         }
     },
     artisan: {
@@ -4334,25 +2121,10 @@ export const traits = {
         type: 'major',
         origin: 'dwarf',
         taxonomy: 'resource',
-        val: 9,
+        val: 180,
         vars(r){
             // [Auto Crafting Boost, Manufacturing Boost, Improved Morale]
-            switch (r || traitRank('artisan') || 1){
-                case 0.1:
-                    return [15,8,0.15];
-                case 0.25:
-                    return [20,10,0.2];
-                case 0.5:
-                    return [35,15,0.35];
-                case 1:
-                    return [50,20,0.5];
-                case 2:
-                    return [60,25,0.55];
-                case 3:
-                    return [70,30,0.6];
-                case 4:
-                    return [80,35,0.65];
-            }
+            return traitScale(r || traitRank('artisan') || 1, [15,8,0.15], [50,20,0.5], [80,35,0.65]);
         }
     },
     stubborn: {
@@ -4361,25 +2133,10 @@ export const traits = {
         type: 'major',
         origin: 'dwarf',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
         vars(r){
             // Raises Knowledge cost of scientific advancements
-            switch (r || traitRank('stubborn') || 1){
-                case 0.1:
-                    return [20];
-                case 0.25:
-                    return [18];
-                case 0.5:
-                    return [14];
-                case 1:
-                    return [10];
-                case 2:
-                    return [6];
-                case 3:
-                    return [4];
-                case 4:
-                    return [3];
-            }
+            return traitScale(r || traitRank('stubborn') || 1, [20], [10], [3]);
         }
     },
     rogue: {
@@ -4388,25 +2145,10 @@ export const traits = {
         type: 'major',
         origin: 'raccoon',
         taxonomy: 'resource',
-        val: 6,
+        val: 120,
         vars(r){
             // [Randomly Steal Things]
-            switch (r || traitRank('rogue') || 1){
-                case 0.1:
-                    return [4];
-                case 0.25:
-                    return [6];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [10];
-                case 2:
-                    return [12];
-                case 3:
-                    return [14];
-                case 4:
-                    return [16];
-            }
+            return traitScale(r || traitRank('rogue') || 1, [4], [10], [16]);
         }
     },
     untrustworthy: {
@@ -4415,25 +2157,10 @@ export const traits = {
         type: 'major',
         origin: 'raccoon',
         taxonomy: 'utility',
-        val: -4,
+        val: -80,
         vars(r){
             // [Financial Institutions Cost Extra]
-            switch (r || traitRank('untrustworthy') || 1){
-                case 0.1:
-                    return [8];
-                case 0.25:
-                    return [7];
-                case 0.5:
-                    return [6];
-                case 1:
-                    return [5];
-                case 2:
-                    return [4];
-                case 3:
-                    return [3];
-                case 4:
-                    return [2];
-            }
+            return traitScale(r || traitRank('untrustworthy') || 1, [8], [5], [2]);
         }
     },
     living_materials: {
@@ -4442,26 +2169,11 @@ export const traits = {
         type: 'major',
         origin: 'lichen',
         taxonomy: 'resource',
-        val: 6,
+        val: 120,
         vars(r){
             // [Some building materials self replicate reducing cost of the next building]
             // [Lumber/Bone, Plywood/Boneweave, Furs/Flesh, Amber (not Stone/Clay)]
-            switch (r || traitRank('living_materials') || 1){
-                case 0.1:
-                    return [0.995];
-                case 0.25:
-                    return [0.99];
-                case 0.5:
-                    return [0.98];
-                case 1:
-                    return [0.97];
-                case 2:
-                    return [0.96];
-                case 3:
-                    return [0.95];
-                case 4:
-                    return [0.94];
-            }
+            return traitScale(r || traitRank('living_materials') || 1, [0.995], [0.97], [0.94]);
         }
     },
     unstable: {
@@ -4470,25 +2182,10 @@ export const traits = {
         type: 'major',
         origin: 'lichen',
         taxonomy: 'utility',
-        val: -5,
+        val: -100,
         vars(r){
             // [Randomly Die]
-            switch (r || traitRank('unstable') || 1){
-                case 0.1:
-                    return [7,10];
-                case 0.25:
-                    return [6,10];
-                case 0.5:
-                    return [5,10];
-                case 1:
-                    return [4,10];
-                case 2:
-                    return [3,10];
-                case 3:
-                    return [2,10];
-                case 4:
-                    return [1,10];
-            }
+            return traitScale(r || traitRank('unstable') || 1, [7,10], [4,10], [1,10]);
         }
     },
     elemental: {
@@ -4497,7 +2194,7 @@ export const traits = {
         type: 'major',
         origin: 'wyvern',
         taxonomy: 'utility',
-        val: 5,
+        val: 100,
         vars(r){
             let element = 'fire';
             switch (global.city.biome || 'grassland'){
@@ -4527,22 +2224,7 @@ export const traits = {
             }
             // [Element, Electric, Acid, Fire, Frost, Combat]
             // [Type, Power, Industry, Smelting, Bioscience, Combat]
-            switch (r || traitRank('elemental') || 1){
-                case 0.1:
-                    return [element, 0.08, 0.01, 0.02, 0.005, 1];
-                case 0.25:
-                    return [element, 0.12, 0.02, 0.03, 0.01, 2];
-                case 0.5:
-                    return [element, 0.16, 0.04, 0.06, 0.02, 4];
-                case 1:
-                    return [element, 0.2, 0.06, 0.09, 0.03, 6];
-                case 2:
-                    return [element, 0.23, 0.08, 0.12, 0.04, 8];
-                case 3:
-                    return [element, 0.26, 0.10, 0.15, 0.05, 10];
-                case 4:
-                    return [element, 0.28, 0.12, 0.18, 0.06, 12];
-            }
+            return traitScale(r || traitRank('elemental') || 1, [element, 0.08, 0.01, 0.02, 0.005, 1], [element, 0.2, 0.06, 0.09, 0.03, 6], [element, 0.28, 0.12, 0.18, 0.06, 12]);
         }
     },
     chicken: {
@@ -4551,25 +2233,10 @@ export const traits = {
         type: 'major',
         origin: 'wyvern',
         taxonomy: 'combat',
-        val: -8,
+        val: -160,
         vars(r){
             // [Hell Worse, Piracy Worse, Zombies Worse, Events Worse]
-            switch (r || traitRank('chicken') || 1){
-                case 0.1:
-                    return [110,20,20];
-                case 0.25:
-                    return [100,18,16];
-                case 0.5:
-                    return [75,15,13];
-                case 1:
-                    return [50,12,10];
-                case 2:
-                    return [40,9,8];
-                case 3:
-                    return [30,6,6];
-                case 4:
-                    return [20,3,4];
-            }
+            return traitScale(r || traitRank('chicken') || 1, [110,20,20], [50,12,10], [20,3,4]);
         }
     },
     tusk: {
@@ -4578,7 +2245,7 @@ export const traits = {
         type: 'major',
         origin: 'narwhal',
         taxonomy: 'resource',
-        val: 6,
+        val: 120,
         vars(r){
             let moisture = 0;
             switch (global.city.biome || 'grassland'){
@@ -4611,22 +2278,8 @@ export const traits = {
             }
 
             // [Mining based on Attack, Attack Bonus]
-            switch (r || traitRank('tusk') || 1){
-                case 0.1:
-                    return [80,Math.round(moisture * 0.4)];
-                case 0.25:
-                    return [100,Math.round(moisture * 0.5)];
-                case 0.5:
-                    return [130,Math.round(moisture * 0.75)];
-                case 1:
-                    return [160,Math.round(moisture * 1)];
-                case 2:
-                    return [190,Math.round(moisture * 1.2)];
-                case 3:
-                    return [220,Math.round(moisture * 1.4)];
-                case 4:
-                    return [250,Math.round(moisture * 1.6)];
-            }
+            let tusk = traitScale(r || traitRank('tusk') || 1, [80,0.4], [160,1], [250,1.6]);
+            return [tusk[0], Math.round(moisture * tusk[1])];
         }
     },
     blubber: {
@@ -4635,25 +2288,10 @@ export const traits = {
         type: 'major',
         origin: 'narwhal',
         taxonomy: 'resource',
-        val: -3,
+        val: -60,
         vars(r){
             // [Refine your dead to make Oil]
-            switch (r || traitRank('blubber') || 1){
-                case 0.1:
-                    return [2.5];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [1.5];
-                case 1:
-                    return [1];
-                case 2:
-                    return [0.75];
-                case 3:
-                    return [0.5];
-                case 4:
-                    return [0.25];
-            }
+            return traitScale(r || traitRank('blubber') || 1, [2.5], [1], [0.25]);
         }
     },
     ocular_power: {
@@ -4662,25 +2300,11 @@ export const traits = {
         type: 'major',
         origin: 'beholder',
         taxonomy: 'utility',
-        val: 9,
+        val: 180,
         vars(r){
             // [Powers Active, Power Scaling]
-            switch (r || traitRank('ocular_power') || 1){
-                case 0.1:
-                    return [1, 10];
-                case 0.25:
-                    return [1, 25];
-                case 0.5:
-                    return [1, 50];
-                case 1:
-                    return [2, 75];
-                case 2:
-                    return [2, 100];
-                case 3:
-                    return [3, 125];
-                case 4:
-                    return [3, 150];
-            }
+            let rank = r || traitRank('ocular_power') || 1;
+            return [rankStep(rank, [[0,1],[1,2],[1.67,3]]), traitScale(rank, [10], [75], [150])[0]];
         }
     },
     floating: {
@@ -4689,25 +2313,10 @@ export const traits = {
         type: 'major',
         origin: 'beholder',
         taxonomy: 'production',
-        val: -3,
+        val: -60,
         vars(r){
             // [Wind lowers production]
-            switch (r || traitRank('floating') || 1){
-                case 0.1:
-                    return [16];
-                case 0.25:
-                    return [14];
-                case 0.5:
-                    return [12];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('floating') || 1, [16], [10], [4]);
         }
     },
     wish: {
@@ -4716,25 +2325,10 @@ export const traits = {
         type: 'major',
         origin: 'djinn',
         taxonomy: 'utility',
-        val: 13,
+        val: 260,
         vars(r){
             // [Wish Cooldown Period]
-            switch (r || traitRank('wish') || 1){
-                case 0.1:
-                    return [2520];
-                case 0.25:
-                    return [2160];
-                case 0.5:
-                    return [1800];
-                case 1:
-                    return [1440];
-                case 2:
-                    return [1080];
-                case 3:
-                    return [720];
-                case 4:
-                    return [540];
-            }
+            return traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]);
         }
     },
     devious: {
@@ -4743,25 +2337,10 @@ export const traits = {
         type: 'major',
         origin: 'djinn',
         taxonomy: 'resource',
-        val: -4,
+        val: -80,
         vars(r){
             // [Trade Less Productive]
-            switch (r || traitRank('devious') || 1){
-                case 0.1:
-                    return [35];
-                case 0.25:
-                    return [30];
-                case 0.5:
-                    return [25];
-                case 1:
-                    return [20];
-                case 2:
-                    return [15];
-                case 3:
-                    return [10];
-                case 4:
-                    return [8];
-            }
+            return traitScale(r || traitRank('devious') || 1, [35], [20], [8]);
         }
     },
     grenadier: {
@@ -4770,25 +2349,10 @@ export const traits = {
         type: 'major',
         origin: 'bombardier',
         taxonomy: 'combat',
-        val: 6,
+        val: 120,
         vars(r){
             // [More Powerful Soldiers but less of them]
-            switch (r || traitRank('grenadier') || 1){
-                case 0.1:
-                    return [100];
-                case 0.25:
-                    return [110];
-                case 0.5:
-                    return [125];
-                case 1:
-                    return [150];
-                case 2:
-                    return [175];
-                case 3:
-                    return [200];
-                case 4:
-                    return [225];
-            }
+            return traitScale(r || traitRank('grenadier') || 1, [100], [150], [225]);
         }
     },
     aggressive: {
@@ -4797,25 +2361,10 @@ export const traits = {
         type: 'major',
         origin: 'bombardier',
         taxonomy: 'combat',
-        val: -2,
+        val: -40,
         vars(r){
             // [Major Death, Minor Death]
-            switch (r || traitRank('aggressive') || 1){
-                case 0.1:
-                    return [35,14]
-                case 0.25:
-                    return [30,12];
-                case 0.5:
-                    return [25,10];
-                case 1:
-                    return [20,8];
-                case 2:
-                    return [15,6];
-                case 3:
-                    return [10,4];
-                case 4:
-                    return [5,2];
-            }
+            return traitScale(r || traitRank('aggressive') || 1, [35,14], [20,8], [5,2]);
         }
     },
     empowered: {
@@ -4824,25 +2373,10 @@ export const traits = {
         type: 'major',
         origin: 'nephilim',
         taxonomy: 'utility',
-        val: 8,
+        val: 160,
         vars(r){
-            // [Boosts Other Traits]
-            switch (r || traitRank('empowered') || 1){
-                case 0.1:
-                    return [-1,2];
-                case 0.25:
-                    return [-2,3];
-                case 0.5:
-                    return [-3,4];
-                case 1:
-                    return [-4,6];
-                case 2:
-                    return [-6,9];
-                case 3:
-                    return [-8,12];
-                case 4:
-                    return [-99,99];
-            }
+// Major and genus rank bonuses; Empowered ranks cap at 2.
+            return traitScale(Math.min(2, r || traitRank('empowered') || 1), [0.01,0.005], [0.2,0.1], [0.4,0.2]);
         }
     },
     blasphemous: {
@@ -4851,25 +2385,10 @@ export const traits = {
         type: 'major',
         origin: 'nephilim',
         taxonomy: 'production',
-        val: -5,
+        val: -100,
         vars(r){
             // [Temples less effective]
-            switch (r || traitRank('blasphemous') || 1){
-                case 0.1:
-                    return [25];
-                case 0.25:
-                    return [20];
-                case 0.5:
-                    return [15];
-                case 1:
-                    return [10];
-                case 2:
-                    return [8];
-                case 3:
-                    return [6];
-                case 4:
-                    return [4];
-            }
+            return traitScale(r || traitRank('blasphemous') || 1, [25], [10], [4]);
         }
     },
     deep_power: { //increased mastery, mastery effects can be distributed along the different stats they provide
@@ -4878,25 +2397,10 @@ export const traits = {
         type: 'genus',
         origin: 'primordial',
         taxonomy: 'combat',
-        val: 9,
+        val: 180,
         vars(r){
             // [mastery increase multiplier]
-            switch (r || traitRank('deep_power') || 1){
-                case 0.1:
-                    return [0];
-                case 0.25:
-                    return [4];
-                case 0.5:
-                    return [8];
-                case 1:
-                    return [12];
-                case 2:
-                    return [15];
-                case 3:
-                    return [18];
-                case 4:
-                    return [22];
-            }
+            return traitScale(r || traitRank('deep_power') || 1, [0], [12], [22]);
         }
     },
     ancient: { //reduced quantum level
@@ -4905,25 +2409,10 @@ export const traits = {
         type: 'genus',
         origin: 'primordial',
         taxonomy: 'resource',
-        val: -8,
+        val: -160,
         vars(r){
             // [reduction to quantum in percentage]
-            switch (r || traitRank('ancient') || 1){
-                case 0.1:
-                    return [35];
-                case 0.25:
-                    return [30];
-                case 0.5:
-                    return [25];
-                case 1:
-                    return [20];
-                case 2:
-                    return [18];
-                case 3:
-                    return [15];
-                case 4:
-                    return [12];
-            }
+            return traitScale(r || traitRank('ancient') || 1, [35], [20], [12]);
         }
     },
     scrounger: { //scavengers are available, scavengers produce raider resources
@@ -4932,25 +2421,10 @@ export const traits = {
         type: 'major',
         origin: 'raptors',
         taxonomy: 'production',
-        val: 5,
+        val: 100,
         vars(r){
             // [Percentage of raider production]
-            switch (r || traitRank('scrounger') || 1){
-                case 0.1:
-                    return [10];
-                case 0.25:
-                    return [15];
-                case 0.5:
-                    return [25];
-                case 1:
-                    return [50];
-                case 2:
-                    return [75];
-                case 3:
-                    return [90];
-                case 4:
-                    return [110];
-            }
+            return traitScale(r || traitRank('scrounger') || 1, [10], [50], [110]);
         }
     },
     nostalgic: { //morale reduction for science/high tech techs.
@@ -4961,25 +2435,10 @@ export const traits = {
         type: 'major',
         origin: 'raptors',
         taxonomy: 'production',
-        val: -6,
+        val: -120,
         vars(r){
             // [morale reduction per tech]
-            switch (r || traitRank('nostalgic') || 1){
-                case 0.1:
-                    return [2];
-                case 0.25:
-                    return [1.5];
-                case 0.5:
-                    return [1.2];
-                case 1:
-                    return [1];
-                case 2:
-                    return [0.8];
-                case 3:
-                    return [0.65];
-                case 4:
-                    return [0.55];
-            }
+            return traitScale(r || traitRank('nostalgic') || 1, [2], [1], [0.55]);
         }
     },
     humongous: { //general production, storage and citizen workers increased in strength. Building cost and cost creep increased (UNIMPLEMENTED)
@@ -4988,25 +2447,10 @@ export const traits = {
         type: 'major',
         origin: 'rexicus',
         taxonomy: 'utility',
-        val: 12,
+        val: 240,
         vars(r){
             // [production/storage/job mult, building cost/creep mult]
-            switch (r || traitRank('humongous') || 1){
-                case 0.1:
-                    return [1.5, 1.6];
-                case 0.25:
-                    return [2, 2];
-                case 0.5:
-                    return [2.6, 2.5];
-                case 1:
-                    return [3.2, 3];
-                case 2:
-                    return [3.5, 3.2];
-                case 3:
-                    return [3.8, 3.4];
-                case 4:
-                    return [4, 3.6];
-            }
+            return traitScale(r || traitRank('humongous') || 1, [1.5, 1.6], [3.2, 3], [4, 3.6]);
         }
     },
     limited: { //reduced crafting
@@ -5015,25 +2459,10 @@ export const traits = {
         type: 'major',
         origin: 'rexicus',
         taxonomy: 'resource',
-        val: -6,
+        val: -120,
         vars(r){
             // [reduction in percentage]
-            switch (r || traitRank('limited') || 1){
-                case 0.1:
-                    return [35];
-                case 0.25:
-                    return [28];
-                case 0.5:
-                    return [20];
-                case 1:
-                    return [15];
-                case 2:
-                    return [12];
-                case 3:
-                    return [10];
-                case 4:
-                    return [7];
-            }
+            return traitScale(r || traitRank('limited') || 1, [35], [15], [7]);
         }
     },
     wooly: { //citizens raise resource caps and trade routes
@@ -5042,25 +2471,10 @@ export const traits = {
         type: 'major',
         origin: 'mammuth',
         taxonomy: 'combat',
-        val: 5,
+        val: 100,
         vars(r){
             // [percentage of warehouse storage per citizen, citizens needed per trade route]
-            switch (r || traitRank('wooly') || 1){
-                case 0.1:
-                    return [0.55, 16];
-                case 0.25:
-                    return [0.65, 15];
-                case 0.5:
-                    return [0.75, 14];
-                case 1:
-                    return [1, 12];
-                case 2:
-                    return [1.2, 11];
-                case 3:
-                    return [1.35, 11];
-                case 4:
-                    return [1.4, 10];
-            }
+            return traitScale(r || traitRank('wooly') || 1, [0.55, 16], [1, 12], [1.4, 10]);
         }
     },
     mourning: { //global production reduced when citizens die. (works similar to warmonger) (UNIMPLEMENTED)
@@ -5069,25 +2483,10 @@ export const traits = {
         type: 'major',
         origin: 'mammuth',
         taxonomy: 'production',
-        val: -5,
+        val: -100,
         vars(r){
             // [citizen contribution]
-            switch (r || traitRank('mourning') || 1){
-                case 0.1:
-                    return [2.5];
-                case 0.25:
-                    return [2];
-                case 0.5:
-                    return [1.5];
-                case 1:
-                    return [1];
-                case 2:
-                    return [0.8];
-                case 3:
-                    return [0.6];
-                case 4:
-                    return [0.5];
-            }
+            return traitScale(r || traitRank('mourning') || 1, [2.5], [1], [0.5]);
         }
     },
     ooze: { // you are some kind of ooze, everything is bad
@@ -5096,25 +2495,10 @@ export const traits = {
         type: 'major',
         origin: 'sludge',
         taxonomy: 'production',
-        val: -50,
+        val: -1000,
         vars(r){
             // [All jobs worse, Theology weaker, Mastery weaker]
-            switch (r || traitRank('ooze') || 1){
-                case 0.1:
-                    return [25,30,50];
-                case 0.25:
-                    return [20,25,40];
-                case 0.5:
-                    return [15,20,35];
-                case 1:
-                    return [12,15,30];
-                case 2:
-                    return [10,12,25];
-                case 3:
-                    return [8,10,20];
-                case 4:
-                    return [6,8,18];
-            }
+            return traitScale(r || traitRank('ooze') || 1, [25,30,50], [12,15,30], [6,8,18]);
         }
     },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
@@ -6834,7 +4218,7 @@ export const races = {
         home: loc('race_nephilim_home'),
         entity: loc('race_nephilim_entity'),
         traits: {
-            empowered: 2,
+            empowered: 1.33,
             blasphemous: 1
         },
         solar: {
@@ -6874,7 +4258,7 @@ export const races = {
         type: 'demonic',
         home: loc('race_hellspawn_home'),
         entity: loc('race_hellspawn_entity'),
-        traits: { immoral: 4 },
+        traits: { immoral: 2 },
         solar: {
             red: loc('race_hellspawn_solar_red'),
             hell: loc('race_hellspawn_solar_hell'),
@@ -8394,7 +5778,7 @@ export function cleanAddTrait(trait){
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
                 if (global.civic.foreign[`gov${i}`].occ){
-                    let occ_amount = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
+                    let occ_amount = jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
                     global.civic['garrison'].max += occ_amount;
                     global.civic['garrison'].workers += occ_amount;
                     global.civic.foreign[`gov${i}`].occ = false;
@@ -8960,57 +6344,72 @@ export function combineTraits(){
     }
 }
 
-export function traitRank(trait){
-    if (global.race['empowered'] && !['empowered','catnip','anise'].includes(trait)){
-        let val = traits[trait].val;
-        if (val >= traits.empowered.vars()[0] && val <= traits.empowered.vars()[1]){
-            switch (global.race[trait]){
-                case 0.1:
-                    return 0.25;
-                case 0.25:
-                    return 0.5;
-                case 0.5:
-                    return 1;
-                case 1:
-                    return 2;
-                case 2:
-                    return 3;
-                case 3:
-                    return 4;
-                case 4:
-                    return 4;
-            }
-        }
-    }
-    return global.race[trait];
+// Interpolate major and genus trait values from ranks 0.1 to 2.
+function traitScale(r, low, mid, high){
+    r = Math.max(0.1, r);
+    let from = r < 1 ? low : mid;
+    let to = r < 1 ? mid : high;
+    let f = r < 1 ? (r - 0.1) / 0.9 : (r <= 2 ? r - 1 : 1 + (r - 2) / 2);
+    return mid.map(function(v,i){
+        return typeof from[i] === 'number' && typeof to[i] === 'number' ? +(from[i] + (to[i] - from[i]) * f).toFixed(6) : v;
+    });
 }
 
+// Return the value assigned to the highest reached rank step.
+function rankStep(r, steps){
+    let value = steps[0][1];
+    steps.forEach(function(s){
+        if (r >= s[0]){ value = s[1]; }
+    });
+    return value;
+}
+
+// Move a trait rank to the previous or next permitted step.
+export function stepTraitRank(rank, down){
+    const steps = [0.1, 0.25, 0.5, 1, 1.33, 1.67, 2];
+    if (down){
+        let lower = steps.filter(s => s < rank);
+        return lower.length > 0 ? lower[lower.length - 1] : rank;
+    }
+    let higher = steps.find(s => s > rank);
+    return higher === undefined ? rank : higher;
+}
+
+// Return the highest legacy rank tier at or below a rank.
+export function rankTier(rank){
+    const steps = [0.1, 0.25, 0.5, 1, 1.33, 1.67, 2];
+    const old = [0.1, 0.25, 0.5, 1, 2, 3, 4];
+    let i = steps.length - 1;
+    while (i > 0 && steps[i] > rank){ i--; }
+    return old[i];
+}
+
+// Convert a legacy fixed trait rank to the current scale.
+export function legacyTraitRank(rank){
+    return { 2: 1.33, 3: 1.67, 4: 2 }[rank] || rank;
+}
+
+// Return a trait rank after Empowered bonuses.
+export function traitRank(trait){
+    let rank = global.race[trait];
+    if (rank && global.race['empowered'] && !['empowered','catnip','anise'].includes(trait)){
+        return +(rank + traits.empowered.vars()[traits[trait].type === 'genus' ? 1 : 0]).toFixed(6);
+    }
+    return rank;
+}
+
+// Change a trait rank using an explicit rank, step direction, or increment.
 export function setTraitRank(trait,opts){
     opts = opts || {};
     if (global.race[trait] && !opts['force']){
-        switch (global.race[trait]){
-            case 0.1:
-                global.race[trait] = opts['down'] ? 0.1 : 0.25;
-                return opts['down'] ? false : true;
-            case 0.25:
-                global.race[trait] = opts['down'] ? 0.1 : 0.5;
-                return true;
-            case 0.5:
-                global.race[trait] = opts['down'] ? 0.25 : 1;
-                return true;
-            case 1:
-                global.race[trait] = opts['down'] ? 0.5 : 2;
-                return true;
-            case 2:
-                global.race[trait] = opts['down'] ? 1 : 3;
-                return true;
-            case 3:
-                global.race[trait] = opts['down'] ? 2 : 4;
-                return true;
-            case 4:
-                global.race[trait] = opts['down'] ? 3 : 4;
-                return opts['down'] ? true : false;
+        let rank = opts['by']
+            ? +Math.min(2, Math.max(0.1, global.race[trait] + (opts['down'] ? -opts.by : opts.by))).toFixed(2)
+            : stepTraitRank(global.race[trait], opts['down']);
+        if (rank === global.race[trait]){
+            return false;
         }
+        global.race[trait] = rank;
+        return true;
     }
     else if (opts['set']){
         global.race[trait] = opts['set'];

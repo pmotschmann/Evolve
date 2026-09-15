@@ -6,11 +6,13 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass, unlockCrates, unlockContainers } from './resources.js';
-import { loadFoundry, jobScale, limitCraftsmen, job_data } from './jobs.js';
+import { loadFoundry, jobScale, jobStack, limitCraftsmen, job_data } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCounterEspionage } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { drawShipYard, jumpGateShutdown, jumpGateRestart, aerographeneSpeedBonus, shipCapacitorSaving, surveyTheme, grantSupplyFreighters, stealthStudied, revealAlienInfiltrators, containmentCaptureChance, interrogationDuration, sWarfare, sensorUpgrade } from './truepath.js';
+import { drawShipYard, jumpGateShutdown, jumpGateRestart, surveyTheme, stealthStudied, revealAlienInfiltrators,
+         containmentCaptureChance, interrogationDuration, sWarfare } from './truepath.js';
+import { aerographeneSpeedBonus, shipCapacitorSaving, grantSupplyFreighters, sensorUpgrade } from './ships.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
@@ -19063,7 +19065,7 @@ function uniteEffect(){
     buildGarrison($('#c_garrison'),false);
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
-            let occ_amount = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
+            let occ_amount = jobStack(global.civic.govern.type === 'federation' ? 15 : 20);
             global.civic['garrison'].max += occ_amount;
             global.civic['garrison'].workers += occ_amount;
             global.civic.foreign[`gov${i}`].occ = false;

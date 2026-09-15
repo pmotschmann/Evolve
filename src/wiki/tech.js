@@ -10,7 +10,8 @@ import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs } from './../
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 import { traitPageOf } from './species.js';
-import { shipCapacitorSaving, surveyTheme } from './../truepath.js';
+import { surveyTheme } from './../truepath.js';
+import { shipCapacitorSaving } from './../ships.js';
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');

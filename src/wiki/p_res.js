@@ -499,8 +499,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 <b-dropdown-item v-on:click="pickHighPop(0.25)">{{ highPopLabel(0.25) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickHighPop(0.5)">{{ highPopLabel(0.5) }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="pickHighPop(1)">{{ highPopLabel(1) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickHighPop(2)">{{ highPopLabel(2) }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="pickHighPop(3)">{{ highPopLabel(3) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(1.33)">{{ highPopLabel(1.33) }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(1.67)">{{ highPopLabel(1.67) }}</b-dropdown-item>
             </b-dropdown></div>
             <div class="calcInput" v-show="i.micro.use"><b-checkbox class="patrol" v-model="i.micro.val">${loc('universe_micro')}</b-checkbox></div>
             <div class="calcInput" v-show="i.synth.use"><b-checkbox class="patrol" v-model="i.synth.val">${loc('wiki_calc_synth')}</b-checkbox></div>

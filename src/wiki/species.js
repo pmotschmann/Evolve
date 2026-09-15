@@ -67,8 +67,9 @@ Object.keys(evolutionPath).forEach(function (key) {
 export function racesPage(content){
     content = sideMenu('create',content);
 
-    let genus_trank_pri = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 2 : 1;
-    let genus_trank_sec = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 1 : 0.5;
+    let genus_trank_pri = (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4) ? 1.25 : 1;
+// A hybrid secondary genus starts one step lower than its primary genus.
+    let genus_trank_sec = 0.5;
     let list = [];
     Object.keys(races).forEach(function (race){
         if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) 
@@ -164,21 +165,21 @@ function extraTraitList(race){
         case 'wolven':
             return easter.active ? [{t: 'hyper', r: 1},{t: 'fast_growth', r: 1},{t: 'rainbow', r: 1},{t: 'optimistic', r: 1}] : [];
         case 'vulpine':
-            return easter.active ? [{t: 'cannibalize', r: 1},{t: 'rage', r: 1},{t: 'blood_thirst', r: 1},{t: 'sticky', r: 1}] : [];
+            return easter.active ? [{t: 'cannibalize', r: 1.33},{t: 'rage', r: 1},{t: 'blood_thirst', r: 1},{t: 'sticky', r: 1}] : [];
         case 'elven':
-            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'slaver', r: 2},{t: 'resourceful', r: 0.5},{t: 'small', r: 0.25}] : [];
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'slaver', r: 1.33},{t: 'resourceful', r: 0.5},{t: 'small', r: 0.25}] : [];
         case 'capybara':
             return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'beast_of_burden', r: 1},{t: 'pack_rat', r: 0.5},{t: 'musical', r: 0.25}] : [];
         case 'centaur':
             return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'beast_of_burden', r: 1},{t: 'curious', r: 0.5},{t: 'blissful', r: 0.25}] : [];
         case 'wendigo':
-            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'immoral', r: 3},{t: 'cannibalize', r: 0.5},{t: 'claws', r: 0.25}] : [];
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'immoral', r: 1.67},{t: 'cannibalize', r: 0.5},{t: 'claws', r: 0.25}] : [];
         case 'yeti':
-            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'scavenger', r: 3},{t: 'regenerative', r: 0.5},{t: 'musical', r: 0.25}] : [];
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'scavenger', r: 1.67},{t: 'regenerative', r: 0.5},{t: 'musical', r: 0.25}] : [];
         case 'entish':
-            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'photosynth', r: 3},{t: 'optimistic', r: 0.5},{t: 'armored', r: 0.25}] : [];
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'photosynth', r: 1.67},{t: 'optimistic', r: 0.5},{t: 'armored', r: 0.25}] : [];
         case 'human':
-            return hallowed.active ? [{t: 'anthropophagite', r: 1}, {t: 'cannibalize', r: 2}, {t: 'infectious', r: 3}] : [];
+            return hallowed.active ? [{t: 'anthropophagite', r: 1}, {t: 'cannibalize', r: 1.33}, {t: 'infectious', r: 1.67}] : [];
         case 'tortoisan':
             return hallowed.active ? [{t: 'hyper', r: 0.25}, {t: 'swift', r: 0.5}, {t: 'infiltrator', r: 1}] : [];
         case 'unicorn':

@@ -1,24 +1,45 @@
 import { $ } from './dom.js';
-import { global, p_on, support_on, sizeApproximation, keyMap, seededRandom, webWorker, battle_log } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, get_qlevel, timeCheck, timeFormat, buildQueue, getWeaselTechLevelRequirement, modRes, actionPool, poolHeld, modalCloseButton } from './functions.js';
-import { races, traits, orbitLength, geneBonus } from './races.js';
+import { global, p_on, support_on, sizeApproximation, seededRandom, webWorker, battle_log, keyMap } from './vars.js';
+import { vBind, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, get_qlevel, flib,
+         darkEffect, adjustCosts, getWeaselTechLevelRequirement, calcPrestige, modRes, clearElement, popover,
+         deepClone, buildQueue, timeCheck, timeFormat, actionPool, poolHeld, modalCloseButton } from './functions.js';
+import { races, traits, geneBonus, traitCostMod, fathomCheck, orbitLength } from './races.js';
 import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
-import { armyRating, garrisonSize, soldierDeath, buildGarrison, govEffect, govTitle, rivalCollapsed, soldierTrainingRate, soldierRecoveryRate } from './civics.js';
-import { jobScale, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
+import { armyRating, garrisonSize, govEffect, soldierDeath, soldierTrainingRate, soldierRecoveryRate, buildGarrison,
+         rivalCollapsed, govTitle } from './civics.js';
+import { jobScale, jobStackStep, job_data, loadFoundry, limitCraftsmen, workerScale } from './jobs.js';
 import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, drawCity, bank_vault, buildTemplate, casinoEffect, housingLabel, structName, initStruct, getStructNumActive } from './actions.js';
-import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, incrementStruct, planetName, sceneryBodies } from './space.js';
-import { defineGovernor, removeTask, govActive } from './governor.js';
-import { defineIndustry, nf_resources, addSmelter, factoryData, setupRituals, cancelRituals, setPowerGrid } from './industry.js';
+import { actions, payCosts, powerOnNewStruct, drawTech, bank_vault, structName, initStruct, getStructNumActive,
+         buildTemplate, casinoEffect, housingLabel, setAction, drawCity } from './actions.js';
+import { fuel_adjust, renderSpace, incrementStruct, planetName, int_fuel_adjust, checkRequirements, spaceTech,
+         sceneryBodies } from './space.js';
+import { govActive, defineGovernor, removeTask } from './governor.js';
+import { defineIndustry, addSmelter, factoryData, nf_resources, cancelRituals, setupRituals, setPowerGrid } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
-import { traitCostMod, fathomCheck } from './races.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
-import { starData, setOrbits, dist3, genXYZcoord, nearestStar, orbitPoint, orbitAngle, orbitDist, orbitEcc, orbitPeriod, randomCoord, rel, buildSolarMap, starDetour } from './stars.js';
+import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap } from './stars.js';
 import { loc } from './locale.js';
-import { supplyRegionName, supplyPool, supplyRegions, supplyMode, partitioned, regAmount, regDiff, poolMod, syncTotal, activeSupplyRegions, capitalGone } from './supply.js';
+import { supplyMode, supplyRegionName, activeSupplyRegions, capitalGone, supplyPool, partitioned, regAmount, poolMod,
+         syncTotal } from './supply.js';
 import { refundUnderground } from './iceage.js';
+import { retiredShipFields } from './shipsave.js';
+import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipArmorSoak, shipSpeed, shipArmorFactor,
+         fleetDamageSoak, shipClassFactor, shipAttackPower, shipCrewSize, leaveFleet, sensorRange, shipClassSoak,
+         minHullToLaunch, fleetCmdRange, shipMoving, shipPort, TPShipInitTransit, initializeShipTrip, planShipTrip,
+         fleetPace, shipDestination, shipPosition, tripDays, regionReachable, shipBound, hastenShip, tradeFleet,
+         tradeFreighters, freightCargo, freightLoad, shipFleet, tradeLeader, patrolsUnlocked, shipPatrol,
+         advancePatrol, sensorRangeAU, sendShipTo, advanceShip, getRandomShipName, repairSupplyFreighters,
+         shipyardPayer, buildTPShip, shipPower, explorerRetired, shipSpecialAllowed, shipDefaultSpecial, shipParts,
+         shipPartAvailable, shipSlotOpen, shipSpecial, shipBombardPower, shipFuelUse, tankerFuelRange, shipCosts,
+         shipPartKey, shipyardZone, fleetMembers, shipFuelTank, shipFuelAmount, jumpGates, shipLegLeft,
+         activeRepairYards, locSystem, shipLeg, shipTripDays, legDays, freightCapacity, canManuallyRefuel,
+         manuallyRefuelShip, stopPatrol, refitAllowed, fleetCommandRating, fleetEscortCount, fleetCommandUsed,
+         shipFlagship, fleetsFor, fleetWorthForming, shipyardLocations, shipSpaceworthy, sensorUpgrade,
+         improvedSensors, dockedFields, shipCanMakeTrip, startPatrol, tradeLegDays, locSystemName, shipDestinations,
+         shipCanLaunch, shipManned, refitParts, refitDesign, refitCosts, refitChanged, refitBlocked, refitDrains,
+         applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips } from './ships.js';
 
 const outerTruth = {
     spc_titan: {
@@ -224,9 +245,9 @@ const outerTruth = {
                     incrementStruct('titan_quarters');
                     global.civic.titan_colonist.display = true;
                     if (powerOnNewStruct(this)){
-                        global.resource[global.race.species].max += jobScale(1);
+                        let hiredMax = jobStackStep(global.space.titan_quarters.on);
+                        global.resource[global.race.species].max += hiredMax;
 
-                        let hiredMax = jobScale(1);
                         global.civic.titan_colonist.max += hiredMax;
 
                         let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
@@ -2480,7 +2501,7 @@ function repairSurveyPoints(){
         }
         // A ship parked on the bad point keeps somewhere to be — named, so it does not read as
         // undefined — but it is no longer offered as a destination. Otherwise the point simply goes.
-        if (allShips().some(ship => !ship.inTransit && ship.location.name === stale)){
+        if (allShips().some(ship => shipDockedAt(ship) === stale)){
             old.n = planetName()[moon];
             old.a = false;
         }
@@ -2500,7 +2521,7 @@ export function checkTungstenSurvey(){
     for (let moon of surveyMoons){
         if (s.done[moon]){ continue; }
         let point = surveyPoint(moon);
-        if (!allShips().some(ship => !ship.inTransit && ship.location.name === point && ship.sensor === 'quantum')){ continue; }
+        if (!allShips().some(ship => shipDockedAt(ship) === point && ship.sensor === 'quantum')){ continue; }
 
         s.done[moon] = true;
         if (moon === s.rich){
@@ -2525,7 +2546,7 @@ export function checkTungstenSurvey(){
     }
 }
 
-const tauCetiModules = {
+export const tauCetiModules = {
     tau_star: {
         info: {
             name(){
@@ -2862,7 +2883,7 @@ const tauCetiModules = {
             effect(){
                 let explorer = 'Explorer';
                 if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                    let shipId = global.space.shipyard.ships.findIndex(x => !x.inTransit && x.location.name === 'tauceti' && x.class === 'explorer');
+                    let shipId = global.space.shipyard.ships.findIndex(x => shipDockedAt(x) === 'tauceti' && x.class === 'explorer');
                     if (shipId !== -1){
                         explorer = global.space.shipyard.ships[shipId].name;
                     }
@@ -2872,7 +2893,7 @@ const tauCetiModules = {
             action(){
                 let shipId = -1;
                 if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                    shipId = global.space.shipyard.ships.findIndex(x => !x.inTransit && x.location.name === 'tauceti' && x.class === 'explorer');
+                    shipId = global.space.shipyard.ships.findIndex(x => shipDockedAt(x) === 'tauceti' && x.class === 'explorer');
                 }
                 if (shipId >= 0 && payCosts(this)){
                     global.space.shipyard.ships.splice(shipId,1);
@@ -6146,20 +6167,6 @@ function zGroundFireCount(){
     return targets;
 }
 
-// Share of a hit each armour lets through.
-const shipArmorSoak = { steel: 1, alloy: 0.75, neutronium: 0.5, aerographene: 0.75 };
-export function shipArmorFactor(ship){
-    return ship && shipArmorSoak.hasOwnProperty(ship.armor) ? shipArmorSoak[ship.armor] : 1;
-}
-
-// Aerographene stops as much as alloy while weighing next to nothing, so it is the one plating that makes a hull
-// faster instead of slower.
-const AEROGRAPHENE_SPEED = 1.1;
-// Exported so the tech that unlocks the plating advertises the same number the ships actually fly at.
-export function aerographeneSpeedBonus(){
-    return Math.round((AEROGRAPHENE_SPEED - 1) * 100);
-}
-
 // Plating is described against steel, which is the zero point for both figures: it soaks a full hit.
 function armorDesc(armor){
     let desc = loc(`outer_shipyard_armor_${armor}_desc`);
@@ -6183,21 +6190,6 @@ function armorDesc(armor){
     return notes.length ? `${desc} ${notes.join(' ')}` : desc;
 }
 
-// Share of a hit each hull size takes, smallest to largest. The corsair is a destroyer in every
-// respect but this one: it is built around a cruiser's frame and soaks like one.
-const shipClassSoak = {
-    corvette: 1,
-    frigate: 0.85,
-    destroyer: 0.7,
-    cruiser: 0.55,
-    corsair: 0.55,
-    battlecruiser: 0.4,
-    dreadnought: 0.3
-};
-export function shipClassFactor(ship){
-    return ship && shipClassSoak.hasOwnProperty(ship.class) ? shipClassSoak[ship.class] : 1;
-}
-
 // Whatever taught the horde to fly also taught it to aim. Some weeks after the first launch, anything
 // of yours sitting over Earth starts taking fire from the ground.
 function zGroundFire(fleet){
@@ -6206,7 +6198,7 @@ function zGroundFire(fleet){
 
     // Everything parked over Earth is in range, but the batteries can only hold a firing solution on so
     // a few targets per day. The same hull is never shot twice in one day.
-    let overhead = global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === 'spc_home');
+    let overhead = global.space.shipyard.ships.filter(s => shipDockedAt(s) === 'spc_home');
 
     let hit = 0;
     // Drawn without replacement, so the same hull is never worked over twice in one day.
@@ -6265,7 +6257,7 @@ function combatDamage(attacker,defender){
 function guardsAt(locationName){
     let guards = [];
     if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-        guards = global.space.shipyard.ships.filter(s => !s.inTransit && s.location.name === locationName);
+        guards = global.space.shipyard.ships.filter(s => shipDockedAt(s) === locationName);
     }
     // Sector Command defends Jupiter and Ganymede alongside anything in orbit.
     const station = sectorCommandGuard(locationName);
@@ -6400,7 +6392,7 @@ function zBattle(locationName,foes,rounds){
 }
 
 // Resolve a single-volley orbital intercept.
-function zEngage(locationName,foes){
+export function zEngage(locationName,foes){
     return zBattle(locationName,foes,1);
 }
 
@@ -6447,101 +6439,6 @@ export function zWarfareVars(){
     };
 }
 
-// --- Ship motion ---------------------------------------------------------------------------------
-
-// Put a ship at a given fraction of its journey.
-function placeShip(ship){
-    if (!ship.inTransit) {
-        ship.location.position = genXYZcoord(ship.location.name);
-        return;
-    }
-
-    // Fraction of the current leg still to run. any value outside of 0 to 1 is invalid and can cause
-    // weird behavior such as moving ships millions of AU outside the star cluster.
-    let dist = ship.path[0].totalTime > 0 ? ship.timeToNextStep / ship.path[0].totalTime : 0;
-    if (!(dist >= 0)){ dist = 0; }
-    else if (dist > 1){ dist = 1; }
-    let origin = ship.origin.position;
-    let destination = ship.path[0].destination.position;
-
-    // Straight interpolation on each axis.
-    ship.location.position.x = destination.x * (1 - dist) + origin.x * dist;
-    ship.location.position.y = destination.y * (1 - dist) + origin.y * dist;
-    ship.location.position.z = destination.z * (1 - dist) + origin.z * dist;
-}
-
-// Return a ship's interpolated position without advancing its route.
-export function shipPointAhead(ship, days){
-    if (!ship.inTransit || !ship.path.length){ return genXYZcoord(ship.location.name); }
-    const total = ship.path[0].totalTime;
-    let dist = total > 0 ? (ship.timeToNextStep - days) / total : 0;
-    if (!(dist >= 0)){ dist = 0; }
-    else if (dist > 1){ dist = 1; }
-    const origin = ship.origin.position, destination = ship.path[0].destination.position;
-    return {
-        x: destination.x * (1 - dist) + origin.x * dist,
-        y: destination.y * (1 - dist) + origin.y * dist,
-        z: destination.z * (1 - dist) + origin.z * dist
-    };
-}
-
-function burnShipFuel(ship, leg, days){
-    // Enemy fleets keep their existing scripted movement and are not part of the player's logistics.
-    if (ship.enemy){ return days; }
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res){ return days; }
-    ensureShipFuel(ship);
-    if (leg.inGate){ return days; } // Wormhole travel is free.
-    const usable = ship.fuel / fuel.burn;
-    const moved = Math.min(days, usable);
-    ship.fuel = Math.max(0, ship.fuel - moved * fuel.burn);
-    ship.fueled = ship.fuel > 0;
-    return moved;
-}
-
-function advanceShip(ship, step){
-    while (ship.path.length > 0 && step > 0) {
-        const leg = ship.path[0];
-        const wanted = Math.min(step, ship.timeToNextStep);
-        const moved = wanted > 0 ? burnShipFuel(ship, leg, wanted) : 0;
-        if (wanted > 0 && moved <= 0){ break; }
-        ship.timeToNextStep -= moved;
-        step -= moved;
-        if (wanted > 0 && moved + 0.000001 < wanted){ break; }
-        if (ship.timeToNextStep > 0.000001){ break; }
-        // Reached either a jump gate or the final destination.
-        if (ship.path.length === 1) {
-            TPShipInitTransit(ship, ship.destination.name);
-            break;
-        }
-        // Do not trigger encounters at route waypoints.
-        if (ship.enemy && !leg.wp) { zEngage(leg.destination.name, [ship]); }
-        ship.origin = { name: leg.destination.name, position: leg.destination.position };
-        ship.totalTime -= leg.totalTime;
-        ship.path.shift();
-        ship.timeToNextStep = ship.path[0].totalTime;
-    }
-    placeShip(ship);
-}
-
-// Move every hull under way — yours and the horde's — by `step` days. Pass 1 from longLoop, or
-// midRatio / longRatio from midLoop for the same speed in five smaller steps.
-export function moveShips(step){
-    if (global.space['shipyard'] && global.space.shipyard['ships']){
-        for (let ship of global.space.shipyard.ships){
-            if (ship.inTransit){ advanceShip(ship, step); }
-        }
-    }
-    advanceTradeRoutes(step);
-    advancePatrols();
-    syndicateMove(step);
-    if (global.race['zfleet'] && global.race.zfleet['s']){
-        for (let ship of global.race.zfleet.s){
-            if (ship.inTransit){ advanceShip(ship, step); }
-        }
-    }
-}
-
 function zFleetMove(fleet){
     let landings = {};
     for (let i=fleet.s.length-1; i>=0; i--){
@@ -6550,13 +6447,14 @@ function zFleetMove(fleet){
             fleet.s.splice(i,1);
             continue;
         }
-        if (!ship.inTransit){
+        if (!shipMoving(ship)){
             // The Venus blockade is not a delivery. It takes station in orbit and stays there, so it is
             // left in the fleet rather than landed and turned into a horde on the ground.
             if (ship.vb){ continue; }
             fleet.s.splice(i,1);
-            if (!landings[ship.location.name]){ landings[ship.location.name] = []; }
-            landings[ship.location.name].push(ship);
+            const at = shipPort(ship);
+            if (!landings[at]){ landings[at] = []; }
+            landings[at].push(ship);
         }
     }
 
@@ -6567,16 +6465,17 @@ function zFleetMove(fleet){
         zEngage(locationName,arrivals);
 
         zCullDowned(arrivals).forEach(function(ship){
-            if (!global.race.zhorde.hasOwnProperty(ship.location.name)){ return; }
+            const at = shipPort(ship);
+            if (!global.race.zhorde.hasOwnProperty(at)){ return; }
             // A mauled hull spills part of its cargo on the way down: a percent of the horde for every
             // two percent of hull it lost getting here.
             let load = Math.max(0,Math.round(ship.load * (1 - ship.damage / 200)));
             if (load <= 0){ return; }
-            global.race.zhorde[ship.location.name] += load;
-            zMessage(loc('zfleet_landing',[ship.name,regionName(ship.location.name),load.toLocaleString()]),'danger');
+            global.race.zhorde[at] += load;
+            zMessage(loc('zfleet_landing',[ship.name,regionName(at),load.toLocaleString()]),'danger');
             // A landing on a region whose horde was a secret gives the game away.
             if (!global.race['zfound']){ global.race['zfound'] = {}; }
-            global.race.zfound[ship.location.name] = true;
+            global.race.zfound[at] = true;
         });
         renderSpace();
     });
@@ -6800,7 +6699,7 @@ const zBlockadeRepair = 2;
 export function venusBlockade(){
     let fleet = global.race['zfleet'];
     if (!fleet || !fleet.s){ return 0; }
-    return fleet.s.filter(s => s.vb && !s.inTransit).length;
+    return fleet.s.filter(s => s.vb && !shipMoving(s)).length;
 }
 
 // Sent once, the moment the outpost on the surface is identified. Whatever is down there does not want
@@ -6837,7 +6736,7 @@ function zBlockadeDay(fleet){
         return;
     }
 
-    let onStation = ships.filter(s => !s.inTransit);
+    let onStation = ships.filter(s => !shipMoving(s));
     if (onStation.length === 0){ return; }
 
     // Taking station is what closes the planet, so it is announced the day it happens rather than the
@@ -7282,15 +7181,10 @@ function corsairHull(region){
     return ship;
 }
 
-// Where a ship is on the map, in transit or not.
-function shipPoint(ship){
-    return ship && ship.location && ship.location.position ? ship.location.position : false;
-}
-
 // The name to file an engagement under: a fight in open space is logged against wherever the ship
 // being jumped was headed, which is the only place name either party would recognise.
 function encounterWhere(ship){
-    return ship.inTransit && ship.destination && ship.destination.name ? ship.destination.name : ship.location.name;
+    return shipDestination(ship) || shipPort(ship);
 }
 
 // Hunt freighters first, then raid a world.
@@ -7300,17 +7194,17 @@ function corsairHunt(corsair){
 
 // Chase the nearest reachable freighter.
 function corsairChase(corsair){
-    const from = shipPoint(corsair);
+    const from = shipPosition(corsair);
     if (!from){ return false; }
     const prey = (global.space.shipyard?.ships || [])
-        .filter(ship => ship.class === 'freighter' && ship.damage < 100 && shipPoint(ship))
-        .sort((a,b) => dist3(from,shipPoint(a)) - dist3(from,shipPoint(b)));
+        .filter(ship => ship.class === 'freighter' && ship.damage < 100 && shipPosition(ship))
+        .sort((a,b) => dist3(from,shipPosition(a)) - dist3(from,shipPosition(b)));
     const tried = new Set();
     for (const ship of prey){
         const target = encounterWhere(ship);
         if (tried.has(target)){ continue; }
         tried.add(target);
-        if (!corsair.inTransit && corsair.location.name === target){ continue; }
+        if (shipDockedAt(corsair) === target){ continue; }
         if (corsairLaunch(corsair,target,false)){ return true; }
     }
     return false;
@@ -7319,7 +7213,7 @@ function corsairChase(corsair){
 // Raid a reachable world when no freighter can be chased.
 function corsairSortie(corsair){
     for (const target of corsairMarks(corsair)){
-        if (!corsair.inTransit && corsair.location.name === target){
+        if (shipDockedAt(corsair) === target){
             // Raid immediately when already in orbit.
             corsair.od = false;
             corsair.home = false;
@@ -7338,7 +7232,7 @@ function corsairSortie(corsair){
 // Launch a hunt, raid, or prowl route.
 function corsairLaunch(corsair,target,raid,prowl){
     const trip = planShipTrip(corsair,target);
-    if (!trip || (!prowl && trip.totalTime > sWarfare.huntDays)){ return false; }
+    if (!trip || (!prowl && tripDays(trip) > sWarfare.huntDays)){ return false; }
     initializeShipTrip(corsair,target,trip);
     corsair.od = false;
     corsair.home = false;
@@ -7359,8 +7253,8 @@ function corsairBeat(){
 // Move between inner-system stops until a hunt is available.
 function corsairProwl(corsair){
     const stops = corsairBeat();
-    if (corsair.prowl && corsair.inTransit && stops.includes(corsair.destination.name)){ return true; }
-    const at = corsair.inTransit ? corsair.destination.name : corsair.location.name;
+    if (corsair.prowl && shipMoving(corsair) && stops.includes(shipDestination(corsair))){ return true; }
+    const at = shipBound(corsair);
     const next = stops.filter(region => region !== at);
     if (next.length === 0){ return false; }
     return corsairLaunch(corsair,next[Math.floor(seededRandom(0,next.length,true))],false,true);
@@ -7376,7 +7270,7 @@ function corsairRaidable(region){
 
 // List reachable raid targets, prioritizing stocked worlds.
 function corsairMarks(corsair){
-    const from = shipPoint(corsair);
+    const from = shipPosition(corsair);
     if (!from){ return []; }
     const reachable = activeSupplyRegions().filter(corsairRaidable)
         .sort((a,b) => dist3(from,genXYZcoord(a)) - dist3(from,genXYZcoord(b)));
@@ -7402,7 +7296,7 @@ function corsairGoHome(corsair){
     corsair.prowl = false;
     // Mark the corsair as returning before plotting its route.
     corsair.home = true;
-    if (!corsair.inTransit && corsair.location.name === corsair.syn){ return true; }
+    if (shipDockedAt(corsair) === corsair.syn){ return true; }
     const trip = planShipTrip(corsair,corsair.syn);
     if (!trip){ return false; }
     initializeShipTrip(corsair,corsair.syn,trip);
@@ -7414,11 +7308,7 @@ function corsairGoHome(corsair){
 function corsairEngageDrive(corsair){
     if (corsair.od){ return; }
     corsair.od = true;
-    corsair.timeToNextStep /= sWarfare.overdrive;
-    corsair.totalTime /= sWarfare.overdrive;
-    if (Array.isArray(corsair.path)){
-        corsair.path.forEach(function(leg){ leg.totalTime /= sWarfare.overdrive; });
-    }
+    hastenShip(corsair, sWarfare.overdrive);
 }
 
 // The escort's chance of seeing one coming.
@@ -7626,8 +7516,7 @@ function corsairAmbush(corsair,escort,freighter){
 
 // Resolve a corsair raid after it reaches its target world.
 function corsairAssault(corsair){
-    if (!corsair.raid || corsair.home || corsair.inTransit){ return false; }
-    if (corsair.location.name !== corsair.raid){ return false; }
+    if (!corsair.raid || corsair.home || shipDockedAt(corsair) !== corsair.raid){ return false; }
     const where = corsair.raid;
     corsair.raid = false;
     // Recheck the raid target after arrival.
@@ -7663,16 +7552,16 @@ function corsairAssault(corsair){
 
 // Advance corsair pursuit and resolve arrived raids.
 function corsairStalk(corsair){
-    if (!corsair.inTransit){ corsairAssault(corsair); return; }
+    if (!shipMoving(corsair)){ corsairAssault(corsair); return; }
     if (corsair.home){ return; }
-    const from = shipPoint(corsair);
+    const from = shipPosition(corsair);
     if (!from){ return; }
 
     const ships = global.space.shipyard?.ships || [];
     let quarry = false, near = Infinity;
     for (const ship of ships){
         if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
-        const at = shipPoint(ship);
+        const at = shipPosition(ship);
         if (!at){ continue; }
         const away = dist3(from,at);
         if (away < near){ quarry = ship; near = away; }
@@ -7688,7 +7577,7 @@ function corsairStalk(corsair){
     // Resolve interception as a robbery or escort fight.
     const company = shipFleet(quarry).filter(s => s.class !== 'freighter' && s.damage < 100);
     // A freighter docked under Sector Command's guns is defended by it.
-    const station = quarry.inTransit ? false : sectorCommandGuard(quarry.location.name);
+    const station = sectorCommandGuard(shipDockedAt(quarry));
     if (station){ company.push(station); }
     if (company.length > 0){ corsairAmbush(corsair,company,quarry); }
     else { corsairRaid(corsair,quarry); }
@@ -7722,21 +7611,21 @@ function corsairBaseDay(region){
 
 // Process one corsair's daily state.
 function corsairBaseShipDay(corsair,region,elapsed){
-    if (corsair.damage >= 100){ corsairLost(corsair,corsair.location.name); return; }
+    if (corsair.damage >= 100){ corsairLost(corsair,shipPort(corsair)); return; }
     const awake = corsairBaseAwake(region);
     // A dormant base recalls anything it already had out.
-    if (!awake && !corsair.home && (corsair.inTransit || corsair.location.name !== region)){
+    if (!awake && !corsair.home && shipDockedAt(corsair) !== region){
         corsairGoHome(corsair);
         return;
     }
-    if (corsair.inTransit){
+    if (shipMoving(corsair)){
         // Interrupt prowling for a reachable hunt.
         if (corsair.prowl){ corsairHunt(corsair); }
         return;
     }
 
     // Repair and relaunch corsairs at their base.
-    if (corsair.location.name === region){
+    if (shipDockedAt(corsair) === region){
         corsair.home = false;
         if (corsair.damage > 0){
             corsair.damage = Math.max(0,corsair.damage - (corsair.haul > 0 ? sWarfare.haulRepair : sWarfare.repair) * Math.max(1,elapsed));
@@ -7761,7 +7650,7 @@ function patrolHunt(){
     // Patrol orders saved before Sector Command existed wait for it to be built.
     if (!patrolsUnlocked()){ return; }
     const ships = global.space.shipyard?.ships || [];
-    const corsairs = syndicateShips().filter(c => c.inTransit && shipPoint(c));
+    const corsairs = syndicateShips().filter(c => shipMoving(c) && shipPosition(c));
     if (corsairs.length === 0){ return; }
 
     const seen = new Set();
@@ -7771,14 +7660,14 @@ function patrolHunt(){
         group.forEach(member => seen.add(member));
         const lead = tradeLeader(group);
         const patrol = shipPatrol(lead);
-        const at = shipPoint(lead);
+        const at = shipPosition(lead);
         if (!at){ continue; }
 
         // End pursuits that exceed the chase limit.
         if (patrol.chase){
             if (global.stats.days - patrol.chase >= sWarfare.chaseDays){
                 setPatrolChase(group,false);
-                if (!lead.inTransit){ advancePatrol(group); }
+                if (!shipMoving(lead)){ advancePatrol(group); }
             }
             continue;
         }
@@ -7786,7 +7675,7 @@ function patrolHunt(){
         // Pursue the nearest corsair detected by fleet or ground sensors.
         let quarry = false, near = Infinity;
         for (const corsair of corsairs){
-            const away = dist3(at,shipPoint(corsair));
+            const away = dist3(at,shipPosition(corsair));
             if (away >= near){ continue; }
             if (away <= sensorRangeAU(lead) * sensorStealth() || detectorCue(at,corsair)){ quarry = corsair; near = away; }
         }
@@ -7796,11 +7685,7 @@ function patrolHunt(){
         const id = global.space.shipyard.ships.indexOf(lead);
         if (id < 0 || !sendShipTo(id,target,true)){ continue; }
         // Apply the patrol pursuit speed multiplier.
-        group.forEach(function(member){
-            member.timeToNextStep /= sWarfare.chaseSpeed;
-            member.totalTime /= sWarfare.chaseSpeed;
-            if (Array.isArray(member.path)){ member.path.forEach(function(leg){ leg.totalTime /= sWarfare.chaseSpeed; }); }
-        });
+        group.forEach(member => hastenShip(member, sWarfare.chaseSpeed));
         setPatrolChase(group,global.stats.days);
         zMessage(loc('syndicate_patrol_chase',[regionName(target)]),'warning');
     }
@@ -7817,7 +7702,7 @@ function setPatrolChase(group,day){
 // A patrol that catches an enemy ship engages it in combat.
 function patrolStrike(){
     const ships = global.space.shipyard?.ships || [];
-    const corsairs = syndicateShips().filter(c => shipPoint(c));
+    const corsairs = syndicateShips().filter(c => shipPosition(c));
     if (corsairs.length === 0){ return; }
 
     const seen = new Set();
@@ -7826,11 +7711,11 @@ function patrolStrike(){
         const group = tradeFleet(ship);
         group.forEach(member => seen.add(member));
         const lead = tradeLeader(group);
-        const at = shipPoint(lead);
+        const at = shipPosition(lead);
         if (!at){ continue; }
 
         for (const corsair of corsairs){
-            if (dist3(at,shipPoint(corsair)) > sWarfare.catchAU){ continue; }
+            if (dist3(at,shipPosition(corsair)) > sWarfare.catchAU){ continue; }
             const where = encounterWhere(lead);
             const guns = group.filter(s => s.damage < 100);
             if (guns.length === 0){ break; }
@@ -7841,7 +7726,7 @@ function patrolStrike(){
                 shadowWarTask('s1');
             }
             setPatrolChase(group,false);
-            if (!lead.inTransit){ advancePatrol(group); }
+            if (!shipMoving(lead)){ advancePatrol(group); }
             break;
         }
     }
@@ -7956,7 +7841,7 @@ export function syndicateDay(){
 export function syndicateMove(step){
     if (!corsairsActive()){ return; }
     syndicateShips().forEach(function(corsair){
-        if (corsair.inTransit){ advanceShip(corsair,step); }
+        if (shipMoving(corsair)){ advanceShip(corsair,step); }
     });
     syndicateShips().forEach(corsairStalk);
     patrolStrike();
@@ -7970,7 +7855,7 @@ function infestationCombat(region){
         let bombard = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (!ship.inTransit && ship.location.name === region){
+                if (shipDockedAt(ship) === region){
                     crew += shipCrewSize(ship);
                     let rating = shipAttackPower(ship);
                     bombard += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
@@ -8074,7 +7959,7 @@ function razeStructures(region,razings){
 }
 
 // Return a region label, including map-only scenery bodies.
-function regionName(region){
+export function regionName(region){
     let cat = razeTargets.hasOwnProperty(region) && razeTargets[region].c === 'tauceti' ? 'tauceti' : 'space';
     let info = actions[cat]?.[region]?.info;
     if (!info || !info.name){
@@ -8584,15 +8469,6 @@ export function drawShipYard(){
     }
 }
 
-export function buildTPShipQueue(action){
-    // Charge queued ships to the active shipyard zone.
-    if (payCosts(action, action.cost)){
-        buildTPShip(deepClone(action.bp), true);
-        return true;
-    }
-    return false;
-}
-
 export function TPShipDesc(parent,obj){
     let ship = obj.type;
     let raw = shipCosts(ship);
@@ -8639,254 +8515,7 @@ export function TPShipDesc(parent,obj){
     return desc;
 }
 
-// Initialize ship variables related to transit.
-function TPShipInitTransit(ship, locationName) {
-    // Whether ship is currently in transit
-    ship.inTransit = false;
-
-    // Current location of the ship
-    ship.location = {
-        position: genXYZcoord(locationName),
-        
-        // Only if not in transit
-        name: locationName
-    };
-    
-    // Origin of the ship, either starting position or gate it just exited - only if in transit
-    ship.origin = {
-        name: "",
-        position: {x: 0, y: 0, z: 0}
-    };
-    // Final destination of the ship - only if in transit
-    ship.destination = {
-        name: "",
-        position: {x: 0, y: 0, z: 0}
-    };
-
-    // Path to destination, contains jump gates along the way as well 
-    // as the final destination - only if in transit
-    ship.path = [];
-    // Remaining days to get to next step along the path, used to 
-    // interpolate ship position - only if in transit
-    ship.timeToNextStep = 0;
-    // Sum of days for all steps along the path. Stored here to prevent 
-    // recalculating the sum every time something needs it 
-    ship.totalTime = 0;
-}
-
-// Return a freighter dock for a region or its supply zone.
-function freightDock(region){
-    return starData[resolveBody(region)] ? region : supplyPool(region);
-}
-
-export function repairSupplyFreighters(){
-    if (!global.space?.shipyard?.ships){ return 0; }
-    let repaired = 0;
-    global.space.shipyard.ships.forEach(function(ship){
-        if (!ship.supplyGrant){ return; }
-        ship.special = 'extra_fuel';
-        // Old starter ships may have been saved against a retired pool name. Correct that once, but
-        // never pull a working ship back to its original grant dock after the player has dispatched it.
-        if (ship.supplyDockFixed || ship.inTransit){ return; }
-        const dock = freightDock(ship.supplyGrant);
-        if (ship.location.name !== dock){
-            TPShipInitTransit(ship, dock);
-            ship.damage = ship.damage || 0;
-            ship.fueled = ship.fueled || false;
-            repaired++;
-        }
-        ship.supplyDockFixed = true;
-    });
-    return repaired;
-}
-
-export function grantSupplyFreighters(regions){
-    if (global.race['supplyFreightersGranted'] || !global.space?.shipyard?.ships){ return 0; }
-    let granted = 0;
-    const routeOrigins = ['spc_home','spc_red','spc_gas','spc_gas'].filter(region => regions.includes(region));
-    for (const region of routeOrigins){
-        if (global.space.shipyard.ships.some(ship => ship.supplyGrant === region)){ continue; }
-        const dock = freightDock(region);
-        const ship = {
-            class: 'freighter', power: 'diesel', armor: 'alloy', engine: 'vacuum', sensor: 'radar',
-            weapon: 'none', special: 'extra_fuel', name: getRandomShipName(), cargo: {}, supplyGrant: region,
-            damage: 0, fueled: true, fuel: 0
-        };
-        let suffix = 1, base = ship.name;
-        while (global.space.shipyard.ships.some(existing => existing.name === ship.name)){
-            ship.name = `${base} ${++suffix}`;
-        }
-        TPShipInitTransit(ship, dock);
-        // Handed over ready to fly, like anything else off the slipway.
-        ship.fuel = shipFuelTank(ship);
-        ship.supplyDockFixed = true;
-        global.space.shipyard.ships.push(ship);
-        granted++;
-    }
-    global.race.supplyFreightersGranted = true;
-    granted += seedStarterSupplyRoutes();
-    if (granted > 0){ drawShips(); }
-    return granted;
-}
-
-function addStarterRouteFreighter(starter, dock = 'spc_gas'){
-    let ship = global.space.shipyard.ships.find(existing => existing.supplyRouteStarter === starter);
-    if (ship){ return ship; }
-    ship = {
-        class: 'freighter', power: 'diesel', armor: 'alloy', engine: 'vacuum', sensor: 'radar',
-        weapon: 'none', special: 'extra_fuel', name: getRandomShipName(), cargo: {}, supplyGrant: dock,
-        supplyRouteStarter: starter, supplyDockFixed: true, damage: 0, fueled: true, fuel: 0
-    };
-    let suffix = 1, base = ship.name;
-    while (global.space.shipyard.ships.some(existing => existing.name === ship.name)){
-        ship.name = `${base} ${++suffix}`;
-    }
-    TPShipInitTransit(ship, dock);
-    ship.fuel = shipFuelTank(ship);
-    global.space.shipyard.ships.push(ship);
-    return ship;
-}
-
-function startStarterSupplyRoute(ship, starter, stops){
-    if (!ship || ship.supplyRouteStarter === starter && tradeRoute(ship)){ return true; }
-    if (ship.inTransit){ return false; }
-    ship.fuel = shipFuelTank(ship);
-    ship.fueled = ship.fuel > 0;
-    if (!startFreightRoute(ship, stops)){ return false; }
-    ship.supplyRouteStarter = starter;
-    return true;
-}
-
-// Seed the initial freighter trade routes.
-export function seedStarterSupplyRoutes(){
-    if (!global.space?.shipyard?.ships || supplyMode() !== 'regional'){ return 0; }
-    if (global.race.supplyStarterRoutesSeeded){ return 0; }
-    const ships = global.space.shipyard.ships;
-    const routeOrigins = ['spc_home','spc_red','spc_gas','spc_gas'];
-    if (global.race.supplyStarterFreighterCleanup !== 2){
-        const retained = new Set();
-        const starterIds = ['earth_titan_food_helium','mars_titan_food','jupiter_titan_fuel','jupiter_makemake_ceres'];
-        starterIds.forEach(function(starter){
-            const ship = ships.find(ship => ship.supplyRouteStarter === starter);
-            if (ship){ retained.add(ship); }
-        });
-        routeOrigins.forEach(function(origin){
-            const ship = ships.find(ship => ship.class === 'freighter' && ship.supplyGrant === origin && !ship.supplyRouteStarter);
-            if (ship){ retained.add(ship); }
-        });
-        global.space.shipyard.ships = ships.filter(ship => !ship.supplyGrant || retained.has(ship));
-        global.race.supplyStarterFreighterCleanup = 2;
-    }
-    const starters = global.space.shipyard.ships;
-    const home = starters.find(ship => ship.class === 'freighter' && ship.supplyGrant === 'spc_home' && !ship.supplyRouteStarter)
-        || addStarterRouteFreighter('earth_titan_food_helium', 'spc_home');
-    const mars = starters.find(ship => ship.class === 'freighter' && ship.supplyGrant === 'spc_red' && !ship.supplyRouteStarter);
-    const jupiter = starters.find(ship => ship.class === 'freighter' && ship.supplyGrant === 'spc_gas' && !ship.supplyRouteStarter);
-    const outer = addStarterRouteFreighter('jupiter_makemake_ceres');
-    const earthReady = startStarterSupplyRoute(home, 'earth_titan_food_helium', [
-        { zone: 'spc_home', pickups: ['Food'] },
-        { zone: 'spc_titan', pickups: [] }
-    ]);
-    const marsReady = startStarterSupplyRoute(mars, 'mars_titan_food', [
-        { zone: 'spc_red', pickups: ['Food'] },
-        { zone: 'spc_titan', pickups: [] },
-        { zone: 'spc_gas', pickups: ['Oil','Helium_3'] },
-    ]);
-    const titanReady = startStarterSupplyRoute(jupiter, 'jupiter_titan_fuel', [
-        { zone: 'spc_gas', pickups: ['Oil','Helium_3'] },
-        { zone: 'spc_titan', pickups: [] }
-    ]);
-    const outerReady = startStarterSupplyRoute(outer, 'jupiter_makemake_ceres', [
-        { zone: 'spc_gas', pickups: ['Oil'] },
-        { zone: 'spc_makemake', pickups: ['Orichalcum','Uranium','Neutronium','Elerium'] },
-        { zone: 'spc_dwarf', pickups: [] }
-    ]);
-    if (earthReady && marsReady && titanReady && outerReady){ global.race.supplyStarterRoutesSeeded = true; }
-    return Number(earthReady) + Number(marsReady) + Number(titanReady) + Number(outerReady);
-}
-
-// Return the supply zone of the active shipyard.
-export function shipyardZone(){
-    return global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
-}
-
-// Provide a supply-aware payer for direct ship construction.
-export function shipyardPayer(){
-    return { id: 'tp-ship', supply(){ return shipyardZone(); } };
-}
-
-function buildTPShip(ship, queue){
-    let locationName = shipyardZone();
-    TPShipInitTransit(ship, locationName);
-    // A queued Supply Ship may carry a fit that is no longer offered.
-    if (ship.class === 'supply_ship' && !shipSpecialAllowed(shipSpecial(ship),ship.class)){
-        ship.special = shipDefaultSpecial(ship.class);
-    }
-
-    ship.damage = 0;
-    // A hull leaves the yard fuelled. Fuelling it is part of building it, and a ship delivered dry
-    // cannot move at all unless the yard happens to sit on a world that makes its fuel.
-    ship.fuel = shipFuelTank(ship);
-    ship.fueled = true;
-
-    if (ship.name.length === 0){
-        ship.name = getRandomShipName();
-    }
-
-    let num = 1;
-    let name = ship.name;
-    while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
-        num++;
-        name = ship.name + ` ${num}`;
-    }
-    ship.name = name;
-
-    global.space.shipyard.ships.push(ship);
-    drawShips();
-    updateCosts();
-    if (!queue){
-        global.space.shipyard.blueprint.name = getRandomShipName();
-    }
-}
-
-function getRandomShipName(){
-    let names = [
-        'Trident','Spacewolf','Excalibur','Neptune','Deimos','Phobos','Enterprise','Intrepid','Daedalus','Odyssey','Endurance','Horizon','Hyperion',
-        'Icarus','Aurora','Axiom','Nemesis','Normandy','Orion','Prometheus','Vanguard','Discovery','Voyager','Defiant','Titan','Liberty','Destiny',
-        'Phoenix','Nautilus','Barracuda','Dolphin','Cuttlefish','Tiger Shark','Stingray','Swordfish','Triton','Dragon','Scorpion','Hagfish','Marlin',
-        'Galileo','Raven','Sarcophagus','Excelsior','Scimitar','Vengeance','Nomad','Nova','Olympus','Aegis','Agamemnon','Charon','Achilles','Apollo',
-        'Hermes','Hydra','Medusa','Talos','Zeus','Heracles','Cerberus','Acheron','Damocles','Juno','Persephone','Solaris','Victory','Hawk','Fury',
-        'Razor','Stinger','Outrider','Falcon','Vulture','Nirvana','Retribution','Swordbreaker','Valkyrie','Athena','Avalon','Merlin','Argonaut','Serenity',
-        'Gunstar','Ranger','Tantive','Cygnus','Nostromo','Reliant','Narcissus','Liberator','Sulaco','Infinity','Resolute','Wasp','Hornet','Independence',
-        'Gilgamesh','Midway','Concordia','Goliath','Cosmos','Express','Tigers Claw','Oberon','Minnow','Majestic','Spartacus','Colossi','Vigilant',
-        'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire',
-        'McShipFace','Monitor','Merrimack','Constitution','Ghost','Pequod','Arcadia','Corsair','Inferno','Jenny','Revenge','Red October','Jackdaw',
-        'Thorn','Caleuche','Valencia','Ourang','Deering','Baychimo','Octavius','Joyita','Lovibond','Celeste','Dutchman'
-    ];
-
-    let name = names[Math.rand(0, names.length)];
-    if (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
-        name = randomWord();
-    }
-
-    return name;
-}
-
-function randomWord(){
-    let syllables = [
-        'al','an','ar','as','at','ea','ed','en','er','es','ha','he','hi','in','is','it','le','me','nd','ne','ng','nt','on','or','ou','re','se','st','te','th','ti','to','ve','wa',
-        'all','and','are','but','ent','era','ere','eve','for','had','hat','hen','her','hin','his','ing','ion','ith','not','ome','oul','our','sho','ted','ter','tha','the','thi','tio','uld','ver','was','wit','you',
-    ];
-    let max = Math.rand(2, 5);
-
-    let word = ``;
-    for (let i=0; i<max; i++){
-        word += syllables[Math.rand(0,syllables.length)];
-    }
-    return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-function updateCosts(){
+export function updateCosts(){
     let costs = shipCosts(global.space.shipyard.blueprint);
     clearElement($(`#shipYardCosts`));
 
@@ -8904,1465 +8533,6 @@ function updateCosts(){
             $(`#shipYardCosts`).append(`<span> | </span><span class="res-${k} ${color}" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name} ${sizeApproximation(costs[k])}</span>`);
         }
     });
-}
-
-export function shipCrewSize(ship){
-    switch (ship.class){
-        case 'corvette':
-            return global.race['grenadier'] ? jobScale(1) : jobScale(2);
-        case 'frigate':
-            return global.race['grenadier'] ? jobScale(2) : jobScale(3);
-        case 'destroyer':
-        case 'corsair':
-            return global.race['grenadier'] ? jobScale(3) : jobScale(4);
-        case 'cruiser':
-            return global.race['grenadier'] ? jobScale(4) : jobScale(6);
-        case 'battlecruiser':
-            return global.race['grenadier'] ? jobScale(5) : jobScale(8);
-        case 'dreadnought':
-            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
-        case 'explorer':
-            return global.race['grenadier'] ? jobScale(6) : jobScale(10);
-        case 'freighter':
-        // Supply Ships use light crew requirements.
-        case 'supply_ship':
-            return jobScale(1);
-    }
-}
-
-// Share of a mount's draw that capacitor banks save. They hold the charge between shots, so the
-// reactor tops the bank up instead of carrying every discharge itself.
-const CAPACITOR_SAVING = 0.25;
-// Exported so the tech that fits the banks advertises the same number the ships actually draw at.
-export function shipCapacitorSaving(){
-    return Math.round(CAPACITOR_SAVING * 100);
-}
-
-// What a weapon mount pulls from the reactor, capacitors included.
-function weaponDraw(watts, use_inflate){
-    let banks = global.tech['syard_capacitor'] ? 1 - CAPACITOR_SAVING : 1;
-    return Math.round(watts * banks * use_inflate);
-}
-
-export function shipPower(ship, wiki){
-    let watts = 0;
-
-    let out_inflate = 1;
-    let use_inflate = 1;
-    switch (ship.class){
-        case 'frigate':
-        case 'freighter':
-            out_inflate = 1.1;
-            use_inflate = 1.2;
-            break;
-        case 'destroyer':
-            out_inflate = 1.5;
-            use_inflate = 1.65;
-            break;
-        case 'cruiser':
-            out_inflate = 2;
-            use_inflate = 2.5;
-            break;
-        case 'battlecruiser':
-            out_inflate = 2.5;
-            use_inflate = 3.5;
-            break;
-        case 'dreadnought':
-            out_inflate = 5;
-            use_inflate = 6.5;
-            break;
-        case 'explorer':
-            out_inflate = 6;
-            use_inflate = 2;
-            break;
-        // Supply Ship power use.
-        case 'supply_ship':
-            out_inflate = 2.25;
-            use_inflate = 2;
-            break;
-    }
-
-    switch (ship.power){
-        case 'solar':
-            watts = Math.round(50 * out_inflate);
-            break;
-        case 'diesel':
-            watts = Math.round(100 * out_inflate);
-            break;
-        case 'fission':
-            watts = Math.round(150 * out_inflate);
-            break;
-        case 'fusion':
-            watts = Math.round((ship.class === 'explorer' || wiki ? 174 : 175) * out_inflate);
-            break;
-        case 'elerium':
-            watts = Math.round(200 * out_inflate);
-            break;
-        case 'antimatter':
-            watts = Math.round(250 * out_inflate);
-            break;
-    }
-
-    watts = Math.round(Math.max(watts, powerModifier(watts)));
-
-    switch (ship.weapon){
-        case 'railgun':
-            watts -= weaponDraw(10, use_inflate);
-            break;
-        case 'laser':
-            watts -= weaponDraw(30, use_inflate);
-            break;
-        case 'p_laser':
-            watts -= weaponDraw(18, use_inflate);
-            break;
-        case 'plasma':
-            watts -= weaponDraw(50, use_inflate);
-            break;
-        case 'phaser':
-            watts -= weaponDraw(65, use_inflate);
-            break;
-        case 'disruptor':
-            watts -= weaponDraw(100, use_inflate);
-            break;
-        case 'gauss':
-            watts -= weaponDraw(150, use_inflate);
-            break;
-    }
-
-    watts -= Math.round((shipSpecialPower[shipSpecial(ship)] || 0) * use_inflate);
-
-    switch (ship.engine){
-        case 'ion':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 18 : 25) * use_inflate);
-            break;
-        case 'tie':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 36 : 50) * use_inflate);
-            break;
-        case 'pulse':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 25 : 40) * use_inflate);
-            break;
-        case 'photon':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 50 : 75) * use_inflate);
-            break;
-        case 'vacuum':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 75 : 120) * use_inflate);
-            break;
-        case 'emdrive':
-            watts -= Math.round((ship.class !== 'explorer' && !wiki ? 1024 : 515) * use_inflate);
-            break;
-        case 'electrokinetic':
-            watts -= Math.round((global.tech.syard_engine >= 6 ? 100 : 140) * use_inflate);
-            break;
-    }
-
-    const sensorDraw = improvedSensors() ? 1 - sensorUpgrade.powerCut : 1;
-    switch (ship.sensor){
-        case 'radar':
-            watts -= Math.round(10 * sensorDraw * use_inflate);
-            break;
-        case 'lidar':
-            watts -= Math.round(25 * sensorDraw * use_inflate);
-            break;
-        case 'quantum':
-            watts -= Math.round(75 * sensorDraw * use_inflate);
-            break;
-    }
-
-    return watts;
-}
-
-// --- Ship weapons -------------------------------------------------------------------------------
-// In unlock order: the index is what syard_weapon is measured against, so this order is load bearing.
-const shipWeapons = ['railgun','laser','p_laser','plasma','phaser','disruptor','gauss'];
-
-// Whether the Explorer hull and the emdrive engine are still on offer in the yard.
-function explorerRetired(){
-    if (global.tech['resettle']){ return true; }
-    return global.tech['tau_home'] && global.tech.tau_home >= 2 ? true : false;
-}
-
-// --- The special slot ---------------------------------------------------------------------------
-const shipSpecials = ['none','massdriver','extra_fuel','extra_cargo','extra_thruster','mobile_storage','fuel_tanker','repair_ship'];
-const freighterSpecials = ['extra_fuel','extra_cargo','extra_thruster'];
-// A Supply Ship is nothing but the fit it carries, so its slot is never empty. Mobile Storage leads
-// the list because it is what an unconfigured hull is built as once supply zones exist.
-export const supplyShipSpecials = ['mobile_storage','fuel_tanker','repair_ship'];
-
-// Ships allowed to carry mass drivers
-const massDriverHulls = ['cruiser','battlecruiser','dreadnought'];
-export function shipSpecialAllowed(special,shipClass){
-    // Mobile Storage stocks a supply zone, so it is not offered until the zones exist.
-    if (special === 'mobile_storage' && supplyMode() === 'global'){ return false; }
-    if (supplyShipSpecials.includes(special)){ return shipClass === 'supply_ship'; }
-    // Supply Ships require a supported fit.
-    if (shipClass === 'supply_ship'){ return false; }
-    if (special === 'massdriver'){ return massDriverHulls.includes(shipClass); }
-    if (freighterSpecials.includes(special)){ return shipClass === 'freighter'; }
-    return special === 'none';
-}
-
-// What a hull falls back to when its current special does not fit it — a class change in the yard, or
-// a copied design whose fit the new class cannot carry.
-export function shipDefaultSpecial(shipClass){
-    if (shipClass !== 'supply_ship'){ return 'none'; }
-    return shipSpecialAllowed('mobile_storage',shipClass) ? 'mobile_storage' : 'fuel_tanker';
-}
-
-// --- Hull slots ---------------------------------------------------------------------------------
-// Ship parts in shipyard unlock order; refits use the same definitions.
-const shipParts = {
-    class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','freighter','explorer','supply_ship'],
-    power: ['solar','diesel','fission','fusion','elerium','antimatter'],
-    weapon: shipWeapons,
-    armor : ['steel','alloy','neutronium','aerographene'],
-    engine: ['ion','tie','pulse','photon','vacuum','emdrive','electrokinetic'],
-    sensor: ['visual','radar','lidar','quantum'],
-    special: shipSpecials,
-};
-
-// Refit-capable parts; class changes require a different hull.
-const refitParts = ['power','weapon','armor','engine','sensor','special'];
-
-// Return whether a part is currently available for this hull class.
-function shipPartAvailable(part, idx, value, shipClass){
-    if (explorerRetired() && value === 'emdrive'){ return false; }
-    // Check shipyard availability for each hull class.
-    if (part === 'class'){
-        if (explorerRetired() && value === 'explorer'){ return false; }
-        if (value === 'freighter'){ return global.tech['shadow'] >= 5; }
-        // Supply Ships use their dedicated technology unlock.
-        if (value === 'supply_ship'){ return global.tech['syard_supply'] ? true : false; }
-        if (global.tech['tauceti'] && value === 'explorer'){ return true; }
-        return global.tech['syard_class'] > idx ? true : false;
-    }
-    if (part === 'special'){
-        // Supply Ship fits do not require special-slot technology.
-        if (shipClass === 'supply_ship'){ return supplyShipSpecials.includes(value) && shipSpecialAllowed(value,shipClass); }
-        if (shipClass === 'freighter'){ return freighterSpecials.includes(value); }
-        // Do not offer specials unsupported by this hull.
-        if (!shipSpecialAllowed(value,shipClass)){ return false; }
-        return global.tech['syard_special'] ? true : false;
-    }
-    if (part === 'engine' && global.tech['tauceti'] && value === 'emdrive'){ return true; }
-    if (shipClass === 'explorer'){
-        if (part === 'weapon'){ return idx === 1; }
-        if (part === 'engine'){ return idx === 6; }
-        if (part === 'sensor'){ return idx === 4; }
-    }
-    return global.tech[`syard_${part}`] > idx ? true : false;
-}
-
-// Return whether this hull exposes the requested refit slot.
-function shipSlotOpen(part, shipClass){
-    // Freighters and Supply Ships have no weapon slot.
-    if (part === 'weapon'){ return shipClass !== 'freighter' && shipClass !== 'supply_ship'; }
-    if (part === 'special'){ return shipClass === 'freighter' || shipClass === 'supply_ship' || global.tech['syard_special'] ? true : false; }
-    return true;
-}
-
-// What special a ship has equipped.
-export function shipSpecial(ship){
-    return ship && ship.special && shipSpecials.includes(ship.special) ? ship.special : 'none';
-}
-
-// Power a special mount draws. A fit missing from here would take the whole readout to NaN, so the
-// lookup below defaults rather than trusting this to stay complete.
-const shipSpecialPower = {
-    none: 0, massdriver: 325,
-    extra_fuel: 0, extra_cargo: 0, extra_thruster: 0,
-    mobile_storage: 0, fuel_tanker: 0, repair_ship: 0
-};
-
-// --- Orbital bombardment ------------------------------------------------------------------------
-const shipBombardRating = { cruiser: 500, battlecruiser: 900, dreadnought: 2000 };
-
-// The bombardment rating of a single hull, or 0 for anything not carrying a mass driver.
-export function shipBombardPower(ship){
-    if (!ship || shipSpecial(ship) !== 'massdriver'){ return 0; }
-    if (!shipSpecialAllowed('massdriver',ship.class)){ return 0; }
-    return shipBombardRating.hasOwnProperty(ship.class) ? shipBombardRating[ship.class] : 0;
-}
-
-export function shipAttackPower(ship){
-    let rating = 0;
-    switch (ship.weapon){
-        case 'railgun':
-            rating = 36;
-            break;
-        case 'laser':
-            rating = 64;
-            break;
-        case 'p_laser':
-            rating = 54;
-            break;
-        case 'plasma':
-            rating = 90;
-            break;
-        case 'phaser':
-            rating = 114;
-            break;
-        case 'disruptor':
-            rating = 156;
-            break;
-        case 'gauss':
-            rating = 210;
-            break;
-    }
-
-    if (global.race['wish'] && global.race['wishStats'] && global.race.wishStats.ship){
-        rating = Math.round(rating * 1.25);
-    }
-
-    // An escort shoots better under a flagship that knows how to lead one (see fleetHulls).
-    let led = fleetDamageBonus(ship);
-    if (led > 0){
-        rating = Math.round(rating * (1 + led));
-    }
-
-    switch (ship.class){
-        case 'corvette':
-            return rating;
-        case 'frigate':
-            return Math.round(rating * 1.5);
-        case 'destroyer':
-        case 'corsair':
-            return Math.round(rating * 2.75);
-        case 'cruiser':
-            return Math.round(rating * 5.5);
-        case 'battlecruiser':
-            return Math.round(rating * 10);
-        case 'dreadnought':
-            return Math.round(rating * 22);
-        case 'explorer':
-            return Math.round(rating * 1.2);
-        // Return zero firepower for unarmed hulls.
-        case 'freighter':
-        case 'supply_ship':
-            return 0;
-        // Rate unlisted hulls from their equipped weapon.
-        default:
-            return rating;
-    }
-}
-
-export const FREIGHTER_CAPACITY = 1000000;
-export function freightCapacity(ship){
-    let cap = ship && ship.class === 'freighter' && shipSpecial(ship) === 'extra_cargo'
-        ? Math.round(FREIGHTER_CAPACITY * 1.5) : FREIGHTER_CAPACITY;
-    if (global.race['pack_rat']){
-        cap *= 1 + (traits.pack_rat.vars()[1] / 100);
-    }
-    return cap;
-}
-export function freightCargo(ship){
-    if (!ship || ship.class !== 'freighter'){ return {}; }
-    if (!ship.cargo || typeof ship.cargo !== 'object'){ ship.cargo = {}; }
-    // Cargo is discrete. Normalize any legacy or debug-injected value so every transfer is a
-    // positive whole unit and a stranded fractional unit can never affect capacity or speed.
-    Object.keys(ship.cargo).forEach(function(res){
-        const amount = Math.floor(Number(ship.cargo[res]) || 0);
-        if (amount > 0){ ship.cargo[res] = amount; }
-        else { delete ship.cargo[res]; }
-    });
-    return ship.cargo;
-}
-export function freightLoad(ship){
-    return Object.values(freightCargo(ship)).reduce((total, amount) => total + (Number(amount) || 0), 0);
-}
-export function freightWeight(ship){
-    return Object.entries(freightCargo(ship)).reduce((total, [res, amount]) => total + (atomic_mass[res] || 0) * (Number(amount) || 0), 0);
-}
-export function freightSpeedPenalty(ship){
-    if (!ship || ship.class !== 'freighter'){ return 0; }
-    const penalty = Math.floor(freightWeight(ship) / 1750000);
-    return shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty;
-}
-
-// Remaining whole days to a ship's final destination, including any later jump-gate legs.
-export function shipArrivalTime(ship){
-    if (!ship || !ship.inTransit || !ship.path || !ship.path.length){ return 0; }
-    const leg = ship.path[0];
-    return Math.max(0, Math.round((ship.totalTime || 0) - ((leg.totalTime || 0) - (ship.timeToNextStep || 0))));
-}
-
-export function shipSpeed(ship){
-    let mass = 1;
-    switch (ship.class){
-        case 'corvette':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1 : 0.95) : ship.armor === 'neutronium' ? 1.1 : 1;
-            break;
-        case 'frigate':
-        case 'freighter':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1.12 : 1.1) : ship.armor === 'neutronium' ? 1.35 : 1.25;
-            break;
-        case 'destroyer':
-        case 'corsair':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1.25 : 1.2) : ship.armor === 'neutronium' ? 1.95 : 1.8;
-            break;
-        case 'cruiser':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 1.75 : 1.5) : ship.armor === 'neutronium' ? 3.5 : 3;
-            break;
-        case 'battlecruiser':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 2.4 : 2) : ship.armor === 'neutronium' ? 4.8 : 4;
-            break;
-        // Supply Ship mass class.
-        case 'supply_ship':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 2.05 : 1.75) : ship.armor === 'neutronium' ? 4.15 : 3.5;
-            break;
-        case 'dreadnought':
-            mass = global.tech['syard_mass'] ? (ship.armor === 'neutronium' ? 3.5 : 3) : (ship.armor === 'neutronium' ? 7.5 : 6);
-            break;
-        case 'explorer':
-            mass = 1;
-            break;
-    }
-    if (ship.armor === 'aerographene'){ mass /= AEROGRAPHENE_SPEED; }
-
-    // Featherlight: avian hulls are built lighter than anyone else's.
-    mass /= geneBonus('featherlight');
-
-    let boost = 1;
-    switch (ship.location?.name ?? ""){
-        case 'spc_dwarf':
-            boost = p_on['m_relay'] && !ship.inTransit && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
-            break;
-        case 'tau_gas2':
-            boost = p_on['tcm_relay'] && !ship.inTransit && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
-            break;
-        default:
-            boost = 1;
-            break;
-    }
-    // A fleet led by a light hull is a courier group rather than a battle line, and the whole group
-    // moves at that pace — flagship included.
-    boost *= 1 + fleetSpeedBonus(ship);
-    let speed;
-    switch (ship.engine){
-        case 'ion':
-            speed = (global.tech.syard_engine >= 6 ? 30 : 12) / mass * boost;
-            break;
-        case 'tie': speed = (global.tech.syard_engine >= 6 ? 55 : 22) / mass * boost; break;
-        case 'pulse': speed = (global.tech.syard_engine >= 6 ? 45 : 18) / mass * boost; break;
-        case 'photon': speed = (global.tech.syard_engine >= 6 ? 75 : 30) / mass * boost; break;
-        case 'vacuum': speed = (global.tech.syard_engine >= 6 ? 105 : 42) / mass * boost; break;
-        case 'emdrive': speed = 37500 / mass * boost; break;
-        case 'electrokinetic': speed = (global.tech.syard_engine >= 6 ? 140 : 56) / mass * boost; break;
-    }
-    return ship.class === 'freighter' ? speed * Math.max(0.25, 1 - freightSpeedPenalty(ship) / 100) : speed;
-}
-
-export function shipFuelUse(ship){
-    let res = false;
-    let burn = 0;
-
-    switch (ship.power){
-        case 'diesel':
-            res = 'Oil';
-            burn = 8;
-            break;
-        case 'fission':
-            res = 'Uranium';
-            burn = 0.5;
-            break;
-        case 'fusion':
-            res = 'Helium_3';
-            burn = 12;
-            break;
-        case 'elerium':
-            res = 'Elerium';
-            burn = 1;
-            break;
-        case 'antimatter':
-            res = 'Positronium';
-            burn = 0.05;
-            break;
-    }
-
-    switch (ship.class){
-        case 'frigate':
-            burn *= 1.25;
-            break;
-        case 'destroyer':
-        case 'corsair':
-            burn *= 1.5;
-            break;
-        case 'cruiser':
-            burn *= 2;
-            break;
-        case 'battlecruiser':
-            burn *= 3;
-            break;
-        case 'dreadnought':
-            burn *= 5;
-            break;
-        case 'explorer':
-            burn *= 25;
-            break;
-        case 'freighter':
-            burn *= 1.25;
-            break;
-        case 'supply_ship':
-            burn *= 2.5;
-            break;
-    }
-
-    return {
-        res: res,
-        burn: +(burn).toFixed(2)
-    };
-}
-
-// Ships consume onboard fuel only while traveling.
-const shipFuelRange = 250;
-const explorerFuelRange = 800000;
-// A Fuel Tanker is mostly tank: twice the legs of anything else, and a store on top of that.
-const tankerFuelRange = 500;
-// The reserve it carries for everyone else, in AU of its own burn per fuel type.
-const tankerStoreRange = 1000;
-const solarRanges = { M: 50, K: 75, G: 100, F: 125, A: 150, B: 200, O: 250 };
-const globalRefuelExceptions = ['spc_eris', 'spc_triton', 'spc_trition', 'spc_sun'];
-
-// Whether a hull is a Supply Ship carrying a given fit.
-export function supplyShipMode(ship, mode){
-    return ship && ship.class === 'supply_ship' && shipSpecial(ship) === mode ? true : false;
-}
-
-export function shipFuelTank(ship){
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res || fuel.burn <= 0){ return 0; }
-    const auPerDay = shipSpeed(ship) / 225;
-    const range = ship.class === 'explorer' ? explorerFuelRange
-        : (supplyShipMode(ship,'fuel_tanker') ? tankerFuelRange : shipFuelRange);
-    const stock = auPerDay > 0 ? fuel.burn * range / auPerDay : 0;
-    // Freighters trade half their stock tank for cargo space unless fitted with Extra Fuel.
-    return Math.round(ship.class === 'freighter' && shipSpecial(ship) !== 'extra_fuel' ? stock / 2 : stock);
-}
-
-// --- Mobile Storage -----------------------------------------------------------------------------
-// Base Elerium storage per deployed Supply Ship.
-export const supplyShipElerium = 100;
-
-// Deployed Supply Ships provide storage to their supply pool.
-
-// Deployed hulls, keyed by supply pool.
-export function deployedSupply(pool){
-    if (!global.race['supply_deployed']){ global.race['supply_deployed'] = {}; }
-    if (pool === undefined){ return global.race.supply_deployed; }
-    if (!Array.isArray(global.race.supply_deployed[pool])){ global.race.supply_deployed[pool] = []; }
-    return global.race.supply_deployed[pool];
-}
-
-export function deployedSupplyCount(pool){
-    return deployedSupply(pool).length;
-}
-
-// Ships sitting at a world in this pool that could be put to work here.
-export function deployableSupply(pool){
-    const ships = global.space.shipyard?.ships || [];
-    return ships.filter(s => supplyShipMode(s,'mobile_storage') && !s.inTransit && s.location && s.location.name && supplyPool(s.location.name) === pool);
-}
-
-// Take one out of service and add it to the zone.
-export function deploySupplyShip(ship){
-    if (!supplyShipMode(ship,'mobile_storage') || ship.inTransit || !ship.location || !ship.location.name){ return false; }
-    const idx = global.space.shipyard.ships.indexOf(ship);
-    if (idx < 0){ return false; }
-    const pool = supplyPool(ship.location.name);
-    // Remove deployed ships from their fleet and crew roster.
-    leaveFleet(ship);
-    if (!shipManned(ship)){
-        global.civic.garrison.crew -= shipCrewSize(ship);
-        if (global.civic.garrison.crew < 0){ global.civic.garrison.crew = 0; }
-    }
-    global.space.shipyard.ships.splice(idx,1);
-    deployedSupply(pool).push(deepClone(ship));
-    drawShips();
-    return true;
-}
-
-// Put one back on the roster. Whatever the zone can no longer hold is gone: the stores were on the
-// ship, and taking the ship away takes them with it.
-export function undeploySupplyShip(pool){
-    const parked = deployedSupply(pool);
-    if (!parked.length){ return false; }
-    const ship = parked.pop();
-    // Return undeployed ships to their pool homeworld.
-    TPShipInitTransit(ship, supplyPoolHome(pool));
-    ship.damage = ship.damage || 0;
-    if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
-    global.space.shipyard.ships.push(ship);
-    drawShips();
-    return true;
-}
-
-// Return the homeworld for an undeployed supply pool.
-function supplyPoolHome(pool){
-    if (starData[pool]){ return pool; }
-    const regions = supplyRegions().filter(region => supplyPool(region) === pool && starData[region]);
-    return regions.length ? regions[0] : 'spc_home';
-}
-
-// --- Fuel Tankers -------------------------------------------------------------------------------
-// The reserve a tanker carries for other ships, one figure per fuel type. Each is what tankerStoreRange
-// AU of flying costs a hull burning that fuel at the tanker's own rate, so the store grows with the
-// engine tech the same way a tank does. This is separate from the tanker's own fuel, which is what it
-// flies on and which nothing else may touch.
-const tankerFuels = ['Oil','Uranium','Helium_3','Elerium','Positronium'];
-const tankerPlants = { Oil: 'diesel', Uranium: 'fission', Helium_3: 'fusion', Elerium: 'elerium', Positronium: 'antimatter' };
-
-export function tankerStoreMax(ship, res){
-    if (!supplyShipMode(ship,'fuel_tanker') || !tankerPlants[res]){ return 0; }
-    const auPerDay = shipSpeed(ship) / 225;
-    if (!(auPerDay > 0)){ return 0; }
-    // Calculate tanker reserves from the specified fuel type.
-    const burn = shipFuelUse({ class: 'supply_ship', power: tankerPlants[res] }).burn;
-    return Math.round(burn * tankerStoreRange / auPerDay);
-}
-
-// The reserve itself, created on demand and trimmed to whatever the current maxima are.
-export function tankerStore(ship){
-    if (!supplyShipMode(ship,'fuel_tanker')){ return false; }
-    if (!ship.tanker || typeof ship.tanker !== 'object'){ ship.tanker = {}; }
-    tankerFuels.forEach(function(res){
-        const cap = tankerStoreMax(ship, res);
-        const held = Number(ship.tanker[res]);
-        // Initialize a new tanker reserve at capacity.
-        ship.tanker[res] = Math.max(0, Math.min(cap, Number.isFinite(held) ? held : cap));
-    });
-    return ship.tanker;
-}
-
-// Every tanker parked at a world, for the ships sitting there with it.
-function tankersAt(locationName){
-    const ships = global.space.shipyard?.ships || [];
-    return ships.filter(s => supplyShipMode(s,'fuel_tanker') && !s.inTransit && s.location && s.location.name === locationName);
-}
-
-// One day's work for every tanker: top up what is docked alongside it, out of its reserve. A tanker
-// never fuels itself or another tanker from the same pool — the reserve is for the fleet.
-export function tankerRefuel(){
-    const ships = global.space.shipyard?.ships || [];
-    for (const ship of ships){
-        if (ship.inTransit || !ship.location){ continue; }
-        if (supplyShipMode(ship,'fuel_tanker')){ continue; }
-        const fuel = shipFuelUse(ship);
-        if (!fuel.res || !tankerPlants[fuel.res]){ continue; }
-        let want = shipFuelTank(ship) - shipFuelAmount(ship);
-        if (want <= 0){ continue; }
-        for (const tanker of tankersAt(ship.location.name)){
-            if (want <= 0){ break; }
-            const store = tankerStore(tanker);
-            const give = Math.min(want, store[fuel.res] || 0);
-            if (give <= 0){ continue; }
-            store[fuel.res] -= give;
-            ship.fuel += give;
-            ship.fueled = ship.fuel > 0;
-            want -= give;
-        }
-    }
-}
-
-function ensureShipFuel(ship){
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res){
-        delete ship.fuel;
-        ship.fueled = true;
-        return 0;
-    }
-    const tank = shipFuelTank(ship);
-    if (!Number.isFinite(ship.fuel)){
-        // Existing saves had no tank. Keep operational ships operational, but leave salvaged wrecks dry.
-        ship.fuel = ship.damage >= 75 && !ship.fueled ? 0 : tank;
-    }
-    ship.fuel = Math.max(0, Math.min(tank, ship.fuel));
-    ship.fueled = ship.fuel > 0;
-    return ship.fuel;
-}
-
-export function shipFuelAmount(ship){ return ensureShipFuel(ship); }
-
-function fuelAtLocation(res, location){
-    if (!global.resource[res]){ return 0; }
-    // Use global stock for fuels without regional storage.
-    return partitioned(res) ? regAmount(res, supplyPool(location)) : global.resource[res].amount;
-}
-
-function locationProducesFuelAt(ship, location){
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res || !location){ return false; }
-    if (partitioned(fuel.res)){
-        return (regDiff(fuel.res)[supplyPool(location)] || 0) > 0;
-    }
-    // Any valid dock can refuel globally stored fuel.
-    const body = starData[location];
-    return !!body && !body.startype && !globalRefuelExceptions.includes(location)
-        && !(global.tech?.resettle && location === 'spc_home');
-}
-
-function locationProducesFuel(ship){
-    return !!ship && !ship.inTransit && locationProducesFuelAt(ship, ship.location && ship.location.name);
-}
-
-export function canAutoRefuelAt(ship, location){ return locationProducesFuelAt(ship, location); }
-
-function fillShipTank(ship){
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res){ ensureShipFuel(ship); return 0; }
-    ensureShipFuel(ship);
-    const need = Math.max(0, shipFuelTank(ship) - ship.fuel);
-    const taken = Math.min(need, fuelAtLocation(fuel.res, ship.location.name));
-    if (taken > 0){
-        modRes(fuel.res, -taken, false, ship.location.name);
-        ship.fuel += taken;
-    }
-    ship.fueled = ship.fuel > 0;
-    return taken;
-}
-
-// Called by the main tick for docked ships. Only natural producers refill automatically.
-// Return refuelling use and its source zone for ledger accounting.
-export function autoRefuelShip(ship){
-    if (!ship || ship.inTransit || !locationProducesFuel(ship)){ return false; }
-    const taken = fillShipTank(ship);
-    return taken > 0 ? { res: shipFuelUse(ship).res, at: ship.location.name, taken } : false;
-}
-
-export function canManuallyRefuel(ship){
-    const fuel = shipFuelUse(ship);
-    return !!(ship && !ship.inTransit && fuel.res && !locationProducesFuel(ship)
-        && fuelAtLocation(fuel.res, ship.location.name) > 0 && shipFuelAmount(ship) < shipFuelTank(ship));
-}
-
-export function manuallyRefuelShip(ship){
-    return canManuallyRefuel(ship) ? fillShipTank(ship) : 0;
-}
-
-function solarPoweredAlong(start, end){
-    const distance = dist3(start, end);
-    const samples = Math.max(1, Math.ceil(distance / 5));
-    for (let i = 0; i <= samples; i++){
-        const t = i / samples;
-        const point = { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t, z: start.z + (end.z - start.z) * t };
-        const star = starData[nearestStar(point)];
-        if (!star || dist3(point, genXYZcoord(nearestStar(point))) > (solarRanges[(star.startype || '').charAt(0)] || 0)){ return false; }
-    }
-    return true;
-}
-
-function shipTripFuel(ship, trip){
-    const fuel = shipFuelUse(ship);
-    if (!fuel.res){
-        let from = ship.location.position;
-        for (const leg of trip.path){
-            if (!leg.inGate && !solarPoweredAlong(from, leg.destination.position)){ return Infinity; }
-            from = leg.destination.position;
-        }
-        return 0;
-    }
-    return trip.path.reduce((total, leg) => total + (leg.inGate ? 0 : leg.totalTime * fuel.burn), 0);
-}
-
-function shipCanMakeTrip(ship, trip){
-    return !!trip && shipTripFuel(ship, trip) <= shipFuelAmount(ship) + 0.000001;
-}
-
-function tradeFleet(ship){
-    const fleet = shipFleet(ship);
-    return fleet.length ? fleet : [ship];
-}
-function tradeFreighters(group){ return group.filter(ship => ship.class === 'freighter'); }
-function tradeRoute(ship){
-    if (!ship || !ship.tradeRoute || !Array.isArray(ship.tradeRoute.stops) || ship.tradeRoute.stops.length <= 1){ return false; }
-    // A stop saved against a zone key ships cannot fly to (Tau Ceti's star, before its dock moved) follows its pool.
-    ship.tradeRoute.stops.forEach(function(stop){
-        if (stop && stop.zone && !starData[resolveBody(stop.zone)]){ stop.zone = supplyPool(stop.zone); }
-    });
-    return ship.tradeRoute;
-}
-function setTradeRoute(group, route){ group.forEach(ship => { ship.tradeRoute = deepClone(route); }); }
-function clearTradeRoute(group){ group.forEach(ship => { delete ship.tradeRoute; }); }
-// Use the earliest shipyard entry as a stable fleet route leader.
-function tradeLeader(group){
-    if (group.length <= 1){ return group[0]; }
-    const ships = global.space.shipyard.ships;
-    let best = group[0], bestAt = ships.indexOf(best);
-    for (let i=1; i<group.length; i++){
-        const at = ships.indexOf(group[i]);
-        if (at < bestAt){ best = group[i]; bestAt = at; }
-    }
-    return best;
-}
-
-// --- Patrol routes ---------------------------------------------------------------------------------
-// A patrol is a standing order to tour a list of worlds in turn, for ever. It carries nothing and
-// trades nothing — the freight routes above are the machinery for that — so a patrol is no more than
-// the stops and how far along them the fleet has got. Like a trade route it lives on every ship of
-// the fleet, so any row of the shipyard can be asked about it.
-
-// Patrols need Sector Command, whose completion raises syard_fleet to 4.
-export function patrolsUnlocked(){
-    return global.tech['syard_fleet'] && global.tech.syard_fleet >= 4 ? true : false;
-}
-
-export function shipPatrol(ship){
-    return ship && ship.patrol && Array.isArray(ship.patrol.stops) && ship.patrol.stops.length > 0 ? ship.patrol : false;
-}
-
-function setPatrol(group, patrol){ group.forEach(ship => { ship.patrol = deepClone(patrol); }); }
-function clearPatrol(group){ group.forEach(ship => { delete ship.patrol; }); }
-function setPatrolIndex(group, index){ group.forEach(ship => { if (ship.patrol){ ship.patrol.index = index; } }); }
-
-// Send a patrolling fleet on to its next stop. A leg the fleet cannot afford right now is not
-// skipped: it stays docked, refuelling, and the next tick tries the same leg again.
-function advancePatrol(group){
-    const lead = tradeLeader(group);
-    const patrol = shipPatrol(lead);
-    if (!patrol || group.some(s => s.inTransit)){ return false; }
-    // Pause patrol movement while pursuing a corsair.
-    if (patrol.chase){ return false; }
-    // Wait at repair yards until every patrol ship is repaired.
-    if (atShipyard(lead) && group.some(s => s.damage > 0)){ return false; }
-    const id = global.space.shipyard.ships.indexOf(lead);
-    if (id < 0){ return false; }
-
-    const stops = patrol.stops;
-    let at = typeof patrol.index === 'number' ? patrol.index : -1;
-    for (let i=0; i<stops.length; i++){
-        const next = (at + 1) % stops.length;
-        // Continue from the route stop matching the current location.
-        if (stops[next] === lead.location.name){
-            at = next;
-            setPatrolIndex(group, next);
-            continue;
-        }
-        if (!sendShipTo(id, stops[next], true)){ return false; }
-        setPatrolIndex(group, next);
-        return true;
-    }
-    return false;
-}
-
-// Put a fleet onto a patrol and send it to its next stop. The stops are the whole loop, the fleet's
-// own position included — it is a stop like any other, and the tour comes back round to it.
-export function startPatrol(ship, stops){
-    if (!patrolsUnlocked() || !ship || !Array.isArray(stops) || stops.length === 0){ return false; }
-    const group = tradeFleet(ship);
-    // Replace freight routing with patrol routing.
-    clearTradeRoute(group);
-    setPatrol(group, { stops: stops.slice(), index: -1 });
-    // Start immediately unless the fleet is already in transit.
-    if (group.some(s => s.inTransit)){ return true; }
-    if (!advancePatrol(group)){
-        clearPatrol(group);
-        return false;
-    }
-    return true;
-}
-
-export function stopPatrol(ship){
-    const group = tradeFleet(ship);
-    if (!group.some(shipPatrol)){ return false; }
-    clearPatrol(group);
-    drawShips();
-    return true;
-}
-
-// One pass per tick: every patrolling fleet sitting at a stop moves off to the next one.
-function advancePatrols(){
-    const ships = global.space.shipyard?.ships || [];
-    const seen = new Set();
-    for (const ship of ships){
-        if (seen.has(ship) || !shipPatrol(ship)){ continue; }
-        const group = tradeFleet(ship);
-        group.forEach(member => seen.add(member));
-        if (group.some(member => member.inTransit)){ continue; }
-        advancePatrol(group);
-    }
-}
-
-// The fleet's slowest hull as it would stand at `from`, ready to launch. A mass relay only pushes
-// what leaves from it, and shipSpeed reads that off the ship's own location, so a leg is timed from
-// where it starts rather than from wherever the fleet happens to be sitting when the question is asked.
-function paceAt(group, from){
-    const pace = fleetPace(group);
-    if (!pace){ return false; }
-    const at = deepClone(pace);
-    at.inTransit = false;
-    at.location = { name: from, position: genXYZcoord(from) };
-    at.origin = { name: '', position: genXYZcoord(from) };
-    return at;
-}
-
-// Cache route legs and fleet pace by simulated day.
-const legCache = { at: 0, day: false, map: new Map(), pace: new Map() };
-
-// Cache fleet pace for the current simulated day.
-function legSpeed(group){
-    const head = group && group.length ? group[0] : false;
-    if (!head){ return 0; }
-    if (legCache.pace.has(head)){ return legCache.pace.get(head); }
-    const lead = fleetPace(group);
-    const speed = lead ? shipSpeed(lead) : 0;
-    legCache.pace.set(head, speed);
-    return speed;
-}
-
-function tradeLeg(group, from, to){
-    const now = Date.now();
-    if (now - legCache.at > 2000 || legCache.day !== global.stats.days){
-        legCache.at = now;
-        legCache.day = global.stats.days;
-        legCache.map.clear();
-        legCache.pace.clear();
-    }
-    const key = `${from}|${to}|${legSpeed(group)}`;
-    if (legCache.map.has(key)){ return legCache.map.get(key); }
-    const pace = paceAt(group, from);
-    const trip = pace ? planShipTrip(pace, to) : false;
-    legCache.map.set(key, trip);
-    return trip;
-}
-
-// Return a cached route-leg plan.
-function tradeTrip(group, from, to){
-    return tradeLeg(group, from, to);
-}
-
-// Return fleet travel time for one route leg, or Infinity if unreachable.
-export function tradeLegDays(group, from, to){
-    if (from === to){ return 0; }
-    const trip = tradeLeg(group, from, to);
-    return trip ? trip.totalTime : Infinity;
-}
-
-// Return whether a fleet can reach a world on its current fuel.
-export function fleetCanReach(group, to){
-    if (!group || !group.length){ return false; }
-    const from = group[0].location.name;
-    if (from === to){ return true; }
-    const trip = tradeLeg(group, from, to);
-    return trip ? group.every(s => shipCanMakeTrip(s, trip)) : false;
-}
-
-// Validate that a proposed route is flyable with available fuel.
-export function tradeRouteViable(group, stops){
-    return stops.length > 1 && validateTradeRoute(group, stops);
-}
-
-// What a world can expect a freighter to bring it, and roughly when.
-const freightRouteLoops = 6;
-
-const arrivalCache = { at: 0, map: new Map() };
-export function freightArrivals(res, pool, loadable){
-    const cacheKey = loadable ? false : `${res}|${pool}`;
-    if (cacheKey){
-        const now = Date.now();
-        if (now - arrivalCache.at > 250){ arrivalCache.at = now; arrivalCache.map.clear(); }
-        if (arrivalCache.map.has(cacheKey)){ return arrivalCache.map.get(cacheKey); }
-    }
-    const take = loadable || ((r, zone, capacity) => Math.min(capacity, Math.max(0, regAmount(r, zone))));
-    const arrivals = [];
-    const ships = (global.space.shipyard && global.space.shipyard.ships) || [];
-    const seen = new Set();
-    for (const ship of ships){
-        if (seen.has(ship) || ship.class !== 'freighter'){ continue; }
-        const group = tradeFleet(ship).filter(member => member.class === 'freighter');
-        group.forEach(member => seen.add(member));
-        if (!group.length){ continue; }
-        const lead = tradeLeader(group);
-        const route = tradeRoute(lead);
-        let hold = group.reduce((total, member) => total + (freightCargo(member)[res] || 0), 0);
-
-        if (!route){
-            if (hold > 0 && lead.inTransit && lead.destination && supplyPool(lead.destination.name) === pool){
-                arrivals.push({ at: shipArrivalTime(lead), amount: hold });
-            }
-            continue;
-        }
-
-        const stops = route.stops;
-        if (!stops.some(stop => supplyPool(stop.zone) === pool)){ continue; }
-        const capacity = group.reduce((total, member) => total + freightCapacity(member), 0);
-        let when = lead.inTransit ? shipArrivalTime(lead) : 0;
-        let at = route.index;
-        for (let step = 0; step <= stops.length * freightRouteLoops; step++){
-            const stop = stops[at];
-            if (supplyPool(stop.zone) === pool){
-                if (hold > 0){ arrivals.push({ at: when, amount: hold }); }
-                hold = 0;
-            }
-            if ((stop.pickups || []).includes(res)){
-                hold = take(res, stop.zone, capacity);
-            }
-            const next = (at + 1) % stops.length;
-            // Each stop includes one docked day before the next leg.
-            when += 1 + tradeLegDays(group, stop.zone, stops[next].zone);
-            at = next;
-        }
-    }
-    arrivals.sort((a,b) => a.at - b.at);
-    if (cacheKey){ arrivalCache.map.set(cacheKey, arrivals); }
-    return arrivals;
-}
-
-// Verify every ship can complete one full route loop with available refuelling.
-function validateTradeRoute(group, stops){
-    for (const ship of group){
-        // Apply automatic refuelling at the first stop before departure.
-        let reserve = canAutoRefuelAt(ship, stops[0].zone) ? shipFuelTank(ship) : shipFuelAmount(ship);
-        for (let i=0; i<stops.length; i++){
-            const from = stops[i].zone, to = stops[(i + 1) % stops.length].zone;
-            const trip = tradeTrip(group, from, to);
-            if (!trip){ return false; }
-            const needed = shipTripFuel(ship, trip);
-            if (needed > reserve + 0.000001){ return false; }
-            reserve -= needed;
-            if (canAutoRefuelAt(ship, to)){ reserve = shipFuelTank(ship); }
-        }
-    }
-    return true;
-}
-
-function tradeUnload(group, pool){
-    const freighters = tradeFreighters(group);
-    const cargo = {};
-    freighters.forEach(ship => Object.entries(freightCargo(ship)).forEach(([res, amount]) => { cargo[res] = (cargo[res] || 0) + amount; }));
-    Object.entries(cargo).forEach(function([res, amount]){
-        const spill = poolMod(res, pool, amount);
-        const moved = amount - Math.max(0, spill);
-        let left = moved;
-        freighters.forEach(function(ship){
-            const held = freightCargo(ship)[res] || 0;
-            const take = Math.min(held, left);
-            if (take > 0){ ship.cargo[res] -= take; if (ship.cargo[res] <= 0){ delete ship.cargo[res]; } left -= take; }
-        });
-        syncTotal(res);
-    });
-}
-function tradeLoadOne(freighters, pool, res, amount){
-    let remaining = Math.min(Math.floor(regAmount(res, pool)), amount, freighters.reduce((n,ship) => n + freightCapacity(ship) - freightLoad(ship), 0));
-    const requested = remaining;
-    while (remaining > 0){
-        const open = freighters.filter(ship => freightLoad(ship) < freightCapacity(ship)).sort((a,b) => freightLoad(a) - freightLoad(b));
-        if (!open.length){ break; }
-        const low = freightLoad(open[0]);
-        const tied = open.filter(ship => freightLoad(ship) === low);
-        const next = open.find(ship => freightLoad(ship) > low);
-        const rise = Math.min(...tied.map(ship => freightCapacity(ship) - low), next ? freightLoad(next) - low : Infinity);
-        const each = Math.min(rise, Math.floor(remaining / tied.length));
-        if (each > 0){
-            tied.forEach(ship => { const cargo = freightCargo(ship); cargo[res] = (cargo[res] || 0) + each; });
-            remaining -= each * tied.length;
-        }
-        else {
-            tied.slice(0, remaining).forEach(ship => { const cargo = freightCargo(ship); cargo[res] = (cargo[res] || 0) + 1; });
-            remaining = 0;
-        }
-    }
-    const moved = requested - remaining;
-    if (moved > 0){ poolMod(res, pool, -moved); }
-    return moved;
-}
-function tradeLoad(group, pool, pickups){
-    const freighters = tradeFreighters(group);
-    let selected = [...new Set(Array.isArray(pickups) ? pickups : [pickups])].filter(res => res && global.resource[res]);
-    let free = freighters.reduce((n,ship) => n + freightCapacity(ship) - freightLoad(ship), 0);
-    while (free > 0 && selected.length){
-        const share = Math.max(1, Math.floor(free / selected.length));
-        const stillAvailable = [];
-        selected.forEach(function(res){
-            const moved = tradeLoadOne(freighters, pool, res, share);
-            free -= moved;
-            if (regAmount(res, pool) > 0 && moved >= share){ stillAvailable.push(res); }
-        });
-        if (stillAvailable.length === selected.length && free < selected.length){ break; }
-        selected = stillAvailable;
-    }
-    // Refresh totals after all selected cargo transfers.
-    [...new Set(Array.isArray(pickups) ? pickups : [pickups])].filter(res => res && global.resource[res]).forEach(syncTotal);
-}
-function serviceTradeStop(group, route){
-    const stop = route.stops[route.index];
-    tradeUnload(group, stop.zone);
-    tradeLoad(group, stop.zone, stop.pickups || (stop.res ? [stop.res] : []));
-    group.forEach(autoRefuelShip);
-}
-function launchTradeLeg(group, route){
-    const next = (route.index + 1) % route.stops.length;
-    const destination = route.stops[next].zone;
-    const id = global.space.shipyard.ships.indexOf(tradeLeader(group));
-    if (id < 0 || !sendShipTo(id, destination, true)){ clearTradeRoute(group); return false; }
-    route.index = next;
-    route.wait = 0;
-    setTradeRoute(group, route);
-    return true;
-}
-
-export function startFreightRoute(ship, stops){
-    const group = tradeFleet(ship);
-    const freighters = tradeFreighters(group);
-    if (!freighters.length || !stops || stops.length < 2 || group.some(s => s.inTransit)){ return false; }
-    const routeStops = stops.map(stop => ({ zone: stop.zone, pickups: Array.isArray(stop.pickups) ? stop.pickups.filter(Boolean) : (stop.res ? [stop.res] : []) }));
-    if (routeStops[0].zone !== supplyPool(ship.location.name) || !validateTradeRoute(group, routeStops)){ return false; }
-    const route = { stops: routeStops, index: 0, wait: 0 };
-    setTradeRoute(group, route);
-    serviceTradeStop(group, route);
-    return launchTradeLeg(group, route);
-}
-export function stopFreightRoute(ship){
-    const group = tradeFleet(ship);
-    if (!group.some(tradeRoute)){ return false; }
-    clearTradeRoute(group);
-    return true;
-}
-function advanceTradeRoutes(step){
-    const ships = global.space.shipyard?.ships || [];
-    // Advance dock timers before grouping routes that are ready to depart.
-    let due = false;
-    const launching = new Set();
-    for (const ship of ships){
-        const route = tradeRoute(ship);
-        if (!route || ship.inTransit){ continue; }
-        if (route.wait > 0){
-            route.wait = Math.max(0, route.wait - step);
-            if (route.wait === 0){ launching.add(ship); }
-        }
-        // Treat missing or expired wait times as ready to depart.
-        if (!(route.wait > 0)){ due = true; }
-    }
-    if (!due){ return; }
-
-    const seen = new Set();
-    ships.forEach(function(ship){
-        const route = tradeRoute(ship);
-        if (!route || seen.has(ship) || route.wait > 0){ return; }
-        const group = tradeFleet(ship);
-        group.forEach(member => seen.add(member));
-        const leader = tradeLeader(group);
-        if (ship !== leader || group.some(member => member.inTransit)){ return; }
-        // Service the stop, then launch the next route leg.
-        if (launching.has(leader)){ launchTradeLeg(group, route); return; }
-        // Arrival: transfer first, then remain docked for one complete game day.
-        serviceTradeStop(group, route);
-        route.wait = 1;
-        setTradeRoute(group, route);
-    });
-}
-
-// Supply ship cost creep tracked seperatly per module type
-function sameCostTier(ship, bp){
-    if (ship.class !== bp.class){ return false; }
-    if (bp.class !== 'supply_ship'){ return true; }
-    const fit = s => supplyShipSpecials.includes(shipSpecial(s)) ? shipSpecial(s) : supplyShipSpecials[0];
-    return fit(ship) === fit(bp);
-}
-
-export function shipCosts(bp){
-    let costs = {};
-
-    let h_inflate = 1;
-    let p_inflate = 1;
-    let creep_factor = 1;
-    switch (bp.class){
-        case 'corvette':
-            costs['Money'] = 2500000;
-            costs['Aluminium'] = 500000;
-            h_inflate = 1;
-            p_inflate = 1;
-            creep_factor = 2;
-            break;
-        case 'frigate':
-            costs['Money'] = 5000000;
-            costs['Aluminium'] = 1250000;
-            h_inflate = 1.1;
-            p_inflate = 1.09;
-            creep_factor = 1.5;
-            break;
-        case 'destroyer':
-            costs['Money'] = 15000000;
-            costs['Aluminium'] = 3500000;
-            h_inflate = 1.2;
-            p_inflate = 1.18;
-            creep_factor = 1.2;
-            break;
-        case 'cruiser':
-            costs['Money'] = 50000000;
-            costs['Adamantite'] = 1000000;
-            h_inflate = 1.3;
-            p_inflate = 1.25;
-            break;
-        case 'battlecruiser':
-            costs['Money'] = 125000000;
-            costs['Adamantite'] = 2600000;
-            h_inflate = 1.35;
-            p_inflate = 1.3;
-            creep_factor = 0.8;
-            break;
-        case 'dreadnought':
-            costs['Money'] = 500000000;
-            costs['Adamantite'] = 8000000;
-            h_inflate = 1.4;
-            p_inflate = 1.35;
-            creep_factor = 0.5;
-            break;
-        case 'freighter':
-            costs['Money'] = 5000000;
-            costs['Aluminium'] = 1250000;
-            h_inflate = 1.1;
-            p_inflate = 1.09;
-            creep_factor = 1.5;
-            break;
-        case 'explorer':
-            costs['Money'] = 800000000;
-            costs['Adamantite'] = 9500000;
-            h_inflate = 1.45;
-            p_inflate = 1;
-            break;
-        // Supply Ship construction costs.
-        case 'supply_ship':
-            costs['Money'] = 85000000;
-            costs['Adamantite'] = 1800000;
-            h_inflate = 1.32;
-            p_inflate = 1.27;
-            break;
-    }
-
-    switch (bp.armor){
-        case 'steel':
-            costs['Steel'] = Math.round(350000 ** h_inflate);
-            break;
-        case 'alloy':
-            costs['Alloy'] = Math.round(250000 ** h_inflate);
-            break;
-        case 'neutronium':
-            costs['Neutronium'] = Math.round(10000 ** h_inflate);
-            break;
-        case 'aerographene':
-            costs['Aerographene'] = Math.round(50000 ** h_inflate);
-            break;
-    }
-
-    switch (bp.engine){
-        case 'ion':
-            costs['Titanium'] = Math.round(75000 ** p_inflate);
-            break;
-        case 'tie':
-            costs['Titanium'] = Math.round(150000 ** p_inflate);
-            break;
-        case 'pulse':
-            costs['Titanium'] = Math.round(125000 ** p_inflate);
-            break;
-        case 'photon':
-            costs['Titanium'] = Math.round(210000 ** p_inflate);
-            break;
-        case 'vacuum':
-            costs['Titanium'] = Math.round(300000 ** p_inflate);
-            break;
-        case 'emdrive':
-            costs['Titanium'] = Math.round(1250000 ** p_inflate);
-            break;
-        case 'electrokinetic':
-            costs['Titanium'] = Math.round(1750000 ** p_inflate);
-            break;
-    }
-
-    let alt_mat = ['dreadnought','explorer'].includes(bp.class) ? true : false;
-    switch (bp.power){
-        case 'solar':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(40000 ** h_inflate);
-            costs['Iridium'] = Math.round(15000 ** p_inflate);
-            break;
-        case 'diesel':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(40000 ** h_inflate);
-            costs['Iridium'] = Math.round(15000 ** p_inflate);
-            break;
-        case 'fission':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(50000 ** h_inflate);
-            costs['Iridium'] = Math.round(30000 ** p_inflate);
-            break;
-        case 'fusion':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(50000 ** h_inflate);
-            costs['Iridium'] = Math.round(40000 ** p_inflate);
-            break;
-        case 'elerium':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(60000 ** h_inflate);
-            costs['Iridium'] = Math.round(55000 ** p_inflate);
-            break;
-        case 'antimatter':
-            costs[alt_mat ? 'Orichalcum' : 'Copper'] = Math.round(60000 ** h_inflate);
-            costs['Iridium'] = Math.round(65000 ** p_inflate);
-            break;
-    }
-
-    if (bp.class !== 'explorer'){
-        switch (bp.sensor){
-            case 'radar':
-                costs['Money'] = Math.round(costs['Money'] ** 1.04);
-                break;
-            case 'lidar':
-                costs['Money'] = Math.round(costs['Money'] ** 1.08);
-                break;
-            case 'quantum':
-                costs['Money'] = Math.round(costs['Money'] ** 1.12);
-                break;
-        }
-    }
-
-    switch (bp.weapon){
-        case 'railgun':
-            costs['Iron'] = Math.round(25000 ** h_inflate);
-            break;
-        case 'laser':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.05);
-            costs['Nano_Tube'] = Math.round(12000 ** h_inflate);
-            break;
-        case 'p_laser':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.035);
-            costs['Nano_Tube'] = Math.round(12000 ** h_inflate);
-            break;
-        case 'plasma':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.1);
-            costs['Nano_Tube'] = Math.round(20000 ** h_inflate);
-            break;
-        case 'phaser':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.15);
-            costs['Quantium'] = Math.round(18000 ** h_inflate);
-            break;
-        case 'disruptor':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
-            costs['Quantium'] = Math.round(35000 ** h_inflate);
-            break;
-        case 'gauss':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
-            costs['Quantium'] = Math.round(60000 ** h_inflate);
-            costs['Iron'] = Math.round(350000 ** h_inflate);
-            break;
-    }
-
-    // The special mount
-    if (shipSpecial(bp) === 'massdriver'){
-        costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
-        costs['Tungsten'] = Math.round(750000 ** h_inflate);
-        costs['Quantium'] = Math.round(40000 ** h_inflate);
-    }
-
-    if (bp.class === 'explorer'){
-        costs['Iron'] *= 10;
-        costs['Titanium'] *= 5;
-        costs['Iridium'] *= 50;
-    }
-
-    let typeCount = 0;
-    global.space.shipyard.ships.forEach(function(ship){
-        if (sameCostTier(ship,bp)){
-            typeCount++;
-        }
-    });
-
-    let creep = 1 + (typeCount - 2) / 25 * creep_factor;
-    Object.keys(costs).forEach(function(res){
-        if (bp.class === 'explorer'){
-            costs[res] = Math.ceil(costs[res] * ((typeCount + 1) * 3));
-        }
-        else {
-            if (typeCount < 2){
-                costs[res] = Math.ceil(costs[res] * (typeCount === 0 ? 0.75 : 0.9));
-            }
-            else if (typeCount > 2){
-                costs[res] = Math.ceil(costs[res] * creep);
-            }
-        }
-    });
-
-    return costs;
-}
-
-// --- Refitting ----------------------------------------------------------------------------------
-// Return whether a docked ship can be refitted at this shipyard.
-export function refitAllowed(ship){
-    if (!global.tech['syard_fleet'] || global.tech.syard_fleet < 2){ return false; }
-    if (!ship || ship.inTransit || !ship.location){ return false; }
-    return activeRepairYards().includes(ship.location.name);
-}
-
-// Build a blueprint-shaped design from a ship and optional refit plan.
-function refitDesign(ship, plan){
-    let design = { class: ship.class, name: ship.name };
-    refitParts.forEach(function(part){
-        design[part] = plan && plan[part] !== undefined ? plan[part] : ship[part];
-    });
-    return design;
-}
-
-// Minimum Money charge for labor when a refit adds no material cost.
-const refitLabor = 0.25;
-
-// Charge only added material costs, with a minimum Money labor fee.
-export function refitCosts(ship, plan){
-    let now = shipCosts(refitDesign(ship,false));
-    let want = shipCosts(refitDesign(ship,plan));
-    let costs = {};
-    Object.keys(want).forEach(function(res){
-        let diff = (want[res] || 0) - (now[res] || 0);
-        if (diff > 0){ costs[res] = Math.ceil(diff); }
-    });
-    // Unchanged plans have no refit cost.
-    if (refitChanged(ship, plan)){
-        let money = (want.Money || 0) - (now.Money || 0);
-        costs['Money'] = money > 0 ? Math.ceil(money) : Math.ceil((want.Money || 0) * refitLabor);
-    }
-    return costs;
-}
-
-// Return whether a plan changes any refittable part.
-function refitChanged(ship, plan){
-    return refitParts.some(function(part){
-        return plan[part] !== undefined && plan[part] !== ship[part];
-    });
-}
-
-// Return the locale key blocking a changed part, or false when valid.
-function refitBlocked(ship, plan){
-    let design = refitDesign(ship, plan);
-    for (let i=0; i<refitParts.length; i++){
-        let part = refitParts[i];
-        if (design[part] === ship[part]){ continue; }
-        if (!shipSlotOpen(part,ship.class)){ return 'outer_shipyard_refit_part'; }
-        let idx = shipParts[part].indexOf(design[part]);
-        if (idx < 0 || !shipPartAvailable(part,idx,design[part],ship.class)){ return 'outer_shipyard_refit_part'; }
-    }
-    if (shipPower(design) < 0){ return 'outer_shipyard_refit_power'; }
-    // Extra Cargo cannot be removed while its capacity is in use.
-    if (ship.class === 'freighter' && freightLoad(ship) > freightCapacity(design)){ return 'outer_shipyard_refit_cargo'; }
-    return false;
-}
-
-// Return whether changing power source requires emptying the fuel tank.
-function refitDrains(ship, plan){
-    let now = shipFuelUse(refitDesign(ship,false)).res;
-    let want = shipFuelUse(refitDesign(ship,plan)).res;
-    return now !== want && !!now;
-}
-
-// Apply a valid refit while preserving ship identity and assignments.
-function applyRefit(ship, plan){
-    if (!ship || !refitAllowed(ship) || !refitChanged(ship,plan) || refitBlocked(ship,plan)){ return false; }
-    let raw = refitCosts(ship, plan);
-    let costs = {};
-    Object.keys(raw).forEach(function(res){
-        costs[res] = function(){ return raw[res]; };
-    });
-    // Charge refits to the ship's docked yard.
-    if (!payCosts({ id: 'tp-refit', supply(){ return ship.location.name; } }, costs)){ return false; }
-    let burned = shipFuelUse(ship).res;
-    refitParts.forEach(function(part){
-        if (plan[part] !== undefined){ ship[part] = plan[part]; }
-    });
-    // Changing fuel type empties the incompatible tank.
-    if (shipFuelUse(ship).res !== burned){ ship.fuel = 0; }
-    // Clamp retained fuel to the new tank capacity.
-    ensureShipFuel(ship);
-    return true;
 }
 
 export function clearShipDrag(){
@@ -10517,10 +8687,10 @@ const shipyardRanks = {
 function shipyardShipCompare(a,b,yards){
     yards = yards || activeRepairYards();
     return (
-        (yards.includes(a.location.name) ? 0 : 1) - (yards.includes(b.location.name) ? 0 : 1)
-        || (shipyardRanks.location[a.location.name] ?? 0) - (shipyardRanks.location[b.location.name] ?? 0)
-        || a.inTransit - b.inTransit
-        || a.timeToNextStep - b.timeToNextStep
+        (yards.includes(shipPort(a)) ? 0 : 1) - (yards.includes(shipPort(b)) ? 0 : 1)
+        || (shipyardRanks.location[shipPort(a)] ?? 0) - (shipyardRanks.location[shipPort(b)] ?? 0)
+        || shipMoving(a) - shipMoving(b)
+        || shipLegLeft(a) - shipLegLeft(b)
         || (shipyardRanks.class[a.class] ?? 0) - (shipyardRanks.class[b.class] ?? 0)
         || (shipyardRanks.engine[a.engine] ?? 0) - (shipyardRanks.engine[b.engine] ?? 0)
         || (shipyardRanks.power[a.power] ?? 0) - (shipyardRanks.power[b.power] ?? 0)
@@ -10594,8 +8764,8 @@ function queueTPShip(design){
 function copyShipDesign(ship){
     let design = deepClone(ship);
     [
-        // Position and transit state.
-        'location','destination','origin','transit','inTransit','timeToNextStep','path','damage','crew','ret',
+        // Position and transit state, including the fields of older saves.
+        'location','movement',...retiredShipFields,'transit','damage','crew','ret',
         // Fleet membership.
         'fid','flag',
         // Assigned patrol or freight route.
@@ -10614,7 +8784,7 @@ function copyShipDesign(ship){
     return design;
 }
 
-function drawShips(){
+export function drawShips(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
@@ -10654,7 +8824,7 @@ function drawShips(){
     }
     // Use supply-region names for freighter locations outside combat dispatch zones.
     global.space.shipyard.ships.forEach(function(ship){
-        const location = ship.inTransit ? ship.destination.name : ship.location.name;
+        const location = shipBound(ship);
         if (!regionNames[location]){ regionNames[location] = supplyRegionName(location); }
     });
 
@@ -10672,7 +8842,7 @@ function drawShips(){
     let collapsed = false;
     global.space.shipyard.ships.forEach(function(ship,i){
         // Which tab should the ship be drawn in
-        let shipDisplayLocation = (ship.inTransit ? ship.destination.name : ship.location.name);
+        let shipDisplayLocation = shipBound(ship);
 
         // 'yards' filters for locations with shipyards rather then star systems
         if (view.sys === 'yards'){
@@ -10734,7 +8904,7 @@ function drawShipGroup(list,g,locationName,regionNames,repairYards){
 
     // Ships of this group, read fresh on every render so the summary cannot go stale.
     let here = function(){
-        return global.space.shipyard.ships.filter(function(s){ return (s.inTransit ? s.destination.name : s.location.name) === locationName; });
+        return global.space.shipyard.ships.filter(function(s){ return shipBound(s) === locationName; });
     };
 
     // Bound to the view options behind a wrapper key rather than to the yard itself.
@@ -10764,7 +8934,7 @@ function drawShipGroup(list,g,locationName,regionNames,repairYards){
                 return here().reduce(function(t,s){ return t + shipCrewSize(s); },0);
             },
             transit(){
-                return here().filter(function(s){ return s.inTransit; }).length;
+                return here().filter(shipMoving).length;
             }
         }
     });
@@ -10773,7 +8943,7 @@ function drawShipGroup(list,g,locationName,regionNames,repairYards){
 function drawShipRow(list,i,ship,regionNames){
     {
         let dispatch = `<button id="ship${i}loc" class="button is-info" @click="pickDest(${i})">
-            <span>${regionNames[ship.inTransit ? ship.destination.name : ship.location.name]}</span>
+            <span>${regionNames[shipBound(ship)]}</span>
         </button>`;
 
         // A ship serving under a flagship is indented behind it, so a fleet reads as one block whether
@@ -10918,7 +9088,7 @@ function drawShipRow(list,i,ship,regionNames){
                 // Only at a yard, and only while actually docked there rather than crossing to it.
                 scrapAllowed(id){
                     let s = global.space.shipyard.ships[id];
-                    return s && !s.inTransit && shipyardLocations.includes(s.location.name) ? true : false;
+                    return s && shipyardLocations.includes(shipDockedAt(s)) ? true : false;
                 },
                 // Which fleet a ship belongs to, shown against its name.
                 fleetTag(id){
@@ -10965,7 +9135,7 @@ function drawShipRow(list,i,ship,regionNames){
                 // ship into one.
                 fleetShow(id){
                     let s = global.space.shipyard.ships[id];
-                    if (!global.tech['syard_fleet'] || !s || s.inTransit){ return false; }
+                    if (!global.tech['syard_fleet'] || !s || shipMoving(s)){ return false; }
                     if (s.fid){ return true; }
                     // Freighters may escort an existing fleet but cannot create one. Keep their
                     // join dialog available so a docked freighter can see eligible flagships.
@@ -10980,7 +9150,7 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 fleetAction(id){
                     let s = global.space.shipyard.ships[id];
-                    if (!global.tech['syard_fleet'] || !s || s.inTransit){ return; }
+                    if (!global.tech['syard_fleet'] || !s || shipMoving(s)){ return; }
                     // Already flying with someone: the link takes it back out, and does so directly —
                     // there is nothing to choose between.
                     if (s.fid){
@@ -11094,15 +9264,15 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 dest(id){
                     let s = global.space.shipyard.ships[id];
-                    let name = s.class === 'explorer' ? loc('tech_era_tauceti') : regionNames[s.destination.name];
+                    let name = s.class === 'explorer' ? loc('tech_era_tauceti') : regionNames[shipDestination(s)];
                     return loc(`outer_shipyard_arrive`,[
                         name,
                         // (Total time) minus (time already traversed on current step)
-                        s.inTransit ? Math.round(s.totalTime - (s.path[0].totalTime - s.timeToNextStep)) : 0
+                        shipMoving(s) ? Math.round(shipTripDays(s) - (legDays(shipLeg(s)) - shipLegLeft(s))) : 0
                     ]);
                 },
                 show(id){
-                    return global.space.shipyard.ships[id].inTransit;
+                    return shipMoving(global.space.shipyard.ships[id]);
                 },
                 // A ship pulled out of the line for repairs remembers where it was posted. Say so, and
                 // let the player call the arrangement off without having to re-order the ship by hand.
@@ -11156,168 +9326,6 @@ function tauEnableSoldiers(){
         buildGarrison($('#garrison'),true);
         buildGarrison($('#c_garrison'),false);
     }
-}
-
-// Take a `ship` and send it on its merry way to `locationName`
-function initializeShipTrip(ship, locationName, trip){
-    // Whether this ship is presently inside a wormhole, and which gate it is bound for.
-    let inGate = ship.inTransit && ship.path && ship.path[0] && ship.path[0].inGate ? true : false;
-    let gateExit = inGate ? ship.path[0].destination.name : false;
-
-    // If a trip is already calculated then use that trip (for example when sending 
-    // a fleet to account for its slower speed). Otherwise calculate steps for new path.
-    let plannedTrip;
-    if (trip && !inGate)
-        plannedTrip = trip;
-    else
-        plannedTrip = planShipTrip(ship, locationName);
-
-    // We're already at the target location, or the location is unavailable (for any possible reason)
-    if (!plannedTrip)
-        return;
-
-    // Ensure every ship in a fleet has the same travel plan
-    ship.path = deepClone(plannedTrip.path);
-    ship.totalTime = plannedTrip.totalTime;
-
-    // Origin
-    if (!ship.inTransit){
-        // For a stationary ship lauching off - the location it was at before
-        ship.origin = deepClone(ship.location);
-    }
-    else if (!ship.path[0].inGate){
-        // For a ship travelling outside of a gate - just the xyz location it was at when changing course
-        ship.origin = {
-            position: deepClone(ship.location.position),
-            name: ""
-        }
-    }
-    else {
-        // A ship travelling inside a gate must first leave it before being able to change course.
-        // The first path step is unchanged, so origin stays as it was.
-    }
-
-    // Final destination. Landing point calculated in planShipTrip
-    ship.destination.name = locationName;
-    ship.destination.position = ship.path[ship.path.length - 1].destination.position;
-
-    // First step. A carried-over gate leg keeps the time it had left on it
-    if (!(inGate && ship.path[0].inGate && ship.path[0].destination.name === gateExit)){
-        ship.timeToNextStep = ship.path[0].totalTime;
-    }
-
-    // Liftoff
-    ship.inTransit = true;
-}
-// How far along its orbit a body has moved after `days`, in degrees.
-function orbitDegrees(id, days){
-    return orbitAngle(id, days);
-}
-
-// Where a body will actually be `days` from now — a plain projection along the orbits it already travels, for use
-// where the arrival time is known rather than being solved for.
-function bodyPointAt(locationName, days){
-    // A temp point riding a body projects as that body does, carrying its own circuit round with it.
-    // One with no parent is a fixed point in space, and stars do not orbit anything.
-    let temp = tempCoord(locationName);
-    if (temp){
-        let parent = tempParent(temp);
-        if (!parent){ return genXYZcoord(locationName); }
-        let base = bodyPointAt(parent, days), off = tempOffset(temp, days);
-        return { x: base.x + off.x, y: base.y + off.y, z: base.z + off.z };
-    }
-    if (!starData[locationName]){ return genXYZcoord(locationName); }
-    let body = starData[locationName];
-    if (body.startype){ return genXYZcoord(locationName); }
-    if (body.parent){
-        let planetPt = orbitPoint(body.parent, orbitDegrees(body.parent, days));
-        // orbitPoint anchors a moon's circle to wherever its planet is *now*, so take the bare
-        // offset and carry it to where the planet will have got to.
-        let offset = rel(orbitPoint(locationName, orbitDegrees(locationName, days)), genXYZcoord(body.parent));
-        return { x: planetPt.x + offset.x, y: planetPt.y + offset.y, z: planetPt.z + offset.z };
-    }
-    return orbitPoint(locationName, orbitDegrees(locationName, days));
-}
-
-// Passes used to settle a moon intercept, and how close in days counts as settled.
-const MOON_INTERCEPT_STEPS = 8;
-const MOON_INTERCEPT_TOL = 1e-4;
-
-// The same, for settling an intercept against the delay a bend around a star adds to the leg.
-const STAR_DETOUR_STEPS = 8;
-const STAR_DETOUR_TOL = 1e-4;
-
-// Where to aim a ship so it meets `planet` rather than where it used to be.
-function calcLandingPoint(startingPosition, planet, speed, elapsed) {
-    elapsed = elapsed || 0;
-    // A temp point riding a body has to be led like any other orbiting thing, so it goes through the
-    // same intercept below. One with no parent sits still, and the landing point is the point itself.
-    let temp = tempCoord(planet);
-    let leadTemp = temp ? tempParent(temp) !== false : false;
-    if (temp && !leadTemp){ return genXYZcoord(planet); }
-    if (!temp){
-        if (!starData[planet]) { return genXYZcoord(planet); }
-        if (starData[planet].startype) { return genXYZcoord(planet); }
-    }
-    // A moon is solved for directly rather than through the crossing arithmetic below, which measures a body's orbital
-    // radius against the ship's distance from the system centre — for a moon that would pit a 0.01 AU circle against a
-    if (leadTemp || starData[planet].parent) {
-        if (!(speed > 0)){ return genXYZcoord(planet); }
-        let t = dist3(startingPosition, genXYZcoord(planet)) / speed;
-        for (let i = 0; i < MOON_INTERCEPT_STEPS; i++){
-            let next = dist3(startingPosition, bodyPointAt(planet, elapsed + t)) / speed;
-            let settled = Math.abs(next - t) < MOON_INTERCEPT_TOL;
-            t = next;
-            if (settled){ break; }
-        }
-        return bodyPointAt(planet, elapsed + t);
-    }
-    // Tau Ceti bodies orbit their star, which sits far from the home-system origin.
-    let star = starData[planet].star ? genXYZcoord(starData[planet].star) : { x: 0, y: 0, z: 0 };
-    // The band the orbit sweeps out, as radii from the ellipse's own centre: the semi-minor axis at its narrowest and
-    // the semi-major at its widest.
-    let semiMajor, semiMinor, center_x;
-    if (starData[planet].star){
-        semiMajor = starData[planet].dist * 1.2;
-        semiMinor = starData[planet].dist;
-        center_x = star.x + starData[planet].dist / 3;
-    }
-    else {
-        let ecc = orbitEcc(planet);
-        semiMajor = orbitDist(planet);
-        semiMinor = semiMajor * Math.sqrt(1 - ecc * ecc);
-        // The Sun sits at a focus, so the ellipse's centre is one focal distance off it, toward
-        // apoapsis (the -x side, since periapsis is drawn at +x).
-        center_x = star.x - semiMajor * ecc;
-    }
-    let center_y = star.y;
-    // Inclination tilts the orbit about its centre, so a body's distance from that centre is
-    // unchanged and the crossing-window arithmetic below still holds in three dimensions.
-    let ship_dist = dist3(startingPosition, { x: center_x, y: center_y, z: star.z });
-    let cross1_dist = Math.abs(ship_dist - semiMinor);
-    let cross2_dist = Math.abs(ship_dist + semiMinor);
-    let cross1w_dist = Math.abs(ship_dist - semiMajor);
-    let cross2w_dist = Math.abs(ship_dist + semiMajor);
-    let cross1_days = Math.floor(Math.min(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / speed);
-    let cross2_days = Math.ceil(Math.max(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / speed);
-    if (ship_dist >= semiMinor && ship_dist <= semiMajor) {
-        cross1_days = 0;
-    }
-    let planet_orbit = orbitPeriod(planet);
-    let planet_speed = 360 / planet_orbit;
-    // `i` counts flight days from where the ship is now, but the planet has also been moving through
-    // whatever the ship spent getting here, so the angle is wound by elapsed as well.
-    let planet_degree = orbitAngle(planet, elapsed + cross1_days);
-    for (let i = cross1_days; i <= cross2_days; i++) {
-        // orbitPoint rather than open-coded trig, so the landing point is on the same 3D orbit the
-        // body travels and the map draws.
-        let pt = orbitPoint(planet, planet_degree);
-        if (dist3(startingPosition, pt) / speed <= i) {
-            return pt;
-        }
-        planet_degree = (planet_degree + planet_speed) % 360;
-    }
-    return genXYZcoord(planet);
 }
 
 // Whether the syndicate is operating at all
@@ -11378,7 +9386,7 @@ export function syndicate(region,extra){
         let overkill = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (!ship.inTransit && ship.location.name === region && ship.fueled){
+                if (shipDockedAt(ship) === region && ship.fueled){
                     let rating = shipAttackPower(ship);
                     patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                     sensor += sensorRange(ship);
@@ -11425,73 +9433,15 @@ export function syndicate(region,extra){
     return 1;
 }
 
-export function sensorRange(s){
-    let hf = 1;
-    switch (s.class){
-        case 'corvette':
-        case 'frigate':
-            hf = 2;
-            break;
-        case 'destroyer':
-        case 'cruiser':
-        case 'corsair':
-            hf = 1.5;
-            break;
-        case 'explorer':
-            hf = 5;
-            break;
-        case 'freighter':
-            hf = 0.5;
-            break;
-        default:
-            hf = 1;
-            break;
-    }
-    switch (s.sensor){
-        case 'visual':
-            return improvedSensors() ? sensorUpgrade.passiveRange : 1;
-        case 'radar':
-            return 10 * hf;
-        case 'lidar':
-            return 18 * hf;
-        case 'quantum':
-            return 32 * hf;
-    }
-}
-
-// Improved Sensors values used by ship sensor calculations.
-export const sensorUpgrade = {
-    powerCut: 0.25,     // Share of sensor power draw removed.
-    passiveRange: 5,    // Passive Radar reach in Gm; visual sightings reach 1.
-    stealth: 0.5        // Sensor-range multiplier against stealth hulls, up from sWarfare.stealth.
-};
-
-export function improvedSensors(){
-    return global.tech['syard_sensor'] >= 5 ? true : false;
-}
-
-// Return a ship-part locale key, including the Passive Radar upgrade.
-export function shipPartKey(part, val){
-    return part === 'sensor' && val === 'visual' && improvedSensors() ? 'outer_shipyard_sensor_passive' : `outer_shipyard_${part}_${val}`;
-}
-
 // Return the sensor-range multiplier against a target.
 export function sensorStealth(foe){
     const stealth = foe ? (foe.stealth || 1) : sWarfare.stealth;
     return stealth < 1 && improvedSensors() ? Math.max(stealth, sensorUpgrade.stealth) : stealth;
 }
 
-// Sensor ratings are gigameters; the map works in AU. A quantum set on a frigate reads 64 Gm, which is a shade over 0.42 AU
-export const GM_PER_AU = 149.5978707;
-
-// A hull's sensor reach in map units.
-export function sensorRangeAU(ship){
-    return (sensorRange(ship) || 0) / GM_PER_AU;
-}
-
 // Whether an enemy hull is currently detected, by anything of yours that can see it.
 export function foeDetected(foe){
-    if (!foe || !foe.location || !foe.location.position){ return false; }
+    if (!shipPosition(foe)){ return false; }
     return sensorContact(foe) || detectorContact(foe);
 }
 
@@ -11500,11 +9450,12 @@ export function foeDetected(foe){
 function sensorContact(foe){
     // Sector Command watches from Jupiter by the same rules as a ship parked there.
     const station = sectorCommandGuard('spc_gas');
-    if (station && dist3(station.location.position, foe.location.position) <= sensorRangeAU(station) * sensorStealth(foe)){ return true; }
+    if (station && dist3(shipPosition(station), shipPosition(foe)) <= sensorRangeAU(station) * sensorStealth(foe)){ return true; }
     if (!global.space['shipyard'] || !Array.isArray(global.space.shipyard['ships'])){ return false; }
     for (let ship of global.space.shipyard.ships){
-        if (!ship.location || !ship.location.position){ continue; }
-        if (dist3(ship.location.position, foe.location.position) <= sensorRangeAU(ship) * sensorStealth(foe)){ return true; }
+        const at = shipPosition(ship);
+        if (!at){ continue; }
+        if (dist3(at, shipPosition(foe)) <= sensorRangeAU(ship) * sensorStealth(foe)){ return true; }
     }
     return false;
 }
@@ -11535,8 +9486,7 @@ function sectorCommandGuard(where){
         name: loc('space_gas_sector_command_title'),
         station: true,
         fire: where === 'spc_gas' ? 1 : sWarfare.commandMoonFire,
-        inTransit: false,
-        location: { name: 'spc_gas', position: genXYZcoord('spc_gas') }
+        ...dockedFields('spc_gas', genXYZcoord('spc_gas'))
     });
     Object.defineProperty(hull, 'damage', {
         get(){ return command.damage; },
@@ -11631,20 +9581,18 @@ function detectorContact(foe){
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
-        if (dist3(genXYZcoord(sites[site].map), foe.location.position) <= detectorReach(foe,sites[site])){ return true; }
+        if (dist3(genXYZcoord(sites[site].map), shipPosition(foe)) <= detectorReach(foe,sites[site])){ return true; }
     }
     return false;
 }
 
-// Whether one active detector holds both a fleet and a corsair, and can hand the contact over. An
-// array only talks to what it can reach, so a corsair picked up over Ceres is no use to a fleet out
-// past Pluto — both have to be inside the same bubble.
+// Return whether one active detector reaches both the fleet and corsair.
 function detectorCue(at, foe){
     const sites = detectorSites();
     for (const site of Object.keys(sites)){
         if (!detectorOn(sites[site])){ continue; }
         const post = genXYZcoord(sites[site].map);
-        if (dist3(post, foe.location.position) <= detectorReach(foe,sites[site]) && dist3(post, at) <= sWarfare.detectorRange){ return true; }
+        if (dist3(post, shipPosition(foe)) <= detectorReach(foe,sites[site]) && dist3(post, at) <= sWarfare.detectorRange){ return true; }
     }
     return false;
 }
@@ -11797,39 +9745,6 @@ export function erisWar(){
     }
 }
 
-// The star a ship should be drawn relative to, as absolute Sun-frame coords.
-export function shipRefStar(ship){
-    if (!ship.inTransit)
-        return locSystem(ship.location.name);
-
-    let originStar = nearestStar(ship.origin.position || ship.location.position);
-    let destStar = nearestStar(ship.destination.position || ship.location.position);
-    if (originStar === destStar){ return genXYZcoord(originStar); }
-    let dO = dist3(ship.location.position, genXYZcoord(originStar));
-    let dD = dist3(ship.location.position, genXYZcoord(destStar));
-    return genXYZcoord(dO <= dD ? originStar : destStar);
-}
-
-// - Wormhole / Jump Gate Network
-const wormholeSpeedMult = 125000;
-const jumpGates = {
-    spc_sun_gate: {
-        system: 'sun',
-        location: 'spc_sun_gate',
-        active(){ return global.tech['shadow'] || global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
-    },
-    tau_home_gate: {
-        system: 'tauceti',
-        location: 'tau_home',
-        active(){ return global.tech['shadow'] || global.tech['resettle'] && global.tech.resettle >= 3 ? true : false; }
-    }
-};
-// Directed wormhole links. Two entries = a two-way wormhole; a single entry = a one-way gate.
-const jumpLinks = [
-    { from: 'spc_sun_gate', to: 'tau_home_gate' },
-    { from: 'tau_home_gate', to: 'spc_sun_gate' }
-];
-
 // Which star system a location belongs to.
 export function tempCoord(locationName){
     let temps = global.race['tempCoordinates'];
@@ -11899,7 +9814,7 @@ export function moveTempCoordinates(days = 0.2){
 }
 
 // The system a temp point belongs to.
-function tempSystem(entry){
+export function tempSystem(entry){
     // A point riding a body belongs to whatever system that body does, whatever `s` was recorded as.
     let parent = tempParent(entry);
     if (parent){
@@ -11910,243 +9825,6 @@ function tempSystem(entry){
     if (!body || entry.s === 'spc_sun'){ return 'sun'; }
     if (body.star){ return body.star; }
     return body.startype ? entry.s : 'sun';
-}
-
-function locSystem(locationName){
-    let temp = tempCoord(locationName);
-    if (temp){ return tempSystem(temp); }
-    if (locationName === 'tauceti'){ return 'tauceti'; }
-    locationName = resolveBody(locationName);
-    return starData[locationName] && starData[locationName].star ? starData[locationName].star : 'sun';
-}
-
-// Display name of the star a location orbits.
-function locSystemName(locationName){
-    // Temp points need no special case: their `s` is a table key, so locSystem resolves them to the
-    // same system keys everything else uses and the label lookup below covers them.
-    let sys = locSystem(locationName);
-    if (locationName === sys){ return ''; }
-    let star = sys === 'sun' ? starData.spc_sun : starData[sys];
-    return star && star.label ? star.label : '';
-}
-
-// Find an active wormhole route (series of gate locations if any) connecting fromLoc's system to toLoc's system,
-// or null when cannot find a path.
-function findWormholeRoute(fromLoc, toLoc){
-    let fromSys = locSystem(fromLoc);
-    let toSys = locSystem(toLoc);
-    if (fromSys === toSys){ 
-        // Travel directly to location, no gates involved
-        return [{
-            location: toLoc,
-            inGate: false
-        }];
-    }
-    let curSys;
-
-    let systemGateLinks = {};
-    jumpLinks.forEach(link => {
-        let from = jumpGates[link.from];
-        if (!from.active())
-            return;
-        
-        let to = jumpGates[link.to];
-        if (!to.active())
-            return;
-
-        if (!systemGateLinks.hasOwnProperty(from.system)){
-            systemGateLinks[from.system] = [];
-        }
-        systemGateLinks[from.system].push({from: from, to: to});
-    });
-
-
-    let toPos = genXYZcoord(toLoc);
-
-    // Algorithm based on wikipedia pseudocode. Note that euclidean distance is a consistent heuristic
-    let open_set = [fromSys];
-    let came_from = {};
-    let g_score = {};
-    g_score[fromSys] = 0;
-
-    let f_score = {};
-    f_score[fromSys] = dist3(genXYZcoord(fromLoc), toPos);
-
-    let total_path = [];
-
-    while (open_set.length > 0){
-        curSys = open_set.shift();
-        let curStar = (curSys === 'sun' ? 'spc_sun' : curSys);
-        let curPos = genXYZcoord(curStar);
-
-        
-        if (curSys === toSys) {
-            while (curSys !== fromSys){
-                total_path.unshift(curSys); 
-                curSys = came_from[curSys];
-            }
-            break;
-        }
-
-        if (systemGateLinks[curSys]){
-            systemGateLinks[curSys].forEach(link => {
-                let exitSys = link.to.system;
-                let exitStar = (exitSys === 'sun' ? 'spc_sun' : exitSys);
-                let exitPos = genXYZcoord(exitStar);
-
-                let tentative_g_score = g_score[curSys] + dist3(curPos, exitPos);
-                if (!f_score.hasOwnProperty(exitSys) || tentative_g_score < f_score[exitSys]) {
-                    came_from[exitSys] = curSys;
-                    g_score[exitSys] = tentative_g_score;
-                    f_score[exitSys] = tentative_g_score + dist3(exitPos, toPos);
-
-                    if (!open_set.includes(exitSys)) {
-                        open_set.push(exitSys);
-                        open_set.sort((a, b) => f_score[a] - f_score[b]);
-                    }
-                }
-            });
-        }
-    }
-
-    if (total_path.length === 0){
-        // No gate route to that system, which is not the same as no way there
-        let bestVal = Infinity;
-        let bestSys = null;
-
-        Object.entries(f_score).forEach(([sys, val]) => {
-            if (val < bestVal){
-                bestVal = val;
-                bestSys = sys;
-            }
-        });
-
-        if (bestVal === Infinity)
-            return null;
-
-        let curSys = bestSys;
-        while (curSys !== fromSys){
-            total_path.unshift(curSys);
-            curSys = came_from[curSys];
-        }
-    }
-     
-    // Gate path recorded in total_path
-    let route = [];
-    curSys = fromSys;
-    let curLoc = fromLoc;
-    total_path.forEach(system => {
-        let link = systemGateLinks[curSys].filter(link => link.to.system === system)[0];
-        route.push({
-            location: link.from.location,
-            inGate: false
-        });
-        route.push({
-            location: link.to.location,
-            inGate: true
-        });
-
-        curSys = system;
-    });
-    route.push({
-        location: toLoc,
-        inGate: false
-    });
-    return route;
-}
-
-// Plan a ship's trip to `locationName`.
-function planShipTrip(ship, locationName){
-    if (!ship.inTransit && ship.location.name === locationName) {
-        return false;
-    }
-
-    let speed = shipSpeed(ship) / 225;
-
-    // Check if the ship is currently travelling through a gate - it needs to exit first
-    // before being able to change course
-    let inGate = (ship.inTransit && ship.path[0].inGate);
-
-    let path = [];
-    let currentPosition = ship.location.position;
-    let currentTime = 0;
-    let route;
-    if (inGate){
-        path.push(ship.path[0]);
-        currentPosition = ship.path[0].destination.position;
-        currentTime = ship.timeToNextStep;
-
-        route = findWormholeRoute(ship.path[0].destination.name, locationName);
-    }
-    else if (ship.inTransit){
-        // Find path wrt current star. findWormholeRoute only cares about the system the location is in.
-        let currentLocation = nearestStar(ship.location.position);
-        route = findWormholeRoute(currentLocation, locationName);
-    }
-    else{
-        route = findWormholeRoute(ship.location.name, locationName);
-    }
-
-    if (!route)
-        return false;
-
-    route.forEach(step => {
-        let currentSpeed = speed;
-        if (step.inGate)
-            currentSpeed *= wormholeSpeedMult;
-
-        let nextPosition = calcLandingPoint(currentPosition, step.location, currentSpeed, currentTime);
-
-        // Skip stellar detours for wormhole legs.
-        let waypoint = step.inGate ? false : starDetour(currentPosition, nextPosition);
-        if (waypoint){
-            // Recalculate the intercept after adding a stellar detour.
-            let delay = 0;
-            for (let i = 0; i < STAR_DETOUR_STEPS && waypoint; i++){
-                let bent = (dist3(currentPosition, waypoint) + dist3(waypoint, nextPosition) - dist3(currentPosition, nextPosition)) / currentSpeed;
-                let settled = Math.abs(bent - delay) < STAR_DETOUR_TOL;
-                delay = bent;
-                if (settled){ break; }
-                nextPosition = calcLandingPoint(currentPosition, step.location, currentSpeed, currentTime + delay);
-                waypoint = starDetour(currentPosition, nextPosition);
-            }
-        }
-
-        // Include stellar-detour distance in travel time and fuel use.
-        if (waypoint){
-            let legTime = dist3(currentPosition, waypoint) / currentSpeed;
-            path.push({
-                destination: {
-                    name: '',
-                    position: waypoint
-                },
-                totalTime: legTime,
-                inGate: false,
-                wp: true
-            });
-            currentPosition = waypoint;
-            currentTime += legTime;
-        }
-
-        let time = dist3(currentPosition, nextPosition) / currentSpeed;
-
-        path.push({
-            destination: {
-                name: step.location,
-                position: nextPosition
-            },
-            totalTime: time,
-            inGate: step.inGate ? true : false
-        });
-
-        currentPosition = nextPosition;
-        currentTime += time;
-    });
-
-    return {
-        path: path,
-        totalTime: currentTime
-    };
 }
 
 export function tpStorageMultiplier(type,heavy,wiki){
@@ -12872,56 +10550,6 @@ function solarModal(){
     buildSolarMap(box);
 }
 
-// Populate the ship dispatch modal with a button for each valid destination.
-// Active temporary coordinates, as destinations.
-function tempDestinations(ship){
-    let temps = global.race['tempCoordinates'];
-    if (!temps){ return []; }
-    return Object.keys(temps)
-        .filter(key => temps[key] && temps[key].a && (ship.inTransit ? ship.destination.name : ship.location.name) !== key)
-        .map(key => ({ region: key, name: temps[key].n }));
-}
-
-// Return whether ships can reach a region.
-export function regionReachable(region){
-    const info = (spaceTech()[region] || tauCetiModules[region] || {}).info;
-    if (!info || typeof info.nav !== 'function' || !info.nav()){ return false; }
-    if (global.race['orbit_decayed'] && region === 'spc_moon'){ return false; }
-    return true;
-}
-
-// Everywhere a single ship could be sent.
-function shipDestinations(ship){
-    const spaceRegions = spaceTech();
-    let dests = [];
-    if (ship.class === 'explorer'){
-        if (ship.location.name !== 'tauceti'){
-            dests.push({ region: 'tauceti', name: loc('tech_era_tauceti') });
-        }
-        return dests.concat(tempDestinations(ship));
-    }
-
-    let currentShipLocation = ship.inTransit ? ship.destination.name : ship.location.name;
-
-    Object.keys(spaceRegions).forEach(function(region){
-        if (currentShipLocation === region || !regionReachable(region)){ return; }
-        if (region === 'spc_sun_gate'){
-            let name = typeof spaceRegions.spc_sun_gate.info.desc === 'string' ? spaceRegions.spc_sun_gate.info.desc : spaceRegions.spc_sun_gate.info.desc();
-            dests.push({ region: region, name: name });
-        }
-        else {
-            let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-            dests.push({ region: region, name: name });
-        }
-    });
-    Object.keys(tauCetiModules).forEach(function(region){
-        if (currentShipLocation === region || !regionReachable(region)){ return; }
-        let name = typeof tauCetiModules[region].info.name === 'string' ? tauCetiModules[region].info.name : tauCetiModules[region].info.name();
-        dests.push({ region: region, name: name });
-    });
-    return dests.concat(tempDestinations(ship));
-}
-
 function shipDispatchModal(id, modal){
     let ship = global.space.shipyard.ships[id];
     if (!ship){ return; }
@@ -12992,7 +10620,7 @@ function shipDispatchModal(id, modal){
             if (!trip)
                 return;
 
-            let days = trip ? Math.round(trip.totalTime) : 0;
+            let days = trip ? Math.round(tripDays(trip)) : 0;
             let fuelReady = group.every(s => shipCanMakeTrip(s, trip));
             let sysName = showSystem ? locSystemName(d.region) : '';
             let sys = sysName ? `<span class="dispatchSystem has-text-info">${sysName}</span>` : ``;
@@ -13016,19 +10644,19 @@ function shipDispatchModal(id, modal){
             $('#modalBox').append(box);
 
             // Return leg duration, or false when unreachable.
-            let legDays = function(from, to){
+            let patrolLegDays = function(from, to){
                 let days = tradeLegDays(group, from, to);
                 return isFinite(days) ? Math.round(days) : false;
             };
             let legText = function(from, to){
-                let days = legDays(from, to);
+                let days = patrolLegDays(from, to);
                 return days === false
                     ? `<span class="has-text-danger">${loc('outer_shipyard_patrol_unreachable')}</span>`
                     : `<span class="has-text-caution">${loc('transit_time',[days])}</span>`;
             };
 
             // Anchor the route at the fleet's current or destination region.
-            let anchor = group[0].inTransit ? group[0].destination.name : group[0].location.name;
+            let anchor = shipBound(group[0]);
 
             // Reprice destinations from the current planned stop.
             let refreshDests = function(){
@@ -13045,7 +10673,7 @@ function shipDispatchModal(id, modal){
                         text = loc('outer_shipyard_patrol_last');
                     }
                     else {
-                        let days = legDays(from, dest.region);
+                        let days = patrolLegDays(from, dest.region);
                         ok = days !== false;
                         text = ok ? loc('transit_time',[days]) : loc('outer_shipyard_patrol_unreachable');
                     }
@@ -13093,7 +10721,7 @@ function shipDispatchModal(id, modal){
                     if (route.length > 1){
                         let total = 0, whole = true;
                         for (let i=0; i<route.length; i++){
-                            let days = legDays(route[i], route[(i + 1) % route.length]);
+                            let days = patrolLegDays(route[i], route[(i + 1) % route.length]);
                             if (days === false){ whole = false; break; }
                             total += days;
                         }
@@ -13191,9 +10819,7 @@ export function battleLogModal(){
     });
 }
 
-// Who a ship could serve under: a fleet of its own, or any flagship parked alongside with the command points to
-// spare for it.
-// Render the ship refit modal and recalculate costs for each plan change.
+// Render the ship-refit modal and update costs for each plan change.
 function shipRefitModal(id, modal){
     let ship = global.space.shipyard.ships[id];
     if (!ship){ return; }
@@ -13277,7 +10903,7 @@ function shipRefitModal(id, modal){
         // Render refit costs using standard resource affordability styling.
         let costs = refitCosts(ship, plan);
         // Charge refits to the ship's docked shipyard world.
-        let pool = actionPool({ id: 'tp-refit', supply(){ return ship.location.name; } });
+        let pool = actionPool({ id: 'tp-refit', supply(){ return shipPort(ship); } });
         let bill = $(`<div class="costList refitCost"${pool ? ` data-pool="${pool}"` : ``}></div>`);
         let res_list = Object.keys(costs).sort(function(a,b){
             return a === 'Money' ? -1 : b === 'Money' ? 1 : 0;
@@ -13367,465 +10993,6 @@ function fleetJoinModal(id, modal){
     }
 }
 
-// Fleets
-const fleetHulls = {
-    corvette:      { cmd: 1,  cost: 1,  buff: 0,    soak: 0,   speed: 0.1 },
-    frigate:       { cmd: 2,  cost: 2,  buff: 0,    soak: 0,   speed: 0.1 },
-    destroyer:     { cmd: 5,  cost: 3,  buff: 0.05, soak: 0.1, speed: 0 },
-    cruiser:       { cmd: 10, cost: 5,  buff: 0.1,  soak: 0.2, speed: 0 },
-    battlecruiser: { cmd: 15, cost: 8,  buff: 0.1,  soak: 0.2, speed: 0 },
-    dreadnought:   { cmd: 20, cost: 12, buff: 0.1,  soak: 0.2, speed: 0 },
-    freighter:      { cmd: 0,  cost: 1,  buff: 0,    soak: 0,   speed: 0 },
-    // Supply Ships cannot lead battle groups.
-    supply_ship:    { cmd: 0,  cost: 2,  buff: 0,    soak: 0,   speed: 0 }
-};
-
-// The command table, so the wiki documents the live numbers rather than repeating them. Read-only by
-// convention — callers should not mutate what comes back, they should change fleetHulls above.
-export function fleetVars(){
-    return { hulls: fleetHulls };
-}
-
-// Command points a hull has to spend when it leads, and what it takes up when it follows. Both are 0
-// for a hull that does not fleet at all.
-export function fleetCommandRating(ship){
-    return ship && fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].cmd : 0;
-}
-export function fleetCommandCost(ship){
-    return ship && fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].cost : 0;
-}
-
-function allShips(){
-    return global.space['shipyard'] && global.space.shipyard['ships'] ? global.space.shipyard.ships : [];
-}
-
-// The ship leading fleet `fid`, or false when it no longer exists.
-function fleetFlagship(fid){
-    if (!fid){ return false; }
-    return allShips().find(s => s.flag && s.fid === fid) || false;
-}
-
-// Every ship flying under a fleet id, flagship included.
-function fleetMembers(fid){
-    return fid ? allShips().filter(s => s.fid === fid) : [];
-}
-
-// Ships serving under a flagship, not counting the flagship itself.
-export function fleetEscortCount(fid){
-    return fleetMembers(fid).filter(s => !s.flag).length;
-}
-
-// Command points a fleet has spent and has left. The flagship is free, so only the escort counts.
-export function fleetCommandUsed(fid){
-    return fleetMembers(fid).reduce((t,s) => t + (s.flag ? 0 : fleetCommandCost(s)),0);
-}
-export function fleetCommandFree(fid){
-    let flag = fleetFlagship(fid);
-    return flag ? fleetCommandRating(flag) - fleetCommandUsed(fid) : 0;
-}
-
-export function shipFleet(ship){
-    if (!global.tech['syard_fleet'] || !ship || !ship.fid){ return []; }
-    return allShips().filter(s => s.fid === ship.fid && sameStation(s,ship));
-}
-
-// Whether two ships are in the same place and in the same state of motion — both sitting at the same location, or
-// both crossing to the same one and due at the same time.
-function sameStation(a,b){
-    if (!a || !b || a.inTransit !== b.inTransit){ return false; }
-    return a.inTransit
-        ? a.destination.name === b.destination.name && a.timeToNextStep === b.timeToNextStep
-        : a.location.name === b.location.name;
-}
-
-// The flagship a ship answers to, which is itself when it is the one leading. False when it flies alone.
-export function shipFlagship(ship){
-    if (!global.tech['syard_fleet'] || !ship || !ship.fid){ return false; }
-    return fleetFlagship(ship.fid);
-}
-
-// Extra firepower an escort gets from being led. A flagship does not steady itself.
-function fleetDamageBonus(ship){
-    let flag = shipFlagship(ship);
-    if (!flag || flag === ship || ship.flag){ return 0; }
-    return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].buff : 0;
-}
-
-// Share of an incoming hit a flagship shrugs off. Only the ship in command benefits, and only while it
-// actually has an escort to screen it — a flagship leading nobody is just a ship, however it is flagged.
-function fleetDamageSoak(ship){
-    if (!ship || !ship.flag || !shipFlagship(ship) || fleetEscortCount(ship.fid) === 0){ return 0; }
-    return fleetHulls.hasOwnProperty(ship.class) ? fleetHulls[ship.class].soak : 0;
-}
-
-// Speed a fleet gains from being led by a light hull. Flagship and escort alike — the whole group
-// travels as fast as the arrangement lets it.
-function fleetSpeedBonus(ship){
-    let flag = shipFlagship(ship);
-    // A group of one is not a group: a light hull flying alone has nobody to set the pace for.
-    if (!flag || fleetEscortCount(flag.fid) === 0){ return 0; }
-    return fleetHulls.hasOwnProperty(flag.class) ? fleetHulls[flag.class].speed : 0;
-}
-
-// A ship can be shuffled in or out of a fleet only while it is actually sitting somewhere rather than
-// crossing between places, and only if its hull is one that fleets at all.
-function fleetEligible(ship){
-    return global.tech['syard_fleet'] && ship && !ship.inTransit && fleetHulls.hasOwnProperty(ship.class) ? true : false;
-}
-
-// Put a ship in charge of a fleet of its own.
-export function formFleet(ship){
-    if (!fleetEligible(ship) || ship.fid || fleetCommandRating(ship) <= 0){ return false; }
-    if (!global.space.shipyard['fid']){ global.space.shipyard['fid'] = 0; }
-    ship.fid = ++global.space.shipyard.fid;
-    ship.flag = true;
-    return true;
-}
-
-// Put a ship under a flagship, if that fleet has the points left to take it on.
-export function joinFleet(ship,fid){
-    if (!fleetEligible(ship) || ship.fid){ return false; }
-    let flag = fleetFlagship(fid);
-    if (!flag || flag === ship || !sameStation(flag,ship)){ return false; }
-    let cost = fleetCommandCost(ship);
-    if (cost <= 0 || cost > fleetCommandFree(fid)){ return false; }
-    ship.fid = fid;
-    delete ship.flag;
-    return true;
-}
-
-// Take a ship out of its fleet. Standing the flagship down releases everyone with it — a fleet is the
-// ship holding it together, and without that there is nothing left to answer to.
-export function leaveFleet(ship){
-    if (!ship || !ship.fid){ return false; }
-    if (ship.flag){
-        fleetMembers(ship.fid).forEach(function(s){ delete s.fid; delete s.flag; });
-        return true;
-    }
-    delete ship.fid;
-    delete ship.flag;
-    return true;
-}
-
-// Flagships sitting where this ship is whose fleets have the points to take it on.
-export function fleetsFor(ship){
-    if (!fleetEligible(ship) || ship.fid){ return []; }
-    let cost = fleetCommandCost(ship);
-    if (cost <= 0){ return []; }
-    return allShips().filter(s =>
-        s.flag && s !== ship && sameStation(s,ship) && fleetCommandFree(s.fid) >= cost
-    );
-}
-
-// Fleet check
-function fleetWorthForming(ship){
-    return fleetEligible(ship) && !ship.fid && fleetCommandRating(ship) > 0 ? true : false;
-}
-
-// A fleet keeps pace with its slowest ship, so that is the one every trip is planned on.
-function fleetPace(group){
-    if (!group || group.length === 0){ return false; }
-    return group.reduce((a,b) => shipSpeed(a) <= shipSpeed(b) ? a : b);
-}
-
-// Where a damaged ship can be put back together. `avail` is called whenever a ship needs somewhere to go.
-const repairStations = {
-    // Before the resettlement the shipyard itself does the repairs. Once it is gone the repair yard
-    // built in its place takes over, and unlike the shipyard it has to actually be running.
-    spc_dwarf: { avail(){
-        return global.tech['resettle']
-            ? (global.space['repair_yard'] && global.space.repair_yard.count > 0 && p_on['repair_yard'] ? true : false)
-            : (global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false);
-    } },
-    tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } }
-};
-
-// Docking is about the place, not whether it is currently staffed, so this covers every station whether
-// or not its condition passes right now.
-const shipyardLocations = Object.keys(repairStations);
-
-// Worlds a Repair Ship is currently keeping station over. It has to be parked at a body — a tender
-// holding position in open space has nothing to work alongside — and it adds nothing at a world that
-// already has a yard of its own.
-export function repairShipYards(){
-    const ships = global.space.shipyard?.ships || [];
-    const yards = [];
-    for (const ship of ships){
-        if (!supplyShipMode(ship,'repair_ship') || ship.inTransit || !ship.location){ continue; }
-        const at = ship.location.name;
-        // Repair Ships require a named celestial location.
-        if (!at || !starData[at] || shipyardLocations.includes(at) || yards.includes(at)){ continue; }
-        yards.push(at);
-    }
-    return yards;
-}
-
-// The yards that could take a ship in right now. Read fresh every time rather than cached: a station's
-// condition turns on whether it has been built, and that changes as the campaign runs.
-function activeRepairYards(){
-    return shipyardLocations.filter(function(yard){
-        try { return repairStations[yard].avail() ? true : false; }
-        catch (e){ return false; }
-    }).concat(repairShipYards());
-}
-// Hull percentage a ship must have before it is cleared to leave for another destination.
-const minHullToLaunch = 75;
-
-// Docked at a yard, as opposed to out in the field or crossing to one. Ships here are in dry dock:
-// safe from the wear that finds them everywhere else, and repaired at double rate.
-export function atShipyard(ship){
-    if (!ship)
-        return false;
-
-    if (ship.inTransit){ return false; }
-    // Treat parked Repair Ships as repair yards, not shipbuilding yards.
-    return shipyardLocations.includes(ship.location.name) || repairShipYards().includes(ship.location.name);
-}
-
-// A hull below minHullToLaunch% is not spaceworthy — the threshold the yard and the standing orders
-// both measure a battered ship against.
-export function shipSpaceworthy(ship){
-    return ship ? 100 - ship.damage >= minHullToLaunch : false;
-}
-
-// Whether a ship is in good enough condition to be sent somewhere
-export function shipCanLaunch(ship){
-    return ship ? shipSpaceworthy(ship) || !atShipyard(ship) : false;
-}
-
-// Fleet Tactical Command
-
-// Range each percentage option accepts. One definition drives the input's own limits, the clamp behind
-// it and the range shown in its label, so they cannot disagree.
-export const fleetCmdRange = {
-    flee: { min: 0, max: 50 },
-    retHull: { min: 75, max: 100 }
-};
-
-export function fleetCmd(){
-    if (!global.settings['fleetCmd']){
-        global.settings['fleetCmd'] = { flee: 25, ret: true, retHull: 100, quiet: false, zquiet: false };
-    }
-    let cfg = global.settings.fleetCmd;
-    // Backfill anything added after a save was written, so a new option is bound to a real value rather
-    // than to undefined the first time the panel is drawn.
-    if (typeof cfg.quiet === 'undefined'){ cfg['quiet'] = false; }
-    if (typeof cfg.zquiet === 'undefined'){ cfg['zquiet'] = false; }
-    // Pull anything saved under an older, wider range back inside the current one.
-    Object.keys(fleetCmdRange).forEach(function(key){
-        let val = Math.round(Number(cfg[key]));
-        if (isNaN(val)){ val = fleetCmdRange[key].min; }
-        cfg[key] = Math.max(fleetCmdRange[key].min,Math.min(fleetCmdRange[key].max,val));
-    });
-    return cfg;
-}
-
-// The panel and the standing orders it configures come with Fleet Command: the logistics that let ships
-// move as a group are the same ones that let them be given orders to follow on their own.
-export function fleetCmdUnlocked(){
-    return global.tech['syard_fleet'] ? true : false;
-}
-
-// The station a ship runs to: of those currently active, whichever it can reach soonest from where it is.
-function repairYard(ship){
-    let best = false;
-    let bestDays = false;
-    Object.keys(repairStations).forEach(function(locationName){
-        if (!ship.inTransit && ship.location.name === locationName){ return; }
-        let active = false;
-        try { active = repairStations[locationName].avail(); }
-        catch (e){ active = false; }
-        if (!active){ return; }
-
-        let trip = planShipTrip(ship,locationName);
-        if (!trip || typeof trip.totalTime !== 'number'){ return; }
-        if (bestDays === false || trip.totalTime < bestDays){
-            bestDays = trip.totalTime;
-            best = locationName;
-        }
-    });
-    return best;
-}
-
-// Move a ship without any of the checks that apply to an order the player gives. A ship running for
-// repairs is by definition too damaged to launch normally.
-function orderShipTo(ship,locationName){
-    if (!ship || (!ship.inTransit && locationName === ship.location.name) || (ship.inTransit && ship.destination.name === locationName)){ return false; }
-    if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
-    initializeShipTrip(ship, locationName);
-    return true;
-}
-
-// The same, for a whole fleet.
-function orderFleetTo(group,locationName){
-    if (!group || group.length === 0){ return false; }
-    let lead = group[0];
-    if ((!lead.inTransit && locationName === lead.location.name) || (lead.inTransit && lead.destination.name === locationName)){ return false; }
-    // Planned once on the slowest hull and handed to every ship, so the whole group flies the same legs
-    // on the same schedule instead of each working out its own.
-    let trip = planShipTrip(fleetPace(group),locationName);
-    if (!trip){ return false; }
-    group.forEach(function(ship){
-        if (!shipManned(ship)){ global.civic.garrison.crew += shipCrewSize(ship); }
-        initializeShipTrip(ship, locationName, trip);
-    });
-    return true;
-}
-
-// Ship return to fleet check
-function rejoinTarget(ship){
-    if (!ship || !ship['rfid']){ return false; }
-    let flag = fleetFlagship(ship.rfid);
-    if (!flag || flag === ship){ return false; }
-    // A name, never the location object: what comes back is handed straight to orderShipTo as a
-    // destination. A fleet already under way is making for somewhere, and that is where to catch it.
-    return flag.inTransit ? flag.destination.name : flag.location.name;
-}
-
-// A ship that broke off from a fleet for repairs falls back in with it the moment the two are in the same place again.
-function rejoinFleet(ship,cfg){
-    if (!ship || !ship['rfid']){ return false; }
-    if (ship.fid || !fleetFlagship(ship.rfid)){
-        delete ship.rfid;
-        return false;
-    }
-    // Not alongside it yet, or the berth is taken for now — try again another day.
-    if (!joinFleet(ship,ship.rfid)){ return false; }
-    delete ship.rfid;
-    if (!cfg.quiet){
-        let flag = shipFlagship(ship);
-        messageQueue(loc('fleet_cmd_rejoin',[ship.name,flag ? flag.name : ``]),'success',false,['combat']);
-    }
-    return true;
-}
-
-// One pass of the standing orders over the whole fleet.
-export function fleetCmdDay(){
-    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return; }
-    let cfg = fleetCmd();
-    let moved = false;
-
-    // A fleet is dealt with as a unit, through its flagship. An escort still flying with one takes no
-    // orders of its own beyond breaking off when it is shot up, so the two never contradict each other.
-    global.space.shipyard.ships.forEach(function(ship){
-        let hull = 100 - ship.damage;
-        // Only a flagship that still leads something needs to speak for a group.
-        let fleet = ship.flag && shipFlagship(ship) ? shipFleet(ship) : [ship];
-
-        // Disengage: a hull that has fallen past the line breaks off and runs for a repair yard.
-        if (!ship.inTransit && !atShipyard(ship) && hull < cfg.flee){
-            let yard = repairYard(ship);
-            if (yard && yard !== ship.location.name){
-                if (fleet.length > 1){
-                    // Where each ship was is what it comes back to, unless it was already limping home
-                    // from somewhere else, in which case that original posting is the one worth keeping.
-                    fleet.forEach(function(s){ if (!s['ret']){ s['ret'] = s.location.name; } });
-                    if (orderFleetTo(fleet,yard)){
-                        if (!cfg.quiet){
-                            messageQueue(loc('fleet_cmd_disengage_fleet',[ship.name,hull,fleet.length,regionName(yard)]),'warning',false,['combat']);
-                        }
-                        moved = true;
-                    }
-                }
-                else {
-                    if (!ship['ret']){ ship['ret'] = ship.location.name; }
-                    // Remember the fleet it was serving with, so the trip home ends where it started.
-                    if (ship.fid && !ship.flag){ ship['rfid'] = ship.fid; }
-                    leaveFleet(ship);
-                    if (orderShipTo(ship,yard)){
-                        if (!cfg.quiet){
-                            messageQueue(loc('fleet_cmd_disengage',[ship.name,hull,regionName(yard)]),'warning',false,['combat']);
-                        }
-                        moved = true;
-                    }
-                }
-            }
-            return;
-        }
-
-        // A ship that broke off on its own falls back in with its fleet as soon as the two are in the same place
-        if (ship['rfid'] && !ship.inTransit){
-            if (rejoinFleet(ship,cfg)){
-                moved = true;
-                return;
-            }
-            let chase = rejoinTarget(ship);
-            if (chase && chase !== ship.location.name && !atShipyard(ship) && shipSpaceworthy(ship) && orderShipTo(ship,chase)){
-                if (!cfg.quiet){
-                    messageQueue(loc('fleet_cmd_regroup',[ship.name,regionName(chase)]),'success',false,['combat']);
-                }
-                moved = true;
-                return;
-            }
-        }
-
-        // Return on repair: patched up and still holding a posting to go back to.
-        if (ship['ret'] && !ship.inTransit && atShipyard(ship)){
-            if (!cfg.ret){ return; }
-            if (ship.fid && !ship.flag){ return; }
-            if (fleet.some(s => 100 - s.damage < cfg.retHull)){ return; }
-            // A ship still holding a place in a fleet leaves dock making for the fleet rather than for where it was damaged. 
-            // If the fleet is gone, it falls back on its original posting.
-            let home = rejoinTarget(ship) || ship.ret;
-            if (orderFleetTo(fleet,home)){
-                fleet.forEach(function(s){ delete s.ret; });
-                if (!cfg.quiet){
-                    if (fleet.length > 1){
-                        messageQueue(loc('fleet_cmd_return_fleet',[ship.name,regionName(home),fleet.length]),'success',false,['combat']);
-                    }
-                    else {
-                        messageQueue(loc('fleet_cmd_return',[ship.name,regionName(home)]),'success',false,['combat']);
-                    }
-                }
-                moved = true;
-            }
-            return;
-        }
-
-        // Arriving back where it was posted retires the order.
-        if (ship['ret'] && !ship.inTransit && ship.location.name === ship.ret){
-            delete ship.ret;
-            moved = true;
-        }
-    });
-
-    if (moved){ drawShips(); }
-}
-
-// Sedn ships back to shipyard
-export function withdrawShips(regions,destination){
-    if (!global.space.hasOwnProperty('shipyard') || !global.space.shipyard.hasOwnProperty('ships')){ return 0; }
-    let moved = 0;
-
-    // Where a ship counts as being: on station, or on its way somewhere.
-    let posted = function(ship){
-        return regions.includes(ship.inTransit ? ship.destination.name : ship.location.name);
-    };
-    // The posting they are being pulled off no longer exists, so nothing is left to go back to.
-    let clearOrders = function(ship){
-        delete ship.ret;
-        delete ship.rfid;
-    };
-
-    global.space.shipyard.ships.forEach(function(ship){
-        if (!posted(ship) || !ship.flag || !shipFlagship(ship)){ return; }
-        let fleet = shipFleet(ship);
-        if (fleet.length <= 1){ return; }
-        fleet.forEach(clearOrders);
-        if (orderFleetTo(fleet,destination)){ moved += fleet.length; }
-    });
-
-    global.space.shipyard.ships.forEach(function(ship){
-        if (!posted(ship)){ return; }
-        if (ship.fid){ leaveFleet(ship); }
-        clearOrders(ship);
-        if (orderShipTo(ship,destination)){ moved++; }
-    });
-
-    if (moved){ drawShips(); }
-    return moved;
-}
-
 // Syndicate withdrawal from TP3 combat zones
 export function syndicateWithdrawal(){
     const abandoned = ['spc_eris','spc_triton'];
@@ -13855,49 +11022,4 @@ export function syndicateWithdrawal(){
     renderSpace();
     setPowerGrid();
     drawTech();
-}
-
-// Ships parked at a shipyard are unmanned and draw a crew on departure; anywhere else, or already under way, they are crewed.
-function shipManned(ship){
-    return ship.inTransit || !shipyardLocations.includes(ship.location.name);
-}
-
-// Send a ship to a destination region, or its whole fleet if it belongs to one.
-export function dispatchFreighter(ship, locationName){
-    if (!ship || ship.class !== 'freighter' || ship.inTransit){ return false; }
-    const id = global.space.shipyard.ships.indexOf(ship);
-    if (id < 0){ return false; }
-    sendShipTo(id, locationName);
-    return ship.inTransit;
-}
-
-function sendShipTo(id, locationName, keepRoute=false){
-    let ship = global.space.shipyard.ships[id];
-    if (!ship || (!ship.inTransit && locationName === ship.location.name) || (ship.inTransit && ship.destination.name === locationName)){ return; }
-    let group = shipFleet(ship);
-    if (!group.length){ group = [ship]; }
-
-    // A direct player order replaces any repeating logistics instruction.
-    if (!keepRoute){ clearTradeRoute(group); clearPatrol(group); }
-
-    // Nothing leaves dry dock on a badly damaged hull
-    if (group.some(s => !shipCanLaunch(s))){ return false; }
-
-    // Crew for every unmanned ship has to be on hand up front — a fleet leaves together or not at all.
-    let need = group.reduce((t,s) => t + (shipManned(s) ? 0 : shipCrewSize(s)), 0);
-    if (need > global.civic.garrison.workers - global.civic.garrison.crew){ return false; }
-
-    let trip = planShipTrip(fleetPace(group), locationName);
-    if (trip && group.every(s => shipCanMakeTrip(s, trip))) {
-        for (let s of group){
-            if (!shipManned(s)){ global.civic.garrison.crew += shipCrewSize(s); }
-            // An order from the player overrides the standing one
-            if (s['ret']){ delete s.ret; }
-            if (s['rfid']){ delete s.rfid; }
-            initializeShipTrip(s, locationName, trip);
-        }
-    }
-
-    drawShips();
-    return group.some(s => s.inTransit);
 }

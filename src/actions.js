@@ -1,11 +1,11 @@
 import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool, modalCloseButton } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, genomeScale, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool, modalCloseButton } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, citizenDeath, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount, showZoneFor } from './resources.js';
-import { loadFoundry, defineJobs, jobScale, workerScale, job_data } from './jobs.js';
+import { loadFoundry, defineJobs, jobScale, jobStack, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements, planetName } from './space.js';
@@ -3424,7 +3424,7 @@ export const actions = {
                 }
                 let fathom = fathomCheck('cath');
                 if (fathom > 0){
-                    multiplier *= 1 + (traits.curious.vars(3)[0] * fathom);
+                    multiplier *= 1 + (traits.curious.vars(1.67)[0] * fathom);
                 }
                 let sg_on = isStargateOn(wiki);
                 let num_tech_scavs_on = sg_on ? (wiki ? (global.galaxy?.scavenger?.on ?? 0) : gal_on['scavenger']) : 0;
@@ -4745,23 +4745,9 @@ export function buildTemplate(key, region){
                         warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
                     }
                     else if (global.race['parasite']){
-                        let buffer = 6;
-                        switch (traitRank('parasite')){
-                            case 0.25:
-                                buffer = 5;
-                                break;
-                            case 0.5:   
-                                buffer = 4;
-                                break;
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                                buffer = 4 - traitRank('parasite');
-                                break;
-                        }
-                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
-                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[global.race.last_assembled + buffer + 1 - global.stats.days])}</div>`;
+                        let until = parasiteAssemblyUntil();
+                        if (global.race['last_assembled'] && until >= global.stats.days){
+                            warn = `<div class="has-text-caution">${loc('city_assembly_effect_parasite',[until + 1 - global.stats.days])}</div>`;
                         }
                         else {
                             warn = `<div class="has-text-success">${loc('city_assembly_effect_parasite_ok')}</div>`;
@@ -4771,22 +4757,7 @@ export function buildTemplate(key, region){
                 },
                 action(args){
                     if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
-                        let buffer = 6;
-                        switch (traitRank('parasite')){
-                            case 0.25:
-                                buffer = 5;
-                                break;
-                            case 0.5:   
-                                buffer = 4;
-                                break;
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                                buffer = 4 - traitRank('parasite');
-                                break;
-                        }
-                        if (global.race['last_assembled'] && global.race.last_assembled + buffer >= global.stats.days){
+                        if (global.race['last_assembled'] && parasiteAssemblyUntil() >= global.stats.days){
                             return false;
                         }
                     }
@@ -5378,6 +5349,11 @@ export function buildTemplate(key, region){
             return tKey(action,tName,region);
         }
     }
+}
+
+// Return the final Parasite assembly cooldown day.
+function parasiteAssemblyUntil(){
+    return Math.floor(global.race.last_assembled + traits.parasite.vars()[2]);
 }
 
 function genus_condition(r,t){
@@ -8923,7 +8899,7 @@ function sentience(){
                     global.race['maintype'] = type;
                     setTraitRank(trait,{ set: genus_def[type].traits[trait] });
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
-                        setTraitRank(trait);
+                        setTraitRank(trait, { by: 0.25 });
                     }
                 }
                 else {
@@ -8980,7 +8956,7 @@ function sentience(){
     const date = new Date();
     if (!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17){
         if (global.race.species === 'elven'){
-            setTraitRank('slaver',{ set: 2 });
+            setTraitRank('slaver',{ set: 1.33 });
             setTraitRank('resourceful',{ set: 0.5 });
             setTraitRank('small',{ set: 0.25 });
         }
@@ -8995,17 +8971,17 @@ function sentience(){
             setTraitRank('blissful',{ set: 0.25 });
         }
         else if (global.race.species === 'wendigo'){
-            setTraitRank('immoral',{ set: 3 });
+            setTraitRank('immoral',{ set: 1.67 });
             setTraitRank('cannibalize',{ set: 0.5 });
             setTraitRank('claws',{ set: 0.25 });
         }
         else if (global.race.species === 'yeti'){
-            setTraitRank('scavenger',{ set: 3 });
+            setTraitRank('scavenger',{ set: 1.67 });
             setTraitRank('regenerative',{ set: 0.5 });
             setTraitRank('musical',{ set: 0.25 });
         }
         else if (global.race.species === 'entish'){
-            setTraitRank('photosynth',{ set: 3 });
+            setTraitRank('photosynth',{ set: 1.67 });
             setTraitRank('optimistic',{ set: 0.5 });
             setTraitRank('armored',{ set: 0.25 });
         }
@@ -9019,7 +8995,7 @@ function sentience(){
         setTraitRank('optimistic',{ set: 1 });
     }
     else if (global.race.species === 'vulpine' && easter.active){
-        setTraitRank('cannibalize',{ set: 2 });
+        setTraitRank('cannibalize',{ set: 1.33 });
         setTraitRank('rage',{ set: 1 });
         setTraitRank('blood_thirst',{ set: 1 });
         setTraitRank('sticky',{ set: 1 });
@@ -9033,8 +9009,8 @@ function sentience(){
     }
     else if (global.race.species === 'human' && hallowed.active){
         setTraitRank('anthropophagite',{ set: 1 });
-        setTraitRank('cannibalize',{ set: 2 });
-        setTraitRank('infectious',{ set: 3 });
+        setTraitRank('cannibalize',{ set: 1.33 });
+        setTraitRank('infectious',{ set: 1.67 });
     }
     else if (global.race.species === 'tortoisan' && hallowed.active){   
         setTraitRank('hyper',{ set: 0.25 });
@@ -9064,7 +9040,7 @@ function sentience(){
                 if (!global.race[trait]){
                     let rank = 1;
                     if (global.race['badgenes']){
-                        rank = j === 0 ? 0.5 : 2;
+                        rank = j === 0 ? 0.5 : 1.33;
                     }
                     global.race[trait] = rank;
                     break;
@@ -9129,7 +9105,7 @@ function sentience(){
     }
 
     if (global.race.species === 'custom' && global.custom.hasOwnProperty('race0')){
-        global.race['untapped'] = calcGenomeScore({
+        global.race['untapped'] = (1 / genomeScale) * calcGenomeScore({
             name: global.custom.race0.name,
             desc(){ return global.custom.race0.desc; },
             entity: global.custom.race0.entity,
@@ -9147,7 +9123,7 @@ function sentience(){
     }
 
     if (global.race.species === 'hybrid' && global.custom.hasOwnProperty('race1')){
-        global.race['untapped'] = calcGenomeScore({
+        global.race['untapped'] = (1 / genomeScale) * calcGenomeScore({
             name: global.custom.race1.name,
             desc(){ return global.custom.race1.desc; },
             entity: global.custom.race1.entity,
@@ -9902,16 +9878,16 @@ function cataclysm(){
         if (!global.race['flier']){
             global.tech['cement'] = 5;
             global.civic.cement_worker.display = true;
-            global.civic.cement_worker.max = jobScale(1);
-            global.civic.cement_worker.workers = jobScale(1);
+            global.civic.cement_worker.max = jobStack(1);
+            global.civic.cement_worker.workers = jobStack(1);
         }
 
-        global.civic.colonist.max = jobScale(4);
-        global.civic.colonist.workers = jobScale(4);
-        global.civic.space_miner.max = jobScale(3);
-        global.civic.space_miner.workers = jobScale(2);
-        global.civic.professor.max = jobScale(1);
-        global.civic.professor.workers = jobScale(1);
+        global.civic.colonist.max = jobStack(4);
+        global.civic.colonist.workers = jobStack(4);
+        global.civic.space_miner.max = jobStack(3);
+        global.civic.space_miner.workers = jobStack(2);
+        global.civic.professor.max = jobStack(1);
+        global.civic.professor.workers = jobStack(1);
 
         global.city.calendar.day++;
         global.city.market.active = true;
@@ -10130,7 +10106,8 @@ function fanaticTrait(trait,rank){
     else if (global.race['warlord'] && trait === 'spiritual'){ trait = 'unified'; }
     else if (global.race['warlord'] && trait === 'blood_thirst'){ trait = 'apex_predator'; }
     if (global.race[trait]){
-        if (!setTraitRank(trait)){
+// Increase a held trait by 0.5 rank; rank 2 grants a minor trait.
+        if (!setTraitRank(trait, { by: 0.5 })){
             grantRandomMinorTrait(3,true);
         }
         else if (trait === 'imitation'){

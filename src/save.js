@@ -1,6 +1,4 @@
-// Save serialization codec.
-//
-// Replaces LZ-String with raw DEFLATE (fflate), which is both smaller and  faster
+// Save serialization codec with DEFLATE encoding and legacy decoding.
 
 const SENTINEL = '\u0000';   // impossible as the first char of a legacy localStorage save
 const FORMAT_PLAIN = 1;      // DEFLATE(JSON)
@@ -19,9 +17,8 @@ function legacy(){
     return (typeof LZString !== 'undefined' && LZString) ? LZString : null;
 }
 
-// --- 15-bits-per-UTF-16-char packing -------------------------------------------------
-// localStorage bills per UTF-16 code unit (2 bytes), so packing 15 bits into each one costs
-// ~1.07 bytes of quota per compressed byte. This is the same density trick compressToUTF16 uses.
+// --- UTF-16 packing ---------------------------------------------------------------------
+// Pack 15 compressed bits per UTF-16 character for localStorage.
 
 function pack15(bytes){
     let out = '', acc = 0, bits = 0;
@@ -75,9 +72,8 @@ function b64ToBytes(b64){
     return bytes;
 }
 
-// --- lossless field pruning ----------------------------------------------------------
-// Only fields the game rewrites on every load path are dropped, and the decoder puts
-// a stand-in back so nothing downstream ever sees an absent key.
+// --- Lossless field pruning -------------------------------------------------------------
+// Remove only fields restored during decoding.
 
 function pruneState(state){
     const out = {};
@@ -116,9 +112,8 @@ function restoreState(state){
     return state;
 }
 
-// --- Shape-table codec ---------------------------------------------------------------
-// Encode object keys once per shape; ARRAY_TAG preserves real arrays.
-// Keep the legacy shaped format readable; serialization verifies compact formats before writing.
+// --- Shape-table codec -----------------------------------------------------------------
+// Share object keys by shape while preserving arrays and legacy decoding.
 
 const ARRAY_TAG = -1;
 
@@ -197,8 +192,8 @@ function unshapeState(packed){
     return dec(packed[1]);
 }
 
-// --- In-transit ship positions -------------------------------------------------------
-// Pack positions reconstructed from a ship's current leg; retain all other stored positions.
+// --- In-transit ship positions ---------------------------------------------------------
+// Retain legacy position packing for old saves.
 
 const SHIP_POS_REBUILT = 0;
 
@@ -346,9 +341,7 @@ export function encodeSaveString(state){
         + pack15(bytes);
 }
 
-// Parse a localStorage save, new format or legacy. Returns null only when there is genuinely
-// nothing to load; a payload we recognize but cannot decode throws, because silently returning
-// null here would start a new game and the next autosave would overwrite the real save.
+// Decode current or legacy localStorage saves; malformed recognized saves throw.
 export function decodeSaveString(data){
     if (typeof data !== 'string' || data.length === 0){ return null; }
 

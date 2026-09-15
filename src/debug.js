@@ -4,7 +4,7 @@ import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
 import { actions, checkAffordable } from './actions.js';
 import { fuel_adjust, int_fuel_adjust } from './space.js';
-import { shipCosts } from './truepath.js';
+import { shipCosts } from './ships.js';
 import { starData, starInfo } from './stars.js';
 import { f_rate } from './industry.js';
 import { armyRating } from './civics.js';
