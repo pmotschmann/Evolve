@@ -1022,7 +1022,6 @@ export function index(){
                             </div>
                         `);
                         let catMax = $(`
-                            <hr>
                             <div>
                                 <div>
                                     <span class="has-text-warning">${loc('message_log_settings_length')}</span>
@@ -1030,7 +1029,6 @@ export function index(){
                             </div>
                         `);
                         let catSave = $(`
-                            <hr>
                             <div>
                                 <div>
                                     <span class="has-text-warning">${loc('message_log_settings_save')}</span>
@@ -1038,8 +1036,8 @@ export function index(){
                             </div>
                         `);
                         body.append(catVis);
-                        body.append(catMax);
-                        body.append(catSave);
+                        body.append('<hr>', catMax);
+                        body.append('<hr>', catSave);
                         
                         let visSet = ``;
                         let maxSet = ``;
