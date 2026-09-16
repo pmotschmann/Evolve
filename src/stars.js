@@ -165,8 +165,6 @@ const starConstants = {
     // A body closer to its star than this on screen is inside the star's own dot — the star never draws smaller than a
     // one-pixel radius — so it lands on the same pixel and is not drawn at all.
     SYSTEM_MIN_PX: 1,
-    // Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
-    TRAIL_MAX_DASHES: 400,
     // Ship markers are drawn at a constant size on screen, in pixels.
     SHIP_DOT_PX: 3,
     SHIP_LABEL_PX: 5,
@@ -3577,6 +3575,23 @@ function starCulled(pos, range = starRange()){
     if (range !== starConstants.STAR_RANGE_INF && dist3(pos, mapAnchor) > range * starConstants.AU_PER_LY){ return true; }
     return mapScale >= starConstants.planetLabelMinScale && dist3(pos, mapFocus) > starConstants.STAR_CULL_AU;
 }
+// Check if a position is visible on the map, i.e. drawn anywhere between (-margin, -margin) and (width + margin, height + margin)
+function visibleOnMap(pos, margin = 10){
+    // Map position wrt origin in AU
+    let ax = pX(pos), ay = pY(pos);
+
+    // Map position wrt origin in px
+    let zx = ax * mapScale, zy = ay * mapScale;
+
+    // Map position wrt canvas in px
+    let cx = zx + mapShift.x, cy = zy + mapShift.y;
+    
+    // Canvas size
+    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+
+    return (cx >= -margin) && (cx <= rect.width + margin) &&
+           (cy >= -margin) && (cy <= rect.height + margin);
+}
 // The color the map paints a star of a given class. Shared by the discs drawn in the scene and by the backdrop sky,
 // which has to agree with them — a star should be the same color whichever of the two is showing it.
 function starTint(type){
@@ -3652,6 +3667,7 @@ function wrapAngle(a){
     a = (a + Math.PI) % (Math.PI * 2);
     return (a < 0 ? a + Math.PI * 2 : a) - Math.PI;
 }
+// Map position wrt origin in AU
 function pX(p){ return p.x * camCY - p.y * camSY; }
 function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z) * camSP; }
 // Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right and screen-down,
@@ -5890,21 +5906,94 @@ function drawMapFrame() {
         let here = rel(shipPointAhead(ship, drawAhead), ref);
 
         let legs = shipLegs(ship);
-        let span = 0;
-        let prev = here;
-        for (let leg of legs){
-            let q = rel(legEnd(leg), ref);
-            span += Math.sqrt((q.x-prev.x)**2 + (q.y-prev.y)**2 + (q.z-prev.z)**2);
-            prev = q;
-        }
-        let cycle = Math.max(0.5, span / starConstants.TRAIL_MAX_DASHES);
-        ctx.setLineDash([cycle * 0.2, cycle * 0.8]);
+        ctx.setLineDash([10 / mapScale, 40 / mapScale]);
 
-        ctx.moveTo(pX(here), pY(here));
+        let curX = pX(here), curY = pY(here);
+        ctx.moveTo(curX, curY);
         // Draw the full remaining flight path through each waypoint still ahead of the ship.
+        // Skip drawing parts which are out of sight
+        let curVisible = visibleOnMap(shipPointAhead(ship, drawAhead));
         for (let leg of legs){
+            // Position of leg end wrt transform in AU
             let q = rel(legEnd(leg), ref);
-            ctx.lineTo(pX(q), pY(q));
+
+            // Map position of leg end wrt transform in AU
+            let px = pX(q), py = pY(q);
+
+            let nextVisible = visibleOnMap(legEnd(leg));
+            if (curVisible && nextVisible){
+                // Entire leg visible - draw all of it
+                ctx.lineTo(px, py);
+            }
+            else if (nextVisible){
+                // Only final part of leg visible, move to edge of map, draw from there until end
+
+                // Direction vector towards leg end from leg start
+                let dx = px - curX, dy = py - curY;
+
+                // Direction distance in AU
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Direction unit vector
+                let ux = dx / dist, uy = dy / dist;
+        
+                // Canvas size in px (incl. margin)
+                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                let cx = rect.width + 20, cy = rect.height + 20;
+
+                // Canvas size in AU
+                let crx = cx / mapScale, cry = cy / mapScale;
+
+                // Final difference vector length
+                let f = Math.max(crx, cry);
+
+                // Final difference vector
+                let rdx = ux * f, rdy = uy * f;
+
+                // Final shown position
+                let fx = px - rdx, fy = py - rdy;
+                
+                ctx.moveTo(fx, fy);
+                ctx.lineTo(px, py);
+            }
+            else if (curVisible){
+                // Only starting part of leg visible, move to edge of map, draw from start until there
+
+                // Direction vector towards leg end from leg start
+                let dx = px - curX, dy = py - curY;
+
+                // Direction distance in AU
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Direction unit vector
+                let ux = dx / dist, uy = dy / dist;
+        
+                // Canvas size in px (incl. margin)
+                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                let cx = rect.width + 20, cy = rect.height + 20;
+
+                // Canvas size in AU
+                let crx = cx / mapScale, cry = cy / mapScale;
+
+                // Final difference vector length
+                let f = Math.max(crx, cry);
+
+                // Final difference vector
+                let rdx = ux * f, rdy = uy * f;
+
+                // Final shown position
+                let fx = curX + rdx, fy = curY + rdy;
+                
+                ctx.lineTo(fx, fy);
+                ctx.moveTo(px, py);
+            }
+            else {
+                // Entire leg not visible, skip
+                ctx.moveTo(px, py);
+            }
+
+            curVisible = nextVisible;
+            curX = px, curY = py;
         }
         ctx.stroke();
         ctx.restore();
