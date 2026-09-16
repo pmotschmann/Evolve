@@ -102,6 +102,12 @@ export function shipTripDays(ship){
     return legsOf(ship).reduce((total, leg) => total + leg.days, 0);
 }
 
+// Whether a ship is currently going through a wormhole.
+export function shipInterstellar(ship){
+    const leg = shipLeg(ship);
+    return leg && legInGate(leg);
+}
+
 // --- Legs and planned trips ----------------------------------------------------------------------
 
 export function makeTrip(legs, days){

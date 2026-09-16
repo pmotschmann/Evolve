@@ -5,7 +5,7 @@ import { global, webWorker } from './vars.js';
 import { clearElement } from './functions.js';
 import { foeDetected, moveTempCoordinates, resolveBody, syndicate, syndicateGuardHeld, syndicateShips, tempCoord,
          tempOffset, tempParent, venusBlockade } from './truepath.js';
-import { shipMoving, shipLeg, shipLegs, legEnd, moveShips, shipPatrol, shipPointAhead, shipRefStar } from './ships.js';
+import { shipMoving, shipLeg, shipLegs, legEnd, moveShips, shipPatrol, shipPointAhead, shipRefStar, shipInterstellar } from './ships.js';
 import { races, orbitLength } from './races.js';
 import { actions } from './actions.js';
 import { planetName } from './space.js';
@@ -6131,10 +6131,14 @@ function drawMapFrame() {
     }
     
     // Render ships as markers or detailed hulls.
+    // When zoomed out beyond local system only draw ships which are travelling interstellar
     {
         const art = shipArtOn();
+        let drawOnlyInterstellar = (mapScale < starConstants.planetLabelMinScale);
         for (let mark of shipMarks) {
             const { ship, foe } = mark;
+            if (drawOnlyInterstellar && !shipInterstellar(ship)) { continue; }
+
             ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
             ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
             let ref = shipRefStar(ship);
