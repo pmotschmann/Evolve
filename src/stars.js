@@ -182,6 +182,7 @@ const starConstants = {
     BEACON_DOT_PX: 3,
     BEACON_HALO_PX: 11,
     BEACON_LABEL_PX: 6,
+    BEACON_GROUP_LABEL_PX: 20,
     BEACON_PULSE_MS: 1600,
     BEACON_COLOR: '0, 255, 102',
     // Bodies are drawn at symbolic sizes, nothing like true scale — 0.1 map units for an M dwarf is some twenty times the
@@ -6040,27 +6041,95 @@ function drawMapFrame() {
     // and ahead of the ship markers so a ship that has flown out to one reads as sitting on top of it.
     {
         let pulse = beaconPulse();
-        for (let beacon of liveBeacons()){
-            let ref = genXYZcoord(beacon.s || 'spc_sun');
-            if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            let bx = pX(here), by = pY(here);
-            // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
-            // than merely changing size.
-            ctx.beginPath();
-            ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
-            ctx.arc(bx, by, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
-            ctx.arc(bx, by, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.restore();
-        }
-    }
+        ctx.font = `20px serif`;
 
+        if (mapScale < starConstants.planetLabelMinScale){ 
+            // zoomed out: show a grouped beacon instead of overlapping several in the same place
+            const systems = {};
+            for (let beacon of liveBeacons()){
+                if (systems.hasOwnProperty(beacon.s)){
+                    systems[beacon.s].cnt++;
+                    systems[beacon.s].b.push(beacon);
+                }
+                else
+                    systems[beacon.s] = {cnt: 1, b: [beacon]};
+            }
+            
+            // Stop drawing beacon label at the same time we stop drawing system names. Beacon pulses are drawn regardless, same as star dots
+            const drawNames = !starNamesHidden();
+
+            // Cap the scale to starConstants.systemLabelMinScale to prevent text being cluttered with multiple systems on screen
+            let textScale;
+            if (mapScale > starConstants.systemLabelMinScale)
+                textScale = 1 / mapScale;
+            else
+                textScale = 1 / starConstants.systemLabelMinScale;
+            
+            for (const [location, beacons] of Object.entries(systems)){
+                const ref = genXYZcoord(location || 'spc_sun');
+                if (starCulled(ref)){ continue; }
+                ctx.save();
+                ctx.translate(pX(ref), pY(ref));
+                // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
+                // than merely changing size.
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
+                ctx.arc(0, 0, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
+                ctx.arc(0, 0, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+
+                if (drawNames){
+                    // Group label, in the same green as their dots, displayed above system name.
+                    ctx.scale(textScale, textScale);
+                    ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
+                    ctx.textAlign = 'center';
+                    if (beacons.cnt == 1){
+                        ctx.fillText(beacons.b[0].n, 0, -starConstants.BEACON_GROUP_LABEL_PX);
+                    }
+                    else{
+                        const text = loc('scout_beacon_group', [count]);
+                        ctx.fillText(text, 0, -starConstants.BEACON_GROUP_LABEL_PX);
+                    }
+                }
+                ctx.restore();
+            }
+        } 
+        else {
+            // zoomed in: draw individual beacons normally
+            for (let beacon of liveBeacons()){
+                let ref = genXYZcoord(beacon.s || 'spc_sun');
+                if (starCulled(ref)){ continue; }
+                let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
+                ctx.save();
+                ctx.translate(pX(ref), pY(ref));
+                let bx = pX(here), by = pY(here);
+                // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
+                // than merely changing size.
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
+                ctx.arc(bx, by, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
+                ctx.arc(bx, by, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.restore();
+
+                // Signal names, in the same green as their dots and offset the same way the ship names are.
+                ctx.save();
+                ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
+                ctx.translate(pX(ref), pY(ref));
+                ctx.scale(1 / mapScale, 1 / mapScale);
+                ctx.fillText(beacon.n, pX(here) * mapScale + starConstants.BEACON_LABEL_PX, pY(here) * mapScale - starConstants.BEACON_LABEL_PX);
+                ctx.restore();
+            }
+        }  
+    }
+    
     // Render ships as markers or detailed hulls.
     {
         const art = shipArtOn();
@@ -6130,21 +6199,6 @@ function drawMapFrame() {
             : ship.name;
         ctx.fillText(label, pX(here) * mapScale + starConstants.SHIP_LABEL_PX, pY(here) * mapScale - starConstants.SHIP_LABEL_PX);
         ctx.restore();
-    }
-
-    // Signal names, in the same green as their dots and offset the same way the ship names are.
-    {
-        ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
-        for (let beacon of liveBeacons()){
-            let ref = genXYZcoord(beacon.s || 'spc_sun');
-            if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            ctx.scale(1 / mapScale, 1 / mapScale);
-            ctx.fillText(beacon.n, pX(here) * mapScale + starConstants.BEACON_LABEL_PX, pY(here) * mapScale - starConstants.BEACON_LABEL_PX);
-            ctx.restore();
-        }
     }
 
     ctx.fillStyle = "#ffa500";
