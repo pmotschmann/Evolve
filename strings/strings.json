@@ -160,6 +160,7 @@
   "pause_load": "Pause Game On Load",
   "game_play": "Start the Game",
   "game_pause": "Pause the Game",
+  "game_paused_banner": "Game Paused — click to resume",
   "m_keys": "Multiplier Keys",
   "key_mappings": "Key Mappings",
   "tab_mappings": "Tab Mappings",

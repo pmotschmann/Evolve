@@ -2718,7 +2718,21 @@ a {
             height: ~"calc(100vh - 9rem)";
         }
     }
-        
+
+    // Paused notice, sat above the message log. The top bar pause icon is easy to miss.
+    .pauseBanner {
+        display: block;
+        margin: .25rem 0;
+        padding: .15rem 0;
+        border: solid .0625rem;
+        border-radius: .25rem;
+        text-align: center;
+        font-size: .75rem;
+        font-weight: bold;
+        cursor: pointer;
+        animation: pauseBannerPulse 2s ease-in-out infinite;
+    }
+
     #msgQueueHeader {
         .special {
             cursor: pointer;
@@ -5794,6 +5808,20 @@ div.bigbang {
 
     50% {
         opacity: 0.25;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes pauseBannerPulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
     }
 
     100% {
