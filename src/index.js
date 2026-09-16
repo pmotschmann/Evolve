@@ -1046,9 +1046,9 @@ export function index(){
                         let maxInputs = {};
                         let saveInputs = {};
                         message_filters.forEach(function (filter){
-                            visSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-checkbox class="patrol" v-model="s.${filter}.vis" :disabled="checkDisabled('${filter}',s.${filter}.vis)" :input="check('${filter}')"></b-checkbox></div>`;
-                            maxSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="maxVal('${filter}')" min="1" v-model="mi.${filter}" :controls="false"></b-numberinput></div>`;
-                            saveSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="saveVal('${filter}')" min="0" :max="s.${filter}.max" v-model="si.${filter}" :controls="false"></b-numberinput></div>`;
+                            visSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><label for="msg_visSet_${filter}_switch">${loc('message_log_' + filter)}</label> <b-checkbox class="patrol" v-model="s.${filter}.vis" :disabled="checkDisabled('${filter}',s.${filter}.vis)" :input="check('${filter}')" input-id="msg_visSet_${filter}_switch"></b-checkbox></div>`;
+                            maxSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span id="msg_maxSet_${filter}_label">${loc('message_log_' + filter)}</span> <b-numberinput :input="maxVal('${filter}')" min="1" v-model="mi.${filter}" :controls="false" aria-labelledby="msg_maxSet_${filter}_label"></b-numberinput></div>`;
+                            saveSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span id="msg_saveSet_${filter}_label">${loc('message_log_' + filter)}</span> <b-numberinput :input="saveVal('${filter}')" min="0" :max="s.${filter}.max" v-model="si.${filter}" :controls="false" aria-labelledby="msg_saveSet_${filter}_label"></b-numberinput></div>`;
                             
                             maxInputs[filter] = global.settings.msgFilters[filter].max;
                             saveInputs[filter] = global.settings.msgFilters[filter].save;
