@@ -795,6 +795,13 @@ export function jobScale(num){
     return num;
 }
 
+export function hugeScale(v){ //building cost/creep/power modifier and some other things
+    if (global.race['humongous']){
+        v *= traits.humongous.vars()[1];
+    }
+    return v;
+}
+
 // Scale and round a whole stack of people.
 export function jobStack(num){
     return Math.round(jobScale(num));

@@ -2553,9 +2553,6 @@ const extraInformationIA = {
         loc(`wiki_tech_power_upgrade`,[loc(`city_foundry`),2]),
         loc(`wiki_tech_screw_conveyor_alt`,[5])
     ],
-    internet: [
-        loc('wiki_tech_internet_alt', [loc('underground_relic')])
-    ],
     quantum_computing: [
         loc(`wiki_tech_empty`)
     ]

@@ -235,7 +235,7 @@ export function smelterFuelConfig(){
 
 function loadSmelter(parent,bind){
     const fuel_config = smelterFuelConfig();
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{ on_f(s.count) }}/{{ s.cap }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{ on_f(s.count) }}/{{ cap() }}</span></div>`);
     parent.append(fuel);
 
     if (parent.hasClass('modalBody')){
@@ -285,7 +285,7 @@ function loadSmelter(parent,bind){
     }
 
     if (global.tech['star_forge'] && global.tech.star_forge >= 2){
-        let star = $(`<span :aria-label="buildLabel('star') + ariaCount('Star')" class="current star infoOnly">${loc('star')} {{ s.Star }}</span>`);
+        let star = $(`<span :aria-label="buildLabel('star') + ariaCount('Star')" class="current star infoOnly">${loc('star')} {{ starCap() }}</span>`);
         fuelTypes.append(star);
     }
 
@@ -376,10 +376,10 @@ function loadSmelter(parent,bind){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno + global.city.smelter.Super;
-                    if (type === 'Star' && global.city.smelter.Star >= global.city.smelter.StarCap){
+                    if (type === 'Star' && global.city.smelter.Star >= Math.floor(global.city.smelter.StarCap)){
                         break;
                     }
-                    else if (total < global.city.smelter.cap){
+                    else if (total < Math.floor(global.city.smelter.cap)){
                         global.city.smelter[type]++;
                         global.city.smelter.Iron++;
                     }
@@ -492,6 +492,12 @@ function loadSmelter(parent,bind){
             },
             son(c){
                 return global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
+            },
+            cap(){
+                return Math.floor(global.city.smelter.cap);
+            },
+            starCap(){
+                return Math.floor(global.city.smelter.StarCap);
             },
             diffSize(value){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
@@ -615,8 +621,8 @@ export function smelterUnlocked(){
 
 export function addSmelter(num=1, product="Iron", fuel="Oil"){
     global.city.smelter.cap += num;
-    global.city.smelter[product] += num; // ["Iron", "Steel", "Iridium"]
-    global.city.smelter[fuel] += num; // ["Wood", "Coal", "Oil", "Star", "Inferno","Super"]
+    global.city.smelter[product] += Math.floor(num); // ["Iron", "Steel", "Iridium"]
+    global.city.smelter[fuel] += Math.floor(num); // ["Wood", "Coal", "Oil", "Star", "Inferno","Super"]
     if (fuel === 'star') {
         global.city.smelter.StarCap += num;
     }
@@ -630,6 +636,7 @@ export const factoryData = {
     // Lines that were shut down when factory capacity was lost are remembered in factory.
     // When restored they are returned to the previously shut down lines first, then to Alloy if nothing is left to remember.
     addFactoryLines(num){
+        num = Math.floor(num);
         if (!(num > 0) || !global.city['factory']){ return; }
         let hold = global.city.factory['hold'];
         if (hold){

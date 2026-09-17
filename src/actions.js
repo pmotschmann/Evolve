@@ -1294,12 +1294,23 @@ export const actions = {
             },
             effect(){
                 let pop = this.citizens();
+                let safe = spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000);
                     return `<div>${loc('plus_max_citizens',[pop])}</div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_citizens',[pop]);
+                }
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 5000 : 2000) : 1000) : 0)
+                    };
+                    return list[res] || list;
+                },
+                multiplier(wiki){
+                    return 1;
                 }
             },
             action(args){
@@ -1346,17 +1357,27 @@ export const actions = {
                 Horseshoe(){ return global.race['hooved'] ? 5 : 0; }
             },
             effect(){
-                let extraVal = govActive('extravagant',2);
                 let pop = this.citizens();
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000);
-                    if (extraVal){
-                        safe *= 2;
-                    }
+                    let safe = spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
                     return `<div>${loc('plus_max_citizens',[pop])}. <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return `${loc('plus_max_citizens',[pop])}. <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span>`;
+                }
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 5000 : 2000) : 1000) : 0)
+                    };
+                    if (govActive('extravagant',2)){
+                        list.Money *= 2;
+                    }
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
                 }
             },
             powered(){
@@ -1407,7 +1428,7 @@ export const actions = {
             },
             effect(){
                 let pop = this.citizens();
-                return global.race['carnivore'] && !global.race['artifical'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5,global.resource.Food.name])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
+                return global.race['carnivore'] && !global.race['artifical'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_lodge_effect',[hugeEffect(5),global.resource.Food.name])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
             },
             action(args){
                 if (payCosts(this)){
@@ -1447,13 +1468,24 @@ export const actions = {
                 Stone(r={}){ return costMultiplier('smokehouse', r.offset, 50, 1.36); }
             },
             effect(){
-                let food = BHStorageMulti(spatialReasoning(100));
+                let food = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                 return `<div>${loc('plus_max_resource',[food, global.resource.Food.name])}</div><div>${loc('city_smokehouse_effect',[10])}</div>`;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 100
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('smokehouse','city');
-                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(100));
+                    global['resource']['Food'].max += spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -1487,14 +1519,25 @@ export const actions = {
                 Stone(r={}){ return costMultiplier('soul_well', r.offset, 10, 1.36); }
             },
             effect(){
-                let souls = BHStorageMulti(spatialReasoning(500));
+                let souls = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                 let production = global.race['ghostly'] ? (2 + traits.ghostly.vars()[1]) : 2;
-                return `<div>${loc('city_soul_well_effect',[production])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
+                return `<div>${loc('city_soul_well_effect',[hugeEffect(production)])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 500
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('soul_well','city');
-                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(500));
+                    global['resource']['Food'].max += spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -1522,7 +1565,7 @@ export const actions = {
                 Nanite(r={}){ return global.race['deconstructor'] ? costMultiplier('slave_pen', r.offset, 4, 1.36) : 0; },
             },
             effect(){
-                return `<div>${loc('plus_max_resource',[4,global.resource.Slave.name])}</div>`;
+                return `<div>${loc('plus_max_resource',[hugeEffect(4),global.resource.Slave.name])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
@@ -1555,8 +1598,19 @@ export const actions = {
             },
             effect(){
                 let signal = +(production('transmitter')).toFixed(2);
-                let sig_cap = spatialReasoning(100);
+                let sig_cap = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                 return `<div>${loc('gain',[signal, global.resource.Food.name])}</div><div>${loc('city_transmitter_effect',[sig_cap])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 100
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             powered(){ return powerCostMod(0.5); },
             powerBalancer(){
@@ -1668,16 +1722,27 @@ export const actions = {
                 generated *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
                 generated *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
                 generated = +(generated).toFixed(2);
-                let store = BHStorageMulti(spatialReasoning(200));
-                let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                let store = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
+                let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[hugeEffect(0.5),global.resource.Lumber.name])}</div>`;
                 return `<div>${loc('city_compost_heap_effect',[generated,global.resource.Food.name])}</div><div>${loc('city_compost_heap_effect3',[store,global.resource.Food.name])}</div>${wood}`;
             },
             switchable(){ return true; },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 200
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('compost','city');
                     global.city.compost.on++;
-                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(200));
+                    global['resource']['Food'].max += spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -1797,13 +1862,24 @@ export const actions = {
                 Iron(r={}){ return ((global.city.silo ? global.city.silo.count : 0) + (r.offset || 0)) >= 4 && global.city.ptrait.includes('unstable') ? costMultiplier('silo', r.offset, 10, 1.36) : 0; }
             },
             effect(){
-                let food = BHStorageMulti(spatialReasoning(500));
+                let food = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                 return loc('plus_max_resource',[food, global.resource.Food.name]);
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 500
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('silo','city');
-                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(500));
+                    global['resource']['Food'].max += spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -1873,8 +1949,9 @@ export const actions = {
                 if (global.race['grenadier']){
                     soldiers--;
                 }
-                soldiers *= geneBonus('quartermaster');
                 if (soldiers <= 0){ return 1; }
+                soldiers *= geneBonus('quartermaster');
+                soldiers = hugeAdjust(soldiers);
                 return +(jobScale(soldiers)).toFixed(3);
             }
         },
@@ -1895,7 +1972,7 @@ export const actions = {
             effect(){
                 let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
                 let healing = (global.tech['medic'] ?? 1) * 5;
-                let desc = `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
+                let desc = `<div>${loc('city_hospital_effect',[hugeEffect(healing)])}</div>${clinic}`;
                 if (!global.race['artifical'] && global.race.hasOwnProperty('vax')){
                     desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
                 }
@@ -1939,11 +2016,10 @@ export const actions = {
                 if (milVal){
                     rate *= 1 + (milVal / 100);
                 }
-                rate = +rate.toFixed(2);
-                let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[hugeEffect(rate, 2)])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
                 if (global.race['artifical'] && !global.race['orbit_decayed']){
-                    let repair = global.tech['medic'] || 1;
-                    effect += `<div>${loc('city_boot_camp_art_effect',[repair * 5])}</div>`;
+                    let repair = (global.tech['medic'] ?? 1) * 5;
+                    effect += `<div>${loc('city_boot_camp_art_effect',[hugeEffect(repair)])}</div>`;
                 }
                 if (global.race['artifical'] && global.race.hasOwnProperty('vax')){
                     effect += `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
@@ -2067,7 +2143,7 @@ export const actions = {
                 let list = this.storage.res();
                 for (const res of Object.keys(list)){
                     if (global.resource[res].display){
-                        let val = sizeApproximation(+(spatialReasoning(list[res]) * multiplier).toFixed(0),1);
+                        let val = sizeApproximation(spatialReasoning(list[res] * multiplier),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                     }
                 };
@@ -2082,7 +2158,7 @@ export const actions = {
                     let list = this.storage.res();
                     for (const res of Object.keys(list)){
                         if (global.resource[res].display){
-                            global.resource[res].max += (spatialReasoning(list[res] * multiplier));
+                            global.resource[res].max += spatialReasoning(list[res] * multiplier);
                         }
                     };
                     return true;
@@ -2229,9 +2305,8 @@ export const actions = {
                 Iron(r={}){ return ((global.city['bank'] ? global.city.bank.count : 0) + (r.offset || 0)) >= 2 && global.city.ptrait.includes('unstable') ? costMultiplier('bank', r.offset, traitCostMod('untrustworthy',30), 1.3) : 0; }
             },
             effect(){
-                let vault = bank_vault();
-                vault = spatialReasoning(vault);
-                vault = (+(vault).toFixed(0)).toLocaleString();
+                let vault = spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
+                vault = vault.toLocaleString();
 
                 if (global.tech['banking'] >= 2){
                     return `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>`;
@@ -2240,9 +2315,20 @@ export const actions = {
                     return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
                 }
             },
+            storage: {
+                res(res){
+                    let list = {
+                        'Money': bank_vault()
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
+            },
             action(args){
                 if (payCosts(this)){
-                    global['resource']['Money'].max += spatialReasoning(1800);
+                    global['resource']['Money'].max += spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
                     incrementStruct('bank','city');
                     global.civic.banker.max = jobScale(global.city.bank.count);
                     return true;
@@ -2278,15 +2364,26 @@ export const actions = {
                 Crystal(r={}){ return costMultiplier('pylon', r.offset, 8, 1.42) - 3; }
             },
             effect(){
-                let max = spatialReasoning(5);
-                let mana = +(0.01 * darkEffect('magic')).toFixed(3);
-                return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
+                let max = spatialReasoning(this.storage.res('Mana') * this.storage.multiplier());
+                let mana = 0.01 * darkEffect('magic');
+                return `<div>${loc('gain',[hugeEffect(mana, 3),global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
             },
             special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
+            storage: {
+                res(res){
+                    let list = {
+                        'Mana': 5
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('pylon','city');
-                    global.resource.Mana.max += spatialReasoning(5);
+                    global.resource.Mana.max += this.storage.res('Mana') * this.storage.multiplier();
                     return true;
                 }
                 return false;
@@ -2313,7 +2410,7 @@ export const actions = {
             },
             effect(){
                 let ward = global.tech['roguemagic'] && global.tech.roguemagic >= 8 ? 1.25 : 1;
-                return `<div>${loc('city_conceal_ward_effect',[ward])}</div>`;
+                return `<div>${loc('city_conceal_ward_effect',[hugeEffect(ward, 2)])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
@@ -2351,13 +2448,24 @@ export const actions = {
                 Stone(r={}){ return costMultiplier('graveyard', r.offset, 6, 1.9); }
             },
             effect(){
-                let lum = BHStorageMulti(spatialReasoning(100));
-                return `<div>${loc('city_graveyard_effect',[8])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+                let lum = spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());
+                return `<div>${loc('city_graveyard_effect',[hugeEffect(8)])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 100
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('graveyard','city');
-                    global['resource']['Lumber'].max += BHStorageMulti(spatialReasoning(100));
+                    global['resource']['Lumber'].max += spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -2391,14 +2499,25 @@ export const actions = {
                 Stone(r={}){ return costMultiplier('lumber_yard', r.offset, 2, 1.95); }
             },
             effect(){
-                let lum = BHStorageMulti(spatialReasoning(100));
-                return `<div>${loc('production',[2,global.resource.Lumber.name])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+                let lum = spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());
+                return `<div>${loc('production',[hugeEffect(2),global.resource.Lumber.name])}</div><div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div>`;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 100
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('lumber_yard','city');
                     global.civic.lumberjack.display = true;
-                    global['resource']['Lumber'].max += BHStorageMulti(spatialReasoning(100));
+                    global['resource']['Lumber'].max += spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());
                     return true;
                 }
                 return false;
@@ -2425,13 +2544,13 @@ export const actions = {
             },
             effect(){
                 let impact = global.tech['saw'] >= 2 ? 8 : 5;
-                let lum = BHStorageMulti(spatialReasoning(200));
-                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('production',[impact,global.resource.Lumber.name])}</div>`;
+                let lum = spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());
+                let desc = `<div>${loc('plus_max_resource',[lum,global.resource.Lumber.name])}</div><div>${loc('production',[hugeEffect(impact),global.resource.Lumber.name])}</div>`;
                 if (global.tech['foundry'] && global.tech['foundry'] >= 4){
-                    desc = desc + `<div>${loc('crafting',[2,global.resource.Plywood.name])}</div>`;
+                    desc = desc + `<div>${loc('crafting',[hugeEffect(2),global.resource.Plywood.name])}</div>`;
                 }
                 if (global.city.powered){
-                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[4,this.powered()])}</div>`;
+                    desc = desc + `<div class="has-text-caution">${loc('city_sawmill_effect3',[hugeEffect(4),this.powered()])}</div>`;
                 }
                 return desc;
             },
@@ -2441,10 +2560,21 @@ export const actions = {
                     ? [{ r: 'Lumber', k: 'psaw' }]
                     : false;
             },
+            storage: {
+                res(res){
+                    let list = {
+                        'Lumber': 200
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('sawmill','city');
-                    global['resource']['Lumber'].max += BHStorageMulti(spatialReasoning(200));
+                    global['resource']['Lumber'].max += spatialReasoning(this.storage.res('Lumber') * this.storage.multiplier());;
                     powerOnNewStruct(this);
                     return true;
                 }
@@ -2479,13 +2609,13 @@ export const actions = {
                 Stone(r={}){ return costMultiplier('rock_quarry', r.offset, 10, 1.36); }
             },
             effect(){
-                let stone = BHStorageMulti(spatialReasoning(100));
+                let stone = spatialReasoning(this.storage.res('Stone') * this.storage.multiplier());
                 let asbestos = global.race['smoldering'] ? `<div>${loc('plus_max_resource',[stone,global.resource.Chrysotile.name])}</div>` : '';
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}<div class="has-text-caution">${loc('city_rock_quarry_effect2',[4,this.powered()])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[hugeEffect(2)])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}<div class="has-text-caution">${loc('city_rock_quarry_effect2',[hugeEffect(4),this.powered()])}</div>`;
                 }
                 else {
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}`;
+                    return `<div>${loc('city_rock_quarry_effect1',[hugeEffect(2)])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}`;
                 }
             },
             special(){ return global.race['smoldering'] ? true : false; },
@@ -2503,11 +2633,22 @@ export const actions = {
                 return false;
             },
             power_reqs: { mine_conveyor: 1 },
+            storage: {
+                res(res){
+                    let list = {
+                        'Stone': 100
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return BHStorageMulti(1);
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('rock_quarry','city');
                     global.civic.quarry_worker.display = true;
-                    let stone = BHStorageMulti(spatialReasoning(100));
+                    let stone = spatialReasoning(this.storage.res('Stone') * this.storage.multiplier());
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
                         global['resource']['Chrysotile'].max += stone;
@@ -2550,7 +2691,7 @@ export const actions = {
             effect(){
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),screws])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),hugeEffect(screws)])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)]);
@@ -2568,7 +2709,7 @@ export const actions = {
                     global.resource.Cement.display = true;
                     incrementStruct('cement_plant','city');
                     global.civic.cement_worker.display = true;
-                    global.civic.cement_worker.max = global.city.cement_plant.count * jobScale(2);
+                    global.civic.cement_worker.max += jobScale(2);
                     powerOnNewStruct(this);
                     return true;
                 }
@@ -2599,10 +2740,10 @@ export const actions = {
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(1)])}</div>`;
                 if (global.tech['foundry'] >= 2){
                     let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 8 : 5) : 3;
-                    desc = desc + `<div>${loc('city_crafted_mats',[skill])}</div>`;
+                    desc = desc + `<div>${loc('city_crafted_mats',[hugeEffect(skill)])}</div>`;
                 }
                 if (global.tech['foundry'] >= 6){
-                    desc = desc + `<div>${loc('city_foundry_effect2',[2,global.resource.Brick.name])}</div>`;
+                    desc = desc + `<div>${loc('city_foundry_effect2',[hugeEffect(2),global.resource.Brick.name])}</div>`;
                 }
                 return desc;
             },
@@ -2676,7 +2817,7 @@ export const actions = {
             effect(){
                 let desc = `<div>${loc('city_factory_effect')}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 if (global.tech['foundry'] >= 7){
-                    desc = desc + `<div>${loc('city_crafted_mats',[5])}</div>`;
+                    desc = desc + `<div>${loc('city_crafted_mats',[hugeEffect(5)])}</div>`;
                 }
                 return desc;
             },
@@ -2694,7 +2835,7 @@ export const actions = {
                         defineIndustry();
                     }
                     if (powerOnNewStruct(this)){
-                        factoryData.addFactoryLines(1);
+                        factoryData.addFactoryLines(hugeAdjust(1));
                     }
                     return true;
                 }
@@ -2725,7 +2866,20 @@ export const actions = {
                 };
             },
         },
-        nanite_factory: buildTemplate(`nanite_factory`,'city'),
+        nanite_factory: {
+            ...buildTemplate(`nanite_factory`,'city'),
+            storage: {
+                res(res){
+                    let list = {
+                        'Nanite': 2500
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
+            },
+        },
         smelter: {
             id: 'city-smelter',
             title(){ return loc('city_smelter'); },
@@ -2752,7 +2906,7 @@ export const actions = {
             },
             special: true,
             smelting(){
-                return 1;
+                return hugeAdjust(1);
             },
             action(args){
                 if (payCosts(this)){
@@ -2817,10 +2971,10 @@ export const actions = {
             effect(){
                 let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                 if (global.tech['alumina'] >= 2){
-                    return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,this.powered()])}</span>`;
+                    return `<span>${loc(label,[hugeEffect(6)])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[hugeEffect(6),hugeEffect(12),this.powered()])}</span>`;
                 }
                 else {
-                    return loc(label,[6]);
+                    return loc(label,[hugeEffect(6)]);
                 }
             },
             action(args){
@@ -2860,7 +3014,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_miner`)])}</div><div class="has-text-caution">${loc('city_mine_effect2',[this.powered(),5])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_miner`)])}</div><div class="has-text-caution">${loc('city_mine_effect2',[this.powered(),hugeEffect(5)])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[jobScale(1),loc(`job_miner`)]);
@@ -2910,7 +3064,7 @@ export const actions = {
             },
             effect(){
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)])}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[this.powered(),5])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)])}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[this.powered(),hugeEffect(5)])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[jobScale(1),loc(`job_coal_miner`)]);
@@ -2928,7 +3082,7 @@ export const actions = {
                     incrementStruct(this);
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
-                    global.civic.coal_miner.max = jobScale(global.city.coal_mine.count);
+                    global.civic.coal_miner.max += jobScale(1);
                     powerOnNewStruct(this);
                     return true;
                 }
@@ -2957,7 +3111,7 @@ export const actions = {
             },
             effect(){
                 let oil = +(production('oil_well')).toFixed(2);
-                let oc = spatialReasoning(500);
+                let oc = spatialReasoning(this.storage.res('Oil') * this.storage.multiplier());
                 let desc = `<div>${loc('city_oil_well_effect',[oil,oc])}</div>`;
                 if (global.race['blubber'] && global.city.hasOwnProperty('oil_well')){
                     let maxDead = global.city.oil_well.count + (global.space['oil_extractor'] ? global.space.oil_extractor.count : 0);
@@ -2966,10 +3120,21 @@ export const actions = {
                 }
                 return desc;
             },
+            storage: {
+                res(res){
+                    let list = {
+                        'Oil': 500
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('oil_well','city');
-                    global['resource']['Oil'].max += spatialReasoning(500);
+                    global['resource']['Oil'].max += spatialReasoning(this.storage.res('Oil') * this.storage.multiplier());
                     if (global.city.oil_well.count === 1) {
                         global.resource.Oil.display = true;
                         defineIndustry();
@@ -3001,30 +3166,45 @@ export const actions = {
                 Sheet_Metal(r={}){ return costMultiplier('oil_depot', r.offset, 100, dirt_adjust(1.45)); }
             },
             effect() {
-                let oil = spatialReasoning(1000);
+                let mult = this.storage.multiplier();
+                let list = this.storage.res();
+                let oil = list['Oil'] * mult;
                 oil *= global.tech['world_control'] ? 1.5 : 1;
-                let effect = `<div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}.</div>`;
+                let effect = `<div>${loc('plus_max_resource',[+(oil).toFixed(0),global.resource.Oil.name])}.</div>`;
                 if (global.resource['Helium_3'].display){
-                    let val = spatialReasoning(400);
+                    let val = list['Helium_3'] * mult;
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>${loc('plus_max_resource',[val,global.resource.Helium_3.name])}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[+(val).toFixed(0),global.resource.Helium_3.name])}.</div>`;
                 }
                 if (global.tech['uranium'] >= 2){
-                    let val = spatialReasoning(250);
+                    let val = list['Uranium'] * mult;
                     val *= global.tech['world_control'] ? 1.5 : 1;
-                    effect = effect + `<div>${loc('plus_max_resource',[val,global.resource.Uranium.name])}.</div>`;
+                    effect = effect + `<div>${loc('plus_max_resource',[+(val).toFixed(0),global.resource.Uranium.name])}.</div>`;
                 }
                 return effect;
+            },
+            storage: {
+                res(res){
+                    let list = {
+                        'Oil': 500,
+                        'Helium_3': 400,
+                        'Uranium': 250
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('oil_depot','city');
-                    global['resource']['Oil'].max += spatialReasoning(1000) * (global.tech['world_control'] ? 1.5 : 1);
+                    global['resource']['Oil'].max += this.storage.list('Oil') * this.storage.multiplier();
                     if (global.resource['Helium_3'].display){
-                        global['resource']['Helium_3'].max += spatialReasoning(400) * (global.tech['world_control'] ? 1.5 : 1);
+                        global['resource']['Helium_3'].max += this.storage.list('Helium_3') * this.storage.multiplier();
                     }
                     if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += spatialReasoning(250) * (global.tech['world_control'] ? 1.5 : 1);
+                        global['resource']['Uranium'].max += this.storage.list('Uranium') * this.storage.multiplier();
                     }
                     return true;
                 }
@@ -3053,7 +3233,7 @@ export const actions = {
                 Furs(r={}){ return costMultiplier('trade', r.offset, 65, 1.36); }
             },
             effect(){
-                return loc('city_trade_effect',[this.routes()]);
+                return loc('city_trade_effect',[+(this.routes()).toFixed(1)]);
             },
             routes(){
                 let routes = (global.tech['trade'] >= 2) ? 3 : 2;
@@ -3063,7 +3243,7 @@ export const actions = {
                 if (global.race['flier']){
                     routes += traits.flier.vars()[1];
                 }
-                return routes;
+                return hugeAdjust(routes);
             },
             action(args){
                 if (payCosts(this)){
@@ -3101,12 +3281,12 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_effect',[2])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
+                return `<div>${loc('city_trade_effect',[hugeEffect(2)])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('wharf','city');
-                    global.city.market.mtrade += 2;
+                    global.city.market.mtrade += hugeAdjust(2);
                     let vol = global.tech['world_control'] ? 15 : 10;
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         vol *= 2;
@@ -3152,22 +3332,22 @@ export const actions = {
                     modifier *= 1 - (govEffect.socialist()[3] / 100);
                 }
 
-                let amp = +(1 * modifier).toFixed(2);
-                let cas = +(5 * modifier).toFixed(2);
-                let mon = +(2 * modifier).toFixed(2);
-                let trd = +(3 * modifier).toFixed(2);
+                let amp = 1 * modifier;
+                let cas = 5 * modifier;
+                let mon = 2 * modifier;
+                let trd = 3 * modifier;
 
-                let desc = `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div>`;
-                desc += `<div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div>`;
-                desc += `<div>${loc('city_tourist_center_effect2',[cas,structName('casino')])}</div>`;
-                desc += `<div>${loc('city_tourist_center_effect2',[mon,loc(`arpa_project_monument_title`)])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('city_tourist_center_effect1',[hugeEffect(50, 2), global.resource.Food.name])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[hugeEffect(amp,2,2),actions.city.amphitheatre.title()])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[hugeEffect(cas,2,2),structName('casino')])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect2',[hugeEffect(mon,2),loc(`arpa_project_monument_title`)])}</div>`;
                 if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
-                    desc += `<div>${loc(`city_tourist_center_effect2`,[trd, loc('city_trade')])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[hugeEffect(trd,2,2), loc('city_trade')])}</div>`;
                 }
                 let piousVal = govActive('pious',1);
                 if (piousVal){
                     piousVal *= modifier;
-                    desc += `<div>${loc(`city_tourist_center_effect2`,[piousVal, structName('temple')])}</div>`;
+                    desc += `<div>${loc(`city_tourist_center_effect2`,[hugeEffect(piousVal,2,2), structName('temple')])}</div>`;
                 }
 
                 return desc;
@@ -3217,7 +3397,7 @@ export const actions = {
             effect(){
                 let athVal1 = govActive('athleticism',0);
                 let athVal2 = govActive('athleticism',1);
-                return`<div>${loc('plus_max_resource',[jobScale(athVal2 ? athVal2 : 1),loc(`job_entertainer`)])}</div><div>${loc('city_max_morale',[athVal1 ? athVal1 : 1])}</div>`;
+                return`<div>${loc('plus_max_resource',[jobScale(athVal2 ? athVal2 : 1),loc(`job_entertainer`)])}</div><div>${loc('city_max_morale',[hugeEffect(athVal1 ? athVal1 : 1)])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
@@ -3264,6 +3444,17 @@ export const actions = {
                 return desc;
             },
             powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            storage: {
+                res(res){
+                    let list = {
+                        'Money': casino_vault()
+                    };
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('casino','city');
@@ -3308,7 +3499,7 @@ export const actions = {
                     desc = desc + `<div>${loc('plus_max_resource',[jobScale(1),global.civic?.priest?.name || loc(`job_priest`)])}</div>`;
                 }
                 if (global.race.universe === 'evil'){
-                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[hugeEffect(0.5, 2),global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -3464,18 +3655,10 @@ export const actions = {
             },
             action(args){
                 if (payCosts(this)){
-                    let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
-                    if (global.tech['science'] >= 4){
-                        gain *= 1 + (global.city.library.count * 0.02);
-                    }
-                    if (global.tech['supercollider']){
-                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
-                        gain *= (global.tech['supercollider'] / ratio) + 1;
-                    }
-                    global['resource']['Knowledge'].max += gain;
+                    global['resource']['Knowledge'].max += this.knowVal();
                     incrementStruct('university','city');
                     global.civic.professor.display = true;
-                    global.civic.professor.max = jobScale(global.city.university.count);
+                    global.civic.professor.max += jobScale(1);
                     return true;
                 }
                 return false;
@@ -3516,7 +3699,7 @@ export const actions = {
                         know = 0;
                     }
                 }
-                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[know])}</div>`;
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[hugeEffect(know)])}</div>`;
             },
             knowVal(){
                 let gain = 125;
@@ -3600,21 +3783,22 @@ export const actions = {
                 if (global.city.powered){
                     let pgain = +(this.knowVal(true)).toFixed(1);
                     if (global.tech.science >= 15){
-                        desc = desc + `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
+                        desc = desc + `<div>${loc('city_wardenclyffe_effect4',[hugeEffect(2)])}</div>`;
                     }
                     if (global.race.universe === 'magic'){
-                        let mana = spatialReasoning(8);
+                        let mana = spatialReasoning(this.storage.res('Mana') * this.storage.multiplier());
                         desc = desc + `<div>${loc('plus_max_resource',[mana,global.resource.Mana.name])}</div>`;
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[this.powered(),pgain.toLocaleString(),morale])}</div>`
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[this.powered(),pgain.toLocaleString(),hugeEffect(morale)])}</div>`
                     }
                     else {
                         desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[this.powered(),pgain.toLocaleString()])}</div>`;
                     }
                     if (global.race['artifical']){
-                        desc = desc + `<div class="has-text-caution">${loc('city_transmitter_effect',[spatialReasoning(250)])}</div`;
+                        let signal = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
+                        desc = desc + `<div class="has-text-caution">${loc('city_transmitter_effect',[signal])}</div`;
                     }
                 }
                 return desc;
@@ -3643,6 +3827,24 @@ export const actions = {
                 return gain;
             },
             powered(){ return powerCostMod(2); },
+            storage: {
+                res(res){
+                    let list = {
+                        'Food': 250,
+                        'Mana': 8
+                    };
+                    if (!global.race['artifical']){
+                        delete list.Food;
+                    }
+                    if (global.race.universe !== 'Magic'){
+                        delete list.Mana;
+                    }
+                    return res ? (list[res] || 0) : list;
+                },
+                multiplier(wiki){
+                    return 1;
+                }
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('wardenclyffe','city');
@@ -3706,7 +3908,7 @@ export const actions = {
                 if (payCosts(this)){
                     incrementStruct('biolab','city');
                     if (powerOnNewStruct(this)){
-                        global.resource.Knowledge.max += 3000;
+                        global.resource.Knowledge.max += this.knowVal();
                     }
                     return true;
                 }
@@ -3744,7 +3946,7 @@ export const actions = {
             effect(){
                 let consume = global.race.universe === 'magic' ? 0.05 : 0.35;
                 let power = -(this.powered());
-                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
+                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[hugeEffect(consume,2)])}</span>`;
             },
             powered(wiki){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
@@ -3766,8 +3968,7 @@ export const actions = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('coal_power','city');
-                    global.city.coal_power.on++;
-                    global.city.power += 5;
+                    powerOnNewStruct(this);
                     return true;
                 }
                 return false;
@@ -3803,7 +4004,7 @@ export const actions = {
             effect(){
                 let consume = 0.65;
                 let power = -(this.powered());
-                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
+                return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[hugeEffect(consume,2)])}</span>`;
             },
             powered(wiki){
                 let power = 0;
@@ -3830,8 +4031,7 @@ export const actions = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('oil_power','city');
-                    global.city.oil_power.on++;
-                    global.city.power += 6;
+                    powerOnNewStruct(this);
                     return true;
                 }
                 return false;
@@ -3860,15 +4060,14 @@ export const actions = {
             },
             effect(){
                 let consume = 0.1;
-                return `<span>+${-(this.powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
+                return `<span>+${-(this.powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[hugeEffect(consume, 2)])}</span>`;
             },
             powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
             p_fuel(){ return { r: 'Uranium', a: 0.1 }; },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('fission_power','city');
-                    global.city.fission_power.on++;
-                    global.city.power += 14;
+                    powerOnNewStruct(this);
                     return true;
                 }
                 return false;
@@ -3895,8 +4094,9 @@ export const actions = {
                 Iridium(r={}){ return costMultiplier('mass_driver', r.offset, 2200, 1.32); }
             },
             effect(){
-                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1,job_data.scientist.name()])}</div>` : '';
-                return `${exo}<span>${loc('city_mass_driver_effect',[global.race['truepath'] ? 6 : 5,flib('name')])}</span> <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span>`;
+                let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[hugeEffect(1, 1, 3),job_data.scientist.name()])}</div>` : '';
+                let effect = (1 - (global.race['truepath'] ? 0.94 : 0.95) ** hugeAdjust(1)) * 100;
+                return `${exo}<span>${loc('city_mass_driver_effect',[+(effect).toFixed(1),flib('name')])}</span> <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span>`;
             },
             powered(){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5;
@@ -4791,7 +4991,7 @@ export function buildTemplate(key, region){
                     Steel(r={}){ return costMultiplier('nanite_factory', r.offset, 1000, dirt_adjust(1.25)); }
                 },
                 effect(){
-                    let val = spatialReasoning(2500);
+                    let val = spatialReasoning(this.storage.res('Nanite') * this.storage.multiplier());
                     return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
                 },
                 special: true,
@@ -4805,6 +5005,20 @@ export function buildTemplate(key, region){
                         return true;
                     }
                     return false;
+                },
+                struct(){
+                    return {
+                        d: {
+                            count: 1,
+                            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
+                            Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
+                            Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
+                            Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
+                            Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
+                            Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
+                        },
+                        p: ['nanite_factory','city']
+                    }
                 },
                 flair: loc(`city_nanite_factory_flair`)
             };
@@ -4830,7 +5044,7 @@ export function buildTemplate(key, region){
                     if (!global.race['artifical'] && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater']){
                         let cattle = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.cattle : 0;
                         let cattleCap = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.cattleCap : 0;
-                        desc += `<div>${loc(`city_captive_housing_cattle`,[cattle,cattleCap])}</div>`;
+                        desc += `<div>${loc(`city_captive_housing_cattle`,[Math.floor(cattle),Math.floor(cattleCap)])}</div>`;
                     }
 
                     let usedCap = 0;
@@ -4846,7 +5060,7 @@ export function buildTemplate(key, region){
                     }
 
                     let raceCap = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.raceCap : 0;
-                    desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,raceCap])}</div>`;
+                    desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,Math.floor(raceCap)])}</div>`;
                     if (global.tech['unfathomable'] && global.tech.unfathomable >= 2){
                         desc += `<div>${loc(`plus_max_resource`,[1,loc('job_torturer')])}</div>`;
                     }
@@ -4855,7 +5069,7 @@ export function buildTemplate(key, region){
                 action(args){
                     if (payCosts(this)){
                         incrementStruct('captive_housing','city');
-                        let houses = global.city.captive_housing.count;
+                        let houses = hugeAdjust(global.city.captive_housing.count);
                         global.city.captive_housing.raceCap = houses * (global.tech['unfathomable'] && global.tech.unfathomable >= 3 ? 3 : 2);
                         global.city.captive_housing.cattleCap = houses * 5;
                         return true;
@@ -5152,12 +5366,12 @@ export function buildTemplate(key, region){
                 },
                 effect(){
                     let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
-                    return `<div>${loc(`city_meditation_effect`,[traits.calm.vars()[0]])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
+                    return `<div>${loc(`city_meditation_effect`,[hugeEffect(traits.calm.vars()[0], 0)])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
                 },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct('meditation','city');
-                        global.resource.Zen.max += traits.calm.vars()[0];
+                        global.resource.Zen.max += hugeAdjust(traits.calm.vars()[0]);
                         return true;
                     }
                     return false;
@@ -5338,6 +5552,7 @@ export function buildTemplate(key, region){
                     return false;
                 },
                 count(){ return global.city['banquet'].level },
+                on_cap(){ return Math.min(global.city['banquet'].level, 1); }, //todo: test whether this works and remove redundancies for previous method
                 struct(){
                     return {
                         d: { count: 0, on: 0, strength: 0, level: 0 },
@@ -5349,6 +5564,10 @@ export function buildTemplate(key, region){
             return tKey(action,tName,region);
         }
     }
+}
+
+export function hugeEffect(v, i=1, e=1){
+    return +hugeAdjust(v, e).toFixed(i); //use hugeAdjust if you want an int instead of a string
 }
 
 // Return the final Parasite assembly cooldown day.
@@ -5799,10 +6018,10 @@ export function templeEffect(){
         desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
     }
     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-        desc = desc + `<div>${loc('city_temple_effect3')}</div>`;
+        desc = desc + `<div>${loc('city_temple_effect3', [hugeEffect(1)])}</div>`;
     }
     if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-        desc = desc + `<div>${global.race['truepath'] ? loc('city_temple_effect_tp',[2,25]) : loc('city_temple_effect4')}</div>`;
+        desc = desc + `<div>${global.race['truepath'] ? loc('city_temple_effect_tp',[hugeEffect(2),hugeEffect(25)]) : loc('city_temple_effect4', hugeEffect(2.5, 2))}</div>`;
     }
     return desc;
 }
@@ -9367,14 +9586,7 @@ function sentience(){
 
     if (global.race['deconstructor']){
         global.resource.Nanite.display = true;
-        global.city['nanite_factory'] = { count: 1,
-            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
-            Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
-            Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
-            Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
-            Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
-            Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
-        };
+        initStruct(actions.city.nanite_factory); global.city.nanite_factory.count = 1;
         global.settings.showIndustry = true;
     }
 

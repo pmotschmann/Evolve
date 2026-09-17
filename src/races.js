@@ -5852,15 +5852,9 @@ export function cleanAddTrait(trait){
             break;
         case 'deconstructor':
             global.resource.Nanite.display = true;
-            checkPurgatory('city','nanite_factory',{ count: 1,
-                Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
-                Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
-                Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
-                Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
-                Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
-                Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
-            });
+            checkPurgatory('city','nanite_factory', actions.city.nanite_factory.struct().d);
             checkPurgatory('underground','nanite_factory',{ count: 1});
+            global.city.nanite_factory.count = 1;
             break;
         case 'shapeshifter':
             shapeShift(false,true);

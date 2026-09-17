@@ -14,9 +14,11 @@ export function highPopAdjust(v){
     return v;
 }
 
-export function hugeAdjust(v){
+export function hugeAdjust(v, e=1){
+    //Building and job counts are much lower with Humongous, since some buildings rely on other buildings or jobs for their effects. Those effects may have to be multiplied multiple times.
+    //Orichalcum Mass Drivers are such an example, relying on their own count, exolab count and scientist count. That modifier is affected by Humongous 3 times
     if (global.race['humongous']){
-        v *= traits.humongous.vars()[0];
+        v *= traits.humongous.vars()[0] ** e;
     }
     return v;
 }
@@ -135,7 +137,7 @@ function baseProduction(id,val,wiki){
                 case 'food':
                     return highPopAdjust(global.race.universe === 'evil' ? 0.1 : 0.25);
                 case 'cat_food':
-                    return 2;
+                    return hugeAdjust(2);
                 case 'lumber':
                     return highPopAdjust(1.5);
             }
@@ -551,7 +553,7 @@ function baseProduction(id,val,wiki){
         }
         case 'alien_outpost':
         {
-            return 0.01;
+            return 0.01 / hugeAdjust(1);
         }
         case 'psychic_boost':
         {
@@ -630,6 +632,18 @@ function baseProduction(id,val,wiki){
             }
             return water;
         }
+        case 'surface_farm':
+        {
+            if(global.race['artifical']){
+                return 50;
+            }
+            else if(global.race['carnivore'] || global.race['soul_eater'] || global.race['unfathomable']){
+                return 0.08 * (global.surface.herbivores?.count || 0);
+            }
+            else{
+                return 0.05 * (global.surface.trees?.count || 0);
+            }
+        }
         case 'crater_drill':
         {
             switch (val){
@@ -706,9 +720,14 @@ const infiltratedRates = {
 
 // Apply infiltrator penalties to per-structure production.
 export function production(id,val,wiki){
-    const value = baseProduction(id,val,wiki);
-    if (wiki || !infiltratedRates[id]){ return value; }
-    const factor = infiltratorFactor(infiltratedRates[id], id);
+    let value = baseProduction(id,val,wiki);
+    let factor = 1;
+    if (!['psychic_boost', 'psychic_cash'].includes(id)){
+        factor = hugeAdjust(factor);
+    }
+    if (!wiki && infiltratedRates[id]){
+        factor *= infiltratorFactor(infiltratedRates[id], id);
+    }
     if (factor === 1){ return value; }
     if (typeof value === 'number'){ return value * factor; }
     // Scale output fields; leave the government relation bonus unchanged.

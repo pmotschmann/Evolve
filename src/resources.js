@@ -12,7 +12,7 @@ import { freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeed
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
-import { highPopAdjust, production, teamster, technicianCount, infiltratorFactor } from './prod.js';
+import { highPopAdjust, hugeAdjust, production, teamster, technicianCount, infiltratorFactor } from './prod.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
@@ -4412,7 +4412,8 @@ export const spatialReasoning = (function(){
             global.race['cataclysm'] ? global.race.cataclysm : '0',
             global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
             global.genes['ancients'] || '0',
-            global.civic['priest'] ? global.civic.priest.workers : '0'
+            global.civic['priest'] ? global.civic.priest.workers : '0',
+            hugeAdjust(1)
         ].join('-');
 
         if (!spatial[tkey]){
@@ -4471,6 +4472,7 @@ export const spatialReasoning = (function(){
                     modifier *= harmonic[1];
                 }
             }
+            modifier = hugeAdjust(modifier);
             spatial[tkey] = {};
             spatial[tkey][key] = modifier;
         }
@@ -4522,7 +4524,8 @@ export function faithBonus(num_temples = -1){
             if (global.race['ooze']){
                 temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
             }
-
+            temple_bonus = hugeAdjust(temple_bonus);
+            
             return num_temples * temple_bonus * geneBonus('zealot') * geneBonus('radiant');
         }
     }
@@ -4564,6 +4567,7 @@ export function templePlasmidBonus(num_temples = -1){
             if (global.race['orbit_decayed'] && global.race['truepath']){
                 temple_bonus *= 0.1;
             }
+            temple_bonus = hugeAdjust(temple_bonus);
 
             return num_temples * temple_bonus;
         }
