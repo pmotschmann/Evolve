@@ -1114,8 +1114,8 @@ export function index(){
                                         Object.keys(global.settings.msgFilters).forEach(function (filt){
                                             if (global.settings.msgFilters[filt].vis && !haveVis){
                                                 haveVis = true;
-                                                $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
-                                                $(`#msgQueueFilter-${filt}`).addClass('is-active');
+                                                $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-checked', 'false').attr('tabindex', '-1');
+                                                $(`#msgQueueFilter-${filt}`).addClass('is-active').attr('aria-checked', 'true').attr('tabindex', '0');
                                                 message_logs.view = filt;
                                                 let queue = $(`#msgQueueLog`);
                                                 clearElement(queue);
