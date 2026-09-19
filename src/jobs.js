@@ -3,7 +3,7 @@ import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg, getHalloween } from './functions.js';
 import { loc } from './locale.js';
 import { highPopAdjust, hugeAdjust } from './prod.js';
-import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus, geneFlat} from './races.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck, geneBonus, geneFlat, templeOutputBonus} from './races.js';
 import { armyRating, govEffect } from './civics.js';
 import { govActive } from './governor.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
@@ -525,7 +525,7 @@ export const job_data = {
             professor *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professor *= racialTrait(global.civic.professor.workers,'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professor *= 1 + (templeCount() * 0.05);
+                professor *= 1 + (templeCount() * 0.05 * templeOutputBonus());
             }
             if (global.civic.govern.type === 'theocracy'){
                 professor *= 1 - (govEffect.theocracy()[1] / 100);

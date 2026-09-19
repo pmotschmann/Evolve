@@ -2662,7 +2662,7 @@ export const traits = {
         desc(v){ return loc('trait_cunning',v); },
         type: 'minor',
         base: 'A',
-        vars(r=1){ return [8*r]; },
+        vars(r=1){ return [3*r]; },
     },
     hardy: { // Factory output
         name(){ return loc('trait_hardy_name'); },
@@ -2743,7 +2743,7 @@ export const traits = {
         },
         type: 'minor',
         base: 'G',
-        vars(r=1){ return [4*r]; },
+        vars(r=1){ return [2*r]; },
     },
     assayer: { // Iridium and Titanium production
         name(){ return loc('trait_assayer_name'); },
@@ -3027,7 +3027,7 @@ export const traits = {
         type: 'minor',
         base: 'T',
         genus: 'angelic',
-        vars(r=1){ return [3*r]; },
+        vars(r=1){ return [1*r]; },
     },
     overclocked: { // Factory output
         name(){ return loc('trait_overclocked_name'); },
@@ -4770,9 +4770,6 @@ export function racialTrait(workers,type){
     }
     if (type === 'science'){ modifier *= geneBonus('cerebral'); }
     if (type === 'lumberjack'){ modifier *= geneBonus('arborist'); }
-    if (global.race['analytical'] && type === 'science'){
-        modifier *= 1 + (geneVars('analytical')[0] * global.race['analytical'] / 100);
-    }
     modifier *= geneBonus('taskmaster');
     if (['lumberjack','miner','forager','hunting'].includes(type)){
         modifier *= geneBonus('titanic');
@@ -5360,6 +5357,18 @@ export function bumpGeneCache(){
     geneGenusPairs = null;
 }
 
+// The rank a paired minor rung lends to Content or Promiscuous. A major moved onto the
+// minor strand behaves as a standard rank-10 minor here, without changing its own effect.
+function minorEmergentSlotRank(slot){
+    let held = geneSlots()[slot];
+    if (!held || !held.g || !traits[held.g]){ return 0; }
+    if (geneLike(held.g)){ return held.r || 0; }
+    if (!geneSlotExtra(slot) && slotKind(slot) === 'minor' && traits[held.g].type === 'major'){
+        return genes.gene_rank_paired;
+    }
+    return 0;
+}
+
 function buildGeneRanks(){
     let out = {};
     geneEmergentNames.forEach(function(g){ out[g] = 0; });
@@ -5372,13 +5381,14 @@ function buildGeneRanks(){
         if (i >= majorFrom && i < majorTo){ continue; }
         let a = slots[i], b = slots[i + 1];
         if (!a || !a.g || !b || !b.g){ continue; }
-        // Only minor-gene pairs contribute to minor emergent ranks.
-        if (!geneLike(a.g) || !geneLike(b.g)){ continue; }
+        let aRank = minorEmergentSlotRank(i);
+        let bRank = minorEmergentSlotRank(i + 1);
+        if (aRank <= 0 || bRank <= 0){ continue; }
         if (!geneSlotAnswers(i) || !geneSlotAnswers(i + 1)){ continue; }
         if (!geneSlotMatched(i)){ continue; }
         let grows = geneEmergent[geneSlotBase(i)];
         if (grows === undefined || out[grows] === undefined){ continue; }
-        out[grows] += Math.min(a.r,b.r);
+        out[grows] += Math.min(aRank,bRank);
     }
     return out;
 }
@@ -5650,6 +5660,11 @@ export function geneBonus(gene,idx,reduce){
     if (rank <= 0 || !traits[gene]){ return 1; }
     let vars = geneVars(gene);
     return reduce ? 1 - (vars[idx || 0] * rank / 100) : 1 + (vars[idx || 0] * rank / 100);
+}
+
+// The combined multiplier for temple-derived effects; priest capacity and trade routes do not use it.
+export function templeOutputBonus(){
+    return geneBonus('zealot') * geneBonus('radiant');
 }
 
 // The same figure as a plain total rather than a multiplier, for the handful of effects that add

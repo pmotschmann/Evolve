@@ -3,7 +3,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, support_o
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery, modalCloseButton, calcDeepPower } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars} from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars, templeOutputBonus} from './races.js';
 import { defineGovernor, govActive, removeTask } from './governor.js';
 import { drawTech } from  './actions.js';
 import { soulForgeSoldiers } from './portal.js';
@@ -2332,7 +2332,7 @@ export function armyRating(val,type,wound,analysis){
             data.push({ k: 'trait_tactical_name', v: tactical });
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
-            let zealotry = (templeCount() * 0.01);
+            let zealotry = (templeCount() * 0.01 * templeOutputBonus());
             army *= 1 + zealotry;
             data.push({ k: 'tech_zealotry', v: zealotry });
         }

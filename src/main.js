@@ -3,7 +3,7 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes, migrateStrand} from './races.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes, migrateStrand, templeOutputBonus} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, syncSupplyZones, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, jobStack, workerScale, limitCraftsmen, loadServants, craftsmanCap, craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone } from './jobs.js';
@@ -5055,7 +5055,7 @@ function fastLoop(){
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(workerScale(global.civic.professor.workers,'professor'),'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professors_base *= 1 + faithTempleCount() * 0.05;
+                professors_base *= 1 + faithTempleCount() * 0.05 * templeOutputBonus();
             }
             if (global.civic.govern.type === 'theocracy'){
                 professors_base *= 1 - (govEffect.theocracy()[1] / 100);
@@ -5168,6 +5168,12 @@ function fastLoop(){
             if (global.underground['stone_slab_perk']){
                 breakdown.p['Knowledge'][loc('underground_stone_slab')] = (2 * global.underground['stone_slab_perk'].count) + '%';
                 delta *= 1 + (0.02 * global.underground['stone_slab_perk'].count);
+            }
+
+            let analytical = geneBonus('analytical');
+            if (analytical > 1){
+                breakdown.p['Knowledge'][traits.analytical.name()] = ((analytical - 1) * 100) + '%';
+                delta *= analytical;
             }
 
             if (gene_consume > 0) {
@@ -9192,7 +9198,7 @@ function fastLoop(){
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4 && !global.race['truepath']){
-                temple_mult += faithTempleCount() * 0.025;
+                temple_mult += faithTempleCount() * 0.025 * templeOutputBonus();
             }
 
             let upkeep = 0;
@@ -9265,7 +9271,7 @@ function fastLoop(){
             }
             let piousVal = govActive('pious',1);
             if (piousVal && global.city['temple']){
-                tourism += global.city['tourist_center'].on * templeCount() * piousVal * amp;
+                tourism += global.city['tourist_center'].on * templeCount() * piousVal * amp * templeOutputBonus();
             }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 1 + (govEffect.corpocracy()[2] / 100);
@@ -9372,7 +9378,7 @@ function fastLoop(){
         breakdown.p['Money'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 4 && global.race['truepath']){
-            let merchsales = global.resource[global.race.species].amount * templeCount() * 0.08;
+            let merchsales = global.resource[global.race.species].amount * templeCount() * 0.08 * templeOutputBonus();
             breakdown.p['Money'][structName('temple')] = (merchsales) + 'v';
             modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
             rawCash += merchsales * global_multiplier;
@@ -10076,7 +10082,7 @@ function midLoop(){
                 breakdown.c.Authority[loc('surface_watch_tower')] = gain+'v';
             }
             if (global.city['temple'] && !global.race['warlord']){
-                let gain = templeCount() * 0.5;
+                let gain = templeCount() * 0.5 * templeOutputBonus();
                 caps.Authority += gain;
                 breakdown.c.Authority[structName('temple')] = gain+'v';
             }

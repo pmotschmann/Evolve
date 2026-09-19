@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
-import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
+import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars, templeOutputBonus} from './races.js';
 import { templeCount, actions } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -2693,8 +2693,9 @@ export function tradeSellPrice(res){
 
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
-    // Cunning drives the buying price down. The selling price is untouched by it.
-    rate /= geneBonus('cunning');
+    if (global.race['cunning']){
+        rate *= (1 - geneVars('cunning')[0] / 100) ** geneRank('cunning');
+    }
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);
     }
@@ -3670,6 +3671,7 @@ export function containerValue(){
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
         container_value += global.tech['steel_container'] >= 9 ? 15300 : 8000;
     }
+    container_value *= geneBonus('stockpiler');
     if (global.race['pack_rat']){
         container_value *= 1 + (traits.pack_rat.vars()[0] / 100);
     }
@@ -4542,7 +4544,7 @@ export function faithBonus(num_temples = -1){
                 temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
             }
 
-            return num_temples * temple_bonus * geneBonus('zealot') * geneBonus('radiant');
+            return num_temples * temple_bonus * templeOutputBonus();
         }
     }
     return 0;
@@ -4584,7 +4586,7 @@ export function templePlasmidBonus(num_temples = -1){
                 temple_bonus *= 0.1;
             }
 
-            return num_temples * temple_bonus;
+            return num_temples * temple_bonus * templeOutputBonus();
         }
     }
     return 0;

@@ -4,7 +4,7 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank,
          genes, geneBaseOf, genusFeeders, genusStrandTraits, geneCrossingUnlocked, traitSkin,
-         recessivePairCost, recessiveTotalCost } from './races.js';
+         recessivePairCost, recessiveTotalCost, templeOutputBonus } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, jobStack, jobStackStep, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
@@ -1302,7 +1302,7 @@ const spaceProjects = {
                     gain += int_on['laboratory'] * 25;
                 }
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
-                    gain += templeCount(true) * 15;
+                    gain += templeCount(true) * 15 * templeOutputBonus();
                 }
                 if (global.tech.mass >= 2){
                     let brain = workerScale(global.civic.scientist.workers,'scientist');
@@ -8203,7 +8203,7 @@ export function zigguratBonus(){
         if (global.race['high_pop']){
             zig = highPopAdjust(zig);
         }
-        bonus += (templeCount(true) * global.civic.colonist.workers * zig);
+        bonus += (templeCount(true) * global.civic.colonist.workers * zig * templeOutputBonus());
     }
     return bonus;
 }
