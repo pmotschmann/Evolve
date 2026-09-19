@@ -17,6 +17,7 @@ export const events = {
             resource: 'DNA'
         },
         type: 'major',
+        class: 'positive',
         effect(){
             var gain = Math.rand(1,Math.round(global.resource.DNA.max / 3));
             var res = global.resource.DNA.amount + gain;
@@ -31,6 +32,7 @@ export const events = {
             resource: 'RNA'
         },
         type: 'major',
+        class: 'positive',
         effect(){
             var gain = Math.rand(1,Math.round(global.resource.RNA.max / 2));
             var res = global.resource.RNA.amount + gain;
@@ -44,6 +46,7 @@ export const events = {
             resource: 'Knowledge'
         },
         type: 'major',
+        class: 'positive',
         effect(){
             global.race['inspired'] = Math.rand(300,600);
             return loc('event_inspiration');
@@ -54,6 +57,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'major',
+        class: 'positive',
         effect(){
             global.race['motivated'] = Math.rand(300,600);
             return loc('event_motivation');
@@ -66,6 +70,7 @@ export const events = {
             notrait: 'evil'
         },
         type: 'major',
+        class: 'negative',
         effect(){
             var loss = Math.rand(1,Math.round(global.resource.Lumber.amount / 4));
             var res = global.resource.Lumber.amount - loss;
@@ -79,6 +84,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.city.ptrait.includes('flare') && !global.race['iceage'] ? true : false;
         },
@@ -137,6 +143,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             if (checkControlling(`gov0`) && checkControlling(`gov1`) && checkControlling(`gov2`)){
                 return false;
@@ -191,6 +198,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             if (checkControlling(`gov0`) || checkControlling(`gov1`) || checkControlling(`gov2`)){
                 return false;
@@ -241,6 +249,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
         },
@@ -254,6 +263,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
         },
@@ -267,6 +277,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
         },
@@ -279,6 +290,7 @@ export const events = {
             tech: 'military',
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.race['truepath'] && !global.tech['isolation'] && rivalActive() && global.civic.foreign.gov3.hstl > 60 ? true : false;
         },
@@ -291,6 +303,7 @@ export const events = {
             tech: 'magic',
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.race['witch_hunter'] && global.resource.Sus.amount >= 100 ? true : false;
         },
@@ -304,6 +317,7 @@ export const events = {
             notrait: 'truepath'
         },
         type: 'major',
+        class: 'negative',
         effect(){            
             let killed = Math.floor(seededRandom(0,global.civic.garrison.wounded));
             let wounded = Math.floor(seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
@@ -338,6 +352,7 @@ export const events = {
             notech: 'quaked'
         },
         type: 'major',
+        class: 'positive',
         condition(){
             return global.city.ptrait.includes('unstable') ? true : false;
         },
@@ -353,6 +368,7 @@ export const events = {
             notech: 'portal_guard'
         },
         type: 'major',
+        class: 'positive',
         condition(){
             return global.space['space_barracks'] && global.space.space_barracks.on > 0 ? true : false;
         },
@@ -367,6 +383,7 @@ export const events = {
             tech: 'portal_guard'
         },
         type: 'major',
+        class: 'negative',
         effect(){
             let surge = Math.rand(2500,5000);
             global.portal.fortress.threat += surge;
@@ -379,6 +396,7 @@ export const events = {
             resource: 'Knowledge'
         },
         type: 'major',
+        class: 'positive',
         effect(){
             let resources = ['Iron','Copper','Steel','Cement'];
             for (var i = 0; i < resources.length; i++){
@@ -403,6 +421,7 @@ export const events = {
             tech: 'primitive'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             let threshold = global.civic.govern.type === 'oligarchy' ? 45 : 25;
             let aristoVal = govActive('aristocrat',2);
@@ -423,6 +442,7 @@ export const events = {
             tech: 'primitive'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return global.civic.govern.type === 'republic' ? true : false;
         },
@@ -460,6 +480,7 @@ export const events = {
             tech: 'govern'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             return govActive('muckraker',0) ? true : false;
         },
@@ -495,6 +516,7 @@ export const events = {
             notech: 'world_control'
         },
         type: 'major',
+        class: 'negative',
         condition(){
             if (global.race['elusive']){
                 return false;
@@ -532,6 +554,7 @@ export const events = {
             tech: 'mining',
         },
         type: 'major',
+        class: 'negative',
         condition(){
             if (global.resource[global.race.species].amount > 0 && global.civic.miner.workers > 0){
                 return true;
@@ -551,6 +574,7 @@ export const events = {
             resource: 'Money'
         },
         type: 'major',
+        class: 'positive',
         effect(){
             let stealList = [];
             [
@@ -594,6 +618,7 @@ export const events = {
             return false;
         },
         type: 'major',
+        class: 'negative',
         effect(){
             let dead = Math.floor(seededRandom(2,jobScale(10)));
             let type = Math.floor(seededRandom(0,10));
@@ -618,6 +643,7 @@ export const events = {
             return false;
         },
         type: 'major',
+        class: 'negative',
         effect(){
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[0] + 1)));
             if (dead > global.civic.garrison.workers){ dead = global.civic.garrison.workers; }
@@ -637,6 +663,7 @@ export const events = {
             return false;
         },
         type: 'major',
+        class: 'neutral',
         effect(){
             switch (Math.rand(0,5)){
                 case 0:
@@ -723,6 +750,7 @@ export const events = {
             trait: 'curious',
         },
         type: 'minor',
+        class: 'neutral',
         effect(){
             let num = Math.rand(0,5);
             return loc(`event_curious${num}`,[races[global.race.species].name]);
@@ -734,6 +762,7 @@ export const events = {
             trait: 'curious',
         },
         type: 'minor',
+        class: 'neutral',
         effect(){
             let num = Math.rand(5,10);
             return loc(`event_curious${num}`,[races[global.race.species].name]);
@@ -742,14 +771,15 @@ export const events = {
     slave_escape1: slaveLoss('minor','escape1'),
     slave_escape2: slaveLoss('minor','escape2'),
     slave_escape3: slaveLoss('minor','death4'),
-    shooting_star: basicEvent('shooting_star','primitive'),
-    tumbleweed: basicEvent('tumbleweed','primitive'),
-    flashmob: basicEvent('flashmob','high_tech'),
+    shooting_star: basicEvent('shooting_star','primitive','neutral'),
+    tumbleweed: basicEvent('tumbleweed','primitive','neutral'),
+    flashmob: basicEvent('flashmob','high_tech','neutral'),
     witch_hunt: {
         reqs: {
             tech: 'magic',
         },
         type: 'minor',
+        class: 'negative',
         condition(){
             return global.race['witch_hunter'] && global.resource.Sus.amount >= 50 && global.civic.scientist.workers > 0 ? true : false;
         },
@@ -773,6 +803,7 @@ export const events = {
             return false;
         },
         type: 'minor',
+        class: 'negative',
         effect(){
             global.resource[global.race.species].amount--;
             citizenDeath(1);
@@ -795,6 +826,7 @@ export const events = {
             return false;
         },
         type: 'minor',
+        class: 'negative',
         effect(){
             let dead = Math.floor(seededRandom(1,jobScale(traits.aggressive.vars()[1] + 1)));
             if (dead > global.resource[global.race.species].amount){ dead = global.resource[global.race.species].amount; }
@@ -808,6 +840,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'minor',
+        class: 'neutral',
         condition(){
             // No planet or already hot
             if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 2){
@@ -836,6 +869,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'minor',
+        class: 'neutral',
         condition(){
             // No planet or already cold
             if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 0){
@@ -859,16 +893,16 @@ export const events = {
             return loc('event_coldsnap');
         }
     },
-    cucumber: basicEvent('cucumber','primitive'),
-    planking: basicEvent('planking','high_tech'),
-    furryfish: basicEvent('furryfish','primitive'),
-    meteor_shower: basicEvent('meteor_shower','primitive', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
-    hum: basicEvent('hum','high_tech'),
-    bloodrain: basicEvent('bloodrain','primitive', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
-    haunting: basicEvent('haunting','science'),
-    mothman: basicEvent('mothman','science'),
-    dejavu: basicEvent('dejavu','theology'),
-    dollar: basicEvent('dollar','currency',function(){
+    cucumber: basicEvent('cucumber','primitive','neutral'),
+    planking: basicEvent('planking','high_tech','neutral'),
+    furryfish: basicEvent('furryfish','primitive','neutral'),
+    meteor_shower: basicEvent('meteor_shower','primitive','neutral', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
+    hum: basicEvent('hum','high_tech','neutral'),
+    bloodrain: basicEvent('bloodrain','primitive','neutral', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
+    haunting: basicEvent('haunting','science','neutral'),
+    mothman: basicEvent('mothman','science','neutral'),
+    dejavu: basicEvent('dejavu','theology','neutral'),
+    dollar: basicEvent('dollar','currency','positive',function(){
         let cash = Math.rand(1,10);
         global.resource.Money.amount += cash;
         if (global.resource.Money.amount > global.resource.Money.max){
@@ -876,7 +910,7 @@ export const events = {
         }
         return cash;
     }),
-    pickpocket: basicEvent('pickpocket','currency',function(){
+    pickpocket: basicEvent('pickpocket','currency','negative',function(){
         let cash = Math.rand(1,10);
         global.resource.Money.amount -= cash;
         if (global.resource.Money.amount < 0){
@@ -884,19 +918,20 @@ export const events = {
         }
         return cash;
     }),
-    bird: basicEvent('bird','primitive'),
+    bird: basicEvent('bird','primitive','neutral'),
     contest: {
         reqs: {
             tech: 'science',
         },
         type: 'minor',
+        class: 'neutral',
         effect(){
             let place = Math.rand(0,3);
             let contest = Math.rand(0,10);
             return loc('event_contest',[loc(`event_contest_place${place}`),loc(`event_contest_type${contest}`)]);
         }
     },
-    cloud: basicEvent('cloud','primitive',function(){
+    cloud: basicEvent('cloud','primitive','neutral',function(){
         let type = Math.rand(0,11);
         return loc(`event_cloud_type${type}`);
     }, !global.race['iceage']),
@@ -905,6 +940,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'minor',
+        class: 'negative',
         condition(){
             if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['iceage'] && global.city.calendar.weather !== 0){
                 return true;
@@ -921,6 +957,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'minor',
+        class: 'neutral',
         condition(){
             if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['iceage'] && global.city.calendar.weather !== 1){
                 return true;
@@ -932,13 +969,13 @@ export const events = {
             return loc('event_gloom');
         }
     },
-    tracks: basicEvent('tracks','primitive'),
-    hoax: basicEvent('hoax','primitive'),
-    burial: basicEvent('burial','primitive'),
-    artifacts: basicEvent('artifacts','high_tech'),
-    parade: basicEvent('parade','world_control'),
-    crop_circle: basicEvent('crop_circle','agriculture'),
-    llama: basicEvent('llama','primitive',function(){
+    tracks: basicEvent('tracks','primitive','neutral'),
+    hoax: basicEvent('hoax','primitive','neutral'),
+    burial: basicEvent('burial','primitive','neutral'),
+    artifacts: basicEvent('artifacts','high_tech','neutral'),
+    parade: basicEvent('parade','world_control','neutral'),
+    crop_circle: basicEvent('crop_circle','agriculture','neutral'),
+    llama: basicEvent('llama','primitive','negative',function(){
         let food = Math.rand(25,100);
         global.resource.Food.amount -= food;
         if (global.resource.Food.amount < 0){
@@ -952,26 +989,27 @@ export const events = {
         }
         return true;
     }),
-    cat: basicEvent('cat','primitive'),
-    omen: basicEvent('omen','primitive'),
-    theft: basicEvent('theft','primitive',function(){
+    cat: basicEvent('cat','primitive','neutral'),
+    omen: basicEvent('omen','primitive','neutral'),
+    theft: basicEvent('theft','primitive','neutral',function(){
         let thief = Math.rand(0,10);
         return loc(`event_theft_type${thief}`);
     }),
-    compass: basicEvent('compass','mining'),
-    bone: basicEvent('bone','primitive'),
-    delicacy: basicEvent('delicacy','high_tech'),
-    prank: basicEvent('prank','primitive',function(){
+    compass: basicEvent('compass','mining','neutral'),
+    bone: basicEvent('bone','primitive','neutral'),
+    delicacy: basicEvent('delicacy','high_tech','neutral'),
+    prank: basicEvent('prank','primitive','neutral',function(){
         let prank = Math.rand(0,10);
         return loc(`event_prank_type${prank}`);
     }),
-    graffiti: basicEvent('graffiti','science'),
-    soul: basicEvent('soul','soul_eater'),
+    graffiti: basicEvent('graffiti','science','neutral'),
+    soul: basicEvent('soul','soul_eater','neutral'),
     cheese: {
         reqs: {
             tech: 'banking',
         },
         type: 'minor',
+        class: 'positive',
         condition(){
             if (global.tech['banking'] && global.tech.banking >= 7){
                 return true;
@@ -984,8 +1022,8 @@ export const events = {
             return loc(`event_cheese`);
         }
     },
-    tremor: basicEvent('tremor','primitive'),
-    rumor: basicEvent('rumor','primitive',function(){
+    tremor: basicEvent('tremor','primitive','neutral'),
+    rumor: basicEvent('rumor','primitive','neutral',function(){
         let rumor = Math.rand(0,10);
         return loc(`event_rumor_type${rumor}`);
     }),
@@ -994,6 +1032,7 @@ export const events = {
             tech: 'primitive',
         },
         type: 'minor',
+        class: 'positive',
         effect(){
             if (global.race['pet']){
                 global.race.pet.event += Math.rand(300,600);
@@ -1015,7 +1054,8 @@ export const events = {
     },
 };
 
-function basicEvent(title,tech,func,cond){
+// Classify non-resource effects as neutral.
+function basicEvent(title,tech,cls,func,cond){
     return {
         reqs: {
             tech: tech,
@@ -1028,6 +1068,7 @@ function basicEvent(title,tech,func,cond){
             return val;
         },
         type: 'minor',
+        class: cls,
         effect(){
             let val = false;
             if (typeof func === 'function'){
@@ -1048,6 +1089,8 @@ function slaveLoss(type,string){
             return global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : true;
         },
         type: type,
+        // Every one of the six costs a slave, whether it is billed as a death or an escape.
+        class: 'negative',
         effect(){
             if (global.city['slave_pen'] && global.resource.Slave.amount > 0){
                 global.resource.Slave.amount--;
@@ -1111,6 +1154,17 @@ function pillaged(gov,serious){
         });
         return loc('event_pillaged2',[enemy_name,killed.toLocaleString(),wounded.toLocaleString(),stolen.join(', ')]);
     }
+}
+
+// Draw one event from a pool.
+export function rollEvent(pool){
+    if (!Array.isArray(pool) || pool.length === 0){ return false; }
+    let draw = function(){ return pool[Math.floor(seededRandom(0,pool.length))]; };
+    let pick = draw();
+    if (!global.race['unassuming']){ return pick; }
+    if (!events[pick] || events[pick].class !== 'negative'){ return pick; }
+    // Read the current Unassuming rank only after confirming the trait is present.
+    return seededRandom(0,100) < traits.unassuming.vars()[0] ? draw() : pick;
 }
 
 export function eventList(type){

@@ -4,10 +4,15 @@ import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBin
          calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, trickOrTreat, getTraitDesc, 
          removeFromQueue, arpaTimeCheck, deepClone, modalCloseButton } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts, structName } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
-         geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
+import { races, traits, genus_def, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSkin, fathomCheck, planetTraits, setTraitRank, traitRank,
+         geneRoster, geneUnlocked, geneSlotOf, geneRankCap, geneBreakRanks, geneRankCost, geneBreakCost, geneRank, syncGenes, genes,
          geneBonus, geneSlots, genePermanent, geneTemp, geneSlotCost, geneBreaks, geneBreakUnlocked, geneSlotExtra, geneSlotLabel, geneSuited,
-         geneSlotBase, geneSlotMatched, geneSlotAnswers, geneRankStart, geneEffectiveBase, geneVars, geneEmergentList, geneEmergentRank, rankTier} from './races.js';
+         geneSlotBase, geneSlotMatched, geneSlotAnswers, geneRankStart, geneEffectiveBase, geneVars, geneEmergentList, geneEmergentRank, rankTier,
+         geneBaseOf, geneSlotFits, slotKind, slotIsMajor, slotPair, slotSide, slotActive, pairBase, strandPairCount, strandBase,
+         geneSlotCount, slotRecessive, strandRecessivePairs, placeTrait, unplaceTrait,
+         strandRoom, strandGranted, strandGenusPairs, genusEmergentList, genusEmergentRank, genusEmergent, genusFeeders, geneEmergent,
+         syncGenusEmergent, geneLike, traitPermanent, permanentEmergent, fanaticGranted,
+         shapeShift, shapeOptions, strandMimic, strandMimicTraits} from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -565,7 +570,7 @@ export const genePool = {
     homologous_recombination: {
         id: 'genes-homologous_recombination',
         title(){ return loc('arpa_genepool_homologous_recombination_title'); },
-        desc(){ return loc('arpa_genepool_homologous_recombination_desc'); },
+        desc(){ return loc('arpa_genepool_homologous_recombination_desc',[(genes.strand_minor_pairs + 1) * genes.strand_slots]); },
         reqs: { evolve: 2 },
         grant: ['evolve',3],
         cost: { Plasmid(){ return 50; } },
@@ -579,7 +584,7 @@ export const genePool = {
     genetic_reshuffling: {
         id: 'genes-genetic_reshuffling',
         title(){ return loc('arpa_genepool_genetic_reshuffling_title'); },
-        desc(){ return loc('arpa_genepool_genetic_reshuffling_desc'); },
+        desc(){ return loc('arpa_genepool_genetic_reshuffling_desc',[genes.strand_grant_rank]); },
         reqs: { evolve: 3 },
         grant: ['evolve',4],
         cost: { Plasmid(){ return 120; } },
@@ -593,7 +598,7 @@ export const genePool = {
     recombinant_dna: {
         id: 'genes-recombinant_dna',
         title(){ return loc('arpa_genepool_recombinant_dna_title'); },
-        desc(){ return loc('arpa_genepool_recombinant_dna_desc'); },
+        desc(){ return loc('arpa_genepool_recombinant_dna_desc',[(genes.strand_major_pairs + 1) * genes.strand_slots]); },
         reqs: { evolve: 4 },
         grant: ['evolve',5],
         cost: { Plasmid(){ return 200; } },
@@ -607,7 +612,7 @@ export const genePool = {
     chimeric_dna: {
         id: 'genes-chimeric_dna',
         title(){ return loc('arpa_genepool_chimeric_dna_title'); },
-        desc(){ return loc('arpa_genepool_chimeric_dna_desc'); },
+        desc(){ return loc('arpa_genepool_chimeric_dna_desc',[genes.genus_rank_start,genes.genus_break_ranks,genes.gene_break_ranks]); },
         reqs: { evolve: 5 },
         grant: ['evolve',6],
         cost: { Plasmid(){ return 450; } },
@@ -621,7 +626,7 @@ export const genePool = {
     molecular_cloning: {
         id: 'genes-molecular_cloning',
         title(){ return loc('arpa_genepool_molecular_cloning_title'); },
-        desc(){ return loc('arpa_genepool_molecular_cloning_desc'); },
+        desc(){ return loc('arpa_genepool_molecular_cloning_desc',[genes.strand_grant_rank]); },
         reqs: { evolve: 6 },
         grant: ['evolve',7],
         cost: { Plasmid(){ return 800; } },
@@ -635,7 +640,7 @@ export const genePool = {
     transgenes: {
         id: 'genes-transgenes',
         title(){ return loc('arpa_genepool_transgenes_title'); },
-        desc(){ return loc('arpa_genepool_transgenes_desc'); },
+        desc(){ return loc('arpa_genepool_transgenes_desc',[(genes.strand_minor_pairs + 2) * genes.strand_slots]); },
         reqs: { evolve: 7 },
         grant: ['evolve',8],
         cost: { Plasmid(){ return 1600; } },
@@ -649,7 +654,7 @@ export const genePool = {
     synthetic_genome: {
         id: 'genes-synthetic_genome',
         title(){ return loc('arpa_genepool_synthetic_genome_title'); },
-        desc(){ return loc('arpa_genepool_synthetic_genome_desc'); },
+        desc(){ return loc('arpa_genepool_synthetic_genome_desc',[genes.strand_grant_rank]); },
         reqs: { evolve: 8 },
         grant: ['evolve',9],
         cost: { Plasmid(){ return 3200; } },
@@ -663,7 +668,7 @@ export const genePool = {
     unlocked_dna: {
         id: 'genes-unlocked_dna',
         title(){ return loc('arpa_genepool_unlocked_dna_title'); },
-        desc(){ return loc('arpa_genepool_unlocked_dna_desc'); },
+        desc(){ return loc('arpa_genepool_unlocked_dna_desc',[genes.minor_slot_penalty * 100,genes.gene_rank_major,genes.gene_rank_paired]); },
         reqs: { evolve: 9 },
         grant: ['evolve',10],
         cost: { Plasmid(){ return 5000; } },
@@ -2052,25 +2057,15 @@ function genetics(){
     }
 
     if (global.tech['genetics'] > 2){
-        // Built detached: the panel below takes it and renders it as its first tab, so it must not
-        // be in the document yet.
-        let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
-        let minor = false;
-
-        breakdown.append(`<div class="trait major has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
-
-        let traitName = traitSkin('name');
-
+// Build add/remove lists for strand-managed traits.
         let remove_list = [];
-        let null_list = [];
-        let traitListing = $(`<div class="traitListing"></div>`);
-        breakdown.append(traitListing);
         let trait_listing = deepClone(global.race);
         if (eventActive('fool',2023)){
             trait_listing['hooved'] = 1;
         }
         Object.keys(trait_listing).forEach(function (trait){
-            if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
+// Do not offer permanent emergent traits for removal.
+            if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && !traitPermanent(trait)){
                 let mimicTraits = [
                     ...(global.race['ss_traits'] ? global.race['ss_traits'] : []),
                     ...(global.race['iTraits'] ? Object.keys(global.race['iTraits']) : [])
@@ -2091,19 +2086,12 @@ function genetics(){
                 else if(trait === 'forager' && mimicTraits.some(item => ['herbivore', 'carnivore'].includes(item))){
                     readOnly = true;
                 }
-                if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
-                    let major = $(`<div class="traitRow"></div>`);
-                    let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
-                    remove_list.push(trait);
-
-                    major.append(purge);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[+traitRank(trait).toFixed(2)])})</span>`));
-
-                    traitListing.append(major);
+// Held-back genus traits are slotless and cannot be removed.
+                else if (genusEmergentList().includes(trait)){
+                    readOnly = true;
                 }
-                else {
-                    null_list.push(trait);
-                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[+traitRank(trait).toFixed(2)])})</div></div>`);
+                if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
+                    remove_list.push(trait);
                 }
             }
         });
@@ -2112,8 +2100,6 @@ function genetics(){
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
-                breakdown.append(`<div class="trait major has-text-success" role="heading" aria-level="3">${loc('arpa_race_genetic_gain')}</div>`);
-
                 let conflict_traits = ['dumb','smart','iceage','sappy']; //Conflicting traits are paired together
                 let swap_traits = {}; //swap available traits with another one under certain cirucmstances
                 if (global.race['iceage']){
@@ -2163,20 +2149,6 @@ function genetics(){
                     }
                 });
 
-                let addListing = $(`<div class="traitListing"></div>`);
-                breakdown.append(addListing);
-                for (let i=0; i<trait_list.length; i++){
-                    let trait = trait_list[i];
-                    if (!['catnip','anise'].includes(trait)){
-                        let major = $(`<div class="traitRow"></div>`);
-                        let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
-
-                        major.append(add);
-                        major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name()} (${loc(`arpa_genepool_rank`,[offspec_traits[trait] ? 0.5 : 1])})</span>`));
-
-                        addListing.append(major);
-                    }
-                }
             }
         }
 
@@ -2231,7 +2203,7 @@ function genetics(){
             return cost;
         };
         
-        geneSlotPanel($('#arpaGenetics'), breakdown, {
+        geneSlotPanel($('#arpaGenetics'), {
                 purge(t){
                     if (['sludge','ultra_sludge'].includes(global.race.species) && (global.race['modified'] || t === 'ooze')){
                         return;
@@ -2242,6 +2214,9 @@ function genetics(){
                         global.prestige[res].count -= cost;
                         let rank = global.race[t];
                         delete global.race[t];
+// Remove the trait from its slot and update emergent effects.
+                        unplaceTrait(t);
+                        syncGenusEmergent();
                         if (!global.race['modified']){
                             global.race['modified'] = {
                                 t: 0, nr: 0, na: 0, pr: 0, pa: 0
@@ -2270,13 +2245,15 @@ function genetics(){
                         }
                     }
                 },
-                gain(t){
+                gain(t,slot){
                     if (['hellspawn'].includes(global.race.species)){ return; }
                     else if (['sludge','ultra_sludge'].includes(global.race.species) && global.race['modified']){
                         return;
                     }
                     let cost = addCost(t,false);
                     let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+// Require an eligible slot before buying a major trait.
+                    if (slot === undefined ? !strandRoom(t) : !geneSlotFits(slot,t)){ return; }
                     if (global.prestige[res].count >= cost){
                         global.prestige[res].count -= cost;
                         global.race[t] = 1;
@@ -2291,6 +2268,9 @@ function genetics(){
                         if (offspec_traits.includes(t)){
                             setTraitRank(t, {down:true});
                         }
+// Place traits after purchase so slot penalties apply correctly.
+                        placeTrait(t,slot === undefined ? undefined : { slot: slot });
+                        syncGenusEmergent();
                         genetics();
                         drawTech();
                         drawCity();
@@ -2303,46 +2283,15 @@ function genetics(){
                 addCost(t){
                     return addCost(t,true);
                 }
+        },
+        {
+// Expose only traits eligible for addition or removal.
+            list: trait_list.filter(function(t){ return !['catnip','anise'].includes(t); }),
+            offspec: offspec_traits,
+            removable: remove_list.reduce(function(o,t){ o[t] = true; return o; },{}),
+            canAdd: global.genes['mutation'] && global.genes.mutation >= 3 ? true : false
         });
 
-        remove_list.forEach(function (t){
-            popover(`popRemoveBkdwn${t}`, function(){
-                return rmCost(t,true);
-            },
-            {
-                elm: `#geneticBreakdown .remove${t}`,
-                classes: `has-background-light has-text-dark`
-            });
-
-            let id = `raceTrait${t}`;
-            let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: traitRank(t) });
-            popover(id,desc,{ wide: true, classes: 'w30' });
-        });
-
-        null_list.forEach(function (t){
-            let id = `raceTrait${t}`;
-            let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: traitRank(t) });
-            popover(id, desc, { elm: `#geneticBreakdown .trait${t}`, wide: true, classes: 'w30' });
-        });
-
-        trait_list.forEach(function (t){
-            popover(`popAddBkdwn${t}`, function(){
-                return addCost(t,true);
-            },
-            {
-                elm: `#geneticBreakdown .add${t}`,
-                classes: `has-background-light has-text-dark`
-            });
-
-            let id = `raceTrait${t}`;
-            let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, { trank: offspec_traits.includes(t) ? 0.5 : 1 });
-            popover(id,desc,{ wide: true, classes: 'w30' });
-        });
-
-        dragGeneticsList();
     }
 }
 
@@ -2362,7 +2311,9 @@ export function sequenceLabs(){
 }
 
 // --- Gene slots ---
+// Keep the active strand tab in module state.
 const geneView = { tab: 0 };
+const geneTabCount = 3;
 
 // Limit breaks are paid in plasmids, or their antimatter counterpart in that universe.
 function geneBreakBank(){
@@ -2373,27 +2324,123 @@ function geneBreakName(){
         ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
 }
 
-function geneSlotPanel(parent,primary,primaryMethods){
+// What the strand picker is allowed to offer and take away this run, filled in by genetics() before the panel is built.
+let geneMajors = { list: [], offspec: [], removable: {}, canAdd: false };
+
+function majorAddable(trait){
+    return geneMajors.canAdd && geneMajors.list.includes(trait) ? true : false;
+}
+
+function majorRemovable(trait){
+    return geneMajors.removable[trait] ? true : false;
+}
+
+// Return the occupied and available slots on a strand.
+function strandTally(kind){
+    let slots = geneSlots();
+    let base = strandBase(kind);
+    // The genus's own rungs are not counted: the heading is about the slots the player fills.
+    let from = kind === 'major' ? strandGenusPairs() * genes.strand_slots : 0;
+    let total = strandPairCount(kind) * genes.strand_slots - from;
+    let used = 0;
+    for (let n=from; n<from + total; n++){
+        if (slots[base + n] && slots[base + n].g){ used++; }
+    }
+    if (kind === 'minor'){
+        for (let i=geneSlotCount(); i<slots.length; i++){
+            if (slots[i]){ used++; total++; }
+        }
+    }
+    return { used: used, total: total };
+}
+
+// Slotless traits displayed by the genetics panel.
+function emergentList(){
+    return geneEmergentList().concat(genusEmergentList()).concat(permanentEmergent())
+        .filter(function(g){ return traits[g] ? true : false; });
+}
+
+// Return unslotted traits that were granted outside the strand.
+function grantedList(){
+    let held = strandGranted();
+    let emergent = genusEmergent();
+    Object.keys(global.race).forEach(function(t){
+        // A trait that can never be removed is listed with the emergent ones instead.
+        if (held[t] || emergent[t] || traitPermanent(t) || !traits[t]){ return; }
+        if (traits[t].type !== 'major' && traits[t].type !== 'genus'){ return; }
+        if (geneSlotOf(t) !== false){ return; }
+        held[t] = true;
+    });
+    return Object.keys(held).filter(function(t){
+        return traits[t] && global.race[t];
+    });
+}
+
+// What handed a granted trait over, so the popover can say why it is not on a rung of its own.
+function grantedSource(t){
+    if (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(t)){ return 'imitation'; }
+    if (Array.isArray(global.race['ss_traits']) && global.race.ss_traits.includes(t)){ return 'shapeshifter'; }
+    if (Array.isArray(global.race['absorbed'])){
+        for (let i=0; i<global.race.absorbed.length; i++){
+            let r = global.race.absorbed[i];
+            if (races[r] && races[r].fanaticism === t){ return 'absorbed'; }
+        }
+    }
+    if (global.race['wishStats'] && global.race.wishStats[t]){ return 'wish'; }
+    return false;
+}
+
+// Normalize one emergent trait for the genetics panel.
+function emergentInfo(gene){
+    let genus = genusEmergent()[gene] || false;
+    let fixed = !genus && traitPermanent(gene);
+    let rank = genus ? genusEmergentRank(gene) : (fixed ? (traitRank(gene) || 0) : geneEmergentRank(gene));
+    let out = { g: gene, genus: genus, fixed: fixed, rank: rank, name: traitSkin('name',gene), total: '', each: '' };
+    if (!traits[gene]){ return out; }
+    if (!traits[gene].vars){
+        out.total = traits[gene].desc();
+        return out;
+    }
+    if (genus || fixed){
+        // Major and genus descriptions do not use scaled variables.
+        out.total = traitSkin('desc',gene,undefined);
+    }
+    else {
+        let vars = geneVars(gene);
+        out.total = traitSkin('desc',gene,undefined,vars.map(function(v){ return +(v * (rank || 1)).toFixed(2); }));
+        out.each = traitSkin('desc',gene,undefined,vars);
+    }
+    return out;
+}
+
+function geneSlotPanel(parent,traitMethods,majors){
+    geneMajors = Object.assign({ list: [], offspec: [], removable: {}, canAdd: false },majors || {},{
+        gain: traitMethods && traitMethods.gain ? traitMethods.gain : false,
+        addCost: traitMethods && traitMethods.addCost ? traitMethods.addCost : false
+    });
+    if (geneView.tab >= geneTabCount){ geneView.tab = 0; }
     let panel = $(`<div id="geneSlots" class="geneSlots"></div>`);
     parent.append(panel);
 
-    // One slot, rendered the same whichever side of the rung it is on. `side` only decides which way
-    // the base marker faces, so a pair reads inward toward the bond between them.
+    // One slot, rendered the same wherever it sits.
     let slotCell = function(i,side){
         let extra = geneSlotExtra(i);
-        let base = geneSlotBase(i);
+        let major = !extra && slotIsMajor(i);
         let marker = extra
             ? `<span class="slotBase slotBaseExtra">&bull;</span>`
-            : `<span class="slotBase base${base}" v-bind:class="{ paired: answers(${i}), bonded: lit(${i}) }">${base}</span>`;
+            : `<span class="slotBase" v-bind:class="baseClass(${i})">{{ baseMark(${i}) }}</span>`;
         // An extra slot's gene is fixed there: nothing to fill, nothing to swap out.
         let clear = extra ? `` :
-            `<button id="geneClear${i}" class="button geneClear" v-show="filled(${i})" @click="replaceGene(${i})" :aria-label="replaceLabel(${i})">&times;</button>`;
+            `<button id="geneClear${i}" class="button geneClear has-text-danger" v-show="canRemoveGene(${i})" @click="removeGene(${i})" :aria-label="removeLabel(${i})">&times;</button>`
+            + `<button id="geneCull${i}" class="button geneClear has-text-danger" v-show="canCull(${i})" @click="cullSlot(${i})" :aria-label="cullLabel(${i})">&times;</button>`
+            // Shapeshifter slots include a genus-selection control.
+            + `<button id="geneShape${i}" class="button geneShape has-text-special" v-show="canShape(${i})" @click="pickShape(${i})" :aria-label="shapeLabel(${i})">{{ shapeBtn(${i}) }}</button>`;
         let act = `<button id="geneRank${i}" class="button" v-show="canRank(${i})" @click="rankUp(${i})" :aria-label="rankLabel(${i})">{{ rankBtn(${i}) }}</button>`
             + (extra ? `` : `
-                <button id="geneFill${i}" class="button is-info" v-show="!filled(${i}) && pickable().length > 0" @click="pickGene(${i})" :aria-label="slotCostLabel(${i})">${loc('arpa_gene_fill_btn')}</button>`);
+                <button id="geneFill${i}" class="button is-info" v-show="!filled(${i}) && pickable(${i}).length > 0" @click="pickGene(${i})" :aria-label="slotCostLabel(${i})">${loc('arpa_gene_fill_btn')}</button>`);
         // Mirrored across the rung: the remove button sits outside the action on both halves.
         let actions = side === 'Right' ? clear + act : act + clear;
-        return `<div class="geneSlot slot${side}${extra ? ' geneSlotExtra' : ''}" data-slot="${i}">
+        return `<div class="geneSlot slot${side}${major ? ' slotMajor' : ' slotMinor'}${extra ? ' geneSlotExtra' : ''}" data-slot="${i}">
             <span class="slotNum${extra ? ' has-text-special' : ''}">${geneSlotLabel(i)}</span>
             <span class="slotGene" id="geneSlotName${i}" v-bind:class="{ 'has-text-warning': filled(${i}), 'has-text-fade': !filled(${i}) }">{{ slotLabel(${i}) }}</span>
             <span class="slotActions">
@@ -2403,38 +2450,61 @@ function geneSlotPanel(parent,primary,primaryMethods){
         </div>`;
     };
 
-    // General slots run in pairs down the strand; anything granted on top of them is listed after,
-    // on no rung of its own.
+    // A run of rungs from one strand. Each pair is two slots facing each other across the bond.
+    let strandRows = function(kind,from,to){
+        let base = strandBase(kind);
+        let out = `<div class="geneStrand">`;
+        for (let p=from; p<to; p++){
+            let at = base + p * genes.strand_slots;
+            out += `<div class="geneRung">
+                ${slotCell(at,'Left')}
+                <span class="rungBond" v-bind:class="{ bonded: matched(${at}) }">&#8212;</span>
+                ${slotCell(at + 1,'Right')}
+            </div>`;
+        }
+        return out + `</div>`;
+    };
+
+    // Render locked genus rungs before player slots.
+    let held = strandGenusPairs();
+    let majorRows = ``;
+    if (held > 0){
+        majorRows += `<div class="emergeHead has-text-caution">${loc('arpa_gene_genus_row')}</div>`;
+        majorRows += strandRows('major',0,held);
+        majorRows += `<div class="emergeHead has-text-caution">${loc('arpa_gene_slots_major')}</div>`;
+    }
+    majorRows += strandRows('major',held,strandPairCount('major'));
+    let minorRows = strandRows('minor',0,strandPairCount('minor'));
+
+    // Anything the game granted on top sits under the minor strand, on no rung of its own.
     let slots = geneSlots();
-    let general = [], extras = [];
-    for (let i=0; i<slots.length; i++){
-        (geneSlotExtra(i) ? extras : general).push(i);
+    let extras = [];
+    for (let i=geneSlotCount(); i<slots.length; i++){
+        if (slots[i]){ extras.push(i); }
     }
-
-    let rows = `<div class="geneStrand">`;
-    for (let p=0; p<general.length; p+=2){
-        let l = general[p], r = general[p + 1];
-        rows += `<div class="geneRung">
-            ${slotCell(l,'Left')}
-            <span class="rungBond" v-bind:class="{ bonded: matched(${l}) }">&#8212;</span>
-            ${r === undefined ? `<div class="geneSlot slotRight geneSlotVoid"></div>` : slotCell(r,'Right')}
-        </div>`;
-    }
-    rows += `</div>`;
     if (extras.length > 0){
-        rows += `<div class="geneExtras">`;
-        extras.forEach(function(i){ rows += slotCell(i,'Left'); });
-        rows += `</div>`;
+        minorRows += `<div class="geneExtras">`;
+        extras.forEach(function(i){ minorRows += slotCell(i,'Left'); });
+        minorRows += `</div>`;
     }
 
-    // What the strand produces on its own. Listed whether or not any of it is active yet, because a
-    // property nobody can see is a property nobody knows to aim for.
-    rows += `<div class="geneEmergence">
+    // What the genome produces on its own, and what is running beside it.
+    let summary = `<div class="geneEmergence">
         <div class="emergeHead has-text-caution">${loc('arpa_gene_emergent')}</div>
         <div class="emergeRow" v-for="e of emergence()" :key="e.g">
-            <span class="emergeName" v-bind:class="{ 'has-text-warning': e.rank > 0, 'has-text-fade': e.rank === 0 }">{{ e.name }}</span>
+            <span class="emergeName" :id="emergeId(e.g)" v-bind:class="{ 'has-text-warning': e.rank > 0, 'has-text-fade': e.rank === 0 }">{{ e.name }}</span>
             <span class="emergeRank" v-bind:class="{ 'has-text-success': e.rank > 0, 'has-text-fade': e.rank === 0 }">{{ e.at }}</span>
             <span class="emergeText" v-bind:class="{ 'has-text-fade': e.rank === 0 }">{{ e.desc }}</span>
+        </div>
+    </div>`;
+
+    // Return traits granted outside either strand.
+    summary += `<div class="geneGranted" v-show="granted().length > 0">
+        <div class="emergeHead has-text-caution">${loc('arpa_gene_granted')}</div>
+        <div class="emergeRow" v-for="g of granted()" :key="g.t">
+            <span class="emergeName has-text-warning" :id="grantId(g.t)">{{ g.name }}</span>
+            <span class="emergeRank has-text-success">{{ g.at }}</span>
+            <span class="emergeText">{{ g.desc }}</span>
         </div>
     </div>`;
 
@@ -2449,10 +2519,10 @@ function geneSlotPanel(parent,primary,primaryMethods){
     </div>`;
 
     panel.append(`<b-tabs class="geneTabs" v-model="v.tab" :animated="false">
-        <b-tab-item :label="primaryLabel()">${primary ? primary.prop('outerHTML') : ``}</b-tab-item>
-        <b-tab-item :label="slotsLabel()">${rows}</b-tab-item>
+        <b-tab-item :label="majorLabel()">${majorRows}</b-tab-item>
+        <b-tab-item :label="minorLabel()">${minorRows}</b-tab-item>
         <b-tab-item :label="libraryLabel()">${library}</b-tab-item>
-    </b-tabs>`);
+    </b-tabs>${summary}`);
 
     vBind({
         el: `#geneSlots`,
@@ -2461,33 +2531,47 @@ function geneSlotPanel(parent,primary,primaryMethods){
             rdata: global.race,
             v: geneView
         },
-        methods: Object.assign({},primaryMethods || {},{
-            primaryLabel(){ return loc('arpa_gene_primary'); },
-            // The traits the strand grows by itself. Always weak, and ranked by the pairs rather
-            // than by anything the player slots directly.
+        methods: Object.assign({},traitMethods || {},{
+            // Render slotless traits produced by strands and genera.
             emergence(){
-                return geneEmergentList().map(function(g){
-                    let rank = geneEmergentRank(g);
-                    let vars = traits[g] && traits[g].vars ? geneVars(g) : [];
+                return emergentList().map(function(g){
+                    let e = emergentInfo(g);
                     return {
                         g: g,
-                        name: traitSkin('name',g),
-                        rank: rank,
-                        at: rank > 0 ? loc('arpa_genepool_rank',[rank]) : loc('arpa_gene_emergent_off'),
-                        desc: vars.length
-                            ? traits[g].desc(vars.map(function(v){ return +(v * (rank || 1)).toFixed(2); }))
-                            : (traits[g] ? traits[g].desc() : '')
+                        name: e.name,
+                        rank: e.rank,
+                        at: e.genus
+                            ? loc('arpa_gene_emergent_genus',[+e.rank.toFixed(2),loc(`genelab_genus_${e.genus}`)])
+                            : (e.fixed || e.rank > 0
+                                ? loc('arpa_genepool_rank',[+e.rank.toFixed(2)])
+                                : loc('arpa_gene_emergent_off')),
+                        desc: e.total
                     };
                 });
             },
-            // Tab headings, with a count on each so the state is readable without switching.
-            slotsLabel(){
-                // Counted against what is actually on the strand, granted rungs included, rather
-                // than the standard allowance -- a player with extras has more slots than the
-                // base count and the heading should say so.
-                let slots = geneSlots();
-                let used = slots.filter(function(s){ return s && s.g; }).length;
-                return `${loc('arpa_gene_slots')} (${used}/${slots.length})`;
+            // The row's name carries the popover, the same way a slot's does.
+            emergeId(g){ return `emergeName${g}`; },
+            grantId(t){ return `grantName${t}`; },
+            // List traits granted or left unslotted by the strand.
+            granted(){
+                return grantedList().map(function(t){
+                    return {
+                        t: t,
+                        name: traitSkin('name',t),
+                        at: loc('arpa_genepool_rank',[+traitRank(t).toFixed(2)]),
+                        // Major and genus traits only here, so no vars -- see emergentInfo.
+                        desc: traitSkin('desc',t,undefined)
+                    };
+                });
+            },
+            // Tab headings, with a count on each so both strands are readable without switching.
+            majorLabel(){
+                let t = strandTally('major');
+                return `${loc('arpa_gene_slots_major')} (${t.used}/${t.total})`;
+            },
+            minorLabel(){
+                let t = strandTally('minor');
+                return `${loc('arpa_gene_slots_minor')} (${t.used}/${t.total})`;
             },
             libraryLabel(){
                 return `${loc('arpa_gene_library')} (${this.library().length})`;
@@ -2496,19 +2580,82 @@ function geneSlotPanel(parent,primary,primaryMethods){
                 let s = geneSlots()[i];
                 return s && s.g ? true : false;
             },
+            // Whether what is sitting here is a gene.
+            isGene(i){
+                let s = geneSlots()[i];
+                return s && s.g && geneLike(s.g) ? true : false;
+            },
             slotLabel(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g){ return loc('arpa_gene_empty'); }
+                if (!s || !s.g){ return loc(slotIsMajor(i) ? 'arpa_gene_empty_major' : 'arpa_gene_empty'); }
+                if (!this.isGene(i)){
+                    return `${traitSkin('name',s.g)} ${loc('arpa_genepool_rank',[+traitRank(s.g).toFixed(2)])}`;
+                }
                 return `${traitSkin('name',s.g)} ${loc('arpa_genepool_rank',[s.r])} / ${geneRankCap(i)}`;
             },
             matched(i){ return geneSlotMatched(i); },
-            // The base token lights only when the gene matches this slot's own base
-            answers(i){ return geneSlotAnswers(i); },
-            // Fully lit: right slot and bonded with its partner.
-            lit(i){ return geneSlotAnswers(i) && geneSlotMatched(i); },
-            replaceLabel(i){
+            // The base a slot calls for, which is nothing at all until its pair has something in it.
+            baseMark(i){
+                let base = geneSlotBase(i);
+                return base ? base : '·';
+            },
+            baseClass(i){
+                let base = geneSlotBase(i);
+                return [
+                    base ? `base${base}` : `baseNone`,
+                    { paired: geneSlotAnswers(i), bonded: geneSlotAnswers(i) && geneSlotMatched(i) }
+                ];
+            },
+            removeLabel(i){
                 let s = geneSlots()[i];
-                return s && s.g ? loc('arpa_gene_replace_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_replace');
+                return s && s.g ? loc('arpa_gene_remove_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_remove');
+            },
+            // Minor genes can be removed from standard slots at no cost.
+            canRemoveGene(i){
+                let s = geneSlots()[i];
+                return s && s.g && traits[s.g]?.type === "minor" && !geneSlotExtra(i) && !slotRecessive(i) ? true : false;
+            },
+            // Major and genus traits require the CRISPR removal upgrade and plasmids.
+            canCull(i){
+                let s = geneSlots()[i];
+                // Recessive-pair contents cannot change after the run starts.
+                if (slotRecessive(i)){ return false; }
+                return s && s.g && !this.isGene(i) && majorRemovable(s.g) ? true : false;
+            },
+            cullSlot(i){
+                let s = geneSlots()[i];
+                if (s && s.g && this.canCull(i) && this.purge){ this.purge(s.g); }
+            },
+            cullLabel(i){
+                let s = geneSlots()[i];
+                return s && s.g && this.removeCost ? this.removeCost(s.g) : '';
+            },
+            // --- Shapeshifter's genus setting -------------------------------------------------
+            canShape(i){
+                let s = geneSlots()[i];
+                return s && s.g === 'shapeshifter' && shapeOptions().length > 0 ? true : false;
+            },
+            shapeBtn(i){
+                let at = strandMimic();
+                return loc(`genelab_genus_${at || 'none'}`);
+            },
+            shapeLabel(i){
+                let at = strandMimic();
+                return at ? loc('arpa_gene_shape_at',[loc(`genelab_genus_${at}`)]) : loc('arpa_gene_shape_none');
+            },
+            pickShape(i){
+                if (!this.canShape(i)){ return; }
+                let modal = this.$buefy.modal.open({
+                    hasModalCard: false,
+                    content: '<div id="modalBox" class="modalBox"></div>'
+                });
+                modalCloseButton();
+                let checkExist = setInterval(function(){
+                    if (document.getElementById('modalBox')){
+                        clearInterval(checkExist);
+                        shapePickModal(modal);
+                    }
+                }, 50);
             },
             geneName(g){ return traitSkin('name',g); },
             geneDesc(g){
@@ -2518,30 +2665,29 @@ function geneSlotPanel(parent,primary,primaryMethods){
             unlocked(g){ return geneUnlocked(g); },
             temporary(g){ return geneTemp(g) && !genePermanent(g); },
             permanent(g){ return genePermanent(g); },
-            pickable(){
-                return geneRoster().filter(function(t){
-                    return geneUnlocked(t) && geneSlotOf(t) === false && geneSuited(t);
-                });
+            // Everything that could go in this particular slot.
+            pickable(i){
+                return slotChoices(i);
             },
             library(){
                 return geneRoster().filter(function(t){ return geneUnlocked(t) && geneSuited(t); });
             },
             canRank(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g){ return false; }
+                if (!s || !s.g || !this.isGene(i)){ return false; }
                 // At the ceiling there is still a rank to buy, so long as it can be broken through.
                 return s.r < geneRankCap(i) || geneBreakUnlocked() ? true : false;
             },
             atCap(i){
                 let s = geneSlots()[i];
-                return s && s.g && s.r >= geneRankCap(i) ? true : false;
+                return s && s.g && this.isGene(i) && s.r >= geneRankCap(i) ? true : false;
             },
             rankBtn(i){
                 return this.atCap(i) ? loc('arpa_gene_break_btn') : loc('arpa_gene_rank_btn');
             },
             rankLabel(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g){ return ''; }
+                if (!s || !s.g || !this.isGene(i)){ return ''; }
                 let cost = geneRankCost(s.r + 1,s.g,i);
                 if (!this.atCap(i)){
                     return loc('arpa_gene_rank_up',[cost,global.resource.Genes.name]);
@@ -2555,9 +2701,11 @@ function geneSlotPanel(parent,primary,primaryMethods){
                 if (this.filled(i) || geneSlotExtra(i)){ return; }
                 this.openGenePicker(i);
             },
-            replaceGene(i){
-                if (!this.filled(i) || geneSlotExtra(i)){ return; }
-                this.openGenePicker(i);
+            // Remove a minor gene without charging genes or plasmids.
+            removeGene(i){
+                let s = geneSlots()[i];
+                if (!s || !s.g || !this.canRemoveGene(i)){ return; }
+                if (unplaceTrait(s.g) !== false){ afterGeneChange(s.g); }
             },
             openGenePicker(i){
                 let modal = this.$buefy.modal.open({
@@ -2574,7 +2722,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
             },
             rankUp(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g){ return; }
+                if (!s || !s.g || !this.isGene(i)){ return; }
 
                 let rankCap = geneRankCap(i);
                 if (s.r >= rankCap && !geneBreakUnlocked()){ return; }
@@ -2615,28 +2763,115 @@ function geneSlotPanel(parent,primary,primaryMethods){
         })
     });
 
-    // Slot popovers. Bound over every slot present, not just the standard allowance, so granted
-    // extras and anything a later bonus adds are covered too.
+    // Emergent traits get the same popover a slot does, on the name.
+    emergentList().forEach(function(g){
+        popover(`emergeName${g}`, function(){
+            let e = emergentInfo(g);
+            let source = ``;
+            if (e.genus){
+                let feeders = genusFeeders(e.genus).map(function(f){
+                    let held = geneSlotOf(f) !== false;
+                    return `<div class="${held ? `has-text-success` : `has-text-danger`}">`
+                        + loc('arpa_gene_emergent_feeder',[
+                            traitSkin('name',f),
+                            held ? loc('arpa_genepool_rank',[+(global.race[f] || 0).toFixed(2)])
+                                 : loc('arpa_gene_emergent_gone')
+                          ])
+                        + `</div>`;
+                }).join('');
+                source = `<div class="has-text-caution">`
+                    + loc('arpa_gene_emergent_genus_from',[loc(`genelab_genus_${e.genus}`)])
+                    + `</div>`
+                    + feeders
+                    + `<div class="has-text-caution">${loc('arpa_gene_emergent_floor_note',[genes.genus_emergent_floor])}</div>`;
+            }
+            else if (e.fixed){
+                // Permanent revelations and genus traits use different source labels.
+                source = `<div class="has-text-caution">`
+                    + loc(fanaticGranted()[g] ? 'arpa_gene_emergent_fanatic' : 'arpa_gene_emergent_fixed')
+                    + `</div>`;
+            }
+            else {
+                // Read the associated rung from the trait table.
+                let base = Object.keys(geneEmergent).filter(function(b){ return geneEmergent[b] === g; })[0];
+                if (base){
+                    source = `<div class="has-text-caution">`
+                        + loc('arpa_gene_emergent_from',[base,genes.gene_pairs[base]])
+                        + `</div>`;
+                }
+            }
+            let rate = e.each && e.each !== e.total
+                ? `<div class="has-text-caution">${loc('arpa_gene_per_rank',[e.each])}</div>`
+                : ``;
+            return `<div class="has-text-warning">${e.name}</div>`
+                 + `<div>${e.total}</div>`
+                 + `<div class="has-text-caution">${loc('arpa_genepool_rank',[+e.rank.toFixed(2)])}</div>`
+                 + source
+                 + `<div class="has-text-caution">${loc('arpa_gene_emergent_locked')}</div>`
+                 + rate;
+        },
+        {
+            wide: true,
+            classes: `has-background-light has-text-dark`
+        });
+    });
+
+    // Bind popovers that show granted-trait rank and source.
+    grantedList().forEach(function(t){
+        popover(`grantName${t}`, function(){
+            let rank = traitRank(t) || 0;
+            let info = $(`<div></div>`);
+            info.append(`<div class="has-text-warning">${traitSkin('name',t)}</div>`);
+            // Reuse the standard trait-description formatter.
+            getTraitDesc(info, t, { trank: rank });
+            info.append(`<div class="has-text-caution">${loc('arpa_genepool_rank',[+rank.toFixed(2)])}</div>`);
+            let from = grantedSource(t);
+            info.append(`<div class="has-text-caution">`
+                + (from === 'imitation' || from === 'shapeshifter'
+                    ? loc('arpa_gene_granted_trait',[traitSkin('name',from)])
+                    : (from ? loc(`arpa_gene_granted_${from}`) : loc('arpa_gene_granted_room')))
+                + `</div>`);
+            return info;
+        },
+        {
+            wide: true,
+            classes: `has-background-light has-text-dark`
+        });
+    });
+
+    // Bind popovers for every standard and granted slot.
     for (let i=0; i<geneSlots().length; i++){
-        // Named rather than generic, so it reads the same as the button's aria-label.
+        let isGene = function(){
+            let s = geneSlots()[i];
+            return s && s.g && geneLike(s.g) ? true : false;
+        };
+
+        // What it costs to take a major or genus trait back off the strand.
+        popover(`geneCullPop${i}`, function(){
+            let s = geneSlots()[i];
+            if (!s || !s.g || isGene() || !majorRemovable(s.g)){ return ``; }
+            return `<div class="has-text-warning">${traitSkin('name',s.g)}</div>`
+                 + `<div class="has-text-danger">${traitMethods && traitMethods.removeCost ? traitMethods.removeCost(s.g) : ''}</div>`;
+        },
+        {
+            elm: `#geneCull${i}`,
+            classes: `has-background-light has-text-dark`
+        });
+
+        // Explain that removing a minor gene is free.
         popover(`geneClearPop${i}`, function(){
             let s = geneSlots()[i];
-            if (!s || !s.g){ return ``; }
-            let cost = geneSlotCost(i);
-            let afford = global.resource.Genes.amount >= cost ? 'has-text-success' : 'has-text-danger';
-            return `<div class="has-text-warning">${loc('arpa_gene_replace_pop',[traitSkin('name',s.g)])}</div>`
-                 + `<div class="${afford}">${loc('arpa_gene_replace_cost',[cost,global.resource.Genes.name])}</div>`;
+            return s && s.g && isGene() ? `<div class="has-text-warning">${loc("arpa_gene_remove_pop",[traitSkin("name",s.g)])}</div>` : ``;
         },
         {
             elm: `#geneClear${i}`,
             classes: `has-background-light has-text-dark`
         });
 
-        // The price of the next rank, and of the ceiling it has to break through to get there. Kept
-        // off the button so a rung fits on one line, and coloured by what can be paid right now.
+        // Show rank and limit-break costs in a popover.
         popover(`geneRankPop${i}`, function(){
             let s = geneSlots()[i];
-            if (!s || !s.g){ return ``; }
+            if (!s || !s.g || !isGene()){ return ``; }
             let cost = geneRankCost(s.r + 1,s.g,i);
             let afford = global.resource.Genes.amount >= cost ? 'has-text-success' : 'has-text-danger';
             let note = geneSlotMatched(i) ? `` :
@@ -2647,7 +2882,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                 let bCost = geneBreakCost(i);
                 let bAfford = bank.count >= bCost ? 'has-text-success' : 'has-text-danger';
                 breaking = `<div class="${bAfford}">${loc('arpa_gene_break',[bCost,geneBreakName()])}</div>`
-                         + `<div class="has-text-caution">${loc('arpa_gene_break_to',[geneRankCap(i) + genes.gene_break_ranks])}</div>`;
+                         + `<div class="has-text-caution">${loc('arpa_gene_break_to',[geneRankCap(i) + geneBreakRanks(i)])}</div>`;
             }
             return breaking
                  + `<div class="${afford}">${loc('arpa_gene_rank_up',[cost,global.resource.Genes.name])}</div>`
@@ -2666,8 +2901,13 @@ function geneSlotPanel(parent,primary,primaryMethods){
             let cost = geneSlotCost(i);
             let afford = global.resource.Genes.amount >= cost ? 'has-text-success' : 'has-text-danger';
             let want = geneSlotBase(i);
-            let note = want ? `<div class="has-text-caution">${loc('arpa_gene_wants',[want])}</div>` : ``;
-            return `<div class="${afford}">${loc('arpa_gene_slot',[cost,global.resource.Genes.name])}</div>` + note;
+            let note = `<div class="has-text-caution">`
+                + (want ? loc('arpa_gene_wants',[want]) : loc('arpa_gene_wants_any'))
+                + `</div>`;
+            let kind = `<div class="has-text-caution">`
+                + loc(slotIsMajor(i) ? 'arpa_gene_slot_major' : 'arpa_gene_slot_minor',[geneRankStart(i)])
+                + `</div>`;
+            return `<div class="${afford}">${loc('arpa_gene_slot',[cost,global.resource.Genes.name])}</div>` + kind + note;
         },
         {
             elm: `#geneFill${i}`,
@@ -2677,7 +2917,26 @@ function geneSlotPanel(parent,primary,primaryMethods){
         popover(`geneSlotPop${i}`, function(){
             let s = geneSlots()[i];
             if (!s || !s.g || !traits[s.g]){ return ``; }
-            // The figures in force right now, which are halved on an unbonded rung.
+            if (!isGene()){
+                // Major and genus traits have one fixed rank.
+                let rank = traitRank(s.g) || 0;
+                // Add the header outside getTraitDesc for this panel.
+                let info = $(`<div></div>`);
+                info.append(`<div class="has-text-warning">${traitSkin('name',s.g)}</div>`);
+                getTraitDesc(info, s.g, { trank: rank });
+                info.append(`<div class="has-text-caution">${loc('arpa_genepool_rank',[+rank.toFixed(2)])}</div>`);
+                if (!slotIsMajor(i)){
+                    info.append(`<div class="has-text-danger">${loc('arpa_gene_cramped',[genes.minor_slot_penalty * 100])}</div>`);
+                }
+                if (s.b && s.b !== geneBaseOf(s.g)){
+                    info.append(`<div class="has-text-caution">${loc('arpa_gene_stamped',[s.b,geneBaseOf(s.g)])}</div>`);
+                }
+                if (slotRecessive(i)){
+                    info.append(`<div class="has-text-caution">${loc('arpa_gene_sealed')}</div>`);
+                }
+                return info;
+            }
+            // geneVars includes the unbonded strength penalty.
             let vars = traits[s.g].vars ? geneVars(s.g) : [];
             let total = vars.length
                 ? traits[s.g].desc(vars.map(function(v){ return +(v * s.r).toFixed(2); }))
@@ -2697,8 +2956,7 @@ function geneSlotPanel(parent,primary,primaryMethods){
                     + loc(pairKey,[geneEffectiveBase(i) || loc('arpa_gene_base_any'),want,geneRankStart(i)])
                     + `</div>`
                 : ``;
-            // Named only once the slot is actually up against its ceiling, so it reads as the answer
-            // to "why is there no button" rather than noise on every gene.
+            // Explain a locked limit break only at the rank cap.
             let locked = !breakable && s.r >= geneRankCap(i)
                 ? `<div class="has-text-caution">${loc('arpa_gene_break_locked',[loc('arpa_genepool_unlocked_dna_title')])}</div>`
                 : ``;
@@ -2720,85 +2978,156 @@ function geneSlotPanel(parent,primary,primaryMethods){
     }
 }
 
-// The gene picker. Every gene available to slot, as a button; hovering one describes it and gives
-// the price, so the choice can be made without leaving the modal.
+// Everything that could go in one slot.
+function slotChoices(slot){
+    if (geneSlotExtra(slot)){ return []; }
+    let out = geneRoster().filter(function(t){
+        return geneUnlocked(t) && geneSlotOf(t) === false && geneSuited(t) && geneSlotFits(slot,t);
+    });
+    // Major traits may fill only empty slots.
+    let held = geneSlots()[slot];
+    if (!held || !held.g){
+        geneMajors.list.forEach(function(t){
+            if (!traits[t] || global.race[t] || geneSlotOf(t) !== false){ return; }
+            if (!majorAddable(t) || !geneSlotFits(slot,t)){ return; }
+            out.push(t);
+        });
+    }
+    return out;
+}
+
+// Open a genus picker for Shapeshifter.
+function shapePickModal(modal){
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('arpa_gene_shape_title',[traitSkin('name','shapeshifter')])}</p>`));
+
+    let body = $(`<div id="shapePick" class="modalBody genePick"></div>`);
+    $('#modalBox').append(body);
+
+    let at = strandMimic();
+    let choices = ['none'].concat(shapeOptions().sort(function(a,b){
+        return loc(`genelab_genus_${a}`).localeCompare(loc(`genelab_genus_${b}`));
+    }));
+
+    choices.forEach(function(gen){
+        let worn = (gen === 'none' && !at) || gen === at;
+        body.append(`<button id="shapePick_${gen}" class="button genePickBtn${worn ? ` genePickFits` : ` genePickMajor`}" data-genus="${gen}">`
+            + `${loc(`genelab_genus_${gen}`)}</button>`);
+    });
+
+    choices.forEach(function(gen){
+        $(`#shapePick_${gen}`).on('click',function(){
+            clearPopper();
+            if (modal){ modal.close(); }
+            // shapeShift lays the strand again around the new rungs and redraws this tab itself.
+            shapeShift(gen);
+        });
+
+        popover(`shapePickPop_${gen}`,function(){
+            let info = $(`<div></div>`);
+            info.append(`<div class="has-text-warning">${loc(`genelab_genus_${gen}`)}</div>`);
+            if (gen === 'none'){
+                info.append(`<div class="has-text-caution">${loc('arpa_gene_shape_drop')}</div>`);
+                return info;
+            }
+            // What the rung would hold: everything the genus has that the race is not already.
+            let gains = Object.keys(genus_def[gen].traits).filter(function(t){
+                return traits[t] && !global.race.hasOwnProperty(t);
+            });
+            info.append(`<div>${gains.length > 0
+                ? gains.map(t => traitSkin('name',t)).join(', ')
+                : loc('arpa_gene_shape_nothing')}</div>`);
+            info.append(`<div class="has-text-caution">${loc('arpa_gene_shape_locked')}</div>`);
+            return info;
+        },
+        {
+            elm: `#shapePick_${gen}`,
+            classes: `has-background-light has-text-dark`
+        });
+    });
+}
+
 function genePickModal(slot,modal){
-    // The base this slot calls for, shown in the header so the target is in front of you while you
-    // read the grid rather than something to remember from the strand behind the modal.
+    // Show the requested base in the picker header.
     let want = geneSlotBase(slot);
-    let badge = want ? ` <span class="pickBase base${want}">${want}</span>` : ``;
+    let badge = want
+        ? ` <span class="pickBase base${want}">${want}</span>`
+        : ` <span class="pickBase baseNone">&middot;</span>`;
     // The same grid serves an empty slot and a swap; only the heading tells them apart.
     let held = geneSlots()[slot];
     let title = held && held.g
         ? loc('arpa_gene_replace_title',[geneSlotLabel(slot),traitSkin('name',held.g)])
-        : loc('arpa_gene_pick',[geneSlotLabel(slot)]);
+        : loc(slotIsMajor(slot) ? 'arpa_gene_pick_major' : 'arpa_gene_pick',[geneSlotLabel(slot)]);
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}${badge}</p>`));
 
     let body = $(`<div id="genePick" class="modalBody genePick"></div>`);
     $('#modalBox').append(body);
 
-    // What answers this slot's base counts as a match, as do the two specials, which answer any.
-    let answers = function(gene){
-        if (genes.gene_specials.includes(gene)){ return true; }
-        let mine = traits[gene] ? traits[gene].base : false;
-        return want && mine === want ? true : false;
-    };
+    // Treat special traits as minor genes for slotting and ranking.
+    let isMajor = function(t){ return traits[t] && !geneLike(t); };
 
-    let choices = geneRoster().filter(function(t){
-        return geneUnlocked(t) && geneSlotOf(t) === false && geneSuited(t);
-    });
+    let choices = slotChoices(slot);
 
-    // Matches first -- they are the ones worth taking in this slot -- and alphabetical within each
-    // group so the grid stays in a stable, readable order rather than roster order.
+    // Sort picker entries by slot kind, then alphabetically.
     choices.sort(function(a,b){
-        let fa = answers(a), fb = answers(b);
+        let fa = isMajor(a) === slotIsMajor(slot), fb = isMajor(b) === slotIsMajor(slot);
         if (fa !== fb){ return fa ? -1 : 1; }
         return traitSkin('name',a).localeCompare(traitSkin('name',b));
     });
 
     choices.forEach(function(gene){
-        let mine = traits[gene] && traits[gene].base ? traits[gene].base : false;
-        let fits = answers(gene);
-        body.append(`<button id="genePick_${gene}" class="button genePickBtn${fits ? ` genePickFits` : ``}" data-gene="${gene}">`
-            + `<span class="pickBase base${mine || 'X'}">${mine || '&bull;'}</span>${traitSkin('name',gene)}</button>`);
+        let mine = geneBaseOf(gene);
+        body.append(`<button id="genePick_${gene}" class="button genePickBtn${isMajor(gene) ? ` genePickMajor` : ` genePickFits`}" data-gene="${gene}">`
+            + `<span class="pickBase base${mine || 'None'}">${mine || '&middot;'}</span>${traitSkin('name',gene)}</button>`);
     });
 
     choices.forEach(function(gene){
         $(`#genePick_${gene}`).on('click',function(){
+            if (geneSlotOf(gene) !== false){ return; }
+            if (isMajor(gene)){
+                // Use the trait purchase flow when grafting a major trait.
+                if (!majorAddable(gene) || !geneMajors.gain){ return; }
+                clearPopper();
+                if (modal){ modal.close(); }
+                geneMajors.gain(gene,slot);
+                return;
+            }
             // Priced for the gene being taken, not the empty slot: mastery costs double.
             let cost = geneSlotCost(slot,gene);
             if (global.resource.Genes.amount < cost){ return; }
-            if (geneSlotOf(gene) !== false){ return; }
             let prev = geneSlots()[slot];
             let displaced = prev && prev.g && prev.g !== gene ? prev.g : false;
             global.resource.Genes.amount -= cost;
-            geneSlots()[slot] = { g: gene, r: 1 };
-            delete geneBreaks()[slot];
+            placeTrait(gene,{ slot: slot, rank: 1 });
             clearPopper();
             if (modal){ modal.close(); }
             afterGeneChange(gene,displaced);
         });
 
         popover(`genePickPop_${gene}`,function(){
-            let vars = traits[gene] && traits[gene].vars ? traits[gene].vars() : [];
-            let desc = vars.length ? traits[gene].desc(vars) : (traits[gene] ? traits[gene].desc() : '');
+            let major = isMajor(gene);
+            let mine = geneBaseOf(gene);
+            let info = $(`<div></div>`);
+            info.append(`<div class="has-text-warning">${traitSkin('name',gene)}</div>`);
+            // Use the shared trait-description helper for picker entries.
+            getTraitDesc(info, gene, { trank: major ? 1 : undefined });
+            // What putting it here would orient the pair to, when the pair has no type yet.
+            if (!geneSlotBase(slot) && mine){
+                info.append(`<div class="has-text-caution">${loc('arpa_gene_orients',[mine,genes.gene_pairs[mine]])}</div>`);
+            }
+            if (major){
+                // Warn when a major trait uses a half-strength minor slot.
+                if (!slotIsMajor(slot)){
+                    info.append(`<div class="has-text-danger">${loc('arpa_gene_cramped',[genes.minor_slot_penalty * 100])}</div>`);
+                }
+                info.append(`<div class="has-text-danger">${geneMajors.addCost ? geneMajors.addCost(gene) : ''}</div>`);
+                return info;
+            }
             let cost = geneSlotCost(slot,gene);
             let afford = global.resource.Genes.amount >= cost ? 'has-text-success' : 'has-text-danger';
-            // What this gene would be worth in this particular slot: answering its base doubles the
-            // ceiling, so the choice is worth showing before it is paid for.
-            let want = geneSlotBase(slot);
-            let mine = traits[gene] ? traits[gene].base : false;
-            let fits = genes.gene_specials.includes(gene) || (want && mine === want);
-            let pairing = want
-                ? `<div class="${fits ? `has-text-success` : `has-text-caution`}">`
-                    + loc(fits ? 'arpa_gene_pair_match' : 'arpa_gene_pair_miss',
-                          [mine || loc('arpa_gene_base_any'),want,fits ? genes.gene_rank_paired : genes.gene_rank_base])
-                    + `</div>`
-                : ``;
-            return `<div class="has-text-warning">${traitSkin('name',gene)}</div>`
-                 + `<div>${desc}</div>`
-                 + pairing
-                 + `<div class="${afford}">${loc('arpa_gene_slot',[cost,global.resource.Genes.name])}</div>`;
+            // Preview the gene's effective rank in this slot.
+            info.append(`<div class="has-text-caution">${loc('arpa_gene_ceiling',[geneRankStart(slot)])}</div>`);
+            info.append(`<div class="${afford}">${loc('arpa_gene_slot',[cost,global.resource.Genes.name])}</div>`);
+            return info;
         },
         {
             elm: `#genePick_${gene}`,

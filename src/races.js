@@ -12,7 +12,7 @@ import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
 import { arpa } from './arpa.js';
 import { renderEdenic } from './edenic.js';
-import { events, eventList } from './events.js';
+import { events, eventList, rollEvent } from './events.js';
 import { swissKnife } from './tech.js';
 import { warhead, big_bang } from './resets.js';
 import { spaceSectors } from './space.js';
@@ -88,8 +88,10 @@ export const genus_def = {
     humanoid: {
         traits: {
             adaptable: 1,
-            wasteful: 1
+            wasteful: 1,
+            versatility: 1
         },
+        emergent: ['versatility'],
         oppose: ['fungi']
     },
     carnivore: {
@@ -98,13 +100,16 @@ export const genus_def = {
             beast: 1,
             cautious: 1
         },
+        emergent: ['carnivore'],
         oppose: ['herbivore']
     },
     herbivore: {
         traits: {
             herbivore: 1,
-            instinct: 1
+            instinct: 1,
+            grazer: 1
         },
+        emergent: ['grazer'],
         oppose: ['carnivore']
     },
     omnivore: {
@@ -118,8 +123,10 @@ export const genus_def = {
     small: {
         traits: {
             small: 1,
-            weak: 1
+            weak: 1,
+            unassuming: 1
         },
+        emergent: ['unassuming'],
         oppose: ['giant']
     },
     giant: {
@@ -142,6 +149,7 @@ export const genus_def = {
             hollow_bones: 1,
             sky_lover: 1
         },
+        emergent: ['flier'],
         oppose: ['reptilian']
     },
     insectoid: {
@@ -150,20 +158,25 @@ export const genus_def = {
             fast_growth: 1,
             high_metabolism: 1
         },
+        emergent: ['fast_growth'],
         oppose: ['plant']
     },
     plant: {
         traits: {
+            photosynth: 1,
             sappy: 1,
             asymmetrical: 1
         },
+        emergent: ['photosynth'],
         oppose: ['insectoid']
     },
     fungi: {
         traits: {
             detritivore: 1,
+            spores: 1,
             spongy: 1
         },
+        emergent: ['spores'],
         oppose: ['humanoid']
     },
     aquatic: {
@@ -190,23 +203,29 @@ export const genus_def = {
     polar: {
         traits: {
             chilled: 1,
-            heat_intolerance: 1
+            heat_intolerance: 1,
+            pykrete: 1
         },
+        emergent: ['pykrete'],
         oppose: ['heat']
     },
     sand: {
         traits: {
             scavenger: 1,
-            nomadic: 1
+            nomadic: 1,
+            grey_market: 1
         },
+        emergent: ['grey_market'],
         oppose: ['aquatic']
     },
     demonic: {
         traits: {
             immoral: 1,
-            evil: 1,
-            soul_eater: 1
+            soul_eater: 1,
+            ruthless: 1,
+            evil: 1
         },
+        emergent: ['evil'],
         oppose: ['angelic']
     },
     angelic: {
@@ -215,13 +234,16 @@ export const genus_def = {
             pompous: 1,
             holy: 1
         },
+        emergent: ['holy'],
         oppose: ['demonic']
     },
     synthetic: {
         traits: {
             artifical: 1,
-            powered: 1
+            powered: 1,
+            tireless: 1
         },
+        emergent: ['artifical'],
         oppose: ['primordial']
     },
     eldritch: {
@@ -231,6 +253,7 @@ export const genus_def = {
             darkness: 1,
             unfathomable: 1
         },
+        emergent: ['darkness','unfathomable'],
         oppose: ['fey']
     },
     primordial: {
@@ -253,7 +276,7 @@ export const traits = {
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'utility',
-        val: 60,
+        val: 50,
         vars(r){ 
             return traitScale(r || traitRank('adaptable') || 1, [2], [10], [25]);
         },
@@ -264,9 +287,21 @@ export const traits = {
         type: 'genus',
         origin: 'humanoid',
         taxonomy: 'resource',
-        val: -60,
+        val: -80,
         vars(r){ 
             return traitScale(r || traitRank('wasteful') || 1, [16], [10], [2]);
+        },
+    },
+    versatility: { // Extra minor gene slot base pair, and makes genes cheaper to slot and rank
+        name(){ return loc('trait_versatility_name'); },
+        desc(v = traits.versatility.vars()){ return loc('trait_versatility',[...v,genes.versatility_pair_rank]); },
+        type: 'genus',
+        origin: 'humanoid',
+        taxonomy: 'utility',
+        val: 120,
+        vars(r){
+            // [Minor Gene Discount]
+            return traitScale(r || traitRank('versatility') || 1, [1], [5], [10]);
         },
     },
     xenophobic: { // Trade posts suffer a -1 penalty per post
@@ -332,6 +367,18 @@ export const traits = {
             return traitScale(r || traitRank('instinct') || 1, [2,10], [10,50], [25,70]);
         },
     },
+    grazer: { // Idle citizens feed themselves off the land, and bring some back
+        name(){ return loc('trait_grazer_name'); },
+        desc(v){ return loc('trait_grazer',v); },
+        type: 'genus',
+        origin: 'herbivore',
+        taxonomy: 'resource',
+        val: 20,
+        vars(r){
+            // [Share of a farmer each idle citizen produces]
+            return traitScale(r || traitRank('grazer') || 1, [1], [20], [40]);
+        },
+    },
     forager: { // Will eat just about anything
         name(){ return loc('trait_forager_name'); },
         desc(v){ return loc('trait_forager',v); },
@@ -365,6 +412,18 @@ export const traits = {
         val: -60,
         vars(r){
             return traitScale(r || traitRank('weak') || 1, [16], [10], [4]);
+        },
+    },
+    unassuming: { // Chance that a negative event is thrown back and drawn again
+        name(){ return loc('trait_unassuming_name'); },
+        desc(v){ return loc('trait_unassuming',v); },
+        type: 'genus',
+        origin: 'small',
+        taxonomy: 'utility',
+        val: 20,
+        vars(r){
+            // [Reroll Chance]
+            return traitScale(r || traitRank('unassuming') || 1, [1], [10], [20]);
         },
     },
     large: { // Increases plantery cost creep multipliers by 0.005
@@ -516,7 +575,7 @@ export const traits = {
         type: 'genus',
         origin: 'plant',
         taxonomy: 'utility',
-        val: 60,
+        val: 20,
         vars(r){
             // [Sunny, Cloudy, Rainy]
             return traitScale(r || traitRank('photosynth') || 1, [5,4,3], [40,20,10], [70,40,25]);
@@ -561,7 +620,7 @@ export const traits = {
         type: 'genus',
         origin: 'fungi',
         taxonomy: 'utility',
-        val: 40,
+        val: 20,
         vars(r){
             // [Bound Add, Bound Multi, Bound Add Parasite]
             return traitScale(r || traitRank('spores') || 1, [1,1.2,1], [2,2,1], [3,3.5,2]);
@@ -657,9 +716,21 @@ export const traits = {
         type: 'genus',
         origin: 'polar',
         taxonomy: 'production',
-        val: -80,
+        val: -120,
         vars(r){
             return traitScale(r || traitRank('heat_intolerance') || 1, [0.4], [0.25], [0.16]);
+        },
+    },
+    pykrete: { // Polar construction material responds to temperature
+        name(){ return loc('trait_pykrete_name'); },
+        desc(v){ return loc('trait_pykrete',v); },
+        type: 'genus',
+        origin: 'polar',
+        taxonomy: 'resource',
+        val: 60,
+        vars(r){
+            // [Hot production penalty, Cold production bonus, Material cost discount]
+            return traitScale(r || traitRank('pykrete') || 1, [40,10,5], [25,25,15], [10,40,25]);
         },
     },
     scavenger: { // scavenger job is always available
@@ -672,6 +743,18 @@ export const traits = {
         vars(r){
             // [impact, duel bonus]
             return traitScale(r || traitRank('scavenger') || 1, [0.05,18], [0.12,25], [0.18,34]);
+        },
+    },
+    grey_market: { // Every trade route leaks a trickle of everything the open market sells
+        name(){ return loc('trait_grey_market_name'); },
+        desc(v){ return loc('trait_grey_market',v); },
+        type: 'genus',
+        origin: 'sand',
+        taxonomy: 'resource',
+        val: 60,
+        vars(r){
+            // [Share of one route's import, gained per route per resource]
+            return traitScale(r || traitRank('grey_market') || 1, [0.2], [3], [6]);
         },
     },
     nomadic: { // -1 Trade route from trade post
@@ -691,6 +774,17 @@ export const traits = {
         val: 80,
         vars(r){
             return traitScale(r || traitRank('immoral') || 1, [-40], [0], [40]);
+        },
+    },
+    ruthless: { // Combat rating bonus; applies to armies, not hunting
+        name(){ return loc('trait_ruthless_name'); },
+        desc(v){ return loc('trait_ruthless',v); },
+        type: 'genus',
+        origin: 'demonic',
+        taxonomy: 'combat',
+        val: 40,
+        vars(r){
+            return traitScale(r || traitRank('ruthless') || 1, [1], [10], [20]);
         },
     },
     evil: { // You are pure evil
@@ -753,10 +847,22 @@ export const traits = {
         type: 'genus',
         origin: 'synthetic',
         taxonomy: 'utility',
-        val: -120,
+        val: -180,
         vars(r){
-            // [Power Req, Labor Boost]
-            return traitScale(r || traitRank('powered') || 1, [0.4,4], [0.2,16], [0.05,28]);
+            // [Power Req]
+            return traitScale(r || traitRank('powered') || 1, [0.4], [0.2], [0.05]);
+        },
+    },
+    tireless: { // The labor half of what Powered used to be
+        name(){ return loc('trait_tireless_name'); },
+        desc(v){ return loc('trait_tireless',v); },
+        type: 'genus',
+        origin: 'synthetic',
+        taxonomy: 'production',
+        val: 60,
+        vars(r){
+            // [Labor Boost]
+            return traitScale(r || traitRank('tireless') || 1, [4], [16], [28]);
         },
     },
     psychic: {
@@ -1995,7 +2101,7 @@ export const traits = {
         val: 180,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            return [0.5, r || traitRank('imitation') || 1];
+            return traitScale(r || traitRank('imitation') || 1, [0.25,0.1], [0.5,0.5], [0.75,1]);
         }
     },
     emotionless: { // You have no emotions, cold logic dictates your decisions
@@ -2031,7 +2137,7 @@ export const traits = {
         val: 200,
         vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            return [0.5, r || traitRank('shapeshifter') || 1];
+            return traitScale(r || traitRank('shapeshifter') || 1, [0.25,0.25], [0.5,1], [0.75,1.5]);
         }
     },
     deconstructor: {
@@ -4559,8 +4665,8 @@ export function racialTrait(workers,type){
             modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
         }
     }
-    if (global.race['powered'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
-        modifier *= 1 + (traits.powered.vars()[1] / 100);
+    if (global.race['tireless'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
+        modifier *= 1 + (traits.tireless.vars()[0] / 100);
     }
     if (global.race['artifical'] && type === 'science'){
         modifier *= 1 + (traits.artifical.vars()[0] / 100);
@@ -4803,15 +4909,45 @@ export function servantTrait(workers,type){
 // Every tunable of the gene economy in one place, so a retune is a single edit here rather than a
 // hunt through the module.
 export const genes = {
-    gene_slot_count: 8,
+    // Pairs each strand starts with, before Adaptable, CRISPR or any bonus.
+    strand_major_pairs: 5,
+    strand_minor_pairs: 4,
+    // The CRISPR Evolve ranks that lengthen a strand, and which one each adds a pair to.
+    strand_evolve_major: [5],
+    strand_evolve_minor: [3,8],
+    // Evolve ranks that gate a whole behaviour rather than a count.
+    evolve_limit_break: 2,      // minor genes may be limit broken at all
+    evolve_genus_slots: 6,      // minor genes may sit in a genus rung's spare half
+    evolve_crossing: 10,        // majors and minors may swap strands, at the usual penalties
+    // Evolve ranks that hand over a matched pair of minor genes at evolution.
+    strand_evolve_grants: [4,7,9],
+    strand_grant_rank: 5,       // the rank each of those genes arrives at
+    // Extra rank ceiling and limit-break value for genes in genus rungs.
+    genus_rank_start: 20,
+    genus_break_ranks: 10,
+    // Base cost and increment for sealed recessive pairs.
+    strand_recessive_base: 20,
+    strand_recessive_step: 10,
+    strand_slots: 2,            // slots on a pair: [X] - [Y]
+    strand_cap: 12,             // most pairs either strand can ever hold; fixes the index ranges
+    // Minimum Versatile rank that unlocks the extra minor pair.
+    versatility_pair_rank: 0.5,
+    strand_version: 9,          // bumped to re-lay every strand on load after a layout change
+    // Layout version that migrates Powered's labor bonus to Tireless.
+    strand_split_powered: 8,
     gene_unlock_phage: 25,
     gene_slot_cost: 10,         // genes, to fill any empty slot
-    gene_rank_base: 5,          // ranks a mispaired slot holds before any limit break
-    gene_rank_paired: 10,       // ...and what a correctly paired one holds instead
+    gene_rank_base: 5,          // ranks a mispaired slot holds before any limit break (legacy saves)
+    gene_rank_paired: 10,       // ...and what a minor gene in a minor slot holds instead
+    gene_rank_major: 20,        // ...and what a minor gene given a major slot holds
     gene_break_ranks: 5,        // ranks each limit break adds
-    // The strand, read left to right and repeating for any slots a later upgrade adds. Taken two at
-    // a time it gives the rungs: A-T, C-G, A-T, C-G.
+    // Strength multiplier for major/genus traits in minor slots.
+    minor_slot_penalty: 0.5,
+    // Minimum rank retained by an emergent genus trait with no feeders.
+    genus_emergent_floor: 0.1,
+    // Base assigned to each major/genus trait taxonomy.
     gene_strand: ['A','T','C','G'],
+    gene_taxonomy: { combat: 'A', production: 'T', resource: 'C', utility: 'G' },
     // Which base answers which. A gene pairs with the slot bearing its own base; the rung it sits on
     // is what makes that slot's partner the complement.
     gene_pairs: { A: 'T', T: 'A', C: 'G', G: 'C' },
@@ -4916,130 +5052,468 @@ export function geneSuited(gene){
 }
 
 
-// Gene slots
-export function geneSlotCount(){
-    let extra = global.race['geneSlotBonus'] || 0;
-    return genes.gene_slot_count + extra;
+// --- Gene strands ------------------------------------------------------------------------------
+// Major/genus traits and minor genes use separate paired slot ranges.
+// Empty pairs are oriented by their first trait; cross-strand placement applies the configured penalty.
+
+// How far one strand's range reaches, whether or not that many pairs are unlocked.
+function strandSpan(){
+    return genes.strand_cap * genes.strand_slots;
 }
+
+// Where a strand's indices begin.
+export function strandBase(kind){
+    return kind === 'major' ? 0 : strandSpan();
+}
+
+// Every index the two strands occupy; granted extras start here.
+export function geneSlotCount(){
+    return strandSpan() * 2;
+}
+
+// Return cached genus and mimic rungs at the head of the major strand.
+export function strandGenusPairs(){
+    if (geneGenusPairs !== null){ return geneGenusPairs; }
+    let pairs = 0;
+    strandGenera().forEach(function(g){
+        pairs += Math.ceil(genusFeeders(g).length / genes.strand_slots);
+    });
+    // Add rungs for slottable traits from the active mimic.
+    pairs += Math.ceil(strandMimicTraits().length / genes.strand_slots);
+    geneGenusPairs = pairs;
+    return pairs;
+}
+
+// Whether Versatile is currently paying for its pair.
+export function versatileActive(){
+    return (global.race['versatility'] || 0) >= genes.versatility_pair_rank;
+}
+
+// Pairs unlocked on a strand.
+export function strandPairCount(kind){
+    let major = kind === 'major';
+    let pairs = major ? genes.strand_major_pairs : genes.strand_minor_pairs;
+    // The CRISPR Evolve line lengthens both strands as it goes.
+    let evolve = global.genes['evolve'] || 0;
+    (major ? genes.strand_evolve_major : genes.strand_evolve_minor).forEach(function(rank){
+        if (evolve >= rank){ pairs++; }
+    });
+    if (!major && versatileActive()){ pairs++; }
+    pairs += global.race['geneSlotBonus'] || 0;
+    if (major){ pairs += strandGenusPairs() + strandRecessivePairs(); }
+    return Math.min(genes.strand_cap, pairs);
+}
+
+// Base pairs a custom design bought outright in the gene lab.
+export function strandRecessivePairs(){
+    let key = customSlotKey();
+    if (!key || !global['custom'] || !global.custom[key]){ return 0; }
+    return global.custom[key]['recessive'] || 0;
+}
+
+// What the next recessive pair costs, given how many the design already holds.
+export function recessivePairCost(owned){
+    return genes.strand_recessive_base + ((owned || 0) * genes.strand_recessive_step);
+}
+
+// What a whole run of them costs together.
+export function recessiveTotalCost(count){
+    let total = 0;
+    for (let n=0; n<(count || 0); n++){ total += recessivePairCost(n); }
+    return total;
+}
+
+// Whether a trait is sitting in one of the recessive pairs.
+export function traitRecessive(trait){
+    let held = strandRecessivePairs();
+    if (held <= 0){ return false; }
+    let slots = geneSlots();
+    let total = strandPairCount('major');
+    let from = strandBase('major') + (total - held) * genes.strand_slots;
+    let to = strandBase('major') + total * genes.strand_slots;
+    for (let i=from; i<to; i++){
+        if (slots[i] && slots[i].g === trait){ return true; }
+    }
+    return false;
+}
+
+// Whether a slot is one of those sealed pairs. Nothing comes out of one.
+export function slotRecessive(slot){
+    if (geneSlotExtra(slot) || slotKind(slot) !== 'major'){ return false; }
+    let bonus = strandRecessivePairs();
+    if (bonus <= 0){ return false; }
+    return slotPair(slot) >= strandPairCount('major') - bonus;
+}
+
+export function majorPairCount(){ return strandPairCount('major'); }
+export function minorPairCount(){ return strandPairCount('minor'); }
 
 export function geneSlots(){
     if (!global.race['geneSlots'] || !Array.isArray(global.race['geneSlots'])){
         global.race['geneSlots'] = [];
     }
-    // Enough general slots for the current allowance, counting only the ones that are general.
-    let general = global.race.geneSlots.filter(function(s){ return !(s && s.x); }).length;
-    while (general < geneSlotCount()){
-        global.race.geneSlots.push(false);
-        general++;
-    }
-    return global.race.geneSlots;
+    let slots = global.race.geneSlots;
+    // Both ranges always exist in full; what is unlocked is a question for slotActive, not for the shape of the array.
+    while (slots.length < geneSlotCount()){ slots.push(false); }
+    return slots;
 }
 
 export function geneSlotExtra(slot){
-    let s = geneSlots()[slot];
-    return s && s.x ? true : false;
+    return slot >= geneSlotCount();
+}
+
+// Which strand a slot belongs to.
+export function slotKind(slot){
+    return !geneSlotExtra(slot) && slot < strandSpan() ? 'major' : 'minor';
+}
+
+export function slotIsMajor(slot){
+    return slotKind(slot) === 'major';
+}
+
+export function slotPair(slot){
+    return geneSlotExtra(slot) ? false : Math.floor((slot - strandBase(slotKind(slot))) / genes.strand_slots);
+}
+
+// 0 for the left half of a rung, 1 for the right.
+export function slotSide(slot){
+    return geneSlotExtra(slot) ? false : (slot - strandBase(slotKind(slot))) % genes.strand_slots;
+}
+
+// Whether a slot is one the player has.
+export function slotActive(slot){
+    let slots = geneSlots();
+    if (slot < 0 || slot >= slots.length){ return false; }
+    if (slots[slot] && slots[slot].g){ return true; }
+    if (geneSlotExtra(slot)){ return slots[slot] ? true : false; }
+    return slotPair(slot) < strandPairCount(slotKind(slot));
 }
 
 export function geneSlotLabel(slot){
-    let slots = geneSlots();
-    let n = 0;
-    for (let i=0; i<=slot && i<slots.length; i++){
-        if (geneSlotExtra(slot) === (slots[i] && slots[i].x ? true : false)){ n++; }
+    if (geneSlotExtra(slot)){
+        let slots = geneSlots();
+        let n = 0;
+        for (let i=geneSlotCount(); i<=slot && i<slots.length; i++){
+            if (slots[i]){ n++; }
+        }
+        return `S${n}`;
     }
-    return geneSlotExtra(slot) ? `S${n}` : `${n}`;
+    // The pair number and which half of it, which is all a slot needs: the tab says which strand.
+    let pair = slotPair(slot);
+    let half = slotSide(slot) === 0 ? 'A' : 'B';
+    if (slotKind(slot) === 'major'){
+        let held = strandGenusPairs();
+        if (pair < held){ return `G${pair + 1}${half}`; }
+        let bonus = strandRecessivePairs();
+        let first = strandPairCount('major') - bonus;
+        if (bonus > 0 && pair >= first){ return `R${pair - first + 1}${half}`; }
+        return `${pair - held + 1}${half}`;
+    }
+    return `${pair + 1}${half}`;
 }
 
-// The base a slot calls for. General slots run the strand in order and repeat, so an upgrade that
-// adds slots extends the same alternating pattern rather than needing a longer table.
+// Return whether a trait uses gene slotting and ranking rules.
+export function geneLike(trait){
+    return traits[trait] && (traits[trait].type === 'minor' || genes.gene_specials.includes(trait)) ? true : false;
+}
+
+// The base a gene reads as.
+export function geneBaseOf(gene){
+    if (!traits[gene] || genes.gene_specials.includes(gene)){ return false; }
+    if (traits[gene].base){ return traits[gene].base; }
+    return traits[gene].taxonomy ? (genes.gene_taxonomy[traits[gene].taxonomy] || false) : false;
+}
+
+// Return a pair's orientation, or false while it is empty.
+export function pairBase(slot){
+    if (slot === false || slot < 0){ return false; }
+    let slots = geneSlots();
+    let first = slot - (slot % genes.strand_slots);
+    for (let n=0; n<genes.strand_slots; n++){
+        let s = slots[first + n];
+        if (!s || !s.g || genes.gene_specials.includes(s.g)){ continue; }
+        let b = s.b || geneBaseOf(s.g);
+        if (b){ return n === 0 ? b : genes.gene_pairs[b]; }
+    }
+    return false;
+}
+
+// The base a slot calls for, or false while its pair has no orientation yet.
 export function geneSlotBase(slot){
-    // A granted pair carries its bases on the slots themselves: they sit outside the strand, so
-    // there is no position to read one from.
     let s = geneSlots()[slot];
+    // Granted slots carry their own bases outside the two strands.
     if (s && s.x){ return s.b || false; }
     if (geneSlotExtra(slot)){ return false; }
-    let general = -1;
-    let slots = geneSlots();
-    for (let i=0; i<=slot && i<slots.length; i++){
-        if (!(slots[i] && slots[i].x)){ general++; }
-    }
-    if (general < 0){ return false; }
-    return genes.gene_strand[general % genes.gene_strand.length];
+    let base = pairBase(slot);
+    if (!base){ return false; }
+    return slotSide(slot) === 0 ? base : genes.gene_pairs[base];
 }
 
-// The slot across the rung from this one, or false when it is on no rung at all. General slots pair
-// by position down the strand; granted extras pair with each other in the order they arrived, two by
-// two, so a granted pair reads as its own rung hanging off the end.
+// The slot across the rung from this one, or false when it is on no rung at all.
 export function genePairSlot(slot){
-    let slots = geneSlots();
-    let extra = geneSlotExtra(slot);
-    let group = [];
-    for (let i=0; i<slots.length; i++){
-        if ((slots[i] && slots[i].x ? true : false) === extra){ group.push(i); }
-    }
-    let at = group.indexOf(slot);
-    if (at < 0){ return false; }
-    let partner = at % 2 === 0 ? at + 1 : at - 1;
-    return partner >= 0 && partner < group.length ? group[partner] : false;
+    return slot % genes.strand_slots === 0 ? slot + 1 : slot - 1;
 }
 
-// Whether the gene sitting in a slot answers that slot's own base. The two specials carry no base
-// of their own and read as an answer wherever they are put -- they are earned rather than found,
-// and pinning them to one rung would make them dead weight on most strands.
+// The genus's rungs at the head of the major strand belong to it.
+export function slotGenusHeld(slot){
+    if (geneSlotExtra(slot) || slotKind(slot) !== 'major'){ return false; }
+    return slotPair(slot) < strandGenusPairs();
+}
+
+// Whether a trait is one of this run's genera's own.
+export function genusFeeder(trait){
+    if (strandMimicTraits().includes(trait)){ return true; }
+    return strandGenera().some(function(g){ return genusFeeders(g).includes(trait); });
+}
+
+// Return slottable traits granted by the active mimic.
+export function strandMimicTraits(){
+    if (!global.race['shapeshifter'] || !Array.isArray(global.race['ss_traits'])){ return []; }
+    let mimic = strandMimic();
+    let held = mimic && Array.isArray(genus_def[mimic].emergent) ? genus_def[mimic].emergent : [];
+    // Exclude the mimicked genus's emergent and permanent traits from its rungs.
+    return global.race.ss_traits.filter(function(t){
+        return traits[t] && !held.includes(t) && !traitPermanent(t);
+    });
+}
+
+// The genus currently being mimicked, or false.
+export function strandMimic(){
+    let at = global.race['ss_genus'];
+    return global.race['shapeshifter'] && at && at !== 'none' && genus_def[at] ? at : false;
+}
+
+// Return eligible genera for Shapeshifter to mimic.
+export function shapeOptions(){
+    if (!global.race['species'] || !races[global.race.species]){ return []; }
+    const sp = races[global.race.species];
+    const base = sp.type === 'hybrid' && Array.isArray(sp.hybrid) ? sp.hybrid : [sp.type];
+    const imitation = global.race['imitation'] && global.race['srace'] && races[global.race.srace]
+        ? (races[global.race.srace].type === 'hybrid' ? races[global.race.srace].hybrid : [races[global.race.srace].type])
+        : [];
+    return Object.keys(genus_def).filter(function(gen){
+        if (['synthetic','eldritch','hybrid'].includes(gen)){ return false; }
+        if (base.includes(gen) || imitation.includes(gen)){ return false; }
+        return global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0;
+    });
+}
+
+// Whether the two strands are open to each other.
+export function geneCrossingUnlocked(){
+    return (global.genes['evolve'] || 0) >= genes.evolve_crossing;
+}
+
+// Chimeric DNA lets a minor gene take the half of a genus rung the genus is not using.
+export function geneGenusSlotUnlocked(){
+    return (global.genes['evolve'] || 0) >= genes.evolve_genus_slots;
+}
+
+// Whether a gene may go in a slot at all.
+export function geneSlotFits(slot,gene){
+    if (geneSlotExtra(slot) || !slotActive(slot)){ return false; }
+    if (slotGenusHeld(slot)){
+        // The genus's own traits always; a gene only once Chimeric DNA has opened the spare half.
+        if (!genusFeeder(gene) && !(geneLike(gene) && geneGenusSlotUnlocked())){ return false; }
+    }
+    // Each kind keeps to its own strand until Unlocked DNA says otherwise.
+    else if (!geneCrossingUnlocked() && geneLike(gene) === slotIsMajor(slot)){ return false; }
+    let want = geneSlotBase(slot);
+    if (!want){ return true; }
+    let mine = geneBaseOf(gene);
+    return !mine || mine === want ? true : false;
+}
+
+// Whether the gene sitting in a slot answers that slot's own base.
 export function geneSlotAnswers(slot){
     let s = geneSlots()[slot];
     if (!s || !s.g || !traits[s.g]){ return false; }
     if (genes.gene_specials.includes(s.g)){ return true; }
     let base = geneSlotBase(slot);
-    return base && traits[s.g].base === base ? true : false;
+    return base && geneEffectiveBase(slot) === base ? true : false;
 }
 
-// Traits nobody slots. They emerge from the strand itself: every rung that is correctly paired AND
-// correctly placed contributes to the one tied to its base pair, at the lower of its two ranks.
-// Keyed by either half of the pair so a rung can be looked up from whichever side.
+// Correctly paired minor-gene rungs produce these slotless traits.
 export const geneEmergent = { A: 'content', T: 'content', C: 'promiscuous', G: 'promiscuous' };
 
+// Static lookup of emergent gene names.
+const geneEmergentBy = {};
+Object.keys(geneEmergent).forEach(function(b){ geneEmergentBy[geneEmergent[b]] = true; });
+const geneEmergentNames = Object.freeze(Object.keys(geneEmergentBy));
+
 export function geneEmergentList(){
-    let seen = [];
-    Object.keys(geneEmergent).forEach(function(b){
-        if (!seen.includes(geneEmergent[b])){ seen.push(geneEmergent[b]); }
-    });
-    return seen;
+    return geneEmergentNames;
 }
 
-// Rank of an emergent trait: the sum over every qualifying rung of the lower of its two genes. A rung
-// only counts when both halves answer their own slot and bond with each other, so it is the reward
-// for getting a pair completely right.
-export function geneEmergentRank(gene){
+// Cache emergent gene ranks; recompute them when the strand changes.
+let geneRankCache = null;
+// Cache gene-to-slot lookups.
+let geneSlotMap = null;
+// Cache each gene's bonded state for geneVars().
+let geneWeakMap = null;
+// How many rungs the genus is holding. Read through strandPairCount on nearly every strand lookup.
+let geneGenusPairs = null;
+
+export function bumpGeneCache(){
+    geneRankCache = null;
+    geneSlotMap = null;
+    geneWeakMap = null;
+    geneGenusPairs = null;
+}
+
+function buildGeneRanks(){
+    let out = {};
+    geneEmergentNames.forEach(function(g){ out[g] = 0; });
     let slots = geneSlots();
-    let done = {};
-    let total = 0;
-    for (let i=0; i<slots.length; i++){
-        if (done[i]){ continue; }
-        let partner = genePairSlot(i);
-        if (partner === false){ continue; }
-        done[i] = true;
-        done[partner] = true;
-        if (!slots[i] || !slots[i].g || !slots[partner] || !slots[partner].g){ continue; }
-        if (!geneSlotAnswers(i) || !geneSlotAnswers(partner)){ continue; }
+    let step = genes.strand_slots;
+    let majorFrom = strandBase('major');
+    let majorTo = majorFrom + (strandGenusPairs() * step);
+    for (let i=0; i+1<slots.length; i+=step){
+        // Genus rungs do not contribute to gene emergents.
+        if (i >= majorFrom && i < majorTo){ continue; }
+        let a = slots[i], b = slots[i + 1];
+        if (!a || !a.g || !b || !b.g){ continue; }
+        // Only minor-gene pairs contribute to minor emergent ranks.
+        if (!geneLike(a.g) || !geneLike(b.g)){ continue; }
+        if (!geneSlotAnswers(i) || !geneSlotAnswers(i + 1)){ continue; }
         if (!geneSlotMatched(i)){ continue; }
-        if (geneEmergent[geneSlotBase(i)] !== gene){ continue; }
-        total += Math.min(slots[i].r,slots[partner].r);
+        let grows = geneEmergent[geneSlotBase(i)];
+        if (grows === undefined || out[grows] === undefined){ continue; }
+        out[grows] += Math.min(a.r,b.r);
     }
-    return total;
+    return out;
 }
 
-// The base a slotted gene reads as. The two specials have none of their own and take on whatever
-// the slot calls for, so they bond with a correct partner and fail with a wrong one like any gene.
+export function geneEmergentRank(gene){
+    if (geneRankCache === null){ geneRankCache = buildGeneRanks(); }
+    return geneRankCache[gene] || 0;
+}
+
+
+// --- Emergent genus properties -----------------------------------------------------------------
+// Held-back genus traits use the average rank of their slotted feeders and never occupy a slot.
+
+// The genera this run was evolved from, primary first.
+export function strandGenera(){
+    if (Array.isArray(global.race['strandGenus']) && global.race.strandGenus.length > 0){
+        return global.race.strandGenus;
+    }
+    let sp = global.race['species'] ? races[global.race.species] : false;
+    if (!sp){ return []; }
+    return sp.type === 'hybrid' && Array.isArray(sp.hybrid) ? sp.hybrid.slice() : [sp.type];
+}
+
+// Which custom design this run was built from, if any.
+export function customSlotKey(){
+    if (global.race['species'] === 'hybrid'){ return 'race1'; }
+    if (global.race['species'] === 'custom'){ return 'race0'; }
+    return false;
+}
+
+// The arrangement a custom design saved, as { trait: slot }.
+export function customArrangement(){
+    let key = customSlotKey();
+    if (!key || !global['custom'] || !global.custom[key]){ return false; }
+    let design = global.custom[key];
+    if (!design['slots'] || typeof design.slots !== 'object'){ return false; }
+    return (design['v'] || 1) >= 2 ? design.slots : false;
+}
+
+// Traits nothing can ever take off.
+const permanentTraits = ['evil','soul_eater','artifical'];
+
+// Traits a fanatic revelation or a deified ancestor handed over during this run.
+export function fanaticGranted(){
+    if (!global.race['fanaticTraits'] || typeof global.race['fanaticTraits'] !== 'object'){
+        global.race['fanaticTraits'] = {};
+    }
+    return global.race.fanaticTraits;
+}
+
+export function markFanaticTrait(trait){
+    if (!traits[trait]){ return false; }
+    fanaticGranted()[trait] = 1;
+    // Permanent traits can change genus-rung count, so invalidate cached strand data.
+    bumpGeneCache();
+    return true;
+}
+
+export function traitPermanent(trait){
+    if (permanentTraits.includes(trait)){ return true; }
+    // A sludge cannot stop being made of sludge.
+    if (trait === 'ooze' && ['sludge','ultra_sludge'].includes(global.race['species'])){ return true; }
+    // Nothing can take back a revelation either, and there is no slot to take it out of.
+    if (global.race['fanaticTraits'] && global.race.fanaticTraits[trait]){ return true; }
+    return false;
+}
+
+// Return permanent traits that run as slotless emergent properties.
+export function permanentEmergent(){
+    let out = [];
+    let held = genusEmergent();
+    Object.keys(global.race).forEach(function(t){
+        if (!traits[t] || held[t] || !traitPermanent(t)){ return; }
+        if (traits[t].type !== 'major' && traits[t].type !== 'genus' && traits[t].type !== 'special'){ return; }
+        out.push(t);
+    });
+    return out;
+}
+
+// The traits a genus keeps back as emergent properties, mapped to the genus they came from.
+export function genusEmergent(){
+    let out = {};
+    let list = strandGenera().slice();
+    // Include emergent traits from the currently mimicked genus.
+    let mimic = strandMimic();
+    if (mimic && !list.includes(mimic)){ list.push(mimic); }
+    list.forEach(function(g){
+        if (!genus_def[g] || !Array.isArray(genus_def[g].emergent)){ return; }
+        genus_def[g].emergent.forEach(function(t){ out[t] = g; });
+    });
+    return out;
+}
+
+export function genusEmergentList(){
+    return Object.keys(genusEmergent());
+}
+
+// The traits of a genus that actually go on the strand: everything it defines, less what it keeps back as emergent.
+export function genusStrandTraits(genus){
+    if (!genus_def[genus]){ return []; }
+    let held = Array.isArray(genus_def[genus].emergent) ? genus_def[genus].emergent : [];
+    return Object.keys(genus_def[genus].traits).filter(function(t){
+        return !held.includes(t) && !permanentTraits.includes(t);
+    });
+}
+
+export function genusFeeders(genus){
+    // A trait that can never be slotted would feed nothing but a zero, so it is not counted as a feeder at all.
+    return genusStrandTraits(genus).filter(function(t){ return !traitPermanent(t); });
+}
+
+export function genusEmergentRank(trait){
+    let genus = genusEmergent()[trait];
+    if (!genus){ return 0; }
+    let feeders = genusFeeders(genus);
+    if (feeders.length === 0){ return genes.genus_emergent_floor; }
+    let total = 0;
+    feeders.forEach(function(t){
+        // Only a feeder that is actually on the strand counts.
+        if (geneSlotOf(t) === false){ return; }
+        total += global.race[t] || 0;
+    });
+    let rank = +(total / feeders.length).toFixed(6);
+    return rank > 0 ? rank : genes.genus_emergent_floor;
+}
+
+// Return a gene's slot-stamped base, or its intrinsic base.
 export function geneEffectiveBase(slot){
     let s = geneSlots()[slot];
     if (!s || !s.g || !traits[s.g]){ return false; }
-    if (genes.gene_specials.includes(s.g)){ return geneSlotBase(slot); }
-    return traits[s.g].base || false;
+    if (genes.gene_specials.includes(s.g)){ return s.b || geneSlotBase(slot); }
+    return s.b || geneBaseOf(s.g);
 }
 
-// The two genes on a rung bond with each other: A to T, C to G. This is about the pair alone -- a
-// rung can bond while sitting in the wrong slots, and two correctly slotted genes that do not answer
-// each other do not bond. An empty partner is no bond.
+// Return whether the two genes on a rung use complementary bases.
 export function geneSlotMatched(slot){
     let partner = genePairSlot(slot);
     if (partner === false){ return false; }
@@ -5047,39 +5521,42 @@ export function geneSlotMatched(slot){
     return a && b && genes.gene_pairs[a] === b ? true : false;
 }
 
-// A gene runs at full strength only while its rung is bonded; on its own, or beside the wrong
-// partner, it runs at half.
+// An unbonded gene runs at half strength.
 export function geneWeak(gene){
-    let slot = geneSlotOf(gene);
-    return slot === false || !geneSlotMatched(slot);
+    if (geneWeakMap === null){ geneWeakMap = {}; }
+    let held = geneWeakMap[gene];
+    if (held === undefined){
+        let slot = geneSlotOf(gene);
+        held = slot === false || !geneSlotMatched(slot);
+        geneWeakMap[gene] = held;
+    }
+    return held;
 }
 
-// The numbers a gene is actually working at right now. Every hook reads through this rather than
-// traits[gene].vars() directly, which is what makes the unbonded halving apply everywhere at once.
+// Return a gene's active values, including the unbonded penalty.
 export function geneVars(gene){
     if (!traits[gene] || !traits[gene].vars){ return [0]; }
     return traits[gene].vars(geneWeak(gene) ? 0.5 : 1);
 }
 
-// Which slot a gene sits in, or false. A gene may only be slotted once.
+// Return a gene slot index, preserving slot zero as a valid result.
 export function geneSlotOf(gene){
-    let slots = geneSlots();
-    for (let i=0; i<slots.length; i++){
-        if (slots[i] && slots[i].g === gene){ return i; }
+    if (geneSlotMap === null){
+        geneSlotMap = {};
+        let slots = geneSlots();
+        for (let i=0; i<slots.length; i++){
+            if (slots[i] && slots[i].g && geneSlotMap[slots[i].g] === undefined){
+                geneSlotMap[slots[i].g] = i;
+            }
+        }
     }
-    return false;
+    let at = geneSlotMap[gene];
+    return at === undefined ? false : at;
 }
 
-// Whether the player may BUY limit breaks, which is what the Unlocked DNA CRISPR upgrade (evolve
-// rank 10) has always claimed to grant -- "unlock the ability to break the rank limits on minor
-// gene traits" -- without anything having enforced it.
-//
-// This gates the purchase only, deliberately not geneRankCap(). The game hands out breaks of its
-// own accord alongside granted genes (see grantRandomMinorTrait / grantMinorTraitPair, which call
-// geneBreaksFor to pay for the ranks they award); capping those would silently demote awarded
-// genes for anyone below rank 10.
+// Limit-break purchases require the Unlocked DNA upgrade; awarded breaks remain valid.
 export function geneBreakUnlocked(){
-    return global.genes['evolve'] && global.genes.evolve >= 10 ? true : false;
+    return (global.genes['evolve'] || 0) >= genes.evolve_limit_break;
 }
 
 // Limit breaks bought per slot this run.
@@ -5090,28 +5567,43 @@ export function geneBreaks(){
     return global.race.geneBreak;
 }
 
-// Where a slot's ceiling starts, before any limit break: twice as far when the gene answers the
-// slot's own base as when it does not. Independent of what sits across the rung -- that decides
-// strength, not the ceiling.
+// Return a slot's rank ceiling before limit breaks.
 export function geneRankStart(slot){
-    return geneSlotAnswers(slot) ? genes.gene_rank_paired : genes.gene_rank_base;
+    // A gene sitting in a genus rung, which only Chimeric DNA allows, climbs further than one anywhere else.
+    if (slotGenusHeld(slot)){ return genes.genus_rank_start; }
+    return slotIsMajor(slot) ? genes.gene_rank_major : genes.gene_rank_paired;
 }
 
-// Rank cap for a slot: where it starts, plus five for every limit break paid for this run.
+// What one limit break is worth here.
+export function geneBreakRanks(slot){
+    return slotGenusHeld(slot) ? genes.genus_break_ranks : genes.gene_break_ranks;
+}
+
+// Rank cap for a slot: where it starts, plus what each limit break paid for this run is worth.
 export function geneRankCap(slot){
     let breaks = geneBreaks()[slot] || 0;
-    return geneRankStart(slot) + (breaks * genes.gene_break_ranks);
+    return geneRankStart(slot) + (breaks * geneBreakRanks(slot));
 }
 
 // How many limit breaks a slot needs before it could hold this rank at all.
 function geneBreaksFor(rank,slot){
-    let start = slot === undefined ? genes.gene_rank_base : geneRankStart(slot);
-    return rank > start ? Math.ceil((rank - start) / genes.gene_break_ranks) : 0;
+    let start = slot === undefined ? genes.gene_rank_paired : geneRankStart(slot);
+    let step = slot === undefined ? genes.gene_break_ranks : geneBreakRanks(slot);
+    return rank > start ? Math.ceil((rank - start) / step) : 0;
+}
+
+// What Versatile takes off the price of putting a gene in a slot or pushing it up a rank.
+export function geneCostDiscount(gene){
+    if (gene && !geneLike(gene)){ return 1; }
+    let rank = traitRank('versatility') || 0;
+    if (rank <= 0){ return 1; }
+    return 1 - (traits.versatility.vars(rank)[0] / 100);
 }
 
 // Self explanatory: the cost to slot or upgrade a gene
 export function geneSlotCost(slot,gene){
-    return genes.gene_slot_cost * geneCostMod(gene !== undefined ? gene : geneInSlot(slot));
+    let g = gene !== undefined ? gene : geneInSlot(slot);
+    return Math.max(1,Math.floor(genes.gene_slot_cost * geneCostMod(g) * geneCostDiscount(g)));
 }
 
 function geneCostMod(gene){
@@ -5129,7 +5621,7 @@ function geneInSlot(slot){
 export function geneRankCost(rank,gene,slot){
     let cost = genes.gene_slot_cost;
     for (let r=2; r<=rank; r++){ cost = Math.round(cost * genes.gene_rank_growth); }
-    return cost * geneCostMod(gene);
+    return Math.max(1,Math.floor(cost * geneCostMod(gene) * geneCostDiscount(gene)));
 }
 
 export function geneBreakCost(slot){
@@ -5144,9 +5636,11 @@ export function geneBreakCost(slot){
 // The live rank of a gene, which is what every effect reads. Zero unless it is sitting in a slot.
 export function geneRank(gene){
     // An emergent trait sits in no slot; its rank is read off the pairs instead.
-    if (geneEmergentList().includes(gene)){ return geneEmergentRank(gene); }
+    if (geneEmergentBy[gene]){ return geneEmergentRank(gene); }
     let slot = geneSlotOf(gene);
-    return slot === false ? 0 : geneSlots()[slot].r;
+    if (slot === false){ return 0; }
+    // Only minor genes are ranked on the slot.
+    return geneSlots()[slot].r || 0;
 }
 
 // The multiplier a gene contributes, as 1 + vars[idx] * rank / 100. The one call every hook makes.
@@ -5167,22 +5661,335 @@ export function geneFlat(gene,idx){
     return vars[idx || 0] * rank;
 }
 
-// Push the slotted ranks onto global.race, which is where the older traits are already read from
-// and what the trait breakdown in the genetics tab displays.
+// Synchronize slotted ranks onto global.race.
 export function syncGenes(){
+    // Invalidate caches before syncing every changed slot and rank.
+    bumpGeneCache();
+    // The genus properties first, and only then the genes.
+    syncGenusEmergent();
     geneRoster().forEach(function(t){
         if (!genes.gene_specials.includes(t)){ delete global.race[t]; }
     });
     geneSlots().forEach(function(slot){
-        if (slot && slot.g){ global.race[slot.g] = slot.r; }
+        // Major and genus slot entries keep their gameplay rank on global.race.
+        if (slot && slot.g && slot.r && geneLike(slot.g)){
+            global.race[slot.g] = slot.r;
+        }
     });
-    // The emergent traits are never slotted, so their rank has to be pushed on here as well or the
-    // hooks that read global.race[trait] would never see them.
+    // Store slotless emergent ranks where gameplay hooks read them.
     geneEmergentList().forEach(function(t){
         let rank = geneEmergentRank(t);
         if (rank > 0){ global.race[t] = rank; }
         else { delete global.race[t]; }
     });
+}
+
+// Synchronize emergent genus ranks onto global.race.
+export function syncGenusEmergent(){
+    let held = global.race['inactiveTraits'] || {};
+    genusEmergentList().forEach(function(t){
+        // Angelic primary races do not regain Evil from a demonic hybrid.
+        if (t === 'evil' && global.race['maintype'] === 'angelic'){
+            delete global.race['evil'];
+            return;
+        }
+        let rank = genusEmergentRank(t);
+        if (held.hasOwnProperty(t)){ held[t] = rank; }
+        else { global.race[t] = rank; }
+    });
+    syncMimicRanks();
+    // Versatile has just been written, so this is the one place that knows the minor strand may have shortened.
+    pruneStrand();
+}
+
+// Synchronize mimicked trait ranks from Shapeshifter.
+export function syncMimicRanks(){
+    let worn = strandMimicTraits();
+    if (worn.length === 0){ return; }
+    let held = global.race['inactiveTraits'] || {};
+    let cut = traits.shapeshifter.vars();
+    worn.forEach(function(t){
+        if (!traits[t]){ return; }
+        let rank = traits[t].val >= 0 ? cut[0] : cut[1];
+        if (held.hasOwnProperty(t)){ held[t] = rank; }
+        else { global.race[t] = rank; }
+    });
+}
+
+// --- Laying traits out on the strand -----------------------------------------------------------
+
+// Traits the strand does not hold.
+export function strandGranted(){
+    let out = {};
+    let mark = function(t){ if (traits[t]){ out[t] = true; } };
+    if (global.race['iTraits']){ Object.keys(global.race.iTraits).forEach(mark); }
+    // Mimicked traits are placed as strand rungs, not granted traits.
+    if (Array.isArray(global.race['absorbed'])){
+        global.race.absorbed.forEach(function(r){
+            if (races[r] && races[r].fanaticism){ mark(races[r].fanaticism); }
+        });
+    }
+    if (global.race['wishStats']){
+        Object.keys(global.race.wishStats).forEach(function(t){
+            if (global.race.wishStats[t]){ mark(t); }
+        });
+    }
+    return out;
+}
+
+// Where a trait would rather sit.
+function slotPreference(trait){
+    return geneLike(trait) ? ['minor','major'] : ['major','minor'];
+}
+
+// Write a gene into a slot.
+function setGeneSlot(slot,gene,opts){
+    opts = opts || {};
+    let slots = geneSlots();
+    let entry = { g: gene };
+    let stamp = opts['base'] || (genes.gene_specials.includes(gene) ? geneSlotBase(slot) : false);
+    if (stamp){ entry.b = stamp; }
+    if (geneLike(gene)){ entry.r = Math.max(1,opts['rank'] || 1); }
+    slots[slot] = entry;
+    delete geneBreaks()[slot];
+    bumpGeneCache();
+    return slot;
+}
+
+// Find a slot for a trait and put it there.
+export function placeTrait(trait,opts){
+    opts = opts || {};
+    if (!traits[trait]){ return false; }
+    // A trait that can never be taken off never goes in either strand; it runs as an emergent property instead.
+    if (traitPermanent(trait)){ return false; }
+    let held = geneSlotOf(trait);
+    if (held !== false){ return held; }
+    let slots = geneSlots();
+    // A slot the player picked out is taken as given, so long as the pairing rules allow it.
+    if (opts['slot'] !== undefined && opts.slot !== false){
+        let at = opts.slot;
+        if (geneSlotExtra(at) || at < 0 || at >= slots.length){ return false; }
+        // Swapping one minor gene for another is a refill; anything else needs the slot empty.
+        let held = slots[at];
+        if (held && held.g && !(geneLike(held.g) && geneLike(trait))){
+            return false;
+        }
+        if (!geneSlotFits(at,trait)){ return false; }
+        return finishPlacement(at,trait,opts);
+    }
+    let kinds = opts['kind'] ? [opts.kind] : slotPreference(trait);
+    if (opts['overflow'] === false){ kinds = kinds.slice(0,1); }
+    for (let k=0; k<kinds.length; k++){
+        let open = [], fresh = [];
+        for (let i=0; i<slots.length; i++){
+            if (slots[i] || geneSlotExtra(i) || !slotActive(i)){ continue; }
+            if (slotKind(i) !== kinds[k]){ continue; }
+            if (!geneSlotFits(i,trait)){ continue; }
+            (pairBase(i) ? open : fresh).push(i);
+        }
+        let pick = open.length > 0 ? open[0] : (fresh.length > 0 ? fresh[0] : false);
+        if (pick === false){ continue; }
+        return finishPlacement(pick,trait,opts);
+    }
+    return false;
+}
+
+function finishPlacement(slot,trait,opts){
+    setGeneSlot(slot,trait,opts);
+    // Major and genus traits use half strength in minor slots.
+    if (!geneLike(trait) && !slotIsMajor(slot)){
+        global.race[trait] = +((global.race[trait] || 1) * genes.minor_slot_penalty).toFixed(6);
+        geneSlots()[slot].p = true;
+    }
+    return slot;
+}
+
+// Whether either strand has anywhere at all to put a trait.
+export function strandRoom(trait){
+    let slots = geneSlots();
+    for (let i=0; i<slots.length; i++){
+        if (slots[i] || geneSlotExtra(i) || !slotActive(i)){ continue; }
+        if (geneSlotFits(i,trait)){ return true; }
+    }
+    return false;
+}
+
+// Take a trait off its strand. The pair it was on loses its orientation once nothing is left in it.
+export function unplaceTrait(trait){
+    let slot = geneSlotOf(trait);
+    if (slot === false || geneSlotExtra(slot)){ return false; }
+    // A pair the design bought is sealed; what went in stays in.
+    if (slotRecessive(slot)){ return false; }
+    geneSlots()[slot] = false;
+    delete geneBreaks()[slot];
+    bumpGeneCache();
+    return slot;
+}
+
+// Take back any minor pair the strand is no longer paying for.
+export function pruneStrand(){
+    bumpGeneCache();
+    let slots = geneSlots();
+    let base = strandBase('minor');
+    let from = base + (strandPairCount('minor') * genes.strand_slots);
+    let to = base + strandSpan();
+    let dropped = [];
+    for (let i=from; i<to && i<slots.length; i++){
+        if (!slots[i]){ continue; }
+        if (slots[i].g){ dropped.push(slots[i].g); }
+        slots[i] = false;
+        delete geneBreaks()[i];
+    }
+    dropped.forEach(function(g){
+        delete global.race[g];
+        messageQueue(loc('arpa_gene_unslotted',[traitSkin('name',g)]),'danger',false,['progress']);
+    });
+    return dropped;
+}
+
+// Place each genus's feeder traits as matched major pairs.
+function placeGenusPair(pair){
+    // Nothing goes down twice.
+    pair = pair.filter(function(t){ return traits[t] && geneSlotOf(t) === false; });
+    if (pair.length === 0){ return false; }
+    let slots = geneSlots();
+    let base0 = strandBase('major');
+    for (let p=0; p<majorPairCount(); p++){
+        let l = base0 + p * genes.strand_slots, r = l + 1;
+        if (pairBase(l) || slots[l] || slots[r]){ continue; }
+        let base = geneBaseOf(pair[0]) || genes.gene_strand[0];
+        setGeneSlot(l,pair[0],{ base: base });
+        if (pair[1]){ setGeneSlot(r,pair[1],{ base: genes.gene_pairs[base] }); }
+        return true;
+    }
+    // Nothing clean left, so the pair goes down wherever it fits rather than being dropped.
+    pair.forEach(function(t){ placeTrait(t); });
+    return false;
+}
+
+// Lay this run's traits out on a fresh strand.
+export function layoutStrand(){
+    bumpGeneCache();
+    let slots = geneSlots();
+    let breaks = geneBreaks();
+
+    // Preserve existing slot contents while re-laying the strand.
+    let carried = [];
+    for (let i=0; i<slots.length; i++){
+        if (geneSlotExtra(i)){ continue; }
+        let s = slots[i];
+        if (s && s.g && traits[s.g]){
+            if (geneLike(s.g)){
+                carried.push({ g: s.g, r: s.r || 1, b: breaks[i] || 0 });
+            }
+            else if (s.p){
+                // Undo the cramped-slot penalty before re-laying, so it is never charged twice.
+                global.race[s.g] = +((global.race[s.g] || 0) / genes.minor_slot_penalty).toFixed(6);
+            }
+        }
+        slots[i] = false;
+        delete breaks[i];
+    }
+
+    // The genera this run evolved from, primary first.
+    let sp = global.race['species'] ? races[global.race.species] : false;
+    let genera = [];
+    if (sp){
+        let list = sp.type === 'hybrid' && Array.isArray(sp.hybrid) ? sp.hybrid : [sp.type];
+        let main = global.race['maintype'] && list.includes(global.race.maintype) ? global.race.maintype : false;
+        genera = (main ? [main].concat(list.filter(function(g){ return g !== main; })) : list.slice())
+            .filter(function(g){
+                return genus_def[g] && genusFeeders(g).some(function(t){ return global.race.hasOwnProperty(t); });
+            });
+    }
+    global.race['strandGenus'] = genera;
+
+    let granted = strandGranted();
+    let placed = {};
+
+    genera.forEach(function(genus){
+        let feeders = genusFeeders(genus).filter(function(t){
+            return global.race.hasOwnProperty(t) && !granted[t];
+        });
+        // Two at a time: a pair holds two, and a genus with an odd count leaves its last one to open a pair of its own.
+        for (let n=0; n<feeders.length; n+=genes.strand_slots){
+            placeGenusPair(feeders.slice(n,n + genes.strand_slots));
+        }
+        feeders.forEach(function(t){ placed[t] = true; });
+    });
+
+    // Place mimicked traits in their own paired genus rungs.
+    let mimicked = strandMimicTraits().filter(function(t){
+        return global.race.hasOwnProperty(t) && !granted[t] && !placed[t];
+    });
+    for (let n=0; n<mimicked.length; n+=genes.strand_slots){
+        placeGenusPair(mimicked.slice(n,n + genes.strand_slots));
+    }
+    mimicked.forEach(function(t){ placed[t] = true; });
+
+    // The genus is down, so its properties can be worked out.
+    syncGenusEmergent();
+
+    // Then everything else the strand is meant to hold.
+    let emergent = genusEmergent();
+    let majors = Object.keys(global.race).filter(function(t){
+        if (placed[t] || granted[t] || emergent[t] || traitPermanent(t)){ return false; }
+        return traits[t] && (traits[t].type === 'major' || traits[t].type === 'genus');
+    });
+
+    // Honor a saved custom layout when its slots remain valid.
+    let arranged = customArrangement();
+    if (arranged){
+        // In slot order, so a design's own pairing survives even where part of it cannot be honoured.
+        majors.filter(function(t){ return arranged[t] !== undefined; })
+            .sort(function(a,b){ return arranged[a] - arranged[b]; })
+            .forEach(function(t){
+                if (placeTrait(t,{ slot: arranged[t] }) !== false){ placed[t] = true; }
+            });
+        majors = majors.filter(function(t){ return !placed[t]; });
+    }
+
+    // Ordered so complements fall next to each other.
+    let byBase = { A: [], T: [], C: [], G: [] }, loose = [];
+    majors.forEach(function(t){
+        let b = geneBaseOf(t);
+        if (byBase[b]){ byBase[b].push(t); } else { loose.push(t); }
+    });
+    let order = [];
+    [['A','T'],['C','G']].forEach(function(rung){
+        let a = byBase[rung[0]], b = byBase[rung[1]];
+        while (a.length > 0 || b.length > 0){
+            if (a.length > 0){ order.push(a.shift()); }
+            if (b.length > 0){ order.push(b.shift()); }
+        }
+    });
+    order.concat(loose).forEach(function(t){ placeTrait(t); });
+
+    // Minor genes last, into whatever the majors left behind.
+    carried.forEach(function(c){
+        let slot = placeTrait(c.g,{ rank: c.r });
+        if (slot === false){ return; }
+        let owed = Math.max(c.b,geneBreaksFor(c.r,slot));
+        if (owed > 0){ geneBreaks()[slot] = owed; }
+    });
+
+    global.race['strandBuilt'] = genes.strand_version;
+    syncGenes();
+    return true;
+}
+
+// Migrate legacy gene layouts after races.js loads.
+export function migrateStrand(){
+    if (global.race['strandBuilt'] === genes.strand_version){ return false; }
+    // Nothing to lay out until a species has been evolved into.
+    if (!global.race['species'] || !races[global.race.species]){ return false; }
+    // Powered was split, and Tireless carries what used to be its labor boost.
+    if ((global.race['strandBuilt'] || 0) < genes.strand_split_powered
+        && global.race['powered'] && !global.race['tireless']){
+        global.race['tireless'] = global.race['powered'];
+    }
+    layoutStrand();
+    return true;
 }
 
 // The genes this run could still be handed: not a special, not already slotted, and of use here.
@@ -5222,6 +6029,7 @@ export function grantMinorTraitPair(rank){
     pair.forEach(function(half){
         geneTempUnlocks()[half.g] = 1;
         slots.push({ g: half.g, r: at, x: true, b: half.b });
+        bumpGeneCache();
         let free = slots.length - 1;
         let owed = geneBreaksFor(at,free);
         if (owed > 0){
@@ -5236,24 +6044,15 @@ export function grantRandomMinorTrait(rank,extra){
     // A granted slot arrives as a matched pair rather than a lone gene.
     if (extra){ return grantMinorTraitPair(rank); }
 
-    let slots = geneSlots();
     let pool = grantPool();
     if (pool.length === 0){ return false; }
 
-    let free = -1;
-    {
-        // The first empty general slot. An extra is never empty, so this skips them naturally.
-        for (let i=0; i<slots.length; i++){
-            if (!slots[i]){ free = i; break; }
-        }
-    }
-    if (free < 0){ return false; }
     let gene = pool[Math.floor(seededRandom(0,pool.length))];
     let at = Math.max(1,rank || 1);
+    let free = placeTrait(gene,{ rank: at });
+    if (free === false){ return false; }
     geneTempUnlocks()[gene] = 1;
-    slots[free] = { g: gene, r: at };
-    // Measured against the slot it actually landed in: a granted gene that happens to answer its
-    // base already reaches ten, and should not be handed breaks it does not need.
+    // Skip unnecessary limit breaks for genes already in major slots.
     let owed = geneBreaksFor(at,free);
     if (owed > 0){
         geneBreaks()[free] = Math.max(geneBreaks()[free] || 0, owed);
@@ -5262,41 +6061,60 @@ export function grantRandomMinorTrait(rank,extra){
     return gene;
 }
 
-// One rank of the Mutation line
-function grantEvolveGene(slot,rank){
+// Return the first empty minor base pair.
+function freeMinorRung(){
     let slots = geneSlots();
-    if (slot >= slots.length){ return false; }
-    if (slots[slot] && slots[slot].g){
-        // Already occupied -- bring it up to the rank this upgrade is worth and leave it there.
-        if (slots[slot].r < rank){ slots[slot].r = rank; }
-        return false;
+    let base = strandBase('minor');
+    for (let p=0; p<minorPairCount(); p++){
+        let l = base + p * genes.strand_slots, r = l + 1;
+        if (!slots[l] && !slots[r] && slotActive(l) && slotActive(r)){ return l; }
     }
-    let want = geneSlotBase(slot);
-    let pool = geneRoster().filter(function(t){
-        return !genes.gene_specials.includes(t) && geneSlotOf(t) === false && geneSuited(t)
-            && traits[t].base === want;
-    });
-    if (pool.length === 0){ return false; }
-    let gene = pool[Math.floor(seededRandom(0,pool.length))];
-    geneTempUnlocks()[gene] = 1;
-    slots[slot] = { g: gene, r: rank };
-    return true;
+    return false;
 }
 
-// The Mutation line hands over a strand rather than a random none matching gene.
+// Grant a matched minor-gene pair on an empty rung.
+function grantEvolvePair(rank){
+    let at = freeMinorRung();
+    if (at === false){ return false; }
+
+    let byBase = {};
+    grantPool().forEach(function(t){
+        let b = geneBaseOf(t);
+        if (!b){ return; }
+        if (!byBase[b]){ byBase[b] = []; }
+        byBase[b].push(t);
+    });
+    // Only an orientation with something to put on both halves is worth drawing.
+    let bases = Object.keys(genes.gene_pairs).filter(function(b){
+        let c = genes.gene_pairs[b];
+        return byBase[b] && byBase[b].length > 0 && byBase[c] && byBase[c].length > 0;
+    });
+    if (bases.length === 0){ return false; }
+
+    let left = bases[Math.floor(seededRandom(0,bases.length))];
+    let pair = [left,genes.gene_pairs[left]].map(function(b){
+        return byBase[b][Math.floor(seededRandom(0,byBase[b].length))];
+    });
+
+    pair.forEach(function(gene,n){
+        let slot = at + n;
+        geneTempUnlocks()[gene] = 1;
+        setGeneSlot(slot,gene,{ rank: rank });
+        let owed = geneBreaksFor(rank,slot);
+        if (owed > 0){ geneBreaks()[slot] = Math.max(geneBreaks()[slot] || 0, owed); }
+    });
+    return pair;
+}
+
+// Grant the Evolve line's starting minor-gene pairs.
 export function grantEvolveGenes(){
     let have = global.genes['evolve'] || 0;
     let granted = 0;
-    for (let r=2; r<=have; r++){
-        let slot = r - 2;
-        let rank = r - 1;
-        if (grantEvolveGene(slot,rank)){ granted++; }
-        if (slot % 2 === 1){
-            let mate = geneSlots()[slot - 1];
-            if (mate && mate.g && mate.r < rank){ mate.r = rank; }
-        }
-    }
-    if (granted > 0 || have >= 2){ syncGenes(); }
+    genes.strand_evolve_grants.forEach(function(rank){
+        if (have < rank){ return; }
+        if (grantEvolvePair(genes.strand_grant_rank)){ granted++; }
+    });
+    if (granted > 0){ syncGenes(); }
     return granted;
 }
 
@@ -6309,6 +7127,9 @@ export function shapeShift(genus,setup,forceClean){
     global.race['ss_traits'] = shifted;
     combineTraits();
     if(genus || !setup || forceClean){
+        // Rebuild the strand after changing mimicked traits.
+        bumpGeneCache();
+        if (global.race['strandBuilt']){ layoutStrand(); }
         //redraws for mimic heat or avian removing buildings or techs
         arpa('Genetics');
         drawCity();
@@ -6393,6 +7214,8 @@ export function legacyTraitRank(rank){
 export function traitRank(trait){
     let rank = global.race[trait];
     if (rank && global.race['empowered'] && !['empowered','catnip','anise'].includes(trait)){
+        // A recessive pair is fixed as it was designed.
+        if (traitRecessive(trait)){ return rank; }
         return +(rank + traits.empowered.vars()[traits[trait].type === 'genus' ? 1 : 0]).toFixed(6);
     }
     return rank;
@@ -6409,13 +7232,24 @@ export function setTraitRank(trait,opts){
             return false;
         }
         global.race[trait] = rank;
+        afterRankChange(trait);
         return true;
     }
     else if (opts['set']){
         global.race[trait] = opts['set'];
+        afterRankChange(trait);
         return true;
     }
     return false;
+}
+
+// A genus property is the average of the traits feeding it, so moving one of those traits moves the property.
+function afterRankChange(trait){
+    // Recalculate traits granted by Imitation when its rank changes.
+    if (trait === 'imitation'){ setImitation(); }
+    // Shapeshifter also requires emergent traits to be resynchronized.
+    if (!genusFeeder(trait) && trait !== 'shapeshifter'){ return; }
+    syncGenusEmergent();
 }
 
 export function fathomCheck(race){
@@ -6433,37 +7267,44 @@ export function fathomCheck(race){
     return 0;
 }
 
-// `vars` is passed straight to the trait's own desc()
+// Build lazy descriptions for traits with carrier-specific text.
 export function traitSkin(type, trait, species, vars){
     let artificial = species ? genus_def[races[species].type].traits.artifical : global.race['artifical'];
+    let skin;
     switch (type){
         case 'name':
-        {
-            let name = {
-                hooved: hoovedReskin(false, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name(),
-                weak: species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name(),
-                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator_name') : traits.spiritual.name(),
+            skin = {
+                hooved(){ return hoovedReskin(false, species); },
+                promiscuous(){ return artificial ? loc('trait_promiscuous_synth_name') : traits.promiscuous.name(); },
+                weak(){ return species === 'dwarf' ? loc('trait_drunk_name') : traits.weak.name(); },
+                spiritual(){ return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator_name') : traits.spiritual.name(); },
             };
-            return trait ? (name[trait] ? name[trait] : traits[trait].name()) : name;
-        } 
+            if (trait){ return skin[trait] ? skin[trait]() : traits[trait].name(); }
+            break;
         case 'desc':
-        {
-            let desc = {
-                hooved: hoovedReskin(true, species),
-                promiscuous: artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc(vars),
-                weak: species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc(vars),
-                spiritual: global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc(vars),
-                blurry: global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc(vars),
-                playful: global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc(vars),
-                befuddle: global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc(vars),
+            skin = {
+                hooved(){ return hoovedReskin(true, species); },
+                promiscuous(){ return artificial ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc(vars); },
+                weak(){ return species === 'dwarf' ? loc('trait_drunk') : traits.weak.desc(vars); },
+                spiritual(){ return global.race.universe === 'evil' && global.civic.govern.type != 'theocracy' ? loc('trait_manipulator') : traits.spiritual.desc(vars); },
+                blurry(){ return global.race['warlord'] ? loc('trait_blurry_warlord') : traits.blurry.desc(vars); },
+                playful(){ return global.race['warlord'] ? loc('trait_playful_warlord') : traits.playful.desc(vars); },
+                befuddle(){ return global.race['warlord'] ? loc('trait_befuddle_warlord') : traits.befuddle.desc(vars); },
             };
-            return trait ? (desc[trait] ? desc[trait] : traits[trait].desc(vars)) : desc;
-        }
+            if (trait){ return skin[trait] ? skin[trait]() : traits[trait].desc(vars); }
+            break;
+        default:
+            return;
     }
+    // No trait named: hand back the whole map as plain strings, the shape this has always returned.
+    let all = {};
+    Object.keys(skin).forEach(function(k){ all[k] = skin[k](); });
+    return all;
 }
 
 export function hoovedReskin(desc, species=global.race.species){
+    // Normalize false species arguments to the current species.
+    if (!species || !races[species]){ species = global.race.species; }
     let type = species === global.race.species ? global.race.maintype || races[species].type : races[species].type;
     if (species === 'sludge' || species === 'ultra_sludge'){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
@@ -7005,7 +7846,7 @@ function minorWish(parent){
 
                     let event_pool = eventList('minor');
                     if (event_pool.length > 0){
-                        let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
+                        let event = rollEvent(event_pool);
                         let msg = events[event].effect();
                         messageQueue(msg,false,false,['events','minor_events']);
                         global.m_event.l = event;
@@ -7494,7 +8335,7 @@ function majorWish(parent){
 
                     let event_pool = eventList('major');
                     if (event_pool.length > 0){
-                        let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
+                        let event = rollEvent(event_pool);
                         let msg = events[event].effect();
                         messageQueue(msg,'caution',false,['events','major_events']);
                         global.m_event.l = event;

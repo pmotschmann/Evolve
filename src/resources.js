@@ -1497,6 +1497,17 @@ export function setResourceName(name){
         }
     }
 
+    if (genusType === 'polar'){
+        switch(name){
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Pykrete_name');
+                break;
+            case 'Cement':
+                global['resource'][name].name = loc('resource_Icecrete_name');
+                break;
+        }
+    }
+
     if (global.city.universe === 'antimatter'){
         switch(name){
             case 'Positronium':
@@ -1861,25 +1872,33 @@ export function bmRoutes(res, pool){
     return bm[pool] && bm[pool][res] ? bm[pool][res] : 0;
 }
 
+// Cache the market route total until its ledger changes.
+let bmSum = { of: null, n: 0 };
+
 export function bmUsed(){
     const bm = bmLedger();
-    let n = 0;
-    for (const pool in bm){ for (const res in bm[pool]){ n += bm[pool][res]; } }
-    return n;
+    if (bmSum.of !== bm){
+        let n = 0;
+        for (const pool in bm){ for (const res in bm[pool]){ n += bm[pool][res]; } }
+        bmSum = { of: bm, n };
+    }
+    return bmSum.n;
 }
 
 export function bmAdjust(res, pool, delta){
     const bm = bmLedger();
     if (!bm[pool]){ bm[pool] = {}; }
+    const used = bmUsed();
     const now = bm[pool][res] || 0;
     let next = now + delta;
     if (next > now){
         // Respect the shared route limit.
-        next = now + Math.min(delta, Math.max(0, global.city.market.mtrade - bmUsed()));
+        next = now + Math.min(delta, Math.max(0, global.city.market.mtrade - used));
     }
-    if (next <= 0){ delete bm[pool][res]; }
+    if (next <= 0){ delete bm[pool][res]; next = 0; }
     else { bm[pool][res] = next; }
-    global.city.market.trade = bmUsed();
+    bmSum = { of: bm, n: used - now + next };
+    global.city.market.trade = bmSum.n;
     return bm[pool][res] || 0;
 }
 

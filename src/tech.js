@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, save, webWorker, p_on, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, techEra } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, techEra , resName } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
@@ -7478,8 +7478,8 @@ const techs = {
     },
     cement_processing: {
         id: 'tech-cement_processing',
-        title(){ return loc('tech_cement_processing'); },
-        desc(){ return loc('tech_cement_processing'); },
+        title(){ return loc('tech_cement_processing',[resName('Cement')]); },
+        desc(){ return loc('tech_cement_processing',[resName('Cement')]); },
         category: 'ai_core',
         era: 'interstellar',
         reqs: { high_tech: 15 },
@@ -7488,7 +7488,7 @@ const techs = {
         cost: {
             Knowledge(){ return 1750000; },
         },
-        effect: loc('tech_cement_processing_effect'),
+        effect(){ return loc('tech_cement_processing_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -9963,8 +9963,8 @@ const techs = {
     },
     cement: {
         id: 'tech-cement',
-        title(){ return loc('tech_cement'); },
-        desc(){ return loc('tech_cement_desc'); },
+        title(){ return loc('tech_cement',[resName('Cement')]); },
+        desc(){ return loc('tech_cement_desc',[resName('Cement'),resName('Stone')]); },
         category: 'cement',
         era: 'civilized',
         reqs: { mining: 1, storage: 1, science: 1 },
@@ -9974,7 +9974,7 @@ const techs = {
         cost: {
             Knowledge(){ return 500; }
         },
-        effect: loc('tech_cement_effect'),
+        effect(){ return loc('tech_cement_effect',[resName('Cement'),resName('Stone')]); },
         action(){
             if (payCosts(this)){
                 initStruct(actions.city.cement_plant);
@@ -9996,7 +9996,7 @@ const techs = {
             Knowledge(){ return 3200; },
             Iron(){ return 750; }
         },
-        effect: loc('tech_rebar_effect'),
+        effect(){ return loc('tech_rebar_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10017,7 +10017,7 @@ const techs = {
             Knowledge(){ return 6750; },
             Steel(){ return 750; }
         },
-        effect: loc('tech_steel_rebar_effect'),
+        effect(){ return loc('tech_steel_rebar_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10027,8 +10027,8 @@ const techs = {
     },
     portland_cement: {
         id: 'tech-portland_cement',
-        title(){ return loc('tech_portland_cement'); },
-        desc(){ return loc('tech_portland_cement'); },
+        title(){ return loc('tech_portland_cement',[resName('Cement')]); },
+        desc(){ return loc('tech_portland_cement',[resName('Cement')]); },
         category: 'cement',
         era: 'industrialized',
         reqs: { cement: 3, high_tech: 3 },
@@ -10037,7 +10037,7 @@ const techs = {
         cost: {
             Knowledge(){ return 32000; }
         },
-        effect: loc('tech_portland_cement_effect'),
+        effect(){ return loc('tech_portland_cement_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10057,7 +10057,7 @@ const techs = {
         cost: {
             Knowledge(){ return 72000; }
         },
-        effect: loc('tech_screw_conveyor_effect'),
+        effect(){ return loc('tech_screw_conveyor_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10078,7 +10078,7 @@ const techs = {
             Knowledge(){ return 500000; },
             Adamantite(){ return 10000; }
         },
-        effect: loc('tech_adamantite_screws_effect',[3]),
+        effect(){ return loc('tech_adamantite_screws_effect',[3,resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10100,7 +10100,7 @@ const techs = {
             Omniscience(){ return 20000; },
             Asphodel_Powder(){ return 50000; }
         },
-        effect(){ return loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name, global.resource.Cement.name]); },
+        effect(){ return loc('tech_otherworldly_binder_effect',[global.resource.Asphodel_Powder.name, resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -10110,8 +10110,8 @@ const techs = {
     },
     geopolymer_cement: {
         id: 'tech-geopolymer_cement',
-        title(){ return loc('tech_geopolymer_cement'); },
-        desc(){ return loc('tech_geopolymer_cement'); },
+        title(){ return loc('tech_geopolymer_cement',[resName('Cement')]); },
+        desc(){ return loc('tech_geopolymer_cement',[resName('Cement')]); },
         category: 'cement',
         era: 'matrioshka',
         path: ['truepath'],
@@ -10121,7 +10121,7 @@ const techs = {
         cost: {
             Knowledge(){ return 22000000; }
         },
-        effect(){ return loc('tech_geopolymer_cement_effect',[global.resource.Cement.name]); },
+        effect(){ return loc('tech_geopolymer_cement_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 return true;
@@ -18184,8 +18184,8 @@ const techs = {
     },
     otherworldly_cement: {
         id: 'tech-otherworldly_cement',
-        title(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
-        desc(){ return loc('tech_otherworldly_cement',[global.resource.Cement.name]); },
+        title(){ return loc('tech_otherworldly_cement',[resName('Cement')]); },
+        desc(){ return loc('tech_otherworldly_cement',[resName('Cement')]); },
         category: 'cement',
         era: 'existential',
         reqs: { elysium: 17, cement: 7 },
@@ -18195,7 +18195,7 @@ const techs = {
             Knowledge(){ return 135000000; },
             Omniscience(){ return 42500; },
         },
-        effect(){ return loc('tech_otherworldly_cement_effect',[global.resource.Cement.name]); },
+        effect(){ return loc('tech_otherworldly_cement_effect',[resName('Cement')]); },
         action(){
             if (payCosts(this)){
                 initStruct(actions.eden.eden_elysium.eden_cement);

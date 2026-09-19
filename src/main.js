@@ -2,8 +2,8 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse } from './functions.js';
-import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes} from './races.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName } from './functions.js';
+import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes, migrateStrand} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, syncSupplyZones, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, jobStack, workerScale, limitCraftsmen, loadServants, craftsmanCap, craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone } from './jobs.js';
@@ -22,7 +22,7 @@ import { autoRefuelShip, shipCrewSize, sensorRange, shipCosts, buildTPShipQueue,
          shipBound, refreshDock } from './ships.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
-import { events, eventList } from './events.js';
+import { events, eventList, rollEvent } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust, hugeAdjust, teamster, factoryBonus, technicianBonus, infiltratorFactor, weightedInfiltration } from './prod.js';
 import { swissKnife } from './tech.js';
@@ -32,6 +32,15 @@ import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from '.
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect, ice_fuel_adjust } from './iceage.js';
+
+function pykreteWeatherMultiplier(){
+    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
+    if (genus !== 'polar'){ return 1; }
+    let pykrete = traits.pykrete.vars(global.race['pykrete'] || 0.1);
+    if (global.city.calendar.temp === 0){ return 1 + (pykrete[1] / 100); }
+    if (global.city.calendar.temp === 2){ return 1 - (pykrete[0] / 100); }
+    return 1;
+}
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -189,8 +198,11 @@ else {
 
 initMessageQueue();
 
-// Push the slotted gene ranks onto global.race before anything reads them..
-syncGenes();
+// Migrate pre-strand-layout saves after races.js loads.
+if (!migrateStrand()){
+    // Synchronize slotted gene ranks before gameplay reads them.
+    syncGenes();
+}
 
 // Gene phage refund
 if (global.genes['geneReset'] && !global.genes.geneReset['found']){
@@ -1038,10 +1050,10 @@ function processOfflineTime(){
 
     if (heldBack > 0){ gameLoop('start'); }
 
-    runOfflineCatchup(steps, daysPerStep, creditedMinutes, heldBack);
+    runOfflineCatchup(steps, daysPerStep, creditedMinutes);
 }
 
-function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes, heldMs){
+function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
     // Settle whatever the frames were drawing past the last step, before the clock changes scale.
     advanceSolarMap(mapAhead());
     webWorker.offline = true;
@@ -1056,9 +1068,15 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes, heldMs){
     const sliceMs = 24;   // simulation per turn before yielding to the browser
     let done = 0;
 
+    // Yield with MessageChannel so offline catch-up is not timer-throttled.
+    const pump = new MessageChannel();
+    const resume = function(){ pump.port2.postMessage(0); };
+    const stopPump = function(){ pump.port1.onmessage = null; pump.port1.close(); pump.port2.close(); };
+
     // Restore live-play state, persist the (possibly partial) result, and either show the
     // credited-time summary or, when cancelled, just close the popup.
     const finalize = function(cancelledEarly){
+        stopPump();
         clearPopper();      // remove the cancel-button tooltip before tearing down the modal
         restoreReactivity();  // re-wrap global before live play resumes; the UI refreshes next tick
         webWorker.offline = false;
@@ -1071,7 +1089,7 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes, heldMs){
             closeOfflineModal(overlay);
         }
         else {
-            finishOfflineModal(overlay, creditedMinutes, heldMs);
+            finishOfflineModal(overlay, creditedMinutes);
         }
     };
 
@@ -1098,13 +1116,15 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes, heldMs){
         $('#offlineProgTxt').text(`${pct}%`);
 
         if (done < totalSteps){
-            setTimeout(step, 0);
+            resume();
         }
         else {
             finalize(false);
         }
     };
-    setTimeout(step, 0);
+    pump.port1.onmessage = step;
+    pump.port1.start();
+    resume();
 }
 
 function drawOfflineModal(onCancel){
@@ -1157,9 +1177,10 @@ function closeOfflineModal(overlay){
     $(document).off('keydown.offlineModal');
 }
 
-function finishOfflineModal(overlay, minutes, heldMs){
+function finishOfflineModal(overlay, minutes){
+    const heldMs = driftHeld();
     let banked = heldMs >= 1000
-        ? `<p class="offlineMsg has-text-success">${loc('offline_time_banked',[formatShortTime(heldMs)])}</p>`
+        ? `<p class="offlineMsg has-text-success">${loc('offline_time_banked',[formatShortTime(heldMs*4)])}</p>`
         : ``;
     overlay.find('.offlineBox').html(
         `<p class="offlineTitle has-text-warning">${loc('offline_time_title')}</p>`
@@ -2097,6 +2118,21 @@ function fastLoop(){
             });
             }
             global.city.market.trade = used_trade;
+
+            // Grey Market grants each tradable resource based on one route's import volume.
+            if (global.race['grey_market'] && used_trade > 0){
+                let cut = traits.grey_market.vars()[0] / 100;
+                let volume = tradeVolumeBonus();
+                Object.keys(tradeRatio).forEach(function(res){
+                    if (!global.resource[res] || !global.resource[res].display){ return; }
+                    let gain = used_trade * tradeRatio[res] * volume * cut;
+                    if (gain <= 0){ return; }
+                    modRes(res,gain * time_multiplier);
+                    if (breakdown.p.consume[res]){
+                        breakdown.p.consume[res][loc('trait_grey_market_bd')] = gain;
+                    }
+                });
+            }
         }
         if (breakdown.p.consume.Money[loc('trade')] === 0){
             delete breakdown.p.consume.Money[loc('trade')];
@@ -4085,6 +4121,30 @@ function fastLoop(){
             let food_base = 0;
             let virgo = astroSign === 'virgo' ? 1 + (astroVal('virgo')[0] / 100) : 1;
 
+            // Grazing uses this farm weather multiplier.
+            let weather_multiplier = 1;
+            if (!global.race['submerged']){
+                if (global.city.calendar.temp === 0){
+                    if (global.city.calendar.weather === 0){
+                        weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[3] / 100) : 0.7;
+                    }
+                    else {
+                        weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[4] / 100) : 0.85;
+                    }
+                }
+                if (global.city.calendar.weather === 2){
+                    weather_multiplier *= global.race['chilled'] ? (1 - traits.chilled.vars()[5] / 100) : 1.1;
+                }
+            }
+
+            // Idle citizens graze.
+            if (global.race['grazer']){
+                let grazers = workerScale(global.civic.unemployed.workers,'farmer');
+                let graze = grazers * farmerValue(true) * (traits.grazer.vars()[0] / 100);
+                breakdown.p['Food'][loc('trait_grazer_bd')] = graze + 'v';
+                food_base += (graze * virgo * weather_multiplier * q_multiplier * production('psychic_boost','Food'));
+            }
+
             if (global.race['artifical']){
                 if (global.city['transmitter']){
                     food_base = p_on['transmitter'] * production('transmitter') * production('psychic_boost','Food');
@@ -4188,21 +4248,6 @@ function fastLoop(){
                     }
                 }
                 else if (global.city['farm'] || global.race['forager'] || global.race['warlord']) {
-                    let weather_multiplier = 1;
-                    if (!global.race['submerged']){
-                        if (global.city.calendar.temp === 0){
-                            if (global.city.calendar.weather === 0){
-                                weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[3] / 100) : 0.7;
-                            }
-                            else {
-                                weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[4] / 100) : 0.85;
-                            }
-                        }
-                        if (global.city.calendar.weather === 2){
-                            weather_multiplier *= global.race['chilled'] ? (1 - traits.chilled.vars()[5] / 100) : 1.1;
-                        }
-                    }
-
                     if (global.race['forager']){
                         let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
                         let foragers = workerScale(global.civic.forager.workers,'forager');
@@ -4446,7 +4491,11 @@ function fastLoop(){
             let zoo = 0;
             let restaurant = 0;
             if(!global.race['fasting']){
-                consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + workerScale(global.civic.hunter.workers,'hunter')) * 0.5)) * food_consume_mod;
+                // An idle citizen normally feeds itself halfway; a grazer feeds itself entirely.
+                let idle_fed = global.race['grazer'] ? 1 : 0.5;
+                consume = (global.resource[global.race.species].amount + soldiers
+                    - (global.civic.unemployed.workers * idle_fed)
+                    - (workerScale(global.civic.hunter.workers,'hunter') * 0.5)) * food_consume_mod;
                 if (global.race['forager']){
                     consume -= workerScale(global.civic.forager.workers,'forager');
                 }
@@ -5731,6 +5780,11 @@ function fastLoop(){
                 ['portal', 'hell_factory', global.race['warlord'] ? (p_on['hell_factory'] || 0) * 5 : 0]
             ]);
             let factory_output = workDone * cement_base * cement_kept * production('psychic_boost','Cement');
+            let pykreteWeather = pykreteWeatherMultiplier();
+            if (pykreteWeather !== 1){
+                factory_output *= pykreteWeather;
+                breakdown.p['Cement'][loc('trait_pykrete_name')] = ((pykreteWeather - 1) * 100).toFixed(2) + '%';
+            }
             if (global.civic.govern.type === 'corpocracy'){
                 factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
             }
@@ -6785,6 +6839,11 @@ function fastLoop(){
                 }
 
                 let delta = (stone_base + soldiers) * hunger * global_multiplier;
+                let pykreteWeather = pykreteWeatherMultiplier();
+                if (pykreteWeather !== 1){
+                    delta *= pykreteWeather;
+                    breakdown.p['Stone'][loc('trait_pykrete_name')] = ((pykreteWeather - 1) * 100).toFixed(2) + '%';
+                }
                 breakdown.p['Stone'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
                 modRes('Stone', delta * time_multiplier, false, supplyRegionKey('city'));
@@ -6909,6 +6968,13 @@ function fastLoop(){
             // Deferred until here so that Chrysotile cannot get both boosts
             stone_base *= production('psychic_boost','Stone');
             forage_base *= production('psychic_boost','Stone');
+
+            let pykreteWeather = pykreteWeatherMultiplier();
+            if (pykreteWeather !== 1){
+                stone_base *= pykreteWeather;
+                forage_base *= pykreteWeather;
+                breakdown.p['Stone'][loc('trait_pykrete_name')] = ((pykreteWeather - 1) * 100).toFixed(2) + '%';
+            }
 
             breakdown.p['Stone'][stone_prod_name] = stone_base + 'v';
             if (stone_base > 0){
@@ -7316,7 +7382,7 @@ function fastLoop(){
                         else {
                             active_rituals[spell] = global.race.casting[spell];
                         }
-                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`,[resName('Cement')])] = -(consume_mana);
 
                         modRes('Mana', -(consume_mana_dt));
                     }
@@ -11058,7 +11124,7 @@ function midLoop(){
             breakdown.c.Containers[loc('portal_throne_of_evil_title')] = 500 + 'v';
         }
         if (global.portal['twisted_lab'] && global.portal.twisted_lab.count > 0 && global.race['absorbed']){
-            let gain = p_on['twisted_lab'] * actions.portal.prtl_wasteland.knowVal();
+            let gain = p_on['twisted_lab'] * actions.portal.prtl_wasteland.twisted_lab.knowVal();
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('portal_twisted_lab_title')] = gain+'v';
         }
@@ -13334,7 +13400,7 @@ function rollDayEvents(astroSign){
     if (Math.rand(0,global.event.t) === 0){
         let event_pool = eventList('major');
         if (event_pool.length > 0){
-            let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
+            let event = rollEvent(event_pool);
             let msg = events[event].effect();
             messageQueue(msg,'caution',false,['events','major_events']);
             global.event.l = event;
@@ -13355,7 +13421,7 @@ function rollDayEvents(astroSign){
                 event_pool = ['pet'];
             }
             if (event_pool.length > 0){
-                let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
+                let event = rollEvent(event_pool);
                 let msg = events[event].effect();
                 messageQueue(msg,false,false,['events','minor_events']);
                 global.m_event.l = event;
@@ -14335,7 +14401,7 @@ function longLoop(){
                 drawTech();
             }
             if (moldFathom >= 0.08 && global.resource.Knowledge.max >= (actions.tech.portland_cement.cost.Knowledge() * know_adjust) && checkTechRequirements('portland_cement',false) && global.tech['cement'] && global.tech.cement === 3){
-                messageQueue(loc(tech_source,[loc('tech_portland_cement')]),'info',false,['progress']);
+                messageQueue(loc(tech_source,[loc('tech_portland_cement',[resName('Cement')])]),'info',false,['progress']);
                 global.tech.cement = 4;
                 drawTech();
             }
@@ -15042,11 +15108,7 @@ function diffCalc(res,period){
     }
 }
 
-// The .diff node for each resource, remembered between ticks. Looking it up is the bulk of what
-// diffCalc costs — it runs for every tracked resource, four times a second — while the node itself
-// only changes when the resource rows are rebuilt. isConnected catches exactly that: a row that has
-// been replaced leaves the cached node detached, so the next tick re-resolves it. No explicit
-// invalidation is needed, which means a tab rebuild anywhere cannot leave this stale.
+// Cache resource rate nodes and refresh entries after their rows are rebuilt.
 const diffElCache = {};
 function diffEl(res){
     const cached = diffElCache[res];

@@ -3143,7 +3143,9 @@ function ensureBody(id){
 
 // Distance between two points in AU. 
 export function dist3(a,b){
-    return Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+    // Use direct Euclidean distance for frequently evaluated AU-scale coordinates.
+    const x = b.x - a.x, y = b.y - a.y, z = b.z - a.z;
+    return Math.sqrt(x * x + y * y + z * z);
 }
 
 // A body's orbital inclination in degrees.
@@ -3336,11 +3338,20 @@ function clearOf(a, b, centre){
 // route around, and neither has one launching from there.
 export function starDetour(a, b){
     if (!a || !b){ return false; }
+    // Reject stars outside the leg midpoint clearance sphere before the exact test.
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, mz = (a.z + b.z) / 2;
+    const reach = dist3(a, b) / 2 + STAR_CLEARANCE_AU;
+    const reach2 = reach * reach;
+    const clear2 = STAR_CLEARANCE_AU * STAR_CLEARANCE_AU;
     for (const id of starIndex()){
         const body = starData[id];
-        const centre = { x: body.x, y: body.y, z: body.z };
-        if (dist3(a, centre) <= STAR_CLEARANCE_AU || dist3(b, centre) <= STAR_CLEARANCE_AU){ continue; }
-        const wp = clearOf(a, b, centre);
+        const bx = body.x - mx, by = body.y - my, bz = body.z - mz;
+        if (bx * bx + by * by + bz * bz > reach2){ continue; }
+        const ax = body.x - a.x, ay = body.y - a.y, az = body.z - a.z;
+        if (ax * ax + ay * ay + az * az <= clear2){ continue; }
+        const ex = body.x - b.x, ey = body.y - b.y, ez = body.z - b.z;
+        if (ex * ex + ey * ey + ez * ez <= clear2){ continue; }
+        const wp = clearOf(a, b, { x: body.x, y: body.y, z: body.z });
         if (wp){ return wp; }
     }
     return false;

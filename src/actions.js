@@ -1,9 +1,9 @@
 import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, int_on, gal_on, spire_on, tmp_vars, setupStats, callback_queue, decayPerks, writeSave, writeBackup } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, genomeScale, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool, modalCloseButton } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, genomeScale, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, get_qlevel, techEra, actionReqs, poolStock, poolHeld, poolCap, actionPool, modalCloseButton , resName, techCategoryName } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
-import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, citizenDeath, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes} from './races.js';
+import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, citizenDeath, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes, layoutStrand, markFanaticTrait} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount, showZoneFor } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, jobStack, workerScale, job_data } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
@@ -2535,8 +2535,8 @@ export const actions = {
         },
         cement_plant: {
             id: 'city-cement_plant',
-            title(){ return loc('city_cement_plant'); },
-            desc(){ return loc('city_cement_plant_desc'); },
+            title(){ return loc('city_cement_plant',[resName('Cement')]); },
+            desc(){ return loc('city_cement_plant_desc',[resName('Cement')]); },
             type: 'industry',
             category: 'industrial',
             reqs: { cement: 1 },
@@ -2550,10 +2550,10 @@ export const actions = {
             effect(){
                 if (global.tech['cement'] >= 5){
                     let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                    return `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),screws])}</div>`;
+                    return `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`,[resName('Cement')])])}</div><div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),screws,resName('Cement')])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)]);
+                    return loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`,[resName('Cement')])]);
                 }
             },
             powered(){ return powerCostMod(2); },
@@ -6422,7 +6422,7 @@ export function drawTech(){
 
         $(`<div id="tech-dist-old-${category}" class="tech"></div>`)
             .appendTo('#oldTech')
-            .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
+            .append(`<div><h3 class="name has-text-warning">${techCategoryName(category)}</h3></div>`);
 
         let trick = trickOrTreat(4,12,false);
         if (trick.length > 0 && category === 'science'){
@@ -7664,7 +7664,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
 
     let type = c_action.id.split('-')[0];
     if (c_action['category'] && type === 'tech' && !old){
-        parent.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
+        parent.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${techCategoryName(c_action.category)}</div>`));
     }
 
     let tc = timeCheck(c_action,false,true);
@@ -9178,9 +9178,8 @@ function sentience(){
         }
     }
 
-    // Slotted genes carry across a reset intact -- the slots and their ranks live on global.genes,
-    // which survives -- so the ranks are simply pushed back onto the fresh global.race.
-    syncGenes();
+// Lay out the strand after finalizing run traits.
+    layoutStrand();
 
     // The Mutation genes hand over a strand: one slot per rank, each answering its own base, in
     // pairs that finish level with each other.
@@ -10124,6 +10123,8 @@ function fanaticTrait(trait,rank){
         else {
             global.race[trait] = rank ?? 1;
         }
+// Fanaticism revelations become slotless, full-rank emergent traits.
+        markFanaticTrait(trait);
         cleanAddTrait(trait);
     }
     arpa('Genetics');

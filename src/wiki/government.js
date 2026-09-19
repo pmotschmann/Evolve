@@ -2,6 +2,8 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { govActive } from './../governor.js';
 import { sideMenu, infoBoxBuilder, resourceName } from './functions.js';
+// Import the shared resource-name helper.
+import { resName } from './../functions.js';
 
 export function govPage(content){
     let mainContent = sideMenu('create',content);
@@ -49,7 +51,7 @@ export function govPage(content){
                 5: [`{{ line5(g) }}%`],
                 6: [
                     loc('job_farmer'),loc('job_lumberjack'),loc('job_quarry_worker'),loc('job_miner'),loc('job_crystal_miner'),
-                    loc('job_coal_miner'),loc('job_cement_worker'),loc('job_professor'),loc('job_scientist'),loc('soldiers')
+                    loc('job_coal_miner'),loc('job_cement_worker',[resName('Cement')]),loc('job_professor'),loc('job_scientist'),loc('soldiers')
                 ]
             },
             vue: {

@@ -2,7 +2,9 @@ import { $ } from './dom.js';
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank} from './races.js';
+import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank,
+         genes, geneBaseOf, genusFeeders, genusStrandTraits, geneCrossingUnlocked, traitSkin,
+         recessivePairCost, recessiveTotalCost } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale, jobStack, jobStackStep, workerScale, job_data } from './jobs.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
@@ -8416,6 +8418,265 @@ export function setUniverse(){
     }
 }
 
+// --- Custom species strand ---------------------------------------------------------------
+// Custom-species strand-layout helpers.
+
+// Pairs the design's genus keeps at the head of the major strand, additional to the design's own allowance.
+function labGenusList(genome){
+    return genome.genus === 'hybrid' && genome.hybrid ? genome.hybrid : [genome.genus];
+}
+
+function labGenusPairs(genome){
+    let pairs = 0;
+    labGenusList(genome).forEach(function(g){
+        if (!genus_def[g]){ return; }
+        pairs += Math.ceil(genusStrandTraits(g).length / genes.strand_slots);
+    });
+    return pairs;
+}
+
+// The properties a genus keeps back rather than handing to the strand.
+function labGenusEmergent(genome){
+    let out = [];
+    labGenusList(genome).forEach(function(g){
+        if (!genus_def[g] || !Array.isArray(genus_def[g].emergent)){ return; }
+        let feeders = genusStrandTraits(g);
+        let total = 0;
+        feeders.forEach(function(t){ total += genome.ranks[t] || 1; });
+        let rank = feeders.length > 0
+            ? +(total / feeders.length).toFixed(2)
+            : genes.genus_emergent_floor;
+        genus_def[g].emergent.forEach(function(t){
+            if (traits[t]){ out.push({ t: t, genus: g, rank: rank }); }
+        });
+    });
+    return out;
+}
+
+// What a design pays for one of its genus's own traits, emergent ones included.
+function labGenusCost(trait){
+    return traits[trait] ? traits[trait].val : 0;
+}
+
+// The rank Versatile would run at for this design.
+function labVersatile(genome){
+    let found = labGenusEmergent(genome).filter(function(e){ return e.t === 'versatility'; });
+    return found.length > 0 ? found[0].rank : 0;
+}
+
+// Pairs on one of the design's strands.
+function labPairs(genome,kind){
+    let major = kind === 'major';
+    let pairs = major ? genes.strand_major_pairs : genes.strand_minor_pairs;
+    let evolve = global.genes['evolve'] || 0;
+    (major ? genes.strand_evolve_major : genes.strand_evolve_minor).forEach(function(rank){
+        if (evolve >= rank){ pairs++; }
+    });
+    if (!major && labVersatile(genome) >= genes.versatility_pair_rank){ pairs++; }
+    if (major){ pairs += labGenusPairs(genome) + (genome.recessive || 0); }
+    return Math.min(genes.strand_cap,pairs);
+}
+
+// The first pair the design bought, or false when it has bought none.
+function labRecessiveFrom(genome){
+    let bonus = genome.recessive || 0;
+    return bonus > 0 ? labPairs(genome,'major') - bonus : false;
+}
+
+// How many more pairs the design could still buy, which the index space caps.
+function labRecessiveRoom(genome){
+    return Math.max(0,genes.strand_cap - labPairs(genome,'major'));
+}
+
+// Whether a slot is on one of the design's recessive pairs.
+function labIsRecessive(genome,slot){
+    let from = labRecessiveFrom(genome);
+    if (from === false || slot >= labBase('minor')){ return false; }
+    return Math.floor((slot - labBase('major')) / genes.strand_slots) >= from;
+}
+
+// Every slot on a bought pair, so the lab can insist they are all filled before the race is made.
+function labRecessiveSlots(genome){
+    let from = labRecessiveFrom(genome);
+    if (from === false){ return []; }
+    let out = [];
+    for (let p=from; p<labPairs(genome,'major'); p++){
+        let at = labBase('major') + p * genes.strand_slots;
+        out.push(at,at + 1);
+    }
+    return out;
+}
+
+function labBase(kind){
+    return kind === 'major' ? 0 : genes.strand_cap * genes.strand_slots;
+}
+
+// Every slot the design can actually use, in display order.
+function labSlots(genome,kind){
+    let out = [];
+    let base = labBase(kind);
+    for (let n=0; n<labPairs(genome,kind) * genes.strand_slots; n++){ out.push(base + n); }
+    return out;
+}
+
+// What sits in a slot, by inverting the design's { trait: slot } map.
+function labAt(genome,slot){
+    let held = false;
+    Object.keys(genome.slots).forEach(function(t){
+        if (genome.slots[t] === slot){ held = t; }
+    });
+    return held;
+}
+
+// The genus traits, which are locked to the opening pair -- two pairs for a hybrid, one each.
+function labGenusTraits(genome){
+    let out = [];
+    labGenusList(genome).forEach(function(g){
+        if (!genus_def[g]){ return; }
+        genusStrandTraits(g).forEach(function(t){ if (traits[t]){ out.push(t); } });
+    });
+    return out;
+}
+
+function labGenusSlots(genome){
+    return labGenusTraits(genome).length;
+}
+
+// The base a slot reads as.
+function labSlotHeld(genome,slot){
+    let held = labAt(genome,slot);
+    if (!held){ return false; }
+    let locked = labGenusTraits(genome);
+    let at = locked.indexOf(held);
+    if (at >= 0 && at % genes.strand_slots === 1){
+        let first = locked[at - 1];
+        return genes.gene_pairs[geneBaseOf(first)] || geneBaseOf(held);
+    }
+    return geneBaseOf(held);
+}
+
+// The orientation of the pair a slot is on, or false while it is empty and will take anything.
+function labPairBase(genome,slot){
+    let first = slot - (slot % genes.strand_slots);
+    for (let n=0; n<genes.strand_slots; n++){
+        let b = labSlotHeld(genome,first + n);
+        if (b){ return n === 0 ? b : genes.gene_pairs[b]; }
+    }
+    return false;
+}
+
+function labSlotBase(genome,slot){
+    let base = labPairBase(genome,slot);
+    if (!base){ return false; }
+    return slot % genes.strand_slots === 0 ? base : genes.gene_pairs[base];
+}
+
+// Whether a trait may go in a slot.
+function labFits(genome,slot,trait){
+    if (labAt(genome,slot)){ return false; }
+    // The lab only ever places major traits, so every slot on the minor strand is a crossing.
+    if (slot >= labBase('minor') && !geneCrossingUnlocked()){ return false; }
+    let want = labSlotBase(genome,slot);
+    if (!want){ return true; }
+    let mine = geneBaseOf(trait);
+    return !mine || mine === want ? true : false;
+}
+
+// How a slot is named on screen.
+function labSlotLabel(genome,slot){
+    let kind = slot < labBase('minor') ? 'major' : 'minor';
+    let pair = Math.floor((slot - labBase(kind)) / genes.strand_slots);
+    let half = slot % genes.strand_slots === 0 ? 'A' : 'B';
+    if (kind === 'major'){
+        let held = labGenusPairs(genome);
+        if (pair < held){ return `G${pair + 1}${half}`; }
+        let from = labRecessiveFrom(genome);
+        if (from !== false && pair >= from){ return `R${pair - from + 1}${half}`; }
+        return `${pair - held + 1}${half}`;
+    }
+    return `${pair + 1}${half}`;
+}
+
+// A slot the player may edit: everything but the opening pair(s) the genus owns.
+function labLocked(genome,slot){
+    let held = labGenusPairs(genome) * genes.strand_slots;
+    return slot >= labBase('major') && slot < labBase('major') + held;
+}
+
+// Return traits excluded by genus and species constraints.
+function labBlocked(genome,trait){
+    if (genome.traitlist.includes('catnip') && trait === 'anise'){ return true; }
+    if (genome.traitlist.includes('anise') && trait === 'catnip'){ return true; }
+    let synth = ['synthetic','hybrid'].includes(genome.genus)
+        && (genome.genus !== 'hybrid' || (genome.hybrid && genome.hybrid.includes('synthetic')));
+    if (!synth && ['deconstructor','imitation'].includes(trait)){ return true; }
+    return false;
+}
+
+// Give a home to anything the design carries that is not in a slot yet.
+function labAutoPlace(genome){
+    genome.traitlist.forEach(function(t){
+        if (!traits[t] || genome.slots[t] !== undefined){ return; }
+        let open = false, fresh = false;
+        ['major','minor'].forEach(function(kind){
+            if (open !== false){ return; }
+            labSlots(genome,kind).forEach(function(i){
+                if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
+                if (!labFits(genome,i,t)){ return; }
+                if (labPairBase(genome,i)){ open = i; }
+                else if (fresh === false){ fresh = i; }
+            });
+        });
+        let pick = open !== false ? open : fresh;
+        if (pick !== false){ genome.slots[t] = pick; }
+    });
+}
+
+// Whether a slot still exists on this design's strands.
+function labInRange(genome,slot){
+    let kind = slot < labBase('minor') ? 'major' : 'minor';
+    let from = labBase(kind);
+    return slot >= from && slot < from + (labPairs(genome,kind) * genes.strand_slots);
+}
+
+// Put the genus where it belongs, and drop anything the design no longer carries or that no longer fits.
+function labNormalize(genome){
+    let locked = labGenusTraits(genome);
+    // The genus owns the opening slots outright; anything else sitting there is evicted.
+    Object.keys(genome.slots).forEach(function(t){
+        let slot = genome.slots[t];
+        let stale = !genome.traitlist.includes(t) && !locked.includes(t);
+        let squatting = labLocked(genome,slot) && locked.indexOf(t) !== slot - labBase('major');
+        if (stale || squatting){ delete genome.slots[t]; }
+    });
+    locked.forEach(function(t,i){ genome.slots[t] = labBase('major') + i; });
+    // Then anything standing past the end of a strand that has shortened.
+    Object.keys(genome.slots).forEach(function(t){
+        if (locked.includes(t)){ return; }
+        if (!labInRange(genome,genome.slots[t])){ delete genome.slots[t]; }
+    });
+    // Then anything whose base stopped answering, which a genus change can do to a whole strand.
+    Object.keys(genome.slots).forEach(function(t){
+        if (locked.includes(t)){ return; }
+        let slot = genome.slots[t];
+        let mine = geneBaseOf(t);
+        delete genome.slots[t];
+        let want = labSlotBase(genome,slot);
+        if (!want || !mine || mine === want){ genome.slots[t] = slot; }
+    });
+    // Place traits left unassigned after validation.
+    labAutoPlace(genome);
+    // Anything that still has nowhere to go comes off the design.
+    for (let i=genome.traitlist.length - 1; i >= 0; i--){
+        let t = genome.traitlist[i];
+        if (genome.slots[t] === undefined){
+            genome.traitlist.splice(i,1);
+            if (genome.ranks){ delete genome.ranks[t]; }
+            if (genome.fanaticism === t){ genome.fanaticism = false; }
+        }
+    }
+}
+
 export function ascendLab(hybrid,wiki){
     let isWiki = !!wiki;
     if (!isWiki && !global.race['noexport']){
@@ -8545,30 +8806,27 @@ export function ascendLab(hybrid,wiki){
     tpPlanets += `</div>`;
     lab.append($(tpPlanets));
 
-    let genes = $(`<div class="sequence"></div>`);
-    lab.append(genes);
-
     let fanatic = `<div id="geneLabFanatic" class="genus"><div class="has-text-caution header">${loc(`tech_fanaticism`)}</div><button class="button" @click="fanatic()">{{ fanaticism(g.fanaticism) }}</button></div>`;
 
+    // Render lineage controls above the strand view.
     let dGenus = 'humanoid';
+    let controls = `<div class="genus_selection labControls">`;
     if (hybrid){
         dGenus = 'hybrid';
-        let genus = `<div class="genus_selection">`;
-        genus += `<div id="geneLabGenusA" class="genus"><div class="has-text-caution header">${loc('genelab_genus_a')}</div><button class="button" @click="genus(0)" v-html="genus_f(g.hybrid,0)"></button></div>`;
-        genus += `<div id="geneLabGenusB" class="genus"><div class="has-text-caution header">${loc('genelab_genus_b')}</div><button class="button" @click="genus(1)" v-html="genus_f(g.hybrid,1)"></button></div>`;
-        genus += `${fanatic}`;
-        genus += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
-        genus += `</div>`;
-        genes.append($(genus));
+        controls += `<div id="geneLabGenusA" class="genus"><div class="has-text-caution header">${loc('genelab_genus_a')}</div><button class="button" @click="genus(0)" v-html="genus_f(g.hybrid,0)"></button></div>`;
+        controls += `<div id="geneLabGenusB" class="genus"><div class="has-text-caution header">${loc('genelab_genus_b')}</div><button class="button" @click="genus(1)" v-html="genus_f(g.hybrid,1)"></button></div>`;
     }
     else {
-        let genus = `<div class="genus_selection">`;
-        genus += `<div id="geneLabGenus" class="genus"><div class="has-text-caution header">${loc('genelab_genus')}</div><button class="button" @click="genus()">{{ genus_f(g.genus) }}</button></div>`;
-        genus += `${fanatic}`;
-        genus += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
-        genus += `</div>`;
-        genes.append($(genus));
+        controls += `<div id="geneLabGenus" class="genus"><div class="has-text-caution header">${loc('genelab_genus')}</div><button class="button" @click="genus()">{{ genus_f(g.genus) }}</button></div>`;
     }
+    controls += `${fanatic}`;
+    controls += `<div class="resetLab"><button class="button" @click="reset()">${loc('genelab_reset')}</button></div>`;
+    controls += `</div>`;
+    lab.append($(controls));
+
+    // Not `genes`: that is the strand rules imported from races.js, which the slot view reads.
+    let geneBox = $(`<div class="sequence"></div>`);
+    lab.append(geneBox);
 
     let slot = hybrid ? 'race1' : 'race0';
     let genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty(slot) ? {
@@ -8590,6 +8848,9 @@ export function ascendLab(hybrid,wiki){
         genus: global.custom[slot].genus,
         traitlist: global.custom[slot].traits,
         ranks: global.custom[slot]?.ranks || {},
+        // A design written before the lab knew about slots has no arrangement of its own.
+        slots: (global.custom[slot]?.v || 1) >= 2 && global.custom[slot]?.slots ? deepClone(global.custom[slot].slots) : {},
+        bonus: global.custom[slot]?.recessive || 0,
         fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
@@ -8610,6 +8871,8 @@ export function ascendLab(hybrid,wiki){
         genus: dGenus,
         traitlist: [],
         ranks: {},
+        slots: {},
+        recessive: 0,
         fanaticism: false,
     };
 
@@ -8659,38 +8922,8 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    let trait_listing = $(`<b-tabs v-model="tt.t" @update:model-value="swapTab"></b-tabs>`);
-    let all_listing = ``;
-    Object.keys(taxomized).sort().forEach(function (tax){
-        if (tax === 'all'){
-            return;
-        }
-        let negative = '';
-        let trait_list_header = `<b-tab-item><template #header><h2 class="is-sr-only">${loc(`genelab_traits_${tax}`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_${tax}`)}</span></template>`;
-        let trait_list = ``;
-        Object.keys(taxomized[tax]).sort().forEach(function (trait){
-            if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-                if (traits[trait].val >= 0){
-                    trait_list += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" @update:model-value="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ cost('${trait}') }}</span><span v-html="empower(g.traitlist,'${trait}')"></span>)</b-checkbox></div>`;
-                }
-                else {
-                    negative += `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" @update:model-value="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ cost('${trait}') }}</span><span v-html="empower(g.traitlist,'${trait}')"></span>)</b-checkbox></div>`;
-                }
-            }
-        });
-        let full_list = trait_list_header + `<div class="cool trait_selection">` + trait_list + negative + `</div></b-tab-item>`;
-        trait_listing.append($(full_list));
-
-        all_listing += `<h3>${loc(`genelab_traits_${tax}`)}</h3>` + `<div class="lame trait_selection">` + trait_list + negative + `</div>`;
-    });
-
-    let summary = `<b-tab-item id="traitSummary"><template #header><h2 class="is-sr-only">${loc(`genelab_traits_summary`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_summary`)}</span></template></b-tab-item>`;
-    trait_listing.append(summary);
-
-    let allListing = `<b-tab-item id="traitAll"><template #header><h2 class="is-sr-only">${loc(`genelab_traits_all`)}}</h2><span aria-hidden="true">${loc(`genelab_traits_all`)}</span></template>${all_listing}<h3>${loc(`genelab_traits_summary`)}</h3><div id="allSum"></div></b-tab-item>`;
-    trait_listing.append(allListing);
-
-    genes.append(trait_listing);
+    // The strand is the design.
+    geneBox.append($(`<div id="traitSlots"></div>`));
 
     let buttons = `
         <hr>
@@ -8713,11 +8946,17 @@ export function ascendLab(hybrid,wiki){
     }
     lab.append(buttons);
 
-    genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false));
+    // Genes left over, less what the design paid for any extra base pairs.
+    function labScore(gnm){
+        return calcGenomeScore(gnm,(isWiki ? wikiVars : false),tRanks)
+            - recessiveTotalCost(gnm.recessive || 0);
+    }
+
     let error = Vue.reactive({ msg: "" });
 
     let tRanks = genome.ranks;
-    let activeTab = Vue.reactive({ t: 0 });
+    // Priced only once tRanks exists: labScore reads it, and a `let` cannot be touched before its declaration runs.
+    genome.genes = labScore(genome);
     // Whether the True Path field set is showing the whole system. Local to the lab: it decides what
     // is on screen, not anything about the race, so there is nothing to carry into the save.
     let advMode = Vue.reactive({ on: false });
@@ -8736,10 +8975,10 @@ export function ascendLab(hybrid,wiki){
             let ranks = {};
             newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
             tRanks = ranks;
-            genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
-            if (activeTab.t === 5){
-                summaryTab(5);
-            }
+            genome.ranks = tRanks;
+            genome.genes = labScore(genome);
+            // Revalidate and redraw slots after changing genus.
+            slotsTab();
         });
     }
 
@@ -8749,7 +8988,6 @@ export function ascendLab(hybrid,wiki){
             g: genome,
             w: wikiVars,
             err: error,
-            tt: activeTab,
             adv: advMode
         },
         methods: {
@@ -8782,7 +9020,13 @@ export function ascendLab(hybrid,wiki){
             },
             setRace(){
                 if (genome.fanaticism && !genome.traitlist.includes(genome.fanaticism)){ return false; }
-                if (calcGenomeScore(genome,false,tRanks) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
+                // Recessive pairs must be full before the run starts.
+                let hollow = labRecessiveSlots(genome).filter(function(i){ return !labAt(genome,i); });
+                if (hollow.length > 0){
+                    error.msg = loc('genelab_recessive_empty',[hollow.length]);
+                    return false;
+                }
+                if (labScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
 
                     global.custom[slot] = {
@@ -8808,7 +9052,11 @@ export function ascendLab(hybrid,wiki){
                         genus: genome.genus,
                         traits: genome.traitlist,
                         fanaticism: genome.fanaticism,
-                        ranks: tRanks
+                        ranks: tRanks,
+                        // Version 2 knows which major trait sits in which slot.
+                        v: 2,
+                        slots: deepClone(genome.slots),
+                        recessive: genome.recessive || 0
                     };
                     // Carried whether or not the player ever opened Advanced: they hold the genus
                     // defaults until edited, and storing them keeps the race's whole system in one
@@ -8855,6 +9103,8 @@ export function ascendLab(hybrid,wiki){
                 genome.home = "";
                 genome.traitlist = [];
                 genome.ranks = {};
+                genome.slots = {};
+                genome.recessive = 0;
                 genome.fanaticism = false;
 
                 let named = genomeNamer(genome);
@@ -8865,7 +9115,10 @@ export function ascendLab(hybrid,wiki){
                     genome[body] = genusVars[named].solar[body];
                 });
 
-                genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false), tRanks);
+                // Restore locked genus slots after clearing the slot map.
+                labNormalize(genome);
+                genome.genes = labScore(genome);
+                repriceGenome();
             },
             fanatic(){
                 this.$buefy.modal.open({
@@ -8982,9 +9235,6 @@ export function ascendLab(hybrid,wiki){
                     }
                 }, 50);
             },
-            swapTab(tab){
-                summaryTab(tab);
-            },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
                 if (file){
@@ -9064,7 +9314,7 @@ export function ascendLab(hybrid,wiki){
                         genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
-                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
+                        genome.genes = labScore(genome);
 
                         error.msg = "";
                     }
@@ -9163,32 +9413,23 @@ export function ascendLab(hybrid,wiki){
         popover(`genelabBody-${body}`, loc(`genelab_body_${body}`));
     });
 
-    Object.keys(unlockedTraits).sort().forEach(function (trait){
-        if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-            ['cool','lame'].forEach(function(s){
-                popover(`celestialLabtraitSelection${trait}`, function(){
-                    let desc = $(`<div></div>`);
-                    let opts = {
-                        trank: labPreviewRank(trait, tRanks[trait] || 1),
-                        wiki: isWiki
-                    }
-                    getTraitDesc(desc, trait, opts);
-                    return desc;
-                },{
-                    elm: `#celestialLab .${s}.trait_selection .t${trait}`,
-                    classes: `w30`,
-                    wide: true
-                });
-            });
-        }
-    });
+    // The strand is the whole trait interface, so it is drawn straight away rather than waiting for a tab to be opened.
+    slotsTab();
+    genome.genes = labScore(genome);
 
 // Return the lab popover rank, including Empowered bonuses.
+    // What Empowered is adding to a trait.
+    function labEmpowerBonus(t){
+        if (!traits[t] || !genome.traitlist.includes('empowered')){ return 0; }
+        if (['empowered','catnip','anise'].includes(t)){ return 0; }
+        // A trait put in a recessive pair runs exactly as designed; Empowered does not lift it.
+        if (genome.slots[t] !== undefined && labIsRecessive(genome,genome.slots[t])){ return 0; }
+        return traits.empowered.vars(labEffectiveRank('empowered'))[traits[t].type === 'genus' ? 1 : 0];
+    }
+
     function labPreviewRank(t, rank){
-        if (genome.traitlist.includes('empowered') && !['empowered','catnip','anise'].includes(t)){
-            return +(rank + traits.empowered.vars(tRanks['empowered'] || 1)[traits[t].type === 'genus' ? 1 : 0]).toFixed(6);
-        }
-        return rank;
+        let boost = labEmpowerBonus(t);
+        return boost > 0 ? +(rank + boost).toFixed(6) : rank;
     }
 
 // Move lab ranks by 0.05, subject to extinction-achievement gates away from rank 1.
@@ -9208,118 +9449,351 @@ export function ascendLab(hybrid,wiki){
         }
     }
 
-    function summaryTab(tab){
-        if (tab === 4 || tab == 5){
-            let container = tab === 4 ? $(`#traitSummary`) : $(`#allSum`);
-            clearElement(container);
-
-            let negative_sum = '';
-            let summary = `<div class="trait_selection summary">`;
-            genome.traitlist.sort().forEach(function (trait){
-                if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-                    if (traits[trait].val >= 0){
-                        summary += `<div class="field t${trait}">`;
-                        summary += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span></b-checkbox>`;
-                        summary += `<span>[<span class="rc"><span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ cost('${trait}') }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ tRank('${trait}') }}</span>`;
-                        summary += `<span v-html="empower(t.empowered,'${trait}')"></span></span>]`;
-                        summary += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
-                        summary += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
-                        summary += `</span></div>`;
-                    }
-                    else {
-                        negative_sum += `<div class="field t${trait}">`;
-                        negative_sum += `<b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span></b-checkbox>`;
-                        negative_sum += `<span>[<span class="rc"><span class="has-text-warning">${loc(`wiki_calc_cost`)}</span> <span>{{ cost('${trait}') }}</span>, <span class="has-text-warning">${loc(`genelab_rank`)}</span> <span>{{ tRank('${trait}') }}</span>`;
-                        negative_sum += `<span v-html="empower(t.empowered,'${trait}')"></span></span>]`;
-                        negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_lower`,[loc(`trait_${trait}_name`)])}" class="sub has-text-danger" @click="reduce('${trait}')"><span>-</span></span>`;
-                        negative_sum += `<span role="button" aria-label="${loc(`genelab_rank_higher`,[loc(`trait_${trait}_name`)])}" class="add has-text-success" @click="increase('${trait}')"><span>+</span></span>`;
-                        negative_sum += `</span></div>`;
-                    }
-                }
-            });
-            summary += negative_sum + `</div>`;
-            container.append(summary);
-
-            vBind({
-                el: tab === 4 ? '#traitSummary .trait_selection' : '#allSum .trait_selection',
-                data: {
-                    g: genome,
-                    t: tRanks
-                },
-                methods: {
-                    geneEdit(){
-                        let newRanks = genome.traitlist.map(x => tRanks[x] ? { [x]: tRanks[x] } : { [x]: 1 });
-                        let ranks = {};
-                        newRanks.forEach(function(k){ Object.keys(k).forEach(function(t){ ranks[t] = k[t] }) });
-                        tRanks = ranks;
-                        genome.genes = calcGenomeScore(genome,(isWiki ? wikiVars : false),tRanks);
-                    },
-                    reduce(t){
-                        stepLabRank(t, true);
-                        if (tab === 4 ){
-                            vBind({el: `#traitSummary .trait_selection`},'update');
-                        }
-                        else {
-                            vBind({el: `#allSum .trait_selection`},'update');
-                        }
-                        let desc = $(`#traitLabActiveDesc`);
-                        clearElement(desc);
-                        let opts = {
-                            trank: labPreviewRank(t, tRanks[t] || 1),
-                            wiki: isWiki
-                        }
-                        getTraitDesc(desc, t, opts);
-                    },
-                    increase(t){
-                        stepLabRank(t, false);
-                        if (tab === 4 ){
-                            vBind({el: `#traitSummary .trait_selection`},'update');
-                        }
-                        else {
-                            vBind({el: `#allSum .trait_selection`},'update');
-                        }
-                        let desc = $(`#traitLabActiveDesc`);
-                        clearElement(desc);
-                        let opts = {
-                            trank: labPreviewRank(t, tRanks[t] || 1),
-                            wiki: isWiki
-                        }
-                        getTraitDesc(desc, t, opts);
-                    },
-                    cost(trait){
-                        return geneCost(genome,trait,tRanks);
-                    },
-                    tRank(trait){
-                        return tRanks[trait];
-                    },
-                    empower(e,t){
-                        let valid_empower = !['empowered','catnip','anise'].includes(t) && genome.traitlist.includes('empowered');
-                        return valid_empower ? `, <span class="has-text-caution">E</span>` : ``;
-                    }
-                }
-            });
-
-            let popAnchor = tab === 4 ? '#traitSummary' : '#allSum';
-
-            genome.traitlist.sort().forEach(function (trait){
-                if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
-                    popover(`celestialLabtraitSelection${trait}Sum`, function(){
-                        let desc = $(`<div id="traitLabActiveDesc"></div>`);
-                        let opts = {
-                            trank: labPreviewRank(trait, tRanks[trait] || 1),
-                            wiki: isWiki
-                        }
-                        getTraitDesc(desc, trait, opts);
-                        return desc;
-                    },{
-                        elm: `${popAnchor} .summary .t${trait}`,
-                        classes: `w30`,
-                        wide: true
-                    });
-                }
-            });
+    // Return the effective trait rank after minor-slot penalties.
+    function labEffectiveRank(t){
+        let rank = tRanks[t] || 1;
+        let slot = genome.slots[t];
+        if (slot !== undefined && slot >= labBase('minor')){
+            rank = +(rank * genes.minor_slot_penalty).toFixed(6);
         }
+        return rank;
     }
+
+    // Group traits by major slots, minor overflow, and unslotted entries.
+    function slotsTab(){
+        labNormalize(genome);
+        let container = $(`#traitSlots`);
+        clearElement(container);
+
+        let cell = function(i,side){
+            let locked = labLocked(genome,i);
+            // Genus rungs are locked and use genus-defined traits and ranks.
+            let bits = ``;
+            if (!locked){
+                let act = `<button class="button labSlotBtn" @click="pick(${i})">{{ slotBtn(${i}) }}</button>`;
+                let ranker = `<span class="labRank" v-show="filled(${i})">`
+                    + `<span role="button" class="sub has-text-danger" :aria-label="lowerLabel(${i})" @click="reduce(${i})"><span>-</span></span>`
+                    + `<span class="rc">{{ slotRank(${i}) }}</span>`
+                    + `<span role="button" class="add has-text-success" :aria-label="raiseLabel(${i})" @click="increase(${i})"><span>+</span></span>`
+                    + `</span>`;
+                bits = side === 'Right' ? `${act}${ranker}` : `${ranker}${act}`;
+            }
+            return `<div class="geneSlot slot${side}${locked ? ' labLocked' : ''}" data-slot="${i}">
+                <span class="slotNum">${labSlotLabel(genome,i)}</span>
+                <span class="slotGene labSlotName" id="labSlotName${i}" v-bind:class="{ 'has-text-warning': filled(${i}), 'has-text-fade': !filled(${i}) }">{{ slotLabel(${i}) }}</span>
+                <span class="slotActions">${bits}</span>
+                <span class="slotBase" v-bind:class="baseClass(${i})">{{ baseMark(${i}) }}</span>
+            </div>`;
+        };
+
+        let strandRows = function(kind,from,to){
+            let out = `<div class="geneStrand">`;
+            let base = labBase(kind);
+            for (let p=from; p<to; p++){
+                let at = base + p * genes.strand_slots;
+                out += `<div class="geneRung">
+                    ${cell(at,'Left')}
+                    <span class="rungBond" v-bind:class="{ bonded: bonded(${at}) }">&#8212;</span>
+                    ${cell(at + 1,'Right')}
+                </div>`;
+            }
+            return out + `</div>`;
+        };
+
+        // Display locked genus rungs separately from editable slots.
+        let held = labGenusPairs(genome);
+        let emergent = labGenusEmergent(genome);
+        let recessiveFrom = labRecessiveFrom(genome);
+        let ownTo = recessiveFrom === false ? labPairs(genome,'major') : recessiveFrom;
+        let view = `<div class="labStrand">`;
+        if (held > 0){
+            view += `<div class="emergeHead has-text-caution">${loc('genelab_slots_genus')}</div>`;
+            view += strandRows('major',0,held);
+            // What the genus keeps back.
+            if (emergent.length > 0){
+                view += `<div class="labGenusEmergent">`;
+                view += `<div class="pickHead has-text-caution">${loc('genelab_genus_emergent')}</div>`;
+                emergent.forEach(function(e){
+                    // Show the flat genus-trait cost beside emergent properties.
+                    view += `<div class="emergeRow">
+                        <span class="emergeName has-text-warning" id="labEmerge${e.t}">${traitSkin('name',e.t)}</span>
+                        <span class="emergeRank has-text-success">${loc('arpa_genepool_rank',[e.rank])}</span>
+                        <span class="emergeCost has-text-danger">${loc('genelab_genus_emergent_cost',[labGenusCost(e.t)])}</span>
+                        <span class="emergeText">${traitSkin('desc',e.t,undefined)}</span>
+                    </div>`;
+                });
+                view += `</div>`;
+            }
+        }
+        view += `<div class="emergeHead has-text-caution">${loc('genelab_slots_major')}</div>`;
+        view += strandRows('major',held,ownTo);
+
+        // Pairs the design bought outright.
+        view += `<div class="labRecessive">
+            <div class="emergeHead has-text-caution">${loc('genelab_recessive')}
+                <span role="button" class="sub has-text-danger" :aria-label="recessiveLabel(false)" @click="sellPair()"><span>-</span></span>
+                <span class="rc">{{ g.recessive }}</span>
+                <span role="button" class="add has-text-success" :aria-label="recessiveLabel(true)" @click="buyPair()"><span>+</span></span>
+                <span class="recessiveCost">${loc('genelab_recessive_cost',[recessivePairCost(genome.recessive || 0),global.resource.Genes.name])}</span>
+            </div>
+            <div class="has-text-caution recessiveNote">${loc('genelab_recessive_note',[traitSkin('name','empowered')])}</div>
+        </div>`;
+        if (recessiveFrom !== false){
+            view += strandRows('major',recessiveFrom,labPairs(genome,'major'));
+        }
+        // Show the minor-strand overflow only after Unlocked DNA.
+        if (geneCrossingUnlocked()){
+            view += `<div class="emergeHead has-text-caution">${loc('genelab_slots_overflow',[genes.minor_slot_penalty * 100])}</div>`;
+            view += strandRows('minor',0,labPairs(genome,'minor'));
+        }
+        view += `</div>`;
+        container.append(view);
+
+        vBind({
+            el: `#traitSlots .labStrand`,
+            data: { g: genome, t: tRanks },
+            methods: {
+                filled(i){ return labAt(genome,i) ? true : false; },
+                slotLabel(i){
+                    let held = labAt(genome,i);
+                    if (!held){ return loc('arpa_gene_empty'); }
+                    // Genus traits use the fixed cost from calcGenomeScore.
+                    if (labLocked(genome,i)){
+                        return loc('genelab_slot_named',[traitSkin('name',held),labGenusCost(held)]);
+                    }
+                    return loc('genelab_slot_named',[traitSkin('name',held),geneCost(genome,held,tRanks)]);
+                },
+                slotRank(i){
+                    let held = labAt(genome,i);
+                    return held ? labEffectiveRank(held) : '';
+                },
+                slotBtn(i){
+                    return labAt(genome,i) ? loc('genelab_slot_clear') : loc('genelab_slot_set');
+                },
+                baseMark(i){ return labSlotBase(genome,i) || '·'; },
+                baseClass(i){
+                    let base = labSlotBase(genome,i);
+                    return [base ? `base${base}` : `baseNone`,{ paired: labAt(genome,i) ? true : false }];
+                },
+                bonded(i){
+                    return labSlotHeld(genome,i) && labSlotHeld(genome,i + 1) ? true : false;
+                },
+                lowerLabel(i){
+                    let held = labAt(genome,i);
+                    return held ? loc('genelab_rank_lower',[traitSkin('name',held)]) : '';
+                },
+                raiseLabel(i){
+                    let held = labAt(genome,i);
+                    return held ? loc('genelab_rank_higher',[traitSkin('name',held)]) : '';
+                },
+                reduce(i){
+                    let held = labAt(genome,i);
+                    if (!held){ return; }
+                    stepLabRank(held,true);
+                    repriceGenome();
+                    vBind({ el: `#traitSlots .labStrand` },'update');
+                },
+                increase(i){
+                    let held = labAt(genome,i);
+                    if (!held){ return; }
+                    stepLabRank(held,false);
+                    repriceGenome();
+                    vBind({ el: `#traitSlots .labStrand` },'update');
+                },
+                recessiveLabel(up){
+                    let held = genome.recessive || 0;
+                    // Charge the next pair price and refund the last pair price.
+                    let cost = up ? recessivePairCost(held) : recessivePairCost(Math.max(0,held - 1));
+                    return loc(up ? 'genelab_recessive_buy' : 'genelab_recessive_sell',
+                               [cost,global.resource.Genes.name]);
+                },
+                buyPair(){
+                    if (labRecessiveRoom(genome) <= 0){ return; }
+                    genome.recessive = (genome.recessive || 0) + 1;
+                    repriceGenome();
+                },
+                sellPair(){
+                    if (!genome.recessive){ return; }
+                    // Removing the last bought pair also removes its assigned traits.
+                    let going = labRecessiveSlots(genome).slice(-genes.strand_slots);
+                    going.forEach(function(i){
+                        let held = labAt(genome,i);
+                        if (!held){ return; }
+                        delete genome.slots[held];
+                        let at = genome.traitlist.indexOf(held);
+                        if (at >= 0){ genome.traitlist.splice(at,1); }
+                        if (genome.fanaticism === held){ genome.fanaticism = false; }
+                    });
+                    genome.recessive--;
+                    repriceGenome();
+                },
+                pick(i){
+                    if (labLocked(genome,i)){ return; }
+                    let held = labAt(genome,i);
+                    if (held){
+                        // Removing a trait also removes it from the design.
+                        delete genome.slots[held];
+                        let at = genome.traitlist.indexOf(held);
+                        if (at >= 0){ genome.traitlist.splice(at,1); }
+                        if (genome.fanaticism === held){ genome.fanaticism = false; }
+                        repriceGenome();
+                        return;
+                    }
+                    // Create the modal before populating its picker.
+                    let had = $('#modalBox').length;
+                    this.$buefy.modal.open({
+                        hasModalCard: false,
+                        customClass: 'evolve-modal',
+                        content: '<div id="modalBox" class="modalBox"></div>'
+                    });
+                    modalCloseButton();
+                    // Wait for a newly created modal before binding it.
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > had){
+                            clearInterval(checkExist);
+                            labPickModal(i);
+                        }
+                    },50);
+                }
+            }
+        });
+
+        emergent.forEach(function(e){
+            popover(`labEmerge${e.t}`,function(){
+                let info = $(`<div></div>`);
+                info.append(`<div class="has-text-warning">${traitSkin('name',e.t)}</div>`);
+                getTraitDesc(info,e.t,{ trank: labPreviewRank(e.t,e.rank), wiki: isWiki });
+                info.append(`<div class="has-text-caution">${loc('arpa_genepool_rank',[e.rank])}</div>`);
+                info.append(`<div class="has-text-caution">${loc('genelab_genus_emergent_note',[loc(`genelab_genus_${e.genus}`)])}</div>`);
+                return info;
+            },{ classes: `w30`, wide: true });
+        });
+
+        // Every slot's own popover, so a trait can be read where it sits.
+        labSlots(genome,'major').concat(labSlots(genome,'minor')).forEach(function(i){
+            popover(`labSlotName${i}`,function(){
+                let held = labAt(genome,i);
+                if (!held){ return ``; }
+                return labTraitCard(held,i);
+            },{ classes: `w30`, wide: true });
+        });
+    }
+
+    // The picker for one slot: every major the design carries that is not placed yet and whose base answers this slot.
+    function labPickModal(slot){
+        // Use the newly created modal node to avoid binding a stale modal.
+        let box = $('#modalBox').last();
+        if (!box.length){ return; }
+        // Closed the way the lab's own close button closes it.
+        let close = function(){
+            box.closest('.modal').find('.modal-close').trigger('click');
+        };
+        let want = labSlotBase(genome,slot);
+        let label = labSlotLabel(genome,slot);
+        let badge = want
+            ? ` <span class="pickBase base${want}">${want}</span>`
+            : ` <span class="pickBase baseNone">&middot;</span>`;
+        box.append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('genelab_slot_pick',[label])}${badge}</p>`));
+        let body = $(`<div id="specialModal" class="modalBody genePick pickGrouped"></div>`);
+        box.append(body);
+
+        // Offer every unlocked, unplaced major trait for this slot.
+        let choices = Object.keys(unlockedTraits).filter(function(t){
+            if (!traits[t] || traits[t].type !== 'major'){ return false; }
+            if (genome.slots[t] !== undefined){ return false; }
+            if (labBlocked(genome,t)){ return false; }
+            return labFits(genome,slot,t);
+        });
+
+        // A slot whose pair is already oriented can only take one category, so it is shown as a single list.
+        let cats = Object.keys(genes.gene_taxonomy).filter(function(tax){
+            return want ? genes.gene_taxonomy[tax] === want : true;
+        });
+
+        let byName = function(a,b){ return traitSkin('name',a).localeCompare(traitSkin('name',b)); };
+        let entry = function(t){
+            let mine = geneBaseOf(t);
+            let good = traits[t].val >= 0;
+            return `<button id="labPick_${slot}_${t}" data-trait="${t}" class="button genePickBtn${good ? ` genePickFits` : ` genePickMajor`}">`
+                + `<span class="pickBase base${mine || 'None'}">${mine || '&middot;'}</span>`
+                + `<span class="${good ? `has-text-success` : `has-text-danger`}">${traitSkin('name',t)}</span>`
+                + `<span class="pickCost ${good ? `has-text-advanced` : `has-text-caution`}">${geneCost(genome,t,tRanks)}</span></button>`;
+        };
+
+        let tabs = ``, panels = ``, any = false;
+        cats.forEach(function(tax,n){
+            let base = genes.gene_taxonomy[tax];
+            let mine = choices.filter(function(t){ return geneBaseOf(t) === base; });
+            if (mine.length > 0){ any = true; }
+            // Separate positive and negative traits in the picker.
+            let panel = ``;
+            [['genelab_slot_positive',mine.filter(function(t){ return traits[t].val >= 0; })],
+             ['genelab_slot_negative',mine.filter(function(t){ return traits[t].val < 0; })]].forEach(function(part){
+                if (part[1].length === 0){ return; }
+                panel += `<div class="pickHead has-text-caution">${loc(part[0])}</div><div class="pickRow">`;
+                part[1].sort(byName).forEach(function(t){ panel += entry(t); });
+                panel += `</div>`;
+            });
+            if (!panel){ panel = `<div class="has-text-fade">${loc('genelab_slot_none')}</div>`; }
+            if (cats.length > 1){
+                tabs += `<button class="button pickTab${n === 0 ? ` is-active` : ``}" data-group="${base}">`
+                    + `<span class="pickBase base${base}">${base}</span>${loc(`genelab_traits_${tax}`)} (${mine.length})</button>`;
+            }
+            panels += `<div class="pickGroup" data-group="${base}"${n === 0 ? `` : ` style="display:none"`}>${panel}</div>`;
+        });
+
+        if (!any){
+            body.append(`<div class="has-text-fade">${loc('genelab_slot_none')}</div>`);
+            return;
+        }
+        if (tabs){ body.append(`<div class="pickTabs">${tabs}</div>`); }
+        body.append(panels);
+
+        // Use plain buttons because this modal is not Vue-mounted.
+        body.on('click','.pickTab',function(){
+            let group = this.getAttribute('data-group');
+            body.find('.pickTab').each(function(){ this.classList.toggle('is-active',this.getAttribute('data-group') === group); });
+            body.find('.pickGroup').each(function(){ this.style.display = this.getAttribute('data-group') === group ? '' : 'none'; });
+        });
+
+        // Delegate modal clicks to avoid stale per-item bindings.
+        body.on('click','button[data-trait]',function(){
+            let t = this.getAttribute('data-trait');
+            if (!t || genome.slots[t] !== undefined){ return; }
+            if (!genome.traitlist.includes(t)){ genome.traitlist.push(t); }
+            genome.slots[t] = slot;
+            labNormalize(genome);
+            clearPopper();
+            close();
+            repriceGenome();
+        });
+
+        choices.forEach(function(t){
+            popover(`labPickPop_${slot}_${t}`,function(){ return labTraitCard(t,slot); },{
+                elm: `#labPick_${slot}_${t}`,
+                classes: `w30`,
+                wide: true
+            });
+        });
+    }
+
+    // Describe a trait at its effective slot rank.
+    function labTraitCard(trait,slot){
+        let rank = labEffectiveRank(trait);
+        let info = $(`<div></div>`);
+        info.append(`<div class="has-text-warning">${traitSkin('name',trait)}</div>`);
+        getTraitDesc(info,trait,{ trank: labPreviewRank(trait,rank), wiki: isWiki });
+        info.append(`<div class="has-text-caution">${loc('arpa_genepool_rank',[rank])}</div>`);
+        if (slot !== false && slot >= labBase('minor')){
+            info.append(`<div class="has-text-danger">${loc('arpa_gene_cramped',[genes.minor_slot_penalty * 100])}</div>`);
+        }
+        let boost = labEmpowerBonus(trait);
+        if (boost > 0){
+            info.append(`<div class="has-text-caution">${loc('genelab_slot_empowered',[traitSkin('name','empowered'),+boost.toFixed(2)])}</div>`);
+        }
+        return info;
+    }
+
 }
 
 function geneCost(genome,trait,tRanks){

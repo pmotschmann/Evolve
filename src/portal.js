@@ -18,12 +18,7 @@ import { loc } from './locale.js';
 import { defineIndustry, addSmelter, factoryData } from './industry.js';
 import { arpa } from './arpa.js';
 
-// Real-time throttle for the hell observation pie charts. bloodwar() drives these once per
-// in-game day, but many game days can elapse per real second (fast mode, time acceleration,
-// offline catch-up). Repainting the Chart.js canvases that often — each with its default
-// animation — pegs the main thread and is the dominant cause of the hell tab getting laggy
-// when left running. We cap actual canvas repaints to a few per real second; the data is
-// cumulative, so a skipped intermediate frame just corrects on the next repaint.
+// Limit observation-chart repaints; battle data remains cumulative between frames.
 let lastHellGraphUpdate = 0;
 const hellGraphUpdateInterval = 250;
 
@@ -1044,7 +1039,7 @@ const fortressModules = {
                 gain *= global.race.absorbed?.length || 1;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
-                    know *= (global.tech['supercollider'] / ratio) + 1;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 gain = hugeAdjust(gain);
                 return gain;
@@ -4201,9 +4196,7 @@ function fortressDefenseRating(v){
 }
 
 function casualties(demons,pat_armor,ambush,report){
-    // Part of the hell war (called only from bloodwar); draw from the hellseed stream so
-    // casualties are reproducible during offline catch-up without disturbing the standard
-    // seed or the warseed. Mirrors Math.rand's integer-in-[min,max) behaviour.
+    // Draw hell-war randomness from hellseed for reproducible catch-up.
     const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
     let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - hellRand(0,pat_armor);
     let dead = 0;
@@ -4271,13 +4264,9 @@ function fortressData(dt){
     }
 }
 
-// `report` is false for the intermediate days of an offline catch-up step: the day's outcome still
-// lands in global.portal.observe.stats, but the per-day report object is not filed and the graphs
-// are not touched, because purgeReports() would drop those days anyway and nobody is watching.
+// Offline intermediate days update totals without creating reports or redrawing charts.
 export function bloodwar(report = true){
-    // Hell combat draws from its own RNG stream (hellseed) so soul gem and kill outcomes are
-    // reproducible during offline catch-up without disturbing the standard seed or the warseed.
-    // Mirrors Math.rand's integer-in-[min,max) behaviour.
+    // Use the hell RNG stream for reproducible combat outcomes.
     const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
     let day_report = {
         start: global.portal.fortress.threat,
@@ -4669,14 +4658,16 @@ export function bloodwar(report = true){
         day_report.surveyor_finds = {};
         if (global.civic.hell_surveyor.workers > 0 && drone_kills > 0){
             let drone_kills_left = drone_kills;
+            // Attractors raise the minimum share of each surveyor's allocation searched.
+            let search_floor = Math.min(1, 0.5 + ((p_on['attractor'] || 0) * 0.005));
             for (let i=0; i<global.civic.hell_surveyor.workers; i++){
                 let surv_report = { gem: 0, bodies: 0 };
                 // Avoid rounding error in total number of drone kills to distribute
                 let max_search_chance = Math.round(drone_kills_left / (global.civic.hell_surveyor.workers - i));
-                let min_search_chance = Math.round(max_search_chance / 2);
+                let min_search_chance = Math.round(max_search_chance * search_floor);
                 drone_kills_left -= max_search_chance;
 
-                // Each surveyor may search from 50% to 100% of 1 equal share of drone kills
+                // Search a random share from the attractor-adjusted floor to the full allocation.
                 let searched = hellRand(min_search_chance, max_search_chance+1);
                 // Limit to 100 bodies per surveyor
                 let search_limit = highPopAdjust(100);
@@ -4890,9 +4881,7 @@ export function bloodwar(report = true){
 }
 
 export function hellguard(){
-    // Warlord hell combat; draw from the hellseed stream so outcomes are reproducible during
-    // offline catch-up without disturbing the standard seed or the warseed. Mirrors Math.rand's
-    // integer-in-[min,max) behaviour.
+    // Use hellseed for reproducible Warlord combat outcomes.
     const hellRand = (min, max) => Math.floor(seededRandom(min, max, 'hell'));
     if (global.race['warlord'] && global.portal['minions'] && global.portal.minions.count > 0){
         if ((global.portal.throne.enemy.length === 0 || 
@@ -7002,8 +6991,7 @@ export function mechGeneralSlots(size){
     return 0;
 }
 
-// Equipment slots on a demon. Unlike a mech there is no separate special mount to sit outside this
-// count — a cyberdemon's battery and a minion's job both occupy slot zero of this total.
+// Return a demon's total equipment slots, including slot zero.
 export function wlEquipSlots(size){
     let prep = global.blood['prepared'] ? 1 : 0;
     switch (size){
@@ -7019,9 +7007,7 @@ export function wlEquipSlots(size){
     return 0;
 }
 
-// Reshape a demon blueprint to its frame: keep whatever the player already chose where it is still
-// legal for that slot, and fill the rest with something valid. A minion's slot zero only ever offers
-// its job and the later slots refuse it, so this keeps the two from colliding.
+// Rebuild a demon blueprint with valid, non-duplicated equipment.
 export function normalizeWarlordBlueprint(){
     let bp = global.portal.mechbay.blueprint;
     let slots = wlEquipSlots(bp.size);
@@ -7040,9 +7026,7 @@ export function normalizeWarlordBlueprint(){
     bp.equip = equip;
 }
 
-// Reshape the blueprint to the current frame: special pinned at slot zero, general slots filled with
-// something valid. Only ever touches the blueprint — mechs already in the bay keep the loadout they
-// were built with and do not get handed the extra mount for free.
+// Rebuild a mech blueprint with its special mount and valid general equipment.
 export function normalizeBlueprint(){
     if (global.race['warlord']){ normalizeWarlordBlueprint(); return; }
     let bp = global.portal.mechbay.blueprint;
@@ -7137,25 +7121,20 @@ function drawMechs(){
                 // Loaded last: it redraws the lab, which tears this row down.
                 this.loadDesign(id);
             },
-            // Copy a built mech's loadout back into the lab so another like it can be ordered
-            // without setting every dropdown again. Nothing in the bay is touched; this only
-            // fills in the blueprint.
+            // Copy a built mech's loadout into the editable blueprint.
             loadDesign(id){
                 let mech = global.portal.mechbay.mechs[id];
                 if (!mech){ return; }
                 let bp = global.portal.mechbay.blueprint;
                 bp.size = mech.size;
                 bp.chassis = mech.chassis;
-                // Copies, not references. Sharing the arrays would mean editing the design
-                // afterwards silently rebuilt the mech already sitting in the bay.
+                // Copy arrays so later edits do not modify the built mech.
                 bp.hardpoint = Array.isArray(mech.hardpoint) ? [...mech.hardpoint] : [];
                 bp.equip = Array.isArray(mech.equip) ? [...mech.equip] : [];
                 bp.infernal = mech.infernal ? true : false;
-                // Reshape to the current frame: a mech built before the special mount existed
-                // has no entry for it, and warlord demons use a different slot layout entirely.
+                // Normalize legacy and Warlord loadout layouts.
                 normalizeBlueprint();
-                // The weapon and equipment dropdowns are built per size/chassis at draw time, so
-                // the lab has to be rebuilt rather than left to reactivity.
+                // Rebuild size- and chassis-specific controls.
                 drawMechLab();
                 clearPopper();
             },
@@ -7804,9 +7783,7 @@ export function mechRating(mech,boss){
         return 0;
     }
 
-    // The Infernal minor trait. Applied here so it reaches both the boss and the floor branches
-    // below. Not to be confused with mech.infernal on the next line, which is the mech's own
-    // infernal chassis flag.
+    // Apply the Infernal gene bonus before boss and floor modifiers.
     rating *= geneBonus('infernal');
 
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){

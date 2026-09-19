@@ -28,6 +28,24 @@ function genusGeneList(){
     return geneCatalog().filter(function(g){ return traits[g].genus; }).length;
 }
 
+// A-T and C-G, in both directions: the four sequences a pair can read.
+function pairSequences(){
+    return Object.keys(genes.gene_pairs).map(function(b){
+        return `[${b}]-[${genes.gene_pairs[b]}]`;
+    }).join(', ');
+}
+
+function basePairList(){
+    return Object.keys(genes.gene_pairs).filter(function(b){
+        return b < genes.gene_pairs[b];
+    }).map(function(b){ return `${b}-${genes.gene_pairs[b]}`; }).join(' and ');
+}
+
+// Map display categories to the trait-base table.
+function taxonomyBases(){
+    return ['combat','production','resource','utility'].map(function(t){ return genes.gene_taxonomy[t]; });
+}
+
 export function geneticsPage(content){
     let mainContent = sideMenu('create',content);
 
@@ -47,23 +65,31 @@ export function geneticsPage(content){
     });
     sideMenu('add',`genetics-gameplay`,`unlock`,loc('wiki_genetics_unlock'));
 
-    infoBoxBuilder(mainContent,{ name: 'slots', template: 'genetics', paragraphs: 3, h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'slots', template: 'genetics', paragraphs: 4, h_level: 2,
         para_data: {
-            1: [genes.gene_slot_count,genes.gene_slot_count / 2],
-            2: [loc('resource_Genes_name')]
+            1: [genes.strand_major_pairs,genes.strand_major_pairs * genes.strand_slots,
+                genes.strand_minor_pairs,genes.strand_minor_pairs * genes.strand_slots],
+            2: [loc('resource_Genes_name')],
+            4: [traitSkin('name','versatility'),genes.versatility_pair_rank]
         }
     });
     sideMenu('add',`genetics-gameplay`,`slots`,loc('wiki_genetics_slots'));
 
     infoBoxBuilder(mainContent,{ name: 'strand', template: 'genetics', paragraphs: 4, break: [4], h_level: 2,
         para_data: {
-            1: [genes.gene_strand.join(', ')],
-            2: [Object.keys(genes.gene_pairs).filter(function(b){ return b < genes.gene_pairs[b]; })
-                    .map(function(b){ return `${b}-${genes.gene_pairs[b]}`; }).join(' and ')],
-            3: [genes.gene_rank_paired,genes.gene_rank_base]
+            2: [pairSequences(),basePairList()],
+            4: taxonomyBases()
         }
     });
     sideMenu('add',`genetics-gameplay`,`strand`,loc('wiki_genetics_strand'));
+
+    infoBoxBuilder(mainContent,{ name: 'major', template: 'genetics', paragraphs: 4, break: [4], h_level: 2,
+        para_data: {
+            1: [loc('resource_Genes_name')],
+            3: [genes.minor_slot_penalty * 100,genes.gene_rank_major,genes.gene_rank_paired]
+        }
+    });
+    sideMenu('add',`genetics-gameplay`,`major`,loc('wiki_genetics_major'));
 
     infoBoxBuilder(mainContent,{ name: 'emergent', template: 'genetics', paragraphs: 4, break: [3], h_level: 2,
         para_data: {
@@ -73,10 +99,20 @@ export function geneticsPage(content){
     });
     sideMenu('add',`genetics-gameplay`,`emergent`,loc('wiki_genetics_emergent'));
 
+    infoBoxBuilder(mainContent,{ name: 'held', template: 'genetics', paragraphs: 3, h_level: 2,
+        para_data: {
+            2: [genes.genus_emergent_floor]
+        }
+    });
+    sideMenu('add',`genetics-gameplay`,`held`,loc('wiki_genetics_held'));
+
+    infoBoxBuilder(mainContent,{ name: 'granted', template: 'genetics', paragraphs: 2, h_level: 2 });
+    sideMenu('add',`genetics-gameplay`,`granted`,loc('wiki_genetics_granted'));
+
     infoBoxBuilder(mainContent,{ name: 'cost', template: 'genetics', paragraphs: 3, break: [3], h_level: 2,
         para_data: {
             1: [genes.gene_slot_cost,loc('resource_Genes_name')],
-            3: [genes.gene_rank_paired,genes.gene_rank_base,rankCostList()]
+            3: [genes.gene_rank_major,genes.gene_rank_paired,rankCostList()]
         },
         data_color: {
             3: ['warning','warning','plain']

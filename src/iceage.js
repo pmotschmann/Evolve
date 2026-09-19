@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, seededRandom, sizeApproximation, p_on, support_on, writeBackup, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel, thrusterProjection } from './actions.js';
-import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci, deepClone, eventActive } from './functions.js';
+import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci, deepClone, eventActive , resName } from './functions.js';
 import { addSmelter, defineIndustry, factoryData } from './industry.js';
 import { govActive } from './governor.js';
 import { production, highPopAdjust, hugeAdjust } from './prod.js';
@@ -1428,10 +1428,10 @@ const iceAgeModules = {
                         desc += `<div>${loc('city_foundry_effect2',[2,global.resource.Brick.name])}</div>`;
                     }
                     if (!global.race['flier']){
-                        desc += `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`)])}</div>`;
+                        desc += `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_cement_worker`,[resName('Cement')])])}</div>`;
                         if (global.tech['cement'] >= 5){
                             let screws = global.tech['cement'] >= 6 ? 8 : 5;
-                            desc += `<div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),screws])}</div>`;
+                            desc += `<div class="has-text-caution">${loc('city_cement_plant_effect2',[this.powered(),screws,resName('Cement')])}</div>`;
                         }
                     }
                     return desc;
@@ -4264,7 +4264,7 @@ const iceAgeModules = {
                 id: 'surface-crater_fabrication',
                 title(){ return loc('surface_crater_fabrication'); },
                 desc(){
-                    return `<div>${loc('surface_crater_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
+                    return `<div>${loc('surface_crater_fabrication_desc',[resName('Cement')])}</div><div class="has-text-special">${loc('space_support',[loc('surface_crater')])}</div>`;
                 },
                 type: 'industry',
                 reqs: { crater: 3 },
@@ -4275,7 +4275,7 @@ const iceAgeModules = {
                     Wrought_Iron(r={}){ return undergroundCostMultiplier('crater_fabrication', r.offset, 40000, 1.38, 'crater', 'surface'); }
                 },
                 effect(){
-                    let cement_1 = !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`)])}</div>` : ``;
+                    let cement_1 = !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(2),loc(`job_cement_worker`,[resName('Cement')])])}</div>` : ``;
                     let cement_2 = !global.race['flier'] ? `<div>${loc('surface_crater_fabrication_effect2',[+highPopAdjust(2).toFixed(2), global.resource.Cement.name])}</div>` : ``;
                     return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div>${cement_1}<div>${loc('plus_max_resource',[jobScale(2),loc('job_craftsman')])}</div>
                         <div>${loc('surface_crater_fabrication_effect1',[+highPopAdjust(5).toFixed(2)])}</div>${cement_2}`;

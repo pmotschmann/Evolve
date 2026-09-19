@@ -1,7 +1,8 @@
 import { $ } from './dom.js';
 import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, callback_queue, active_rituals } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, binary_limit_test, modalCloseButton } from './functions.js';
+// Import the shared resource-name helper; the wiki has a local method with the same name.
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, binary_limit_test, modalCloseButton, resName } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
@@ -1389,7 +1390,7 @@ function loadPylon(parent,bind){
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ritualList.forEach(function (spell){
-            let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
+            let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`,[resName('Cement')])} {{ ${spell} }}</span>`);
             let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
             let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
             spellTypes.append(sub);
@@ -1457,7 +1458,7 @@ function loadPylon(parent,bind){
             let auto = +(100 * (2 * global.race.casting[spell] / (2 * global.race.casting[spell] + 75))).toFixed(2);
             return loc('modal_pylon_casting_label_crafting',[draw,boost,auto,diff]);
         }
-        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff,boost]);
+        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`,[resName('Cement')]),draw,diff,boost]);
     }
 
     ritualList.forEach(function(type){

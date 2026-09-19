@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, seededRandom, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue , resName } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle, govEffect, garrisonSize, rivalActive, spyActive } from './civics.js';
@@ -173,7 +173,7 @@ export const gov_traits = {
     },
     theorist: {
         name: loc(`gov_trait_theorist`),
-        effect(b){ return loc(`gov_trait_theorist_effect`,[this.vars(b)[0],this.vars(b)[1]]); },
+        effect(b){ return loc(`gov_trait_theorist_effect`,[this.vars(b)[0],this.vars(b)[1],resName('Cement')]); },
         vars(b){
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;
@@ -183,7 +183,7 @@ export const gov_traits = {
     },
     inspirational: {
         name: loc(`gov_trait_inspirational`),
-        effect(b){ return loc(`gov_trait_inspirational_effect`,[this.vars(b)[0]]); },
+        effect(b){ return loc(`gov_trait_inspirational_effect`,[this.vars(b)[0],resName('Cement')]); },
         vars(b){ 
             if (typeof(b) === 'undefined'){
                 b = global.genes.hasOwnProperty('governor') && global.genes.governor >= 3 ? true : false;

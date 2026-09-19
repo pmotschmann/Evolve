@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, timeFormat, calcPrestige, clearPopper } from './functions.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, timeFormat, calcPrestige, clearPopper , resName } from './functions.js';
 import { spatialReasoning } from './resources.js';
 import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
@@ -1741,9 +1741,9 @@ const edenicModules = {
         },
         eden_cement: {
             id: 'eden-eden_cement',
-            title(){ return loc('city_cement_plant'); },
+            title(){ return loc('city_cement_plant',[resName('Cement')]); },
             desc(){
-                return `<div>${loc('city_cement_plant_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('city_cement_plant_desc',[resName('Cement')])}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             type: 'industry',
             reqs: { cement:8 },
@@ -1754,7 +1754,7 @@ const edenicModules = {
                 Asphodel_Powder(r={}){ return spaceCostMultiplier('eden_cement', r.offset, 65000, 1.24, 'eden'); },
             },
             effect(){
-                let desc = loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`)]);
+                let desc = loc('plus_max_resource',[jobScale(5),loc(`job_cement_worker`,[resName('Cement')])]);
                 desc += `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 return desc;
             },

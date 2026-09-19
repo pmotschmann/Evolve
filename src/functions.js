@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
 import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
 import { loc, lastLocalization } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier} from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier, traitRank} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale, jobStack } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -35,14 +35,27 @@ export function popover(id,content,opts){
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
             var popper = $(`<div id="popper" class="popper${wide} ${classes}" data-id="${id}"></div>`);
 
+            // Render content before attaching the popover; callbacks may write directly to it.
+            let body = content
+                ? (typeof content === 'function' ? content({ this: self, popper: popper }) : content)
+                : null;
+            let silent = body === null || body === undefined || body === false
+                || (typeof body === 'string' ? body.trim() === ''
+                    : (typeof body.length === 'number' && body.length === 0));
+            let wrote = popper.children().length > 0 || popper.text().trim() !== '';
+            if (silent && !wrote && !(opts.hasOwnProperty('in') && typeof opts['in'] === 'function')){
+                return;
+            }
+
             if (opts['attach']){
                 $(opts['attach']).append(popper);
             }
             else {
                 $(`#main`).append(popper);
             }
-            if (content){
-                popper.append(typeof content === 'function' ? content({ this: self, popper: popper }) : content);
+            // Append only callback return values; callbacks may write to the popover directly.
+            if (!silent){
+                popper.append(body);
             }
 
             popperRef = window.Popper.createPopper(opts['self'] ? self : $(opts.elm)[0],
@@ -308,6 +321,10 @@ export function driftOffset(n){
 
 export function driftRate(){
     return dV > 0 && !webWorker.offline ? dR[2] : 1;
+}
+
+export function driftHeld(){
+    return dC(dV);
 }
 
 export function driftStep(){
@@ -2500,8 +2517,7 @@ export function calcPrestige(type,inputs){
 export function adjustCosts(c_action, opts){
     opts = opts || {};
     let costs = c_action.cost || {};
-    // One object flows the whole way down: each adjust wrapper hands it to the next, and it lands on
-    // the cost function itself. actionArgs fills in the era, so a cost can read it like reqs does.
+    // Pass one action-argument object through every cost adjustment.
     let args = actionArgs(c_action, opts);
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
@@ -2518,6 +2534,7 @@ export function adjustCosts(c_action, opts){
     costs = inflationAdjust(costs, args);
     costs = technoAdjust(costs, args);
     costs = flierAdjust(costs, args);
+    costs = pykreteAdjust(costs, args);
     costs = kindlingAdjust(costs, args);
     costs = smolderAdjust(costs, args);
     costs = scienceAdjust(costs, args);
@@ -2794,6 +2811,22 @@ function flierAdjust(costs, args){
             else {
                 newCosts[res] = function(){ return costs[res](args); }
             }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function pykreteAdjust(costs, args){
+    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
+    if (genus === 'polar' && (costs['Stone'] || costs['Cement'])){
+        let adjustRate = 1 - (traits.pykrete.vars(global.race['pykrete'] || 0.1)[2] / 100);
+        let newCosts = {};
+        Object.keys(costs).forEach(function(res){
+            newCosts[res] = function(){
+                let cost = costs[res](args);
+                return (res === 'Stone' || res === 'Cement') ? Math.round(cost * adjustRate) : cost;
+            };
         });
         return newCosts;
     }
@@ -3921,6 +3954,7 @@ export function getShrineBonus(type) {
 
 const valAdjust = {
     promiscuous: false,
+    tireless: true,
     revive: false,
     fast_growth: false,
     spores: false,
@@ -3977,6 +4011,10 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'anthropophagite'){
             vals = [vals[0] * 10000];
+        }
+        else if (trait === 'tireless'){
+            // Include the evaluated rank in the genetics breakdown.
+            vals.push(+(rank || traitRank('tireless') || 1).toFixed(2));
         }
         else if (trait === 'living_materials'){
             vals = [global.resource.Lumber.name, global.resource.Plywood.name, global.resource.Furs.name, loc('resource_Amber_name')];
@@ -4168,9 +4206,21 @@ const traitExtra = {
     ]
 };
 
+// Return a resource display name, or its canonical name without a loaded run.
+export function resName(r){
+    return global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) && global.resource[r].name
+        ? global.resource[r].name : loc(`resource_${r}_name`);
+}
+
 function rName(r){
-    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
-    return `<span class="has-text-warning">${res}</span>`;
+    return `<span class="has-text-warning">${resName(r)}</span>`;
+}
+
+// Return a localized tech-category heading, including resource-specific labels.
+export function techCategoryName(category){
+    return category === 'cement'
+        ? loc('tech_dist_cement',[resName('Cement')])
+        : loc(`tech_dist_${category}`);
 }
 
 const altTraitDesc = {

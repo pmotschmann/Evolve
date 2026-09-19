@@ -2321,6 +2321,11 @@ export function armyRating(val,type,wound,analysis){
     if (global.tech.military){ data.push({ k: 'civics_garrison_weaponry', v: weapon_tech - 1 }); }
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy' || type === 'Troops'){
+        if (global.race['ruthless']){
+            let ruthless = (traits.ruthless.vars()[0] / 100);
+            army *= 1 + ruthless;
+            data.push({ k: 'trait_ruthless_name', v: ruthless });
+        }
         if (global.race['tactical']){
             let tactical = (geneVars('tactical')[0] * global.race['tactical'] / 100);
             army *= 1 + tactical;
