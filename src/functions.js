@@ -369,7 +369,31 @@ window.exportGame = function exportGame(){
     return encodeExportString(global);
 }
 
-// fromStorage marks data that came out of localStorage 
+// Remove quotes from message colors before they are used in CSS classes.
+function scrubColor(msg){
+    if (msg && typeof msg === 'object' && typeof msg.c === 'string'){
+        msg.c = msg.c.replaceAll('"', '');
+    }
+}
+
+// Sanitize both legacy message arrays and named message queues.
+function scrubMsgColors(lastMsg){
+    if (Array.isArray(lastMsg)){
+        lastMsg.forEach(scrubColor);
+    }
+    else if (lastMsg && typeof lastMsg === 'object'){
+        if (typeof lastMsg.m === 'string'){
+            scrubColor(lastMsg);
+        }
+        else {
+            for (const queue in lastMsg){
+                if (Array.isArray(lastMsg[queue])){ lastMsg[queue].forEach(scrubColor); }
+            }
+        }
+    }
+}
+
+// fromStorage marks data that came out of localStorage
 window.importGame = function importGame(data,fromStorage){
     let saveState;
     try {
@@ -401,21 +425,8 @@ window.importGame = function importGame(data,fromStorage){
                 saveState.stats.know -= 5000000;
             }
         }
-        // prevent invalid message colors from escaping class attribute
-        if (Array.isArray(saveState.lastMsg)){
-            // Legacy save file: prior to v1.1.4
-            for (let i = 0; i < saveState.lastMsg.length; i++){
-                saveState.lastMsg[i].c = saveState.lastMsg[i].c.replaceAll('"', '');
-            }
-        }
-        else {
-            // Save file from v1.1.4 or newer
-            for (const msgQueue in saveState.lastMsg){
-                for (const msg of saveState.lastMsg[msgQueue]){
-                    msg.c = msg.c.replaceAll('"', '');
-                }
-            }
-        }
+        // Sanitize message colors before saving imported data.
+        scrubMsgColors(saveState.lastMsg);
         // Smart detection of touch device
         saveState.settings['touch'] = touchDevice();
         writeSave(saveState);
