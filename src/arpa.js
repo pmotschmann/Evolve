@@ -11,7 +11,7 @@ import { races, traits, cleanAddTrait, cleanRemoveTrait, combineTraits, traitSki
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, hugeAdjust } from './prod.js';
 import { unlockFeat } from './achieve.js';
 import { supplyMode, partitioned, drawPools } from './supply.js';
 import { loc } from './locale.js';
@@ -2358,6 +2358,7 @@ export function sequenceLabs(){
     if (labs > 0 && global.race['elemental'] && traits.elemental.vars()[0] === 'frost'){
         labs *= 1 + highPopAdjust(global.resource[global.race.species].amount * traits.elemental.vars()[4] / 100);
     }
+    labs = hugeAdjust(labs);
     return Math.round(labs);
 }
 

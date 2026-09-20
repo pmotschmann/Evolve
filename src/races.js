@@ -1,14 +1,14 @@
 import { $ } from './dom.js';
 import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals, writeSave } from './vars.js';
 import { loc } from './locale.js';
-import { defineIndustry } from './industry.js';
-import { jobScale, jobStack, loadFoundry } from './jobs.js';
+import { defineIndustry, factoryData, nf_resources } from './industry.js';
+import { jobScale, jobStack, loadFoundry, job_data } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
-import { setResourceName, drawResourceTab, atomic_mass } from './resources.js';
+import { setResourceName, drawResourceTab, atomic_mass, craftCost, supplyValue } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve, unlockFeat, alevel } from './achieve.js';
-import { highPopAdjust, teamster } from './prod.js';
+import { highPopAdjust, teamster, hugeAdjust } from './prod.js';
 import { actions, checkTechQualifications, drawCity, drawTech, structName, initStruct } from './actions.js';
 import { arpa } from './arpa.js';
 import { renderEdenic } from './edenic.js';
@@ -2450,7 +2450,10 @@ export const traits = {
         val: 240,
         vars(r){
             // [production/storage/job mult, building cost/creep mult]
-            return traitScale(r || traitRank('humongous') || 1, [1.5, 1.6], [3.2, 3], [4, 3.6]);
+            let trait = traitScale(r || traitRank('humongous') || 1, [1.01, 2], [1.05, 3], [1.1, 4]);
+            trait[1] = Math.floor(trait[1]); //building cost modifier can not be a decimal
+            trait[0] *= trait[1]; //building effect is directly modified by cost modifier
+            return trait;
         }
     },
     limited: { //reduced crafting
@@ -5908,6 +5911,10 @@ export function cleanAddTrait(trait){
             }
             calc_mastery(true);
             break;
+        case 'humongous':
+            //remove a bunch of buildings, rounded down because buildings become more expensive and powerful with humongous
+            updateHumongous(0, global.race['humongous']);
+            break;
         default:
             break;
     }
@@ -6160,6 +6167,8 @@ export function cleanRemoveTrait(trait,rank){
             delete global.race['gross_enabled'];
             calc_mastery(true);
             break;
+        case 'humongous':
+            break;
         default:
             break;
     }
@@ -6338,6 +6347,122 @@ export function combineTraits(){
     }
 }
 
+function updateHumongous(prev, curr){
+    //humongous makes buildings more expensive and more powerful. Existing buildings have to be reduced when humongous is obtained.
+    let prev_scale = prev ? traits.humongous.vars(prev)[1] : 1;
+    let ratio = traits.humongous.vars(curr)[1] / prev_scale;
+    if (ratio > 1){
+        const adjust = (c_action, cat, region) => {
+            if(c_action.id){
+                let parts = c_action.id.split('-');
+                if (global[cat][parts[1]]?.count > 1 && c_action.type !== 'megaproject' && !['starDock', 'cave_perk'].includes(region)){
+                    global[cat][parts[1]].count = Math.floor(global[cat][parts[1]].count / ratio);
+                    global[cat][parts[1]].count = Math.max(global[cat][parts[1]].count, 1);
+                    if (global[cat][parts[1]].razed){
+                        global[cat][parts[1]].razed = Math.floor(global[cat][parts[1]].razed / ratio);
+                    }
+                    if ((c_action.hasOwnProperty('powered') || c_action.hasOwnProperty('switchable')) && global[cat][parts[1]].on){
+                        global[cat][parts[1]].on = Math.floor(global[cat][parts[1]].on / ratio);
+                        global[cat][parts[1]].on = Math.max(global[cat][parts[1]].on, 1);
+                    }
+                }
+            }
+        }
+        Object.keys(actions).forEach(function(cat){
+            Object.values(actions[cat]).forEach(function(entry){
+                if (entry && typeof entry === 'object' && !entry.hasOwnProperty('id')){ //city
+                    Object.values(entry).forEach(c_action => adjust(c_action, cat, entry));
+                }
+                else { //other
+                    adjust(entry, cat);
+                }
+            });
+        });
+
+        if (global.city.smelter){
+            ['Wood', 'Coal', 'Oil', 'Star', 'Inferno', 'Super', 'Iron', 'Steel', 'Iridium'].forEach(function(fuel){
+                //reduce active smelters. Can still result in smelters over the cap but that gets fixed automatically
+                global.city.smelter[fuel] = Math.ceil(global.city.smelter[fuel] / ratio);
+            });
+        }
+
+        if (global.city.factory){
+            for (let res of factoryData.factoryLines){
+                //can still result in factories over the cap. Production is reduced between the ratio of overcapped factories
+                global.city.factory[res] = Math.ceil(global.city.factory[res] / ratio);
+                global.city.factory.hold[res] = Math.ceil(global.city.factory.hold[res] / ratio);
+            }
+        }
+
+        if (global.city.nanite_factory){
+            nf_resources.forEach(function(r){
+                //even flooring can result to resources going over cap. Set to 0 instead
+                global.city.nanite_factory[r] = 0;
+            });
+        }
+
+        let graph_plants = [
+            { s: 'portal', k: 'twisted_lab' },
+            { s: 'space', k: 'g_factory' },
+            { s: 'tauceti', k: 'refueling_station' },
+            { s: 'interstellar', k: 'g_factory' }
+        ];
+        graph_plants.forEach(function(plant){
+            if (global[plant.s]?.[plant.k]){
+                ['Lumber','Coal','Oil'].forEach(function(res){
+                    if (global[plant.s][plant.k][res]){
+                        //can still result in graphene factories over the cap. Production is capped to the max each factory is capable of, taking from oil and coal first.
+                        global[plant.s][plant.k][res] = Math.ceil(global[plant.s][plant.k][res] / ratio);
+                    }
+                });
+            }
+        });
+
+        if (global.interstellar.mining_droid){
+            ['adam','uran','coal','alum'].forEach(function(res){
+                //does not result in mining droids going over the cap
+                global.interstellar.mining_droid[res] = Math.floor(global.interstellar.mining_droid[res] / ratio);
+            });
+        }
+        if (global.portal.transport){
+            Object.keys(global.portal.transport.cargo).forEach(function (res){
+                //even flooring can result to resources going over cap. Set to 0 instead
+                global.portal.transport.cargo[res] = 0;
+            });
+        }
+
+        if (global.space['metalworks']){
+            actions.space.spc_titan.metalworks.res().forEach(function(res){
+                //does not result in metalworks going over the cap
+                global.space['metalworks'][res] = Math.floor(global.space['metalworks'][res] / ratio);
+            });
+        }
+
+        Object.keys(job_data).forEach(function (job) {
+            if (global.civic[job]){
+                global.civic[job].workers = Math.ceil(global.civic[job].workers / ratio);
+                global.civic[job].assigned = Math.ceil(global.civic[job].assigned / ratio);
+            }
+        });
+        
+        Object.keys(craftCost()).forEach(function (craft){
+            if (global.city.foundry[craft]){
+                global.city.foundry.crafting -= global.city.foundry[craft] - Math.floor(global.city.foundry[craft] / ratio);
+                global.city.foundry[craft] = Math.floor(global.city.foundry[craft] / ratio);
+            }
+        });
+        global.resource[global.race.species].max = Math.floor(global.resource[global.race.species].max / ratio);
+        let pop_loss = global.resource[global.race.species].amount - global.resource[global.race.species].max;
+        if (pop_loss > 0){
+            messageQueue(loc(pop_loss === 1 ? 'abandon1' : 'abandon2',[pop_loss]),'danger');
+            global.civic.homeless += pop_loss;
+        }
+        global.resource[global.race.species].amount = Math.min(global.resource[global.race.species].amount, global.resource[global.race.species].max);
+    }
+    else if (ratio < 1){
+    }
+}
+
 // Interpolate major and genus trait values from ranks 0.1 to 2.
 function traitScale(r, low, mid, high){
     r = Math.max(0.1, r);
@@ -6402,10 +6527,16 @@ export function setTraitRank(trait,opts){
         if (rank === global.race[trait]){
             return false;
         }
+        if (trait === 'humongous'){
+            updateHumongous(global.race[trait], rank);
+        }
         global.race[trait] = rank;
         return true;
     }
     else if (opts['set']){
+        if (trait === 'humongous'){
+            updateHumongous(global.race[trait], opts['set']);
+        }
         global.race[trait] = opts['set'];
         return true;
     }
@@ -6418,7 +6549,7 @@ export function fathomCheck(race){
         let active = global.city.captive_housing[`race${idx}`];
         if (active > 100){ active = 100; }
         if (active > global.civic.torturer.workers){
-            let unsupervised = active - global.civic.torturer.workers;
+            let unsupervised = active - hugeAdjust(global.civic.torturer.workers);
             active -= Math.ceil(unsupervised / 3);
         }
         let rank = (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0) / 5;
@@ -8202,7 +8333,6 @@ function deepPower(parent){
                 lastUsed = r;
             },
             update(){
-                //console.log(lastUsed);
                 let totalPoints = 0;
                 order.forEach(function (tab){
                     totalPoints += global.race['deepPowerConfig'][tab];
@@ -8215,7 +8345,6 @@ function deepPower(parent){
                             continue;
                         }
                         let reduce = Math.min(difference, global.race['deepPowerConfig'][order[i]]);
-                        //console.log('decreasing', order[i], reduce, r);
                         global.race['deepPowerConfig'][order[i]] -= reduce;
                         difference -= reduce;
                         if(difference <= 0){
@@ -8229,7 +8358,6 @@ function deepPower(parent){
                             continue;
                         }
                         let increase = Math.min(difference, 100 - global.race['deepPowerConfig'][order[i]]);
-                        //console.log('increasing', order[i], increase, r);
                         global.race['deepPowerConfig'][order[i]] += increase;
                         difference -= increase;
                         if(difference <= 0){

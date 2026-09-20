@@ -27,7 +27,7 @@ export function teamster(v){
     if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
         let cap = teamsterCap();
         if (cap < 1){ cap = 1; }
-        let teamster = global.civic.teamster.workers > cap ? cap : global.civic.teamster.workers;
+        let teamster = hugeAdjust(global.civic.teamster.workers) > cap ? cap : hugeAdjust(global.civic.teamster.workers);
         v *= teamster / cap;
     }
     return v;
@@ -155,7 +155,7 @@ function baseProduction(id,val,wiki){
             };
             if (global.tech['drone']){
                 let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 0.12 : 0.06;
-                vals.d = global.space.drone.count * rate * (wiki ? 1 : infiltratorFactor('spc_gas_moon','drone'));
+                vals.d = hugeAdjust(global.space.drone.count) * rate * (wiki ? 1 : infiltratorFactor('spc_gas_moon','drone'));
                 vals.n = vals.b * (1 + (vals.d));
             }
             else {
@@ -197,6 +197,7 @@ function baseProduction(id,val,wiki){
                 if (global.race['high_pop']){
                     gain = highPopAdjust(gain);
                 }
+                gain = hugeAdjust(gain);
                 return gain;
             }
             else {
@@ -218,10 +219,11 @@ function baseProduction(id,val,wiki){
             if (share <= 0){ return 1; }
             // Colonists counted exactly as the graphene factory above counts them, AI colonists included.
             let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-            let pool = 0.01 * titan_colonists * works * (wiki ? 1 : infiltratorFactor('spc_titan','metalworks'));
+            let pool = 0.01 * hugeAdjust(titan_colonists) * works * (wiki ? 1 : infiltratorFactor('spc_titan','metalworks'));
             if (global.race['high_pop']){
                 pool = highPopAdjust(pool);
             }
+            pool = hugeAdjust(pool);
             return 1 + (pool * share / 100);
         }
         case 'harvester':
@@ -592,7 +594,7 @@ function baseProduction(id,val,wiki){
                 base *= 1 + (global.tech.railway / 100);
             }
             if (global.race['warlord'] && global.eden['corruptor']){
-                base = 1 + (p_on['corruptor'] || 0) * 0.06;
+                base = 1 + hugeAdjust(p_on['corruptor'] || 0) * 0.06;
             }
             return base;
         }
@@ -722,7 +724,7 @@ const infiltratedRates = {
 export function production(id,val,wiki){
     let value = baseProduction(id,val,wiki);
     let factor = 1;
-    if (!['psychic_boost', 'psychic_cash'].includes(id)){
+    if (!['psychic_boost', 'psychic_cash', 'metalworks', 'alien_outpost', 'mining_pit', 'womling_mine'].includes(id)){
         factor = hugeAdjust(factor);
     }
     if (!wiki && infiltratedRates[id]){
@@ -748,7 +750,7 @@ export function technicianCount(){
 
 // Multiplier one of the technician rates is worth right now. `rate` is a percent per technician.
 export function technicianBonus(rate){
-    return 1 + (technicianCount() * rate / 100);
+    return 1 + technicianCount() * rate / 100;
 }
 
 export function factoryBonus(factory){

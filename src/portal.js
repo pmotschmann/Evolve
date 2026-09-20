@@ -4,9 +4,9 @@ import { vBind, clearElement, clearTabPanels, popover, clearPopper, timeFormat, 
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck, traitCostMod, orbitLength, geneBonus, citizenDeath } from './races.js';
 import { spatialReasoning, unlockContainers, drawResourceTab } from './resources.js';
-import { loadFoundry, jobScale, jobStack, jobStackStep, limitCraftsmen, job_data } from './jobs.js';
+import { loadFoundry, jobScale, jobStack, jobStackStep, hugeScale, limitCraftsmen, job_data } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost, soldierDeath } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate } from './actions.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc, actions, initStruct, storageMultipler, casinoEffect, structName, absorbRace, buildTemplate, hugeEffect } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab, planetName } from './space.js';
 import { asphodelResist } from './edenic.js';
 import { production, highPopAdjust, hugeAdjust } from './prod.js';
@@ -35,7 +35,7 @@ const fortressModules = {
             repair(){
                 let repair = 200;
                 if (p_on['repair_droid']){
-                    repair *= 0.95 ** p_on['repair_droid'];
+                    repair *= 0.95 ** hugeAdjust(p_on['repair_droid']);
                 }
                 return Math.round(repair);
             }
@@ -113,9 +113,7 @@ const fortressModules = {
                 if (global.race['high_pop']){
                     repair /= traits.high_pop.vars()[2];
                 }
-                if (global.race['humongous']){
-                    repair *= traits.humongous.vars()[1];
-                }
+                repair *= hugeAdjust(1);
                 return Math.round(repair);
             },
             effect(){
@@ -864,7 +862,7 @@ const fortressModules = {
                 multiplier(wiki){
                     let multiplier = storageMultipler(1, wiki);
                     if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                        multiplier *= 1 + (p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
+                        multiplier *= 1 + hugeAdjust(p_on['corruptor'] || 0) * (global.tech.asphodel >= 13 ? 0.16 : 0.12);
                     }
                     return multiplier;
                 },
@@ -1115,7 +1113,7 @@ const fortressModules = {
             powered(){ return powerCostMod(3); },
             special: true,
             smelting(){
-                return hugeAdjust(4 + (global.portal?.demon_forge?.rank || 1) * 4);
+                return 4 + (global.portal?.demon_forge?.rank || 1) * 4;
             },
             crafting(){
                 return hugeAdjust(20 + (global.portal?.demon_forge?.rank || 1) * 12);
@@ -1200,7 +1198,7 @@ const fortressModules = {
                 return false;
             },
             lines(){
-                return hugeAdjust(3 + (global.portal?.hell_factory?.rank || 1));
+                return 3 + (global.portal?.hell_factory?.rank || 1);
             },
             struct(){
                 return {
@@ -1976,7 +1974,7 @@ const fortressModules = {
                 if (unicornFathom > 0){
                     holy *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
-                let rating = Math.round(holy * armyRating(jobScale(hugeAdjust(1)),'hellArmy',0));
+                let rating = Math.round(holy * armyRating(jobScale(hugeScale(1)),'hellArmy',0));
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(hugeScale(1)),this.powered()])}</div>`;
             },
             action(args){
@@ -2209,7 +2207,7 @@ const fortressModules = {
                 let soldiers = global.race['grenadier'] ? 3 : 5;
                 soldiers *= geneBonus('quartermaster');
                 soldiers = hugeAdjust(soldiers);
-                return jobScale(soldiers);
+                return +(jobScale(soldiers)).toFixed(3);
             },
             citizens(){
                 return jobScale(8);
@@ -2810,7 +2808,7 @@ const fortressModules = {
             effect(){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
                 let effect = (1 - rating ** hugeAdjust(1)) * 100;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[(+effect).toFixed(1)])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[+(effect).toFixed(1)])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div>`;
             },
             ship: {
                 civ(){ return 0; },
@@ -2853,8 +2851,11 @@ const fortressModules = {
             effect(wiki){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
                 let num_on = wiki ? (global.portal?.bireme?.on ?? 0) : gal_on['bireme'];
-                let bireme = ((rating ** hugeAdjust(num_on)) ** hugeAdjust(1)) * 100;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[hugeEffect(global.stats.achieve['what_is_best']?.e >= 4 ? 8 : 5)])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[+(bireme).toFixed(1)])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div>`;
+                let bireme = (rating ** hugeAdjust(num_on)) * 100;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[this.cargo_size()])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[+(bireme).toFixed(1)])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div>`;
+            },
+            cargo_size(){
+                return global.stats.achieve['what_is_best']?.e >= 4 ? 8 : 5;
             },
             special: true,
             sAction(){
@@ -3680,7 +3681,7 @@ const fortressModules = {
                 let desc = `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect2',[hugeEffect(mon),loc(`arpa_project_monument_title`)])}</div>`;
                 desc += `<div>${loc('plus_max_resource',[containers,global.resource.Crates.name])}</div><div>${loc('plus_max_resource',[containers,global.resource.Containers.name])}</div>`;
-                desc += `<div>${loc('city_trade_effect',[hugeEffect(global.portal?.spire?.count || 1)])}</div>`;
+                desc += `<div>${loc('city_trade_effect',[global.portal?.spire?.count || 1])}</div>`;
 
                 return desc;
             },
@@ -3743,7 +3744,7 @@ function towerPrice(cost, wiki){
 
 export function soulForgeSoldiers(wiki){
     let base = global.race['warlord'] ? 400 : 650;
-    let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : p_on['gun_emplacement'];
+    let num_gun_emplacement = wiki ? (global.portal?.gun_emplacement?.on ?? 0) : hugeAdjust(p_on['gun_emplacement']);
     let num_soldiers_saved = jobStack(num_gun_emplacement * (global.tech.hell_gun >= 2 ? 2 : 1));
 
     // To avoid divide-by-0 type issues, force the average soldier combat rating to be at least 1
@@ -4055,7 +4056,7 @@ export function buildFortress(parent,full){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    min += jobStack(global.portal.guard_post.on);
+                    min += hugeScale(jobStack(global.portal.guard_post.on));
                 }
                 if (global.portal.fortress.garrison > min){
                     global.portal.fortress.garrison -= dec;
@@ -4169,7 +4170,7 @@ export function buildFortress(parent,full){
                     }
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    stationed -= jobStack(global.portal.guard_post.on);
+                    stationed -= hugeScale(jobStack(global.portal.guard_post.on));
                 }
                 return stationed;
             },
@@ -4245,7 +4246,7 @@ function fortressDefenseRating(v){
         }
     }
     if (global.portal.hasOwnProperty('guard_post')){
-        army -= jobStack(global.portal.guard_post.on);
+        army -= hugeScale(jobStack(global.portal.guard_post.on));
     }
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
@@ -4256,10 +4257,11 @@ function fortressDefenseRating(v){
     }
     if (p_on['war_droid']){
         let droids = p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
+        droids = hugeAdjust(droids);
         army += jobStack(global.tech['hdroid'] ? droids * 2 : droids);
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
-    return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
+    return Math.round(armyRating(army,'hellArmy',wounded) + (p_on['turret'] ? hugeAdjust(p_on['turret']) * turret : 0));
 }
 
 function casualties(demons,pat_armor,ambush,report){
@@ -4406,6 +4408,7 @@ export function bloodwar(report = true){
             if (hellRand(0,global.portal.fortress.threat) >= hellRand(0,999)){
                 let demons = hellRand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
                 let killed = global.tech.portal >= 7 ? hellRand(50,125) : hellRand(25,75);
+                killed = Math.floor(hugeAdjust(killed));
                 if (demons < killed){
                     killed = demons;
                 }
@@ -4431,7 +4434,7 @@ export function bloodwar(report = true){
     let gem_chance = game_base - global.portal.fortress.pity;
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
-        gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
+        gem_chance = Math.round(gem_chance * (0.948 ** hugeAdjust(p_on['attractor'])));
     }
 
     if (global.race['ghostly']){
@@ -4472,7 +4475,7 @@ export function bloodwar(report = true){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
                 patrol_report.droid = true;
-                pat_size += jobStack(global.tech['hdroid'] ? 2 : 1);
+                pat_size += hugeAdjust(jobStack(global.tech['hdroid'] ? 2 : 1));
                 terminators--;
             }
             let pat_armor = armor;
@@ -4532,7 +4535,7 @@ export function bloodwar(report = true){
                 if (killed > 0){
                     // p_on only carries a key once the struct has been powered at least once, so
                     // with no attractor built this is undefined
-                    let div = 35 - Math.floor((p_on['attractor'] || 0) / 3);
+                    let div = 35 - Math.floor(hugeAdjust(p_on['attractor'] || 0) / 3);
                     if (div < 5){ div = 5; }
                     let chances = Math.round(killed / div);
                     for (let j=0; j<chances; j++){
@@ -4662,7 +4665,7 @@ export function bloodwar(report = true){
     if (global.portal.fortress.threat < 10000){
         let influx = ((10000 - global.portal.fortress.threat) / 2500) + 1;
         if (global.tech['portal'] >= 4 && p_on['attractor']){
-            influx *= 1 + (p_on['attractor'] * 0.22);
+            influx *= 1 + hugeAdjust(p_on['attractor'] * 0.22);
         }
         if (global.race['chicken']){
             influx *= 1 + traits.chicken.vars()[0] / 100;
@@ -4746,7 +4749,7 @@ export function bloodwar(report = true){
                 surv_report.bodies = searched;
                 if (searched > 0){
                     // Same undefined-p_on NaN as the patrol drop above.
-                    let div = 25 - Math.floor((p_on['attractor'] || 0) / 5);
+                    let div = 25 - Math.floor(hugeAdjust(p_on['attractor'] || 0) / 5);
                     if (div < 5){ div = 5; }
                     let chances = Math.round(searched / div);
                     for (let j=0; j<chances; j++){
@@ -4783,7 +4786,7 @@ export function bloodwar(report = true){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-            let souls = p_on['soul_attractor'] * hellRand(40 + attract, 120 + attract);
+            let souls = hugeAdjust(p_on['soul_attractor']) * hellRand(40 + attract, 120 + attract);
             global.portal.soul_forge.kills += souls;
             day_report.soul_attractors = souls;
             soulCapacitor(souls);
@@ -4791,7 +4794,7 @@ export function bloodwar(report = true){
 
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = global.civic.ghost_trapper.workers * hellRand(150 + attract, 250 + attract);
+            let souls = hugeAdjust(global.civic.ghost_trapper.workers) * hellRand(150 + attract, 250 + attract);
             if (p_on['ascension_trigger'] && global.eden.hasOwnProperty('encampment') && global.eden.encampment.asc){
                 let heatSink = actions.interstellar.int_sirius.ascension_trigger.heatSink();
                 heatSink = heatSink < 0 ? Math.abs(heatSink) : 0;
@@ -4810,6 +4813,7 @@ export function bloodwar(report = true){
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 day_report.gun_emplacements[i+1] = { kills: 0, gem: false };
                 let kills = global.tech.hell_gun >= 2 ? hellRand(35,75) : hellRand(20,40);
+                kills = Math.floor(hugeAdjust(kills));
                 gunKills += kills;
                 day_report.gun_emplacements[i+1].kills = kills;
             }
@@ -4819,7 +4823,7 @@ export function bloodwar(report = true){
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
             if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-                gun_base *= 0.94 ** p_on['soul_attractor'];
+                gun_base *= 0.94 ** hugeAdjust(p_on['soul_attractor']);
             }
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 if (hellRand(0,Math.round(gun_base)) === 0){
@@ -4851,7 +4855,7 @@ export function bloodwar(report = true){
 
         let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** p_on['soul_attractor'];
+            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** hugeAdjust(p_on['soul_attractor']);
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             day_report.soul_forge.gem_craft = true;
@@ -4877,8 +4881,8 @@ export function bloodwar(report = true){
         if (p_on['gate_turret']){
             day_report.gate_turrets = {};
             let gunKills = 0;
-            let min = global.tech.hell_gun >= 2 ? 65 : 40;
-            let max = global.tech.hell_gun >= 2 ? 100 : 60;
+            let min = hugeAdjust(global.tech.hell_gun >= 2 ? 65 : 40);
+            let max = hugeAdjust(global.tech.hell_gun >= 2 ? 100 : 60);
             for (let i=0; i<p_on['gate_turret']; i++){
                 day_report.gate_turrets[i+1] = { kills: 0, gem: false };
                 let kills = hellRand(min,max);
@@ -5017,7 +5021,7 @@ export function hellguard(){
                 let reapEffect = global.race['blurry'] ? 102 - traits.blurry.vars()[0] : 102;
                 reapEffect -= (global.portal?.reaper?.rank || 1) * 2;
                 if (reapEffect < 1){ reapEffect = 1; }
-                let reaper = 0.25 + (eRating * 0.01) - ((global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
+                let reaper = 0.25 + (eRating * 0.01) - (hugeAdjust(global.portal?.reaper?.count || 0) ** (1 + ((global.portal?.reaper?.rank || 1) - 1) / 25) / reapEffect);
                 if (reaper < 0.01){ reaper = 0.01; }
                 let bound = Math.round(global.portal.minions.spawns * (0.5 * eRating) * (eRating ** reaper) / rating);
                 let kills = hellRand(e.s, bound);
@@ -5042,7 +5046,7 @@ export function hellguard(){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-            let souls = p_on['soul_attractor'] * hellRand(40 + attract, 120 + attract);
+            let souls = hugeAdjust(p_on['soul_attractor']) * hellRand(40 + attract, 120 + attract);
             if (global.race['ghostly']){
                 souls *= 1 + (traits.ghostly.vars()[0] / 100);
                 souls = Math.round(souls);
@@ -5052,9 +5056,9 @@ export function hellguard(){
 
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = global.civic.ghost_trapper.workers * hellRand(150 + attract, 250 + attract);
+            let souls = hugeAdjust(global.civic.ghost_trapper.workers) * hellRand(150 + attract, 250 + attract);
             if (global.portal['mortuary'] && global.portal['corpse_pile']){
-                let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+                let corpse = hugeAdjust(global.portal?.corpse_pile?.count || 0) * hugeAdjust(p_on['mortuary'] || 0);
                 if (corpse > 0){
                     souls *= 1 + corpse / 800;
                 }
@@ -5065,7 +5069,7 @@ export function hellguard(){
 
         let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
-            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** p_on['soul_attractor'];
+            cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** hugeAdjust(p_on['soul_attractor']);
         }
         if (global.race['ghostly']){
             cap *= 2 - traits.ghostly.vars()[1];
@@ -5182,8 +5186,8 @@ export function hellSupression(area, val, wiki){
         case 'ruins':
             {
                 let guard_posts_on = wiki ? (global.portal?.guard_post?.on ?? 0) : p_on['guard_post'];
-                let army = val || jobStack(guard_posts_on);
-                let arc = (wiki ? (global.portal?.arcology?.on ?? 0) : p_on['arcology']) * 75;
+                let army = val || hugeAdjust(jobStack(guard_posts_on));
+                let arc = (wiki ? (global.portal?.arcology?.on ?? 0) : hugeAdjust(p_on['arcology'])) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){
                     aRating *= 1 + (traits.holy.vars()[1] / 100);
@@ -5201,7 +5205,7 @@ export function hellSupression(area, val, wiki){
         case 'gate':
             {
                 let gSup = hellSupression('ruins',val,wiki);
-                let turret = (wiki ? (global.portal?.gate_turret?.on ?? 0) : p_on['gate_turret']) * 100;
+                let turret = (wiki ? (global.portal?.gate_turret?.on ?? 0) : hugeAdjust(p_on['gate_turret'])) * 100;
                 if (global.race['holy']){
                     turret *= 1 + (traits.holy.vars()[1] / 100);
                 }
@@ -7304,7 +7308,7 @@ function dragMechList(){
 }
 
 export function updateMechbay(){
-    let max = (spire_on['mechbay'] || 0) * 25;
+    let max = Math.floor(hugeAdjust(spire_on['mechbay'] || 0) * 25);
     let bay = 0;
     let active = 0;
     let scouts = 0;

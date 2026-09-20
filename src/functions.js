@@ -4,7 +4,7 @@ import { encodeExportString, decodeExportString, decodeSaveString } from './save
 import { loc, lastLocalization } from './locale.js';
 import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier} from './races.js';
 import { actions, actionDesc } from './actions.js';
-import { jobScale, jobStack } from './jobs.js';
+import { jobScale, jobStack, hugeScale } from './jobs.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
@@ -1206,11 +1206,12 @@ export function spaceCostMultiplier(action,offset,base,multiplier,sector,c_min){
 }
 
 export function commonCostMultiplier(action,offset,base,multiplier,sector,count){
-    count = count ? (action === 'citizen' ? global['resource'][global.race.species].amount : global[sector][action]?.count || 0) : 0;
     if (global.race['humongous'] && sector !== 'starDock' && action !== 'soul_capacitor' && action !== 'fob'){
-        if (count > 0){ //first building of any kind is unaffected by humongous
-            base *= traits.humongous.vars()[1];
-            multiplier *= traits.humongous.vars()[1];
+        if (count > 0){
+            let mult_total = ((multiplier ** hugeScale(1)) - 1) / (multiplier - 1); //total combined cost multiplier of hugeScale(1) buildings
+            base *= ((mult_total - 3) / 2) + 3; //multiply building cost by half the total cost multiplier of the next hugeScale(1) buildings
+            //cost creep progresses faster based on humongous rank
+            multiplier = multiplier ** hugeScale(1);
             count--; //first building does not contribute to cost/creep for humongous
         }
     }
@@ -1879,9 +1880,9 @@ export function powerModifier(energy, mega){
     if (global.underground['core_tap_perk']){
         energy *= 1 + (global.underground['core_tap_perk'].count / 100);
     }
-    //megastructures and other similar structures are exempt from extra power with Humongous
+    //megaprojects and other similar structures are exempt from extra power with Humongous
     if (mega) { return +(energy).toFixed(2); }
-    return hugeAdjust(energy, 2);
+    return +(hugeAdjust(energy)).toFixed(2);
 }
 
 export function powerCostMod(energy, mega){
@@ -1890,7 +1891,7 @@ export function powerCostMod(energy, mega){
     }
     // Frostbound: the polar genus runs its buildings colder.
     energy *= 2 - geneBonus('frostbound');
-    energy *= (mega || !global.race['humongous']) ? 1 : traits.humongous.vars()[1];
+    energy *= (mega || !global.race['humongous']) ? 1 : hugeAdjust(1);
     return +(energy).toFixed(2);
 }
 

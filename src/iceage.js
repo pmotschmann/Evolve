@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, seededRandom, sizeApproximation, p_on, support_on, writeBackup, webWorker } from './vars.js';
 import { loc } from './locale.js';
-import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel, thrusterProjection, hugeEffect } from './actions.js';
+import { buildTemplate, actions, setAction, drawTech, payCosts, BHStorageMulti, bank_vault, templeEffect, powerOnNewStruct, storageMultipler, structName, casinoEffect, initStruct, housingLabel, thrusterProjection, hugeEffect, casino_vault } from './actions.js';
 import { clearElement, popover, darkEffect, getShrineBonus, powerCostMod, vBind, modRes, messageQueue, powerModifier, timeFormat, fibonacci, deepClone, eventActive, commonCostMultiplier } from './functions.js';
 import { addSmelter, defineIndustry, factoryData } from './industry.js';
 import { govActive } from './governor.js';
@@ -154,7 +154,7 @@ const iceAgeModules = {
                     Crystal(r={}){ return undergroundCostMultiplier('pylon', r.offset, 20, 1.28, 'cave'); }
                 },
                 effect(){
-                    let max = spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
+                    let max = spatialReasoning(this.storage.res('Mana') * this.storage.multiplier());
                     let mana = 0.015 * darkEffect('magic');
                     return `<div>${loc('gain',[hugeEffect(mana, 3),global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
                 },
@@ -319,7 +319,7 @@ const iceAgeModules = {
                     }
                 },
                 effect(){
-                    let food = spatialReasoning(this.storage.res('Money') * this.storage.multiplier());
+                    let food = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
                     let desc = `<div>${loc('underground_transmitter_effect1')}</div><div>${loc('city_transmitter_effect',[food])}</div>`;
                     if (global.tech['high_tech'] >= 2){
                         desc += `<div class="has-text-caution">${loc('underground_transmitter_effect2', [this.powered()])}`;
@@ -538,7 +538,7 @@ const iceAgeModules = {
                         return global.underground['storage_space'].count + (p_on['storage_space'] || 0);
                     },
                     gain(res, val, multiplier, count){
-                        return Math.floor(count * (['Crates', 'Containers'].includes(res) ? Math.floor(val) : iceAgeStorage(val) * multiplier));
+                        return Math.floor(count * (['Crates', 'Containers'].includes(res) ? Math.floor(val) : spatialReasoning(val) * multiplier));
                     }
                 },
                 action(args){
@@ -636,7 +636,7 @@ const iceAgeModules = {
                         multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
                     }
                     if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                        multiplier *= 1 + faithTempleCount() * 0.05;
+                        multiplier *= 1 + hugeAdjust(faithTempleCount() * 0.05);
                     }
                     let fathom = fathomCheck('cath');
                     if (fathom > 0){
@@ -663,7 +663,7 @@ const iceAgeModules = {
                     base += (global.underground['stone_slab']?.breakthrough || 0) * 800;
                     base /= professors; //infinite with 0 professors
                     if (global.surface['critical_storage']){
-                        base /= 1 + (0.05 * professors * global.surface['critical_storage'].count);
+                        base /= 1 + hugeAdjust(0.05 * professors * global.surface['critical_storage'].count);
                     }
                     return base;
                 },
@@ -1139,6 +1139,17 @@ const iceAgeModules = {
                 },
                 powered(){ return powerCostMod(5); },
                 power_reqs: { housing: 3 },
+                storage: {
+                    res(res){
+                        let list = {
+                            'Money': global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000
+                        };
+                        return res ? (list[res] || 0) : list;
+                    },
+                    multiplier(wiki){
+                        return 1;
+                    }
+                },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -1152,17 +1163,6 @@ const iceAgeModules = {
                         d: { count: 0 },
                         p: ['stone_house','underground']
                     };
-                },
-                storage: {
-                    res(res){
-                        let list = {
-                            'Money': global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000
-                        };
-                        return res ? (list[res] || 0) : list;
-                    },
-                    multiplier(wiki){
-                        return 1;
-                    }
                 },
                 citizens(){
                     return jobScale(3);
@@ -1321,6 +1321,17 @@ const iceAgeModules = {
                     return desc;
                 },
                 powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+                storage: {
+                    res(res){
+                        let list = {
+                            'Money': casino_vault()
+                        };
+                        return res ? (list[res] || 0) : list;
+                    },
+                    multiplier(wiki){
+                        return 1;
+                    }
+                },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -1894,7 +1905,7 @@ const iceAgeModules = {
                     Titanium(r={}){ return undergroundCostMultiplier('under_factory', r.offset, 1000, 1.45, 'industry'); }
                 },
                 effect(){
-                    let desc = `<div>${loc('underground_under_factory_effect', [+(this.lines()).toFixed(1)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                    let desc = `<div>${loc('underground_under_factory_effect', [this.lines()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                     if (global.tech['foundry'] >= 7){
                         desc = desc + `<div>${loc('city_crafted_mats',[hugeEffect(5)])}</div>`;
                     }
@@ -1902,7 +1913,7 @@ const iceAgeModules = {
                 },
                 powered(){ return powerCostMod(3); },
                 special: true,
-                lines(){ return hugeAdjust(2); },
+                lines(){ return 2; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -1965,9 +1976,6 @@ const iceAgeModules = {
                     },
                     multiplier(wiki){
                         return BHStorageMulti(1);
-                    },
-                    count(){
-                        return p_on['shadow_mine'] || 0;
                     }
                 },
                 action(args){
@@ -2254,7 +2262,7 @@ const iceAgeModules = {
                     if (mineshaft_effect < 1){
                         mineshaft_effect = 1;
                     }
-                    return `<div>${loc('interstellar_stellar_forge_effect3', [+(this.smelting(3)).toFixed(1)])}</div><div>${loc('underground_core_forge_effect', [hugeEffect(5 * mineshaft_effect, 2)])}</div>
+                    return `<div>${loc('interstellar_stellar_forge_effect3', [+(this.smelting()).toFixed(1)])}</div><div>${loc('underground_core_forge_effect', [hugeEffect(5 * mineshaft_effect, 2)])}</div>
                         <span class="has-text-caution">${loc('spend',[+(this.consume('Water')).toFixed(1), global.resource.Water.name])}</span>
                         <span class="has-text-caution">${loc('spend',[+(this.consume('Coal')).toFixed(1), global.resource.Coal.name])}</span>`;
                 },
@@ -2268,7 +2276,7 @@ const iceAgeModules = {
                     return 0
                 },
                 smelting(){
-                    return hugeAdjust(3);
+                    return 3;
                 },
                 action(args){
                     if (payCosts(this)){
@@ -2436,10 +2444,10 @@ const iceAgeModules = {
                     Spent_Fossil(r={}){ return fossilCostMultiplier(1, r.offset); }
                 },
                 effect(wiki){
-                    return `<div>${loc('underground_core_tap_perk_effect', [1])}</div><span>+${-(this.powered())}MW</span>`;
+                    return `<div>${loc('underground_core_tap_perk_effect', [1])}</div><span>+${-(this.powered()).toFixed(2)}MW</span>`;
                 },
                 powered(wiki){
-                    return (powerModifier(-25)).toFixed(2);
+                    return powerModifier(-25, true);
                 },
                 power_reqs: { impossible: 1 },
                 action(args){
@@ -2508,7 +2516,7 @@ const iceAgeModules = {
                 citizens(){
                     let extraVal = govActive('extravagant',2);
                     let pop = extraVal ? 5 + extraVal : 5;
-                    return jobScale(pop);
+                    return +(jobScale(pop) / hugeScale(1)).toFixed(1);
                 },
                 action(args){
                     if (payCosts(this)){
@@ -2828,7 +2836,7 @@ const iceAgeModules = {
                     let bunks = this.soldiers();
                     let desc = `<div class="has-text-caution">${loc('space_used_support', [actions.surface.wastes.info.name()])}, ${loc('spend', [+(this.consume('Food')).toFixed(1), global.resource.Food.name])}</div>`;
                     if (global.race.universe === 'evil'){
-                        desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
+                        desc += `<div>${loc('plus_max_resource',[hugeEffect(1),global.resource.Authority.name])}</div>`;
                     }
                     desc += `<div>${loc('surface_watch_tower_effect', [hugeEffect(4)])}</div>`;
                     desc += `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
@@ -3278,7 +3286,7 @@ const iceAgeModules = {
                     Water(r={}){ return undergroundCostMultiplier('bone_storage', r.offset, 320000, 1.16, 'wastes', 'surface'); }
                 },
                 effect(wiki){
-                    let bones = hugeEffect(this.storage.res('Money') * this.storage.multiplier(), 0);
+                    let bones = hugeEffect(this.storage.res('Power_Bones') * this.storage.multiplier(), 0);
                     return `<div>${loc('plus_max_resource',[bones,global.resource.Power_Bones.name])}</div>`;
                 },
                 storage: {
@@ -3340,9 +3348,9 @@ const iceAgeModules = {
                 support(wiki){
                     let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
                     if (count < 100){
-                        return (2 * count) / 10; //anti floating point imprecision
+                        return +((2 * count) / hugeScale(10)).toFixed(1);
                     }
-                    return 30;
+                    return 30 / hugeScale(1);
                 },
                 eco_area(wiki){
                     let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
@@ -4087,7 +4095,7 @@ const iceAgeModules = {
                             data: global.surface.watch_tower,
                         });
                         popover(`explore_progress`, function(){
-                            let desc = `<div>${loc('surface_exploration_time', [timeFormat((100 - global.surface.watch_tower.explore) / (0.0075 + (0.002 * support_on['watch_tower'])))])}</div>`;
+                            let desc = `<div>${loc('surface_exploration_time', [timeFormat((100 - global.surface.watch_tower.explore) / (0.0075 + hugeAdjust(0.002 * support_on['watch_tower'])))])}</div>`;
                             desc += `<div>${loc('surface_exploration_hint')}</div>`;
                             return desc;
                         });
@@ -4108,11 +4116,11 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let desc = `<div>${loc('galaxy_foothold_effect', [this.support(), loc('surface_crater')])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), hugeEffect(this.support_fuel().a), global.resource.Coal.name])}`;
+                    desc += `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), +(this.support_fuel().a).toFixed(0), global.resource.Coal.name])}`;
                     return desc;
                 },
                 support(){ return global.tech['crater'] >= 6 ? 3 : 2; },
-                support_fuel(){ return { r: 'Coal', a: 30 }; },
+                support_fuel(){ return { r: 'Coal', a: hugeAdjust(30) }; },
                 powered(){ return powerCostMod(15); },
                 powerBalancer(){
                     return [{ s: global.surface.crater_headquarters.s_max - global.surface.crater_headquarters.support }];
@@ -4296,7 +4304,7 @@ const iceAgeModules = {
                 effect() {
                     let uranium = spatialReasoning(this.storage.res('Uranium') * this.storage.multiplier());
                     return `<div>${loc('plus_max_resource', [uranium, global.resource.Uranium.name])}</div>
-                            <div>${loc('surface_critical_storage_effect')}</div>`;
+                            <div>${loc('surface_critical_storage_effect', [hugeEffect(5)])}</div>`;
                 },
                 storage: {
                     res(res){
@@ -4376,16 +4384,19 @@ const iceAgeModules = {
                     Aluminium(r={}){ return undergroundCostMultiplier('crater_factory', r.offset, 560000, 1.42, 'crater', 'surface'); }
                 },
                 effect(){
-                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_factory_effect', [hugeEffect(1), jobScale(2)])}</div>`;
+                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_factory_effect', [1, jobScale(2)])}</div>`;
                 },
                 s_type: 'crater',
                 special: true,
                 support(){ return -1; },
                 powered(){ return 0; },
+                manufacturing(){ return Math.floor(global.civic.crater_worker.workers / jobScale(2)); },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
-                        powerOnNewStruct(this);
+                        if(powerOnNewStruct(this)){
+                            factoryData.addFactoryLines(this.manufacturing());
+                        }
                         return true;
                     }
                     return false;
@@ -4494,7 +4505,7 @@ const iceAgeModules = {
                     let desc = ``;
                     desc += `<div>${loc('galaxy_foothold_effect', [this.support(), loc('surface_crater')])}</div>`;
                     if (global.tech['super_fuel'] >= 2){
-                        desc += `<div>${loc('surface_rocket_engine_effect', [hugeEffect(1), jobScale(3)])}</div>`;
+                        desc += `<div>${loc('surface_rocket_engine_effect', [1, jobScale(3)])}</div>`;
                     }
                     desc += `<span>+${power}MW.</span> <span class="has-text-caution">${loc('spend',[+(consume).toFixed(1), global.resource.Super_Fuel.name])}</span>`;
                     return desc;
@@ -4502,7 +4513,7 @@ const iceAgeModules = {
                 special(){ return global.tech['super_fuel'] >= 2; },
                 support(){ return 1; },
                 smelting(){
-                    return Math.floor(global.civic.crater_worker.workers / 3 / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1));
+                    return Math.floor(global.civic.crater_worker.workers / jobScale(3));
                 },
                 powered(wiki){
                     return powerModifier(-110);
@@ -5784,8 +5795,8 @@ export function ecoMinorTraitEffect(lifeform, trait){
 }
 
 export function surfaceEcosystemVisual(){ //run every fastLoop (0.25 seconds)
-    global.surface.overview.area = (p_on['area_heater'] || 0) * actions.surface.ecosystem.area_heater.support() * (1 + actions.surface.wastes.grand_dome.eco_area() / 100);
-    global.surface.overview.water = (p_on['water_pipe'] || 0) * actions.surface.ecosystem.water_pipe.support();
+    global.surface.overview.area = Math.floor((p_on['area_heater'] || 0) * actions.surface.ecosystem.area_heater.support() * (1 + actions.surface.wastes.grand_dome.eco_area() / 100));
+    global.surface.overview.water = Math.floor((p_on['water_pipe'] || 0) * actions.surface.ecosystem.water_pipe.support());
 }
 
 export function surfaceEcosystem(){ //run every longLoop (5 seconds)
@@ -6314,16 +6325,16 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
         base = traitCostMod('untrustworthy',base);
     }
     if (subSector === 'cave' && global.underground['support_beams']){
-        base *= 0.95 ** global.underground['support_beams'].count;
+        base *= 0.95 ** hugeAdjust(global.underground['support_beams'].count);
     }
     if (subSector === 'depths' && global.underground['depths_support_beams']){
-        base *= 0.95 ** global.underground['depths_support_beams'].count;
+        base *= 0.95 ** hugeAdjust(global.underground['depths_support_beams'].count);
     }
     if (subSector === 'industry' && global.underground['industrial_support_beams']){
-        base *= 0.95 ** global.underground['industrial_support_beams'].count;
+        base *= 0.95 ** hugeAdjust(global.underground['industrial_support_beams'].count);
     }
     if (subSector === 'core' && global.underground['core_support_beams']){
-        base *= 0.95 ** global.underground['core_support_beams'].count;
+        base *= 0.95 ** hugeAdjust(global.underground['core_support_beams'].count);
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
         multiplier -= global.genes['creep'] * 0.01;
@@ -6352,10 +6363,6 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
         count = common.count;
     }
     return Math.round((multiplier ** count) * base);
-}
-
-function iceAgeStorage(cost, region){
-    return BHStorageMulti(spatialReasoning(cost));
 }
 
 export function ice_fuel_adjust(fuel){

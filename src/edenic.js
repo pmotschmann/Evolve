@@ -139,7 +139,7 @@ const edenicModules = {
             powered(){
                 let power = -375;
                 if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                    power *= 1 + (p_on['corruptor'] || 0) * 0.06;
+                    power *= 1 + hugeAdjust(p_on['corruptor'] || 0) * 0.06;
                 }
                 return powerModifier(power);
             },
@@ -330,7 +330,7 @@ const edenicModules = {
                 let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
                 let souls = 200 + attact;
                 if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
-                    souls *= 1 + (p_on['symposium'] * piracy('gxy_gorddon'));
+                    souls *= 1 + hugeAdjust(p_on['symposium'] * piracy('gxy_gorddon'));
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
                 desc += `<div>${loc('eden_research_station_effect',[hugeEffect(highPopAdjust(souls), 0), loc('job_ghost_trapper')])}</div>`;
@@ -410,8 +410,8 @@ const edenicModules = {
                         'Bolognium': global.race['warlord'] ? 75 : 45,
                         'Orichalcum': global.race['warlord'] ? 62 : 22,
                         'Asphodel_Powder': global.eden['stabilizer']
-                            ? 0.1 + (global.eden.stabilizer.count * 0.015 * (
-                                global.race['warlord'] && global.eden['corruptor'] && p_on['corruptor'] ? 1 + (p_on['corruptor'] * 0.05) : 1
+                            ? 0.1 + hugeAdjust(global.eden.stabilizer.count * 0.015 * (
+                                global.race['warlord'] && global.eden['corruptor'] && p_on['corruptor'] ? 1 + hugeAdjust(p_on['corruptor'] * 0.05) : 1
                             ))
                             : 0.1
                     };
@@ -1567,11 +1567,7 @@ const edenicModules = {
             },
             effect(){
                 let vault = spatialReasoning(bank_vault() * (global.race['warlord'] ? 20 : 10));
-                if (global.race['warlord'] && global.eden['corruptor'] && global.tech.asphodel >= 12){
-                    vault *= 1 + (p_on['corruptor'] || 0) * 0.08;
-                }
-                vault = vault.toLocaleString();
-                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+                return loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')]);
             },
             storage: {
                 res(res){
@@ -2502,8 +2498,8 @@ export function mechStationEffect(){
     }
 
     let hostility = 0;
-    hostility += global.eden.asphodel_harvester.on * 4;
-    hostility += global.civic.ghost_trapper.workers;
+    hostility += hugeAdjust(global.eden.asphodel_harvester.on) * 4;
+    hostility += hugeAdjust(global.civic.ghost_trapper.workers);
     let rawHostility = hostility;
     let targetHostility = 0;
 
