@@ -2718,7 +2718,21 @@ a {
             height: ~"calc(100vh - 9rem)";
         }
     }
-        
+
+    // Paused notice, sat above the message log. The top bar pause icon is easy to miss.
+    .pauseBanner {
+        display: block;
+        margin: .25rem 0;
+        padding: .15rem 0;
+        border: solid .0625rem;
+        border-radius: .25rem;
+        text-align: center;
+        font-size: .75rem;
+        font-weight: bold;
+        cursor: pointer;
+        animation: pauseBannerPulse 2s ease-in-out infinite;
+    }
+
     #msgQueueHeader {
         .special {
             cursor: pointer;
@@ -5801,6 +5815,20 @@ div.bigbang {
     }
 }
 
+@keyframes pauseBannerPulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes shake {
     0% {
         transform: skewX(-1deg);
@@ -5893,21 +5921,23 @@ div.bigbang {
         }
     }
 
-    .sequence {
+    // Genus, fanaticism and reset, laid across the top so the strand below them has the full width.
+    .genus_selection.labControls {
         display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0 1.5rem;
         margin-top: .5rem;
 
-        .genus_selection {
-            width: 10rem;
-
-            section {
-                margin-top: .5rem;
-            }
-
-            button {
-                padding: 1rem 0.5rem;
-            }
+        .genus, .resetLab {
+            margin-bottom: 0.4rem;
         }
+    }
+
+    // Holds the strand alone now that the pickers have moved out of it.
+    .sequence {
+        display: block;
+        margin-top: .5rem;
 
         .trait_selection {
             margin-top: .5rem;
@@ -6270,6 +6300,107 @@ div.bigbang {
 .baseC { color: var(--tc-info,    #64b5f6); }
 .baseG { color: var(--tc-success, #81c784); }
 .baseX { color: var(--tc-fade,    #9e9e9e); }
+// A pair nothing has been put in yet calls for no base at all.
+.baseNone { color: var(--tc-fade, #9e9e9e); }
+
+// The gene lab's slot view: the strand styles above, plus the rank stepper and the spares list.
+.labStrand {
+    .emergeHead {
+        font-weight: 700;
+        margin: 0.6rem 0 0.2rem 0;
+    }
+
+    .labRank {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        white-space: nowrap;
+
+        .rc {
+            min-width: 2.2rem;
+            text-align: center;
+        }
+    }
+
+    .labSlotBtn {
+        height: 1.6rem;
+        font-size: 0.8rem;
+    }
+
+    // What the genus keeps back, listed under the rung its rank is averaged from.
+    .labGenusEmergent {
+        margin: 0.2rem 0 0.4rem 0;
+
+        .pickHead {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .emergeRow {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.1rem 0;
+        }
+
+        .emergeName {
+            flex: 0 0 auto;
+            min-width: 8rem;
+        }
+
+        .emergeRank {
+            flex: 0 0 auto;
+            min-width: 5rem;
+        }
+
+        // What the genus block charges for it, so an emergent property does not read as a freebie.
+        .emergeCost {
+            flex: 0 0 auto;
+            min-width: 5rem;
+        }
+
+        .emergeText {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
+    // Pairs the design bought, with the stepper that buys them on the heading itself.
+    .labRecessive {
+        .emergeHead {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .rc {
+            min-width: 1.4rem;
+            text-align: center;
+        }
+
+        .recessiveCost {
+            font-weight: 400;
+            opacity: 0.8;
+            font-size: 0.85rem;
+        }
+
+        .recessiveNote {
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+    }
+
+    // The opening pair belongs to the genus and is not the player's to move.
+    .labLocked {
+        opacity: 0.75;
+
+        .slotNum {
+            opacity: 1;
+            font-weight: 700;
+        }
+    }
+
+}
 
 .pickBase {
     display: inline-block;
@@ -6311,9 +6442,60 @@ div.bigbang {
         border-color: var(--tc-success, #81c784);
         box-shadow: 0 0 0.3rem var(--tc-success, #81c784);
     }
+
+    // Major traits are bought out of a different bank and cannot be undone for genes, so they are
+    // marked apart from the minor genes sharing the grid.
+    .genePickMajor {
+        border-color: var(--tc-warning, #ffd54f);
+        box-shadow: 0 0 0.3rem var(--tc-warning, #ffd54f);
+    }
+
+    .pickCost {
+        margin-left: auto;
+        padding-left: 0.5rem;
+    }
 }
 
-.geneSlots {
+// The gene lab's picker is grouped -- by category when the slot's pair has no type yet, and within
+// each by whether a trait helps or hurts -- so it stacks instead of being one flat wrap of buttons.
+.genePick.pickGrouped {
+    display: block;
+
+    .pickTabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .pickTab {
+        height: 1.9rem;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        &.is-active {
+            border-color: var(--tc-warning, #ffd54f);
+            color: var(--tc-warning, #ffd54f);
+        }
+    }
+
+    .pickHead {
+        font-weight: 700;
+        margin: 0.5rem 0 0.2rem 0;
+    }
+
+    .pickRow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+}
+
+// The gene lab's slot view draws the same strand the genetics tab does, so it reads from the same
+// rules rather than a second copy of them.
+.geneSlots, .labStrand {
     .geneTabs {
         > nav.tabs {
             margin-bottom: 0.4rem;
@@ -6429,6 +6611,40 @@ div.bigbang {
         }
     }
 
+    // Traits running beside the strand rather than on it, listed the same way the emergent ones are.
+    .geneGranted {
+        margin-top: 0.6rem;
+        padding-top: 0.4rem;
+        border-top: 1px solid rgba(128,128,128,0.35);
+
+        .emergeHead {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .emergeRow {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.1rem 0;
+        }
+
+        .emergeName {
+            flex: 0 0 auto;
+            min-width: 7rem;
+        }
+
+        .emergeRank {
+            flex: 0 0 auto;
+            min-width: 5rem;
+        }
+
+        .emergeText {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
     // Granted slots sit below the strand rather than on a rung of their own.
     .geneExtras {
         margin-top: 0.5rem;
@@ -6443,7 +6659,8 @@ div.bigbang {
         padding: 0.15rem 0;
 
         .slotNum {
-            width: 1.5rem;
+            width: 1.6rem;
+            flex: 0 0 auto;
             text-align: right;
             opacity: 0.6;
         }
@@ -6484,6 +6701,18 @@ div.bigbang {
                 padding: 0;
                 font-size: 1rem;
                 line-height: 1;
+            }
+
+            // Shapeshifter's genus setting. Wider than the &times; buttons beside it because it
+            // carries the name of the genus currently being worn rather than a symbol.
+            .geneShape {
+                padding: 0 0.4rem;
+                font-size: 0.75rem;
+                line-height: 1;
+                max-width: 7rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     }

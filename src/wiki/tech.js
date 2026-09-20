@@ -6,7 +6,7 @@ import { actions, housingLabel } from './../actions.js';
 import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
-import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs } from './../functions.js';
+import { getHalloween, svgIcons, svgViewBox, techInEra, actionReqs , resName } from './../functions.js';
 import { planetName } from './../space.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 import { traitPageOf } from './species.js';
@@ -1155,7 +1155,7 @@ const extraInformation = {
         loc(`wiki_tech_mad`)
     ],
     cement: [
-        loc(`wiki_tech_building_unlock`,[loc(`city_cement_plant`)])
+        loc(`wiki_tech_building_unlock`,[loc(`city_cement_plant`,[resName('Cement')])])
     ],
     rebar: [
         loc(`wiki_tech_rebar`,[10])
@@ -1167,10 +1167,10 @@ const extraInformation = {
         loc(`wiki_tech_portland_cement`)
     ],
     geopolymer_cement: [
-        loc(`wiki_tech_geopolymer_cement`,[loc(`city_cement_plant`),8])
+        loc(`wiki_tech_geopolymer_cement`,[loc(`city_cement_plant`,[resName('Cement')]),8])
     ],
     screw_conveyor: [
-        loc(`wiki_tech_power_upgrade`,[loc(`city_cement_plant`),2]),
+        loc(`wiki_tech_power_upgrade`,[loc(`city_cement_plant`,[resName('Cement')]),2]),
         loc(`wiki_tech_screw_conveyor`,[5])
     ],
     adamantite_screws: [

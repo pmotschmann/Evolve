@@ -5,7 +5,7 @@ import { global, webWorker } from './vars.js';
 import { clearElement } from './functions.js';
 import { foeDetected, moveTempCoordinates, resolveBody, syndicate, syndicateGuardHeld, syndicateShips, tempCoord,
          tempOffset, tempParent, venusBlockade } from './truepath.js';
-import { shipMoving, shipLeg, shipLegs, legEnd, moveShips, shipPatrol, shipPointAhead, shipRefStar } from './ships.js';
+import { shipMoving, shipLeg, shipLegs, legEnd, moveShips, shipPatrol, shipPointAhead, shipRefStar, shipInterstellar } from './ships.js';
 import { races, orbitLength } from './races.js';
 import { actions } from './actions.js';
 import { planetName } from './space.js';
@@ -165,8 +165,6 @@ const starConstants = {
     // A body closer to its star than this on screen is inside the star's own dot — the star never draws smaller than a
     // one-pixel radius — so it lands on the same pixel and is not drawn at all.
     SYSTEM_MIN_PX: 1,
-    // Had to limit ship trails or trips between stars would crash the browser, also in general they caused lag
-    TRAIL_MAX_DASHES: 400,
     // Ship markers are drawn at a constant size on screen, in pixels.
     SHIP_DOT_PX: 3,
     SHIP_LABEL_PX: 5,
@@ -182,6 +180,7 @@ const starConstants = {
     BEACON_DOT_PX: 3,
     BEACON_HALO_PX: 11,
     BEACON_LABEL_PX: 6,
+    BEACON_GROUP_LABEL_PX: 20,
     BEACON_PULSE_MS: 1600,
     BEACON_COLOR: '0, 255, 102',
     // Bodies are drawn at symbolic sizes, nothing like true scale — 0.1 map units for an M dwarf is some twenty times the
@@ -3143,7 +3142,9 @@ function ensureBody(id){
 
 // Distance between two points in AU. 
 export function dist3(a,b){
-    return Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+    // Use direct Euclidean distance for frequently evaluated AU-scale coordinates.
+    const x = b.x - a.x, y = b.y - a.y, z = b.z - a.z;
+    return Math.sqrt(x * x + y * y + z * z);
 }
 
 // A body's orbital inclination in degrees.
@@ -3336,11 +3337,20 @@ function clearOf(a, b, centre){
 // route around, and neither has one launching from there.
 export function starDetour(a, b){
     if (!a || !b){ return false; }
+    // Reject stars outside the leg midpoint clearance sphere before the exact test.
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, mz = (a.z + b.z) / 2;
+    const reach = dist3(a, b) / 2 + STAR_CLEARANCE_AU;
+    const reach2 = reach * reach;
+    const clear2 = STAR_CLEARANCE_AU * STAR_CLEARANCE_AU;
     for (const id of starIndex()){
         const body = starData[id];
-        const centre = { x: body.x, y: body.y, z: body.z };
-        if (dist3(a, centre) <= STAR_CLEARANCE_AU || dist3(b, centre) <= STAR_CLEARANCE_AU){ continue; }
-        const wp = clearOf(a, b, centre);
+        const bx = body.x - mx, by = body.y - my, bz = body.z - mz;
+        if (bx * bx + by * by + bz * bz > reach2){ continue; }
+        const ax = body.x - a.x, ay = body.y - a.y, az = body.z - a.z;
+        if (ax * ax + ay * ay + az * az <= clear2){ continue; }
+        const ex = body.x - b.x, ey = body.y - b.y, ez = body.z - b.z;
+        if (ex * ex + ey * ey + ez * ez <= clear2){ continue; }
+        const wp = clearOf(a, b, { x: body.x, y: body.y, z: body.z });
         if (wp){ return wp; }
     }
     return false;
@@ -3576,6 +3586,23 @@ function starCulled(pos, range = starRange()){
     if (range !== starConstants.STAR_RANGE_INF && dist3(pos, mapAnchor) > range * starConstants.AU_PER_LY){ return true; }
     return mapScale >= starConstants.planetLabelMinScale && dist3(pos, mapFocus) > starConstants.STAR_CULL_AU;
 }
+// Check if a position is visible on the map, i.e. drawn anywhere between (-margin, -margin) and (width + margin, height + margin)
+function visibleOnMap(pos, margin = 10){
+    // Map position wrt origin in AU
+    let ax = pX(pos), ay = pY(pos);
+
+    // Map position wrt origin in px
+    let zx = ax * mapScale, zy = ay * mapScale;
+
+    // Map position wrt canvas in px
+    let cx = zx + mapShift.x, cy = zy + mapShift.y;
+    
+    // Canvas size
+    let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+
+    return (cx >= -margin) && (cx <= rect.width + margin) &&
+           (cy >= -margin) && (cy <= rect.height + margin);
+}
 // The color the map paints a star of a given class. Shared by the discs drawn in the scene and by the backdrop sky,
 // which has to agree with them — a star should be the same color whichever of the two is showing it.
 function starTint(type){
@@ -3651,6 +3678,7 @@ function wrapAngle(a){
     a = (a + Math.PI) % (Math.PI * 2);
     return (a < 0 ? a + Math.PI * 2 : a) - Math.PI;
 }
+// Map position wrt origin in AU
 function pX(p){ return p.x * camCY - p.y * camSY; }
 function pY(p){ return (p.x * camSY + p.y * camCY) * camCP - (p.z) * camSP; }
 // Depth for painter's-algorithm ordering. This axis completes a right-handed frame with screen-right and screen-down,
@@ -5889,21 +5917,94 @@ function drawMapFrame() {
         let here = rel(shipPointAhead(ship, drawAhead), ref);
 
         let legs = shipLegs(ship);
-        let span = 0;
-        let prev = here;
-        for (let leg of legs){
-            let q = rel(legEnd(leg), ref);
-            span += Math.sqrt((q.x-prev.x)**2 + (q.y-prev.y)**2 + (q.z-prev.z)**2);
-            prev = q;
-        }
-        let cycle = Math.max(0.5, span / starConstants.TRAIL_MAX_DASHES);
-        ctx.setLineDash([cycle * 0.2, cycle * 0.8]);
+        ctx.setLineDash([10 / mapScale, 40 / mapScale]);
 
-        ctx.moveTo(pX(here), pY(here));
+        let curX = pX(here), curY = pY(here);
+        ctx.moveTo(curX, curY);
         // Draw the full remaining flight path through each waypoint still ahead of the ship.
+        // Skip drawing parts which are out of sight
+        let curVisible = visibleOnMap(shipPointAhead(ship, drawAhead));
         for (let leg of legs){
+            // Position of leg end wrt transform in AU
             let q = rel(legEnd(leg), ref);
-            ctx.lineTo(pX(q), pY(q));
+
+            // Map position of leg end wrt transform in AU
+            let px = pX(q), py = pY(q);
+
+            let nextVisible = visibleOnMap(legEnd(leg));
+            if (curVisible && nextVisible){
+                // Entire leg visible - draw all of it
+                ctx.lineTo(px, py);
+            }
+            else if (nextVisible){
+                // Only final part of leg visible, move to edge of map, draw from there until end
+
+                // Direction vector towards leg end from leg start
+                let dx = px - curX, dy = py - curY;
+
+                // Direction distance in AU
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Direction unit vector
+                let ux = dx / dist, uy = dy / dist;
+        
+                // Canvas size in px (incl. margin)
+                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                let cx = rect.width + 20, cy = rect.height + 20;
+
+                // Canvas size in AU
+                let crx = cx / mapScale, cry = cy / mapScale;
+
+                // Final difference vector length
+                let f = Math.max(crx, cry);
+
+                // Final difference vector
+                let rdx = ux * f, rdy = uy * f;
+
+                // Final shown position
+                let fx = px - rdx, fy = py - rdy;
+                
+                ctx.moveTo(fx, fy);
+                ctx.lineTo(px, py);
+            }
+            else if (curVisible){
+                // Only starting part of leg visible, move to edge of map, draw from start until there
+
+                // Direction vector towards leg end from leg start
+                let dx = px - curX, dy = py - curY;
+
+                // Direction distance in AU
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                // Direction unit vector
+                let ux = dx / dist, uy = dy / dist;
+        
+                // Canvas size in px (incl. margin)
+                let rect = document.getElementById("mapCanvas").getBoundingClientRect();
+                let cx = rect.width + 20, cy = rect.height + 20;
+
+                // Canvas size in AU
+                let crx = cx / mapScale, cry = cy / mapScale;
+
+                // Final difference vector length
+                let f = Math.max(crx, cry);
+
+                // Final difference vector
+                let rdx = ux * f, rdy = uy * f;
+
+                // Final shown position
+                let fx = curX + rdx, fy = curY + rdy;
+                
+                ctx.lineTo(fx, fy);
+                ctx.moveTo(px, py);
+            }
+            else {
+                // Entire leg not visible, skip
+                ctx.moveTo(px, py);
+            }
+
+            curVisible = nextVisible;
+            curX = px, curY = py;
         }
         ctx.stroke();
         ctx.restore();
@@ -6040,32 +6141,104 @@ function drawMapFrame() {
     // and ahead of the ship markers so a ship that has flown out to one reads as sitting on top of it.
     {
         let pulse = beaconPulse();
-        for (let beacon of liveBeacons()){
-            let ref = genXYZcoord(beacon.s || 'spc_sun');
-            if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            let bx = pX(here), by = pY(here);
-            // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
-            // than merely changing size.
-            ctx.beginPath();
-            ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
-            ctx.arc(bx, by, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
-            ctx.arc(bx, by, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
-            ctx.fill();
-            ctx.restore();
-        }
-    }
+        ctx.font = `20px serif`;
 
+        if (mapScale < starConstants.planetLabelMinScale){ 
+            // zoomed out: show a grouped beacon instead of overlapping several in the same place
+            const systems = {};
+            for (let beacon of liveBeacons()){
+                if (systems.hasOwnProperty(beacon.s)){
+                    systems[beacon.s].cnt++;
+                    systems[beacon.s].b.push(beacon);
+                }
+                else
+                    systems[beacon.s] = {cnt: 1, b: [beacon]};
+            }
+            
+            // Stop drawing beacon label at the same time we stop drawing system names. Beacon pulses are drawn regardless, same as star dots
+            const drawNames = !starNamesHidden();
+
+            // Cap the scale to starConstants.systemLabelMinScale to prevent text being cluttered with multiple systems on screen
+            let textScale;
+            if (mapScale > starConstants.systemLabelMinScale)
+                textScale = 1 / mapScale;
+            else
+                textScale = 1 / starConstants.systemLabelMinScale;
+            
+            for (const [location, beacons] of Object.entries(systems)){
+                const ref = genXYZcoord(location || 'spc_sun');
+                if (starCulled(ref)){ continue; }
+                ctx.save();
+                ctx.translate(pX(ref), pY(ref));
+                // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
+                // than merely changing size.
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
+                ctx.arc(0, 0, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
+                ctx.arc(0, 0, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+
+                if (drawNames){
+                    // Group label, in the same green as their dots, displayed above system name.
+                    ctx.scale(textScale, textScale);
+                    ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
+                    ctx.textAlign = 'center';
+                    if (beacons.cnt == 1){
+                        ctx.fillText(beacons.b[0].n, 0, -starConstants.BEACON_GROUP_LABEL_PX);
+                    }
+                    else{
+                        const text = loc('scout_beacon_group', [count]);
+                        ctx.fillText(text, 0, -starConstants.BEACON_GROUP_LABEL_PX);
+                    }
+                }
+                ctx.restore();
+            }
+        } 
+        else {
+            // zoomed in: draw individual beacons normally
+            for (let beacon of liveBeacons()){
+                let ref = genXYZcoord(beacon.s || 'spc_sun');
+                if (starCulled(ref)){ continue; }
+                let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
+                ctx.save();
+                ctx.translate(pX(ref), pY(ref));
+                let bx = pX(here), by = pY(here);
+                // A ring that swells outward and fades as it goes, so the mark reads as flaring rather
+                // than merely changing size.
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.3 * (1 - pulse)})`;
+                ctx.arc(bx, by, (starConstants.BEACON_DOT_PX + (starConstants.BEACON_HALO_PX - starConstants.BEACON_DOT_PX) * pulse) / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${starConstants.BEACON_COLOR}, ${0.55 + 0.45 * pulse})`;
+                ctx.arc(bx, by, starConstants.BEACON_DOT_PX / mapScale, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.restore();
+
+                // Signal names, in the same green as their dots and offset the same way the ship names are.
+                ctx.save();
+                ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
+                ctx.translate(pX(ref), pY(ref));
+                ctx.scale(1 / mapScale, 1 / mapScale);
+                ctx.fillText(beacon.n, pX(here) * mapScale + starConstants.BEACON_LABEL_PX, pY(here) * mapScale - starConstants.BEACON_LABEL_PX);
+                ctx.restore();
+            }
+        }  
+    }
+    
     // Render ships as markers or detailed hulls.
+    // When zoomed out beyond local system only draw ships which are travelling interstellar
     {
         const art = shipArtOn();
+        let drawOnlyInterstellar = (mapScale < starConstants.planetLabelMinScale);
         for (let mark of shipMarks) {
             const { ship, foe } = mark;
+            if (drawOnlyInterstellar && !shipInterstellar(ship)) { continue; }
+
             ctx.fillStyle = foe ? "#ff0000" : "#0000ff";
             ctx.strokeStyle = foe ? "#ff0000" : "#0000ff";
             let ref = shipRefStar(ship);
@@ -6130,21 +6303,6 @@ function drawMapFrame() {
             : ship.name;
         ctx.fillText(label, pX(here) * mapScale + starConstants.SHIP_LABEL_PX, pY(here) * mapScale - starConstants.SHIP_LABEL_PX);
         ctx.restore();
-    }
-
-    // Signal names, in the same green as their dots and offset the same way the ship names are.
-    {
-        ctx.fillStyle = `rgb(${starConstants.BEACON_COLOR})`;
-        for (let beacon of liveBeacons()){
-            let ref = genXYZcoord(beacon.s || 'spc_sun');
-            if (starCulled(ref)){ continue; }
-            let here = rel({ x: beacon.x, y: beacon.y, z: beacon.z }, ref);
-            ctx.save();
-            ctx.translate(pX(ref), pY(ref));
-            ctx.scale(1 / mapScale, 1 / mapScale);
-            ctx.fillText(beacon.n, pX(here) * mapScale + starConstants.BEACON_LABEL_PX, pY(here) * mapScale - starConstants.BEACON_LABEL_PX);
-            ctx.restore();
-        }
     }
 
     ctx.fillStyle = "#ffa500";

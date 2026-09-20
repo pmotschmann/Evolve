@@ -1716,7 +1716,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 51;
+global['beta'] = 52;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2660,12 +2660,15 @@ export function resizeGame(){
         build.addClass('right');
         build.removeClass('has-text-info');
 
+        let pauseNote = $('#pauseBanner').detach();
+
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
         queue.removeClass('has-text-info');
         queue.css('resize', 'none');
         $('#queueColumn').addClass('is-one-quarter');
         $('#queueColumn').append(build);
+        $('#queueColumn').append(pauseNote);
         $('#queueColumn').append(queue);
         $('#mainColumn').removeClass('is-three-quarters');
         $('#mainColumn').addClass('is-half');
@@ -2676,12 +2679,15 @@ export function resizeGame(){
         build.removeClass('right');
         build.addClass('has-text-info');
 
+        let pauseNote = $('#pauseBanner').detach();
+
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');
         queue.addClass('has-text-info');
         queue.css('resize', 'vertical');
         $('#queueColumn').removeClass('is-one-quarter');
         $('#sideQueue').append(build);
+        $('#sideQueue').append(pauseNote);
         $('#sideQueue').append(queue);
         $('#mainColumn').removeClass('is-half');
         $('#mainColumn').addClass('is-three-quarters');

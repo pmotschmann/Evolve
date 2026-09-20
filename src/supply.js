@@ -284,12 +284,16 @@ export function regionEnabled(region){
 export function activeSupplyRegions(){
     buildIndex();
     const live = {};
+    // Use region state directly for settled or disabled supply structures.
+    const enabled = {};
     for (const key in structMap){
-        const cat = key.slice(0, key.indexOf(':'));
-        const struct = key.slice(key.indexOf(':') + 1);
         const region = structMap[key];
-        if (live[region] || !regionEnabled(region)){ continue; }
-        const held = global[cat] && global[cat][struct];
+        if (live[region]){ continue; }
+        if (!(region in enabled)){ enabled[region] = regionEnabled(region); }
+        if (!enabled[region]){ continue; }
+        const split = key.indexOf(':');
+        const cat = key.slice(0, split);
+        const held = global[cat] && global[cat][key.slice(split + 1)];
         if (held && held.count > 0){ live[region] = true; }
     }
     // Always include the current capital in active supply regions.

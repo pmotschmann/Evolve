@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, set_alevel, set_ulevel } from './vars.js';
 import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
-import { races, genus_def, geneSlots, geneCatalog, genePermanent, citizenDeath } from './races.js';
+import { races, genus_def, traits, geneSlots, geneLike, geneCatalog, genePermanent, citizenDeath } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters, towerSize } from './portal.js';
@@ -82,7 +82,8 @@ const flairData = {
     colonist: [flib('name')]
 };
 
-export const geneticistGenes = 8;
+// Minor genes required for the Geneticist achievement.
+export const geneticistGenes = 12;
 
 const descData = {
     trade: [750,50],
@@ -665,8 +666,10 @@ export function checkAchievements(){
         }
     }
 
-    // Any filled slot counts, specials included.
-    let slotted = geneSlots().filter(function(s){ return s && s.g ? true : false; }).length;
+// Count slotted minor genes, including special slots.
+    let slotted = geneSlots().filter(function(s){
+        return s && s.g && geneLike(s.g) ? true : false;
+    }).length;
     if (slotted >= geneticistGenes){
         unlockAchieve('geneticist');
     }

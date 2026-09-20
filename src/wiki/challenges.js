@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { actions, wardenLabel } from './../actions.js';
-import { vBind } from './../functions.js';
+import { vBind , resName } from './../functions.js';
 import { neg_roll_traits } from './../races.js';
 import { tradeRatio } from './../resources.js';
 import { sideMenu, subSideMenu, infoBoxBuilder, getSolarName, createCalcSection } from './functions.js';
@@ -231,7 +231,7 @@ export function challengesPage(content){
                 para_data: {
                     1: [loc(`evo_challenge_emfield`),loc(`wiki_challenges_mode`),`50%`,loc(`evo_challenge_discharge`),`50%`],
                     2: [loc(`evo_challenge_discharge`),`-50%`],
-                    3: [loc(`city_cement_plant`),loc(`evo_challenge_discharge`),`50%`],
+                    3: [loc(`city_cement_plant`,[resName('Cement')]),loc(`evo_challenge_discharge`),`50%`],
                     4: [loc(`space_belt_elerium_ship_title`),loc(`evo_challenge_discharge`),`-25%`],
                     5: [loc(`wiki_challenges_mode`),loc(`wiki_resets_ascension`)]
                 },

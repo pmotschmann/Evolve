@@ -2,7 +2,7 @@ import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
-import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, genomeScale, powerModifier } from './../functions.js';
+import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore, genomeScale, powerModifier, resName } from './../functions.js';
 import { job_data } from './../jobs.js';
 import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
@@ -546,9 +546,9 @@ export function mechanicsPage(content){
             }
         });
 
-        infoBoxBuilder(quantum,{ name: 'quantum_cement_processing', template: 'mechanics', label: loc('tech_cement_processing'), paragraphs: 2, break: [2], h_level: 2,
+        infoBoxBuilder(quantum,{ name: 'quantum_cement_processing', template: 'mechanics', label: loc('tech_cement_processing',[resName('Cement')]), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
-                1: [loc('tech_cement_processing'),loc('interstellar_citadel_title')],
+                1: [loc('tech_cement_processing',[resName('Cement')]),loc('interstellar_citadel_title')],
                 2: ['(Q Level / 1.75) %'],
             },
             data_link: {
@@ -1295,7 +1295,7 @@ export function mechanicsPage(content){
                 1: [loc(`race_moldling`)],
                 2: [
                     [
-                        `<span class="has-text-warning">${loc('tech_smelting')}</span>`, `<span class="has-text-warning">${loc('tech_dynamite')}</span>`, `<span class="has-text-warning">${loc('tech_portland_cement')}</span>`, `<span class="has-text-warning">${loc('tech_oxygen_converter')}</span>`,
+                        `<span class="has-text-warning">${loc('tech_smelting')}</span>`, `<span class="has-text-warning">${loc('tech_dynamite')}</span>`, `<span class="has-text-warning">${loc('tech_portland_cement',[resName('Cement')])}</span>`, `<span class="has-text-warning">${loc('tech_oxygen_converter')}</span>`,
                         `<span class="has-text-warning">${loc('tech_machinery')}</span>`, `<span class="has-text-warning">${loc('tech_uranium_storage')}</span>`, `<span class="has-text-warning">${actions.tech.synthetic_fur.title()}</span>`, `<span class="has-text-warning">${loc('tech_rover')}</span>`,
                         `<span class="has-text-warning">${loc('tech_starcharts')}</span>`, `<span class="has-text-warning">${loc('tech_nano_tubes')}</span>`, `<span class="has-text-warning">${loc('tech_stanene')}</span>`, `<span class="has-text-warning">${loc('tech_hydroponics')}</span>`,
                         `<span class="has-text-warning">${loc('tech_orichalcum_panels')}</span>`, `<span class="has-text-warning">${loc('tech_cybernetics')}</span>`

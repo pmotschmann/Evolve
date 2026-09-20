@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
-import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars} from './races.js';
+import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars, templeOutputBonus} from './races.js';
 import { templeCount, actions, hugeEffect } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -1498,6 +1498,17 @@ export function setResourceName(name){
         }
     }
 
+    if (genusType === 'polar'){
+        switch(name){
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Pykrete_name');
+                break;
+            case 'Cement':
+                global['resource'][name].name = loc('resource_Icecrete_name');
+                break;
+        }
+    }
+
     if (global.city.universe === 'antimatter'){
         switch(name){
             case 'Positronium':
@@ -1863,25 +1874,33 @@ export function bmRoutes(res, pool){
     return bm[pool] && bm[pool][res] ? bm[pool][res] : 0;
 }
 
+// Cache the market route total until its ledger changes.
+let bmSum = { of: null, n: 0 };
+
 export function bmUsed(){
     const bm = bmLedger();
-    let n = 0;
-    for (const pool in bm){ for (const res in bm[pool]){ n += bm[pool][res]; } }
-    return n;
+    if (bmSum.of !== bm){
+        let n = 0;
+        for (const pool in bm){ for (const res in bm[pool]){ n += bm[pool][res]; } }
+        bmSum = { of: bm, n };
+    }
+    return bmSum.n;
 }
 
 export function bmAdjust(res, pool, delta){
     const bm = bmLedger();
     if (!bm[pool]){ bm[pool] = {}; }
+    const used = bmUsed();
     const now = bm[pool][res] || 0;
     let next = now + delta;
     if (next > now){
         // Respect the shared route limit.
-        next = now + Math.min(delta, Math.max(0, global.city.market.mtrade - bmUsed()));
+        next = now + Math.min(delta, Math.max(0, global.city.market.mtrade - used));
     }
-    if (next <= 0){ delete bm[pool][res]; }
+    if (next <= 0){ delete bm[pool][res]; next = 0; }
     else { bm[pool][res] = next; }
-    global.city.market.trade = bmUsed();
+    bmSum = { of: bm, n: used - now + next };
+    global.city.market.trade = bmSum.n;
     return bm[pool][res] || 0;
 }
 
@@ -2679,8 +2698,9 @@ export function tradeSellPrice(res){
 
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
-    // Cunning drives the buying price down. The selling price is untouched by it.
-    rate /= geneBonus('cunning');
+    if (global.race['cunning']){
+        rate *= (1 - geneVars('cunning')[0] / 100) ** geneRank('cunning');
+    }
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);
     }
@@ -3657,6 +3677,7 @@ export function containerValue(){
     if (global.tech['steel_container'] && global.tech['steel_container'] >= 8){
         container_value += global.tech['steel_container'] >= 9 ? 15300 : 8000;
     }
+    container_value *= geneBonus('stockpiler');
     if (global.race['pack_rat']){
         container_value *= 1 + (traits.pack_rat.vars()[0] / 100);
     }
@@ -4531,9 +4552,8 @@ export function faithBonus(num_temples = -1){
             if (global.race['ooze']){
                 temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
             }
-            temple_bonus = hugeAdjust(temple_bonus);
-            
-            return num_temples * temple_bonus * geneBonus('zealot') * geneBonus('radiant');
+
+            return num_temples * temple_bonus * templeOutputBonus();
         }
     }
     return 0;
@@ -4574,9 +4594,8 @@ export function templePlasmidBonus(num_temples = -1){
             if (global.race['orbit_decayed'] && global.race['truepath']){
                 temple_bonus *= 0.1;
             }
-            temple_bonus = hugeAdjust(temple_bonus);
 
-            return num_temples * temple_bonus;
+            return num_temples * temple_bonus * templeOutputBonus();
         }
     }
     return 0;

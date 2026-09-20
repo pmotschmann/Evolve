@@ -24,6 +24,18 @@ import { driveSaveGame, driveLoadGame, driveConfigured } from './googledrive.js'
 let offlineHandler = null;
 export function registerOfflineHandler(fn){ offlineHandler = fn; }
 
+// Reflect the current pause state: repaint the top bar icon, and on resume restart the loop and
+// credit the time spent paused as offline time.
+function syncPause(){
+    $(`#pausegame`).removeClass('play');
+    $(`#pausegame`).removeClass('pause');
+    $(`#pausegame`).addClass(global.settings.pause ? 'pause' : 'play');
+    if (!global.settings.pause && !webWorker.s){
+        gameLoop('start');
+        if (offlineHandler){ offlineHandler(); }
+    }
+}
+
 // Keep Buefy modal close buttons positioned within their modal card.
 let modalCloseObserver = null;
 function placeModalCloseButtons(){
@@ -228,19 +240,7 @@ export function mainVue(){
                 initTabs();
             },
             unpause(){
-                $(`#pausegame`).removeClass('play');
-                $(`#pausegame`).removeClass('pause');
-                if (global.settings.pause){
-                    $(`#pausegame`).addClass('pause');
-                }
-                else {
-                    $(`#pausegame`).addClass('play');
-                }
-                if (!global.settings.pause && !webWorker.s){
-                    gameLoop('start');
-                    // Unpausing counts as returning to the game: credit offline time for the pause.
-                    if (offlineHandler){ offlineHandler(); }
-                }
+                syncPause();
             },
             namecase(name){
                 return name.replace(/(?:^|\s)\w/g, function(match) {
@@ -913,6 +913,9 @@ export function index(){
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue standardqueuestyle has-text-info" v-show="display"></div>
+            <div id="pauseBanner">
+                <span class="pauseBanner has-text-caution" role="button" v-show="s.pause" @click="resume()" aria-live="polite" aria-label="${loc('game_play')}">${loc('game_paused_banner')}</span>
+            </div>
             <div id="msgQueue" class="msgQueue vscroll has-text-info" aria-live="polite">
                 <div id="msgQueueHeader">
                     <h2 class="has-text-success">${loc('message_log')}</h2>
@@ -938,6 +941,20 @@ export function index(){
         </div>
         <div id="resources" class="resources vscroll"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);
+    vBind({
+        el: `#pauseBanner`,
+        data: {
+            s: global.settings
+        },
+        methods: {
+            resume(){
+                if (global.settings.pause){
+                    global.settings.pause = false;
+                    syncPause();
+                }
+            }
+        }
+    });
     message_filters.forEach(function (filter){
         $(`#msgQueueFilters`).append(`
             <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" aria-disabled="${filter === 'all' ? 'true' : 'false'}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis" role="button">${loc('message_log_' + filter)}</span>

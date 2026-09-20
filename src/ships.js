@@ -1,6 +1,6 @@
 // Ship state, movement, fleet, repair, and logistics helpers.
 
-import { global, p_on } from './vars.js';
+import { global, p_on, webWorker } from './vars.js';
 import { deepClone, powerModifier, modRes, messageQueue } from './functions.js';
 import { traits, geneBonus } from './races.js';
 import { atomic_mass } from './resources.js';
@@ -100,6 +100,12 @@ export function shipLegLeft(ship){
 // Days the whole journey takes, counted from the start of the leg being flown; 0 when docked.
 export function shipTripDays(ship){
     return legsOf(ship).reduce((total, leg) => total + leg.days, 0);
+}
+
+// Whether a ship is currently going through a wormhole.
+export function shipInterstellar(ship){
+    const leg = shipLeg(ship);
+    return leg && legInGate(leg);
 }
 
 // --- Legs and planned trips ----------------------------------------------------------------------
@@ -748,8 +754,9 @@ export function shipSlotOpen(part, shipClass){
 }
 
 // What special a ship has equipped.
+const shipSpecialSet = new Set(shipSpecials);
 export function shipSpecial(ship){
-    return ship && ship.special && shipSpecials.includes(ship.special) ? ship.special : 'none';
+    return ship && ship.special && shipSpecialSet.has(ship.special) ? ship.special : 'none';
 }
 
 // Power a special mount draws.
@@ -843,20 +850,26 @@ export function freightCapacity(ship){
 export function freightCargo(ship){
     if (!ship || ship.class !== 'freighter'){ return {}; }
     if (!ship.cargo || typeof ship.cargo !== 'object'){ ship.cargo = {}; }
-// Cargo is discrete.
-    Object.keys(ship.cargo).forEach(function(res){
+// Sum discrete cargo without allocating an Object.keys array.
+    for (const res in ship.cargo){
         const held = ship.cargo[res];
         const amount = Math.floor(Number(held) || 0);
         if (amount <= 0){ delete ship.cargo[res]; }
         else if (amount !== held){ ship.cargo[res] = amount; }
-    });
+    }
     return ship.cargo;
 }
 export function freightLoad(ship){
-    return Object.values(freightCargo(ship)).reduce((total, amount) => total + (Number(amount) || 0), 0);
+    const cargo = freightCargo(ship);
+    let total = 0;
+    for (const res in cargo){ total += Number(cargo[res]) || 0; }
+    return total;
 }
 export function freightWeight(ship){
-    return Object.entries(freightCargo(ship)).reduce((total, [res, amount]) => total + (atomic_mass[res] || 0) * (Number(amount) || 0), 0);
+    const cargo = freightCargo(ship);
+    let total = 0;
+    for (const res in cargo){ total += (atomic_mass[res] || 0) * (Number(cargo[res]) || 0); }
+    return total;
 }
 export function freightSpeedPenalty(ship){
     if (!ship || ship.class !== 'freighter'){ return 0; }
@@ -1368,6 +1381,11 @@ function paceAt(group, from){
 const legCacheDays = 5;
 const legCache = { at: 0, day: -Infinity, paceDay: false, map: new Map(), pace: new Map() };
 
+// Return the cache window in simulated days.
+function legCacheWindow(){
+    return legCacheDays * (webWorker.offline ? Math.max(1, webWorker.offlineScale) : 1);
+}
+
 // A fleet's pace for a leg starting at `from`, cached for the current simulated day.
 function legSpeed(group, from){
     const head = group && group.length ? group[0] : false;
@@ -1387,7 +1405,7 @@ function legSpeed(group, from){
 function tradeLeg(group, from, to){
     const now = Date.now();
     const day = global.stats.days;
-    if (now - legCache.at > 2000 || !(day >= legCache.day && day - legCache.day < legCacheDays)){
+    if (now - legCache.at > 2000 || !(day >= legCache.day && day - legCache.day < legCacheWindow())){
         legCache.at = now;
         legCache.day = day;
         legCache.map.clear();
