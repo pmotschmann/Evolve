@@ -8399,6 +8399,7 @@
   "galaxy_alien2_mission_effect": "Station the required invasion force at the %0 system then initiate the attack.",
   "galaxy_alien2_mission_effect2": "Invasion Fleet Rating: %0.",
   "galaxy_alien2_mission_effect3": "Casualty Projection: %0.",
+  "galaxy_alien2_mission_humongous": "Assigned ships are automatically increased to a multiple of %0 due to Humongous.",
   "galaxy_alien2_mission_result2": "You have successfully broken the %0 blockade, establishing a foothold in the system.",
   "galaxy_alien2_support": "%0 %1 Support",
   "galaxy_foothold": "Foothold Station",

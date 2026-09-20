@@ -5667,7 +5667,7 @@ export function geneBonus(gene,idx,reduce){
 
 // The combined multiplier for temple-derived effects; priest capacity and trade routes do not use it.
 export function templeOutputBonus(){
-    return geneBonus('zealot') * geneBonus('radiant');
+    return geneBonus('zealot') * geneBonus('radiant') * hugeAdjust(1);
 }
 
 // The same figure as a plain total rather than a multiplier, for the handful of effects that add

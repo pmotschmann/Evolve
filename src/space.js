@@ -1097,7 +1097,7 @@ const spaceProjects = {
                 Iron(r={}){ return spaceCostMultiplier('red_mine', r.offset, 33000, 1.32); }
             },
             effect(){
-                //affected twice by Humongous
+                //affected twice by Humongous due to colonists
                 let cop_val = production('red_mine','copper');
                 let tit_val = production('red_mine','titanium');
                 let rival = ``;
@@ -5967,14 +5967,14 @@ const galaxyProjects = {
                 Bolognium(r={}){ return spaceCostMultiplier('ship_dock', r.offset, 75000, 1.25, 'galaxy'); },
             },
             effect(wiki){
-                let mult = global.race['humongous'] ? traits.humongous.vars()[1] : 1;
+                let mult = hugeScale(1);
                 if(global.race['fasting']){
                     return `<div>${loc('galaxy_ship_dock_effect_fasting',[+(0.1 * mult).toFixed(2)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
                 }
                 return `<div>${loc('galaxy_ship_dock_effect',[+(0.25 * mult).toFixed(2)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
             },
             support(wiki){
-                let mult = global.race['humongous'] ? traits.humongous.vars()[1] : 1;
+                let mult = hugeScale(1);
                 if(global.race['fasting']){
                     let num_gateways_on = wiki ? global.galaxy.gateway_station.on : p_on['gateway_station'];
                     return num_gateways_on ? 0.1 * num_gateways_on * mult : 0;
@@ -7115,8 +7115,8 @@ const galaxyProjects = {
                 Custom(){ //todo: adjust for humongous
                     if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
                         let total = 0;
-                        Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
-                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_alien2[ship];
+                        Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                         });
                         return {
                             label: loc(`galaxy_fleet_rating`,[`<span${total < 400 ? ` class="has-text-danger"` : ''}>400</span>`]),
@@ -7132,18 +7132,19 @@ const galaxyProjects = {
             effect(){
                 let total = 0;
                 if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
-                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_alien2[ship];
+                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                     });
                 }
                 let odds = total >= 650 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>`;
-                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])}</div>`;
+                let humongous = global.race['humongous'] ? `<span class="has-text-special">${loc('galaxy_alien2_mission_humongous', [hugeScale(1)])}</span>` : '';
+                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div>${humongous}<div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
                     let total = 0;
-                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_alien2[ship];
+                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                     });
                     if (total >= 400){
                         messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].solar.red]),'info',false,['progress']);
@@ -7382,8 +7383,8 @@ const galaxyProjects = {
                 Custom(){ //todo: humongous
                     if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_chthonian')){
                         let total = 0;
-                        Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
-                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_chthonian[ship];
+                        Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                         });
                         return {
                             label: loc(`galaxy_fleet_rating`,[`<span${total < 1250 ? ` class="has-text-danger"` : ``}>1250</span>`]),
@@ -7399,19 +7400,20 @@ const galaxyProjects = {
             effect(){
                 let total = 0;
                 if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_chthonian')){
-                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_chthonian[ship];
+                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                     });
                 }
                 let odds = total >= 4500 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : (total >= 2500 ? `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>` : `<span class="has-text-danger">${loc(`galaxy_piracy_high`)}</span>`);
-                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`;
+                let humongous = global.race['humongous'] ? `<span class="has-text-special">${loc('galaxy_alien2_mission_humongous', [hugeScale(1)])}</span>` : '';
+                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div>${humongous}<div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
 
                     let total = 0;
-                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_chthonian[ship];
+                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
                     });
 
                     if (total >= 1250){
@@ -7429,7 +7431,7 @@ const galaxyProjects = {
                         Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
                             for (let i=0; i<global.galaxy.defense.gxy_chthonian[ship]; i++){
                                 if (wreck > 0){
-                                    wreck -= galaxyProjects.gxy_gateway[ship].ship.rating();
+                                    wreck -= galaxyProjects.gxy_gateway[ship].ship.rating() * hugeScale(1);
                                     loss.push(ship);
                                 }
                             }
