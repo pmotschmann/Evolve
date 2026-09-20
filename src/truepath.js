@@ -10073,7 +10073,9 @@ export function tpStorageMultiplier(type,heavy,wiki){
         break;
         case 'warehouse':
         {
-            // Do Nothing so far
+            if (global.underground['storage_space_perk']){
+                multiplier *= 1 + (0.08 * global.underground['storage_space_perk'].count);
+            }
         }
     }
     return multiplier;

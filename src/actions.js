@@ -5,7 +5,7 @@ import { timeCheck, timeFormat, vBind, popover, clearPopper, togglePopover, flib
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_def, neg_roll_traits, randomMinorTrait, cleanAddTrait, combineTraits, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck, traitCostMod, renderSupernatural, citizenDeath, traitRank, syncGenes, geneBonus, grantRandomMinorTrait, geneVars, grantEvolveGenes, layoutStrand, markFanaticTrait} from './races.js';
 import { defineResources, unlockCrates, unlockContainers, crateValue, containerValue, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus, faithTempleCount, showZoneFor } from './resources.js';
-import { loadFoundry, defineJobs, jobScale, jobStack, workerScale, job_data } from './jobs.js';
+import { loadFoundry, defineJobs, jobScale, jobStack, workerScale, job_data, hugeScale } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs, addSmelter, factoryData, cancelRituals } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating, garrisonSize, govEffect } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, incrementStruct, universe_affixes, renderSpace, piracy, fuel_adjust, isStargateOn, spaceSectors, checkRequirements, planetName } from './space.js';
@@ -1761,7 +1761,7 @@ export const actions = {
                 return global.tech['agriculture'] >= 5 ? structName('windmill') : loc('city_mill_title1');
             },
             desc(){
-                let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
+                let bonus = hugeEffect(global.tech['agriculture'] >= 5 ? 5 : 3);
                 if (global.tech['agriculture'] >= 6){
                     let power = this.powered() * -1;
                     return loc('city_mill_desc2',[bonus,power]);
@@ -1911,7 +1911,7 @@ export const actions = {
                 let bunks = this.soldiers();
                 let desc = `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
                 if (global.race.universe === 'evil'){
-                    desc += `<div>${loc('plus_max_resource',[0.5,global.resource.Authority.name])}</div>`;
+                    desc += `<div>${loc('plus_max_resource',[hugeEffect(0.5, 2),global.resource.Authority.name])}</div>`;
                 }
                 return desc;
             },
@@ -2017,7 +2017,7 @@ export const actions = {
                 if (milVal){
                     rate *= 1 + (milVal / 100);
                 }
-                let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[hugeEffect(rate, 2)])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[hugeEffect(rate, 2)])}</div><div>${loc('city_boot_camp_effect2',[hugeEffect(10)])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
                 if (global.race['artifical'] && !global.race['orbit_decayed']){
                     let repair = (global.tech['medic'] ?? 1) * 5;
                     effect += `<div>${loc('city_boot_camp_art_effect',[hugeEffect(repair)])}</div>`;
@@ -2902,6 +2902,7 @@ export const actions = {
                 if (global.race['pyrophobia']){
                     iron_yield *= 0.9;
                 }
+                iron_yield = hugeEffect(iron_yield);
                 if (global.tech['smelting'] >= 2 && !global.race['steelen']){
                     return loc('city_smelter_effect2',[iron_yield]);
                 }
@@ -3201,12 +3202,12 @@ export const actions = {
             action(args){
                 if (payCosts(this)){
                     incrementStruct('oil_depot','city');
-                    global['resource']['Oil'].max += this.storage.list('Oil') * this.storage.multiplier();
+                    global['resource']['Oil'].max += this.storage.res('Oil') * this.storage.multiplier();
                     if (global.resource['Helium_3'].display){
-                        global['resource']['Helium_3'].max += this.storage.list('Helium_3') * this.storage.multiplier();
+                        global['resource']['Helium_3'].max += this.storage.res('Helium_3') * this.storage.multiplier();
                     }
                     if (global.tech['uranium'] >= 2){
-                        global['resource']['Uranium'].max += this.storage.list('Uranium') * this.storage.multiplier();
+                        global['resource']['Uranium'].max += this.storage.res('Uranium') * this.storage.multiplier();
                     }
                     return true;
                 }
@@ -3283,7 +3284,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_effect',[2])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
+                return `<div>${loc('city_trade_effect',[2])}</div><div>${loc('city_wharf_effect', [hugeEffect(1)])}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
             },
             action(args){
                 if (payCosts(this)){
@@ -6031,7 +6032,7 @@ export function templeEffect(){
         desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
     }
     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-        desc = desc + `<div>${loc('city_temple_effect3', [hugeEffect(1)])}</div>`;
+        desc = desc + `<div>${loc('city_temple_effect3', [1])}</div>`;
     }
     if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
         desc = desc + `<div>${global.race['truepath'] ? loc('city_temple_effect_tp',[hugeEffect(2),hugeEffect(25)]) : loc('city_temple_effect4', [hugeEffect(2.5, 2)])}</div>`;
@@ -6123,7 +6124,7 @@ export function casinoEffect(){
 
     let joy = (global.tech['theatre'] && !global.race['joyless'] && !global.race['iceage']) ? `<div>${loc('plus_max_resource',[jobScale(global.race['warlord'] ? 3 : 1),loc(`job_entertainer`)])}</div>` : '';
     let banker = global.race['orbit_decayed'] || global.tech['isolation'] || global.race['warlord'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('banker_name')])}</div>` : '';
-    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[1])}</div>`;
+    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}${banker}<div>${loc('city_max_morale',[hugeEffect(1)])}</div>`;
     let cash = +(casinoEarn()).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;
@@ -6488,7 +6489,6 @@ export function drawCity(){
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
         removeAction(actions.city[city_name].id);
-
         if(!checkCityRequirements(city_name))
             return;
 
@@ -7762,10 +7762,10 @@ function srDesc(c_action,old){
                         if (!global[region][struct]){
                             desc = desc + `${loc('insufficient')} ${label}. `;
                         }
-                        else if (structs[region][struct].count > global[region][struct].count){
+                        else if (Math.ceil(structs[region][struct].count / hugeScale(1)) > global[region][struct].count){
                             desc = desc + `${loc('insufficient')} ${label}. `;
                         }
-                        else if (check_on && structs[region][struct].on > num_on){
+                        else if (check_on && Math.ceil(structs[region][struct].on / hugeScale(1)) > num_on){
                             desc = desc + `${loc('insufficient')} ${label} enabled. `;
                         }
                     });
@@ -7921,6 +7921,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         const check_on = structs[region][struct].hasOwnProperty('on');
                         let num_on;
                         let res_cost = check_on ? structs[region][struct].on : structs[region][struct].count;
+                        res_cost = Math.ceil(res_cost / hugeScale(1));
                         let color = 'has-text-dark';
                         let aria = '';
 
@@ -7942,11 +7943,11 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
-                        else if (structs[region][struct].count > global[region][struct].count){
+                        else if (Math.ceil(structs[region][struct].count / hugeScale(1)) > global[region][struct].count){
                             color = 'has-text-danger';
                             aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
-                        else if (check_on && structs[region][struct].on > num_on){
+                        else if (check_on && Math.ceil(structs[region][struct].on / hugeScale(1)) > num_on){
                             color = 'has-text-alert';
                         }
 
@@ -8443,7 +8444,7 @@ function checkStructs(structs){
         if (global.hasOwnProperty(region)){
             Object.keys(structs[region]).forEach(function (struct){
                 if (global[region].hasOwnProperty(struct)){
-                    if (global[region][struct].count < structs[region][struct].count){
+                    if (global[region][struct].count < Math.ceil(structs[region][struct].count / hugeScale(1))){
                         test = false;
                         return;
                     }
@@ -8455,7 +8456,7 @@ function checkStructs(structs){
                         } else {
                             num_on = getStructNumActive(actions[region][struct]);
                         }
-                        if (num_on < structs[region][struct].on){
+                        if (num_on < Math.ceil(structs[region][struct].on / hugeScale(1))){
                             test = false;
                             return;
                         }

@@ -1235,12 +1235,11 @@ export function spaceCostMultiplier(action,offset,base,multiplier,sector,c_min){
 
 export function commonCostMultiplier(action,offset,base,multiplier,sector,count){
     if (global.race['humongous'] && sector !== 'starDock' && action !== 'soul_capacitor' && action !== 'fob'){
-        if (count > 0){
+        if (count > 0){ //does not apply to first building of each type
             let mult_total = ((multiplier ** hugeScale(1)) - 1) / (multiplier - 1); //total combined cost multiplier of hugeScale(1) buildings
             base *= ((mult_total - 3) / 2) + 3; //multiply building cost by half the total cost multiplier of the next hugeScale(1) buildings
             //cost creep progresses faster based on humongous rank
             multiplier = multiplier ** hugeScale(1);
-            count--; //first building does not contribute to cost/creep for humongous
         }
     }
     return {action:action, offset:offset, base:base, multiplier:multiplier, sector:sector, count:count };

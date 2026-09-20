@@ -2552,7 +2552,7 @@ const iceAgeModules = {
                     if (global.race.universe === 'evil'){
                         desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
                     }
-                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[2])}</div>`;
+                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[hugeAdjust(2)])}</div>`;
                     return desc;
                 },
                 action(args){
@@ -6063,7 +6063,7 @@ function cycle_breakdown(lifeform){
 }
 
 export function ecoGainMajorTrait(lifeform, trait, suppress, force){
-    if (global.aberrants.trees.mutations === 5){
+    if (global.aberrants.trees.mutations === 5 && global.race['iceage']){
         trait = 'hivemind';
         lifeform = 'trees';
         force = true;
@@ -6077,13 +6077,13 @@ export function ecoGainMajorTrait(lifeform, trait, suppress, force){
     let curr_traits = global.aberrants[lifeform].traits;
     let success = false;
     if (Object.keys(curr_traits).length < ecosystemInfo.majorTraitCap() /*6*/ || force){
-        if (global.aberrants.trees.mutations >= 10 && lifeform === 'trees'){
+        if (global.aberrants.trees.mutations >= 10 && lifeform === 'trees' && global.race['iceage']){
             console.log(Math.rand(0, 5));
             if (Math.rand(0, 5) === 0){
                 trait = 'hivemind';
             }
         }
-        if (global.aberrants.trees.mutations >= 10 && lifeform !== 'trees' && global.aberrants.trees.traits.hasOwnProperty('hivemind')){
+        if (global.aberrants.trees.mutations >= 10 && lifeform !== 'trees' && global.aberrants.trees.traits.hasOwnProperty('hivemind') && global.race['iceage']){
             if (Math.rand(0, 3) === 0){
                 if (lifeform === 'herbivores'){
                     trait = 'shapeshifter';
@@ -6416,11 +6416,13 @@ export function drawPerkUnderground(){
             classes: `has-background-light has-text-dark`
         });
         for(let [index, entry] of Object.entries(actions.underground.cave_perk)){
-            if (!global.underground[index]){
-                initStruct(actions.underground.cave_perk[index]);
+            if (checkRequirements(actions.underground, 'cave_perk', index)){
+                if (!global.underground[index]){
+                    initStruct(actions.underground.cave_perk[index]);
+                }
+                let c_action = actions.underground.cave_perk[index];
+                setAction(c_action,'perkUnderground',index);
             }
-            let c_action = actions.underground.cave_perk[index];
-            setAction(c_action,'perkUnderground',index);
         }
         if (global.underground['arena'].count){
             $(`<div id="underground-dist-perkArena" class="space"><div id="srperkArena"><h3 class="name has-text-warning">${loc('underground_arena')}</h3></div></div>`)

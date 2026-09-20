@@ -2067,7 +2067,7 @@ export function marketItem(mount,market_item,name,color,full){
                 let rate = tradeRatio[res] * tradeVolumeBonus();
                 rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
-                let price = tradeBuyPrice(res);
+                let price = tradeBuyPrice(res) / hugeAdjust(1);
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
             },
             purchase(res){
@@ -2195,7 +2195,7 @@ export function marketItem(mount,market_item,name,color,full){
                 return sizeApproximation(value * global.city.market.qty,0);
             },
             sell_f(value){
-                /*let divide = 4;
+                let divide = 4;
                 if (global.race['merchant']){
                     divide *= 1 - (traits.merchant.vars()[0] / 100);
                 }
@@ -2209,8 +2209,7 @@ export function marketItem(mount,market_item,name,color,full){
                 if (global.race['asymmetrical']){
                     divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
                 }
-                return sizeApproximation(value * global.city.market.qty / divide,0);*/
-                return sizeApproximation(value * global.city.market.qty / tradeSellPrice(),0);
+                return sizeApproximation(value * global.city.market.qty / divide,0);
             },
             trade(val){
                 if (name === 'Stone' && (val === 31 || val === -31)){
@@ -2669,7 +2668,10 @@ export function tradeSellPrice(res){
     if (global.race['conniving']){
         divide--;
     }
-    let price = global.resource[res].value * tradeRatio[res] / divide;
+    let price = 1 / divide;
+    if(res){
+        let price = global.resource[res].value * tradeRatio[res] / divide;
+    }
     if (global.city['wharf']){
         price = price * (1 + hugeAdjust(global.city['wharf'].count * 0.01));
     }
@@ -2691,7 +2693,9 @@ export function tradeSellPrice(res){
         price *= 1 - wariness;
     }
     price *= production('psychic_cash');
-    price = hugeAdjust(price);
+    if (res){
+        price = hugeAdjust(price);
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -4201,7 +4205,7 @@ function initEjector(){
             data: global.interstellar.mass_ejector,
             methods: {
                 max(num){
-                    return num * 1000;
+                    return num * actions.interstellar.int_blackhole.mass_ejector.volume();
                 },
                 real(num){
                     if (p_on['mass_ejector'] < num){
@@ -4253,8 +4257,8 @@ export function loadEjector(name,color){
             methods: {
                 ejectMore(r){
                     let keyMutipler = keyMultiplier();
-                    if (keyMutipler + global.interstellar.mass_ejector.total > p_on['mass_ejector'] * actions.interstellar.int_blackhole.volume()){
-                        keyMutipler = p_on['mass_ejector'] * actions.interstellar.int_blackhole.volume() - global.interstellar.mass_ejector.total;
+                    if (keyMutipler + global.interstellar.mass_ejector.total > p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume()){
+                        keyMutipler = p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume() - global.interstellar.mass_ejector.total;
                     }
                     global.interstellar.mass_ejector[r] += keyMutipler;
                     global.interstellar.mass_ejector.total += keyMutipler;

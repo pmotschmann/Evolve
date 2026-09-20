@@ -288,7 +288,7 @@ const fortressModules = {
             effect(){
                 let bonus = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 50 : 20) : 10;
                 let know = this.knowVal();
-                let sci_bonus = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[2])}</div>` : `<div>${loc('space_moon_observatory_effect',[hugeEffect(2)])}</div><div>${loc('portal_sensor_drone_effect2',[hugeEffect(2)])}</div>`;
+                let sci_bonus = global.race['cataclysm'] ? `<div>${loc('space_moon_observatory_cata_effect',[hugeAdjust(2)])}</div>` : `<div>${loc('space_moon_observatory_effect',[hugeEffect(2)])}</div><div>${loc('portal_sensor_drone_effect2',[hugeEffect(2)])}</div>`;
                 let sci = global.tech['science'] >= 14 ? `<div>${loc('city_max_knowledge',[hugeEffect(know, 1)])}</div>${sci_bonus}` : '';
                 return `<div>${loc('portal_sensor_drone_effect',[hugeEffect(bonus)])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
@@ -4688,11 +4688,11 @@ export function bloodwar(report = true){
             divisor += 250;
         }
         // Higher danger increases both chance of death and average number of deaths, with no limit
-        let danger = jobScale(global.portal.fortress.threat / divisor);
+        let danger = jobScale(global.portal.fortress.threat / divisor) / hugeScale(1);
 
         // Higher exposure increases only chance of death, up to a limit
-        let max_risk = jobScale(10);
-        let exposure = Math.min(max_risk, global.civic.hell_surveyor.workers);
+        let max_risk = jobScale(10) / hugeScale(1);
+        let exposure = Math.min(max_risk, global.civic.hell_surveyor.workers / hugeScale(1));
         let risk = max_risk - hellRand(0,exposure + 1);
 
         if (danger > risk){
@@ -4777,7 +4777,7 @@ export function bloodwar(report = true){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
             if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
-            let souls = hugeAdjust(p_on['soul_attractor']) * hellRand(40 + attract, 120 + attract);
+            let souls = Math.floor(hugeAdjust(p_on['soul_attractor']) * hellRand(40 + attract, 120 + attract));
             global.portal.soul_forge.kills += souls;
             day_report.soul_attractors = souls;
             soulCapacitor(souls);

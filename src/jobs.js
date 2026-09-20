@@ -11,7 +11,7 @@ import { planetName } from './space.js';
 import { supplyZone } from './supply.js';
 import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
-import { actions, getStructNumActive, templeCount } from './actions.js';
+import { actions, getStructNumActive, templeCount, hugeEffect } from './actions.js';
 
 export const job_data = {
     unemployed: {
@@ -641,8 +641,8 @@ export const job_data = {
             else{
                 let value = highPopAdjust(250000);
                 let sup = hellSupression('ruins');
-                let know = hugeAdjust(value * sup.supress, 0);
-                return loc('job_archaeologist_desc',[(+(know).toFixed(0)).toLocaleString()]);
+                let know = hugeEffect(value * sup.supress, 0);
+                return loc('job_archaeologist_desc',[(know).toLocaleString()]);
             }
         },
         stress(){ return global.race['iceage'] ? 5 : 1; },

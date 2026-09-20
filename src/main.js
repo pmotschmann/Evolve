@@ -3143,8 +3143,8 @@ function fastLoop(){
                         army -= forge;
                     }
                 }
-                if (army < jobScale(hugeAdjust(global.portal.guard_post.on))){
-                    global.portal.guard_post.on = Math.floor(army / jobScale(hugeAdjust(1)));
+                if (army < jobScale(hugeScale(global.portal.guard_post.on))){
+                    global.portal.guard_post.on = Math.floor(army / jobScale(hugeScale(1)));
                     p_on['guard_post'] = Math.min(global.portal.guard_post.on, p_on['guard_post']);
                 }
             }
@@ -4749,7 +4749,7 @@ function fastLoop(){
             }
             else {
                 let lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
-                let upperBound = global['resource'][global.race.species].amount;
+                let upperBound = hugeAdjust(global['resource'][global.race.species].amount);
 
                 if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
                     lowerBound += 5;
@@ -4770,7 +4770,7 @@ function fastLoop(){
                     }
                 }
                 if (global.tech['reproduction'] && global.tech.reproduction >= 2 && global.city['hospital']){
-                    lowerBound += global.city.hospital.count;
+                    lowerBound += hugeAdjust(global.city.hospital.count);
                 }
                 if (global.genes['birth']){
                     lowerBound += global.genes['birth'];
@@ -4781,7 +4781,6 @@ function fastLoop(){
                 if(global.race['fasting']){
                     lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
                 }
-                lowerBound /= hugeAdjust(1);
                 if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
                 }
@@ -8641,7 +8640,7 @@ function fastLoop(){
                     if (global.tech['ai_core'] && global.tech['ai_core'] >= 2 && p_on['citadel'] > 0){
                         rate += hugeAdjust(p_on['citadel'] * 0.02);
                     }
-                    let bonus = int_on['processing'] * rate;
+                    let bonus = hugeAdjust(int_on['processing']) * rate;
                     breakdown.p['Adamantite'][`ᄂ${loc('interstellar_processing_title')}`] = (bonus * 100) + '%';
 
                     if (global.race['discharge'] && global.race['discharge'] > 0){
@@ -11809,7 +11808,7 @@ function midLoop(){
         }
 
         if (global.civic.space_miner.display && global.space['space_station']){
-            global.space.space_station.s_max = workerScale(global.civic.space_miner.workers,'space_miner');
+            global.space.space_station.s_max = global.civic.space_miner.workers;
         }
 
         if (global.portal.hasOwnProperty('transport')){

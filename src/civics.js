@@ -945,7 +945,7 @@ function trainSpy(i){
             global.resource.Money.amount -= cost;
             let time = 300;
             if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                time -= (decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
+                time -= hugeAdjust(decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
                 if (time < 10){
                     time = 10;
                 }
@@ -953,7 +953,7 @@ function trainSpy(i){
             if (global.race['infiltrator']){
                 time = Math.round(time / 2);
             }
-            global.civic.foreign[`gov${i}`].trn = time;
+            global.civic.foreign[`gov${i}`].trn = Math.floor(time);
         }
     }
 }

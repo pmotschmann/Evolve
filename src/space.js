@@ -84,7 +84,7 @@ const spaceProjects = {
                 let label = global.race['cataclysm'] ? loc('space_moon_observatory_title') : (global.race['orbit_decayed'] ? loc('city_university') : wardenLabel());
                 let amount = global.race['cataclysm'] ? 25 : (decayPerks() ? 12 : 4);
                 let synergy = `<div>${loc('space_home_satellite_effect2',[label, hugeEffect(amount)])}</div>`;
-                return `<div>${loc('plus_max_resource',[knowledge,global.resource.Knowledge.name])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[job_data.scientist.name()])}</div>`
+                return `<div>${loc('plus_max_resource',[+(knowledge).toFixed(0),global.resource.Knowledge.name])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[hugeEffect(1), job_data.scientist.name()])}</div>`
             },
             knowVal(){
                 let decay_active = global.race['cataclysm'] || decayPerks();
@@ -491,7 +491,7 @@ const spaceProjects = {
                 }
                 let gain = this.knowVal();
                 let synergy = global.race['cataclysm'] || global.tech['resettle'] ? `<div>${loc('space_moon_observatory_cata_effect',[hugeEffect(global.tech['resettle'] ? 2 : 25)])}</div>` : `<div>${loc('space_moon_observatory_effect',[hugeEffect(5)])}</div>`;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[gain,global.resource.Knowledge.name])}</div>${synergy}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div>${prof}<div>${loc('plus_max_resource',[+(gain).toFixed(0),global.resource.Knowledge.name])}</div>${synergy}`;
             },
             knowVal(){
                 let gain = 5000 * geneBonus('stargazer');
@@ -4032,7 +4032,7 @@ const interstellarProjects = {
             },
             effect(){
                 let deuterium = int_fuel_adjust(5);
-                return `<div>${loc('interstellar_int_factory_effect', [hugeEffect(2)])}</div><div>${loc('city_crafted_mats',[hugeEffect(10)])}</div><div class="has-text-caution"><span>${loc('interstellar_fusion_effect',[hugeEffect(deuterium, 2)])}</span> <span>${loc('minus_power',[this.powered()])}</span></div>`;
+                return `<div>${loc('interstellar_int_factory_effect')}</div><div>${loc('city_crafted_mats',[hugeEffect(10)])}</div><div class="has-text-caution"><span>${loc('interstellar_fusion_effect',[hugeEffect(deuterium, 2)])}</span> <span>${loc('minus_power',[this.powered()])}</span></div>`;
             },
             powered(){ return powerCostMod(5); },
             special: true,
@@ -6674,7 +6674,7 @@ const galaxyProjects = {
                 }
                 return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${housing}${foodDesc}<div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
             },
-            powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 25 : 0); },
+            powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 25 : 0, true); },
             refresh: true,
             action(args){
                 if (global.galaxy.embassy.count < 1 && payCosts(this)){
@@ -7116,7 +7116,7 @@ const galaxyProjects = {
                     if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
                         let total = 0;
                         Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
-                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
+                            total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_alien2[ship] / hugeScale(1)) * hugeScale(1);
                         });
                         return {
                             label: loc(`galaxy_fleet_rating`,[`<span${total < 400 ? ` class="has-text-danger"` : ''}>400</span>`]),
@@ -7133,7 +7133,7 @@ const galaxyProjects = {
                 let total = 0;
                 if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
                     Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_alien2[ship] / hugeScale(1)) * hugeScale(1);
                     });
                 }
                 let odds = total >= 650 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>`;
@@ -7144,7 +7144,7 @@ const galaxyProjects = {
                 if (payCosts(this)){
                     let total = 0;
                     Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){ //with humongous, every ship granted by a building has to fight, and if any are destroyed, all of that building are as well
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_chthonian[ship] / hugeScale(1)) * hugeScale(1);
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating() * Math.ceil(global.galaxy.defense.gxy_alien2[ship] / hugeScale(1)) * hugeScale(1);
                     });
                     if (total >= 400){
                         messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].solar.red]),'info',false,['progress']);
@@ -7328,8 +7328,8 @@ const galaxyProjects = {
                 let pirate = piracy('gxy_alien2',false,false,wiki);
                 let know = this.knowVal(wiki);
                 let helium = int_fuel_adjust(this.ship.helium);
-                let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[+(pirate * 100 * 0.75).toFixed(1)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[+(pirate * 100 / 4).toFixed(1)])}</div>`;
-                return `<div>${loc('galaxy_scavenger_effect',[know])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[this.support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[hugeEffect(helium, 2),global.resource.Helium_3.name])}</div>`;
+                let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[hugeEffect(pirate * 100 * 0.75)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[hugeEffect(pirate * 100 / 4)])}</div>`;
+                return `<div>${loc('galaxy_scavenger_effect',[+(know).toFixed(0)])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[this.support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[this.ship.civ()])}</div><div class="has-text-caution">${loc('spend',[hugeEffect(helium, 2),global.resource.Helium_3.name])}</div>`;
             },
             knowVal(wiki){
                 let pirate = piracy('gxy_alien2',false,false,wiki);
@@ -7562,11 +7562,11 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = int_fuel_adjust(this.ship.helium);
-                let deuterium = 0.65;
-                let vitreloy = 0.05;
-                let polymer = 2.3;
-                let neutronium = 0.8;
-                return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_starbase')])}</div><div class="has-text-advanced">${loc('galaxy_ship_rating',[+(this.ship.rating()).toFixed(1)])}</div><div>${loc('gain',[hugeEffect(deuterium, 3),global.resource.Deuterium.name])}</div><div>${loc('gain',[hugeEffect(vitreloy, 3),global.resource.Vitreloy.name])}</div><div>${loc('gain',[hugeEffect(polymer, 2),global.resource.Polymer.name])}</div><div>${loc('gain',[hugeEffect(neutronium, 2),global.resource.Neutronium.name])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div><div class="has-text-caution">${loc('spend',[hugeEffect(helium, 2),global.resource.Helium_3.name])}</div>`;
+                let deuterium = hugeEffect(0.65, 2);
+                let vitreloy = hugeEffect(0.05, 3);
+                let polymer = hugeEffect(2.3, 2);
+                let neutronium = hugeEffect(0.8, 2);
+                return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_starbase')])}</div><div class="has-text-advanced">${loc('galaxy_ship_rating',[+(this.ship.rating()).toFixed(1)])}</div><div>${loc('gain',[deuterium,global.resource.Deuterium.name])}</div><div>${loc('gain',[vitreloy,global.resource.Vitreloy.name])}</div><div>${loc('gain',[polymer,global.resource.Polymer.name])}</div><div>${loc('gain',[neutronium,global.resource.Neutronium.name])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div><div class="has-text-caution">${loc('spend',[hugeEffect(helium, 2),global.resource.Helium_3.name])}</div>`;
             },
             ship: {
                 civ(){ return 0; },

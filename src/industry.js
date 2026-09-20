@@ -571,21 +571,21 @@ function loadSmelter(parent,bind){
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_steel',[+(boost).toFixed(3),global.resource.Steel.name,global.resource.Coal.name,global.resource.Iron.name, hugeEffect(2), hugeEffect(0.25, 2)]);
+            return loc('modal_smelter_steel',[hugeEffect(boost, 3),global.resource.Steel.name,global.resource.Coal.name,global.resource.Iron.name, hugeEffect(2), hugeEffect(0.25, 2)]);
         }
         else if (type === 'iridium'){
             let boost = global.tech['smelting'] >= 7 ? 6.25 : 5;
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_iron',[+(boost).toFixed(3),global.resource.Iridium.name]);
+            return loc('modal_smelter_iron',[hugeEffect(boost, 3),global.resource.Iridium.name]);
         }
         else {
             let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
             if (global.race['pyrophobia']){
                 boost *= 0.9;
             }
-            return loc('modal_smelter_iron',[+(boost).toFixed(3),global.resource.Iron.name]);
+            return loc('modal_smelter_iron',[hugeEffect(boost, 3),global.resource.Iron.name]);
         }
     }
 

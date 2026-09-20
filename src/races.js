@@ -7280,22 +7280,41 @@ function updateHumongous(prev, curr){
                 global.civic[job].assigned = Math.ceil(global.civic[job].assigned / ratio);
             }
         });
+
+        if (global.interstellar?.mass_ejector){
+            Object.keys(global.interstellar.mass_ejector).forEach(function (res){ //mass ejector has more slots instead of more powerful slots with humongous so it needs to be tweaked regardless
+                if (atomic_mass[res]){
+                    //even flooring can result to resources going over cap. Set to 0 instead
+                    global.interstellar.mass_ejector[res] = 0;
+                }
+            })
+        }
         
         Object.keys(craftCost()).forEach(function (craft){
-            if (global.city.foundry[craft]){
+            if (global.city.foundry?.[craft]){
                 global.city.foundry.crafting -= global.city.foundry[craft] - Math.floor(global.city.foundry[craft] / ratio);
                 global.city.foundry[craft] = Math.floor(global.city.foundry[craft] / ratio);
             }
         });
-        global.resource[global.race.species].max = Math.floor(global.resource[global.race.species].max / ratio);
-        let pop_loss = global.resource[global.race.species].amount - global.resource[global.race.species].max;
-        if (pop_loss > 0){
-            messageQueue(loc(pop_loss === 1 ? 'abandon1' : 'abandon2',[pop_loss]),'danger');
-            global.civic.homeless += pop_loss;
+        if (global.resource[global.race.species]){
+            global.resource[global.race.species].max = Math.floor(global.resource[global.race.species].max / ratio);
+            let pop_loss = global.resource[global.race.species].amount - global.resource[global.race.species].max;
+            if (pop_loss > 0){
+                messageQueue(loc(pop_loss === 1 ? 'abandon1' : 'abandon2',[pop_loss]),'danger');
+                global.civic.homeless += pop_loss;
+            }
+            global.resource[global.race.species].amount = Math.min(global.resource[global.race.species].amount, global.resource[global.race.species].max);
         }
-        global.resource[global.race.species].amount = Math.min(global.resource[global.race.species].amount, global.resource[global.race.species].max);
     }
     else if (ratio < 1){
+        if (global.interstellar?.mass_ejector){
+            Object.keys(global.interstellar.mass_ejector).forEach(function (res){ //mass ejector has more slots instead of more powerful slots with humongous so it needs to be tweaked regardless
+                if (atomic_mass[res]){
+                    //even flooring can result to resources going over cap. Set to 0 instead
+                    global.interstellar.mass_ejector[res] = 0;
+                }
+            })
+        }
     }
 }
 
