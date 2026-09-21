@@ -6191,7 +6191,7 @@ function drawMapFrame() {
                         ctx.fillText(beacons.b[0].n, 0, -starConstants.BEACON_GROUP_LABEL_PX);
                     }
                     else{
-                        const text = loc('scout_beacon_group', [count]);
+                        const text = loc('scout_beacon_group', [beacons.cnt]);
                         ctx.fillText(text, 0, -starConstants.BEACON_GROUP_LABEL_PX);
                     }
                 }
