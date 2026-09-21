@@ -17074,6 +17074,7 @@ const techs = {
             if (payCosts(this)){
                 global.tech['overmind'] = 1;
                 global.race['r_data'] = { c: global.resource[global.race.species].amount || 0, s: global.civic.garrison.workers || 0 };
+                global.race.daysSinceBleedOvermind = 0;
                 return true;
             }
             return false;

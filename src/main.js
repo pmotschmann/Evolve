@@ -13072,6 +13072,11 @@ function longLoop(){
             healSoldiers(astroSign);
         }
         
+        if (global.race.hasOwnProperty('daysSinceBleedOvermind')){
+            global.race.daysSinceBleedOvermind++;
+            //maybe add a feat later for suriving long enough
+        }
+        
         if ((global.surface['overview'] || global.underground['arena']?.count) && !global.tech['living_extinction']){
             surfaceEcosystem();
         }

@@ -6295,6 +6295,25 @@ function zUplinkWatch(fleet){
 const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
 const zAftermathSizes = [[0.50,1],[0.40,2],[0.10,3]];
 function zFleetSize(fleet){
+    if (global.tech.overmind){
+        // Sizes get progressively larger as overmind keeps being bled.
+        // Each survived 20 days adds on average +1 ship to the fleet size
+        let rampDays = global.race.daysSinceBleedOvermind ?? 0;
+
+        let baseAmount = Math.floor(rampDays / 20);
+        let remainder = rampDays / 20 - baseAmount;
+        if (seededRandom(0, 1, true) < remainder)
+            baseAmount++;
+        
+        let roll = seededRandom(0, 1, true);
+        for (let i=0; i < zAssaultSizes.length; i++){
+            roll -= zAssaultSizes[i][0];
+            if (roll < 0)
+                return baseAmount + zAssaultSizes[i][1];
+        }
+        return baseAmount + zAssaultSizes[zAssaultSizes.length - 1][1];
+    }
+
     let table = zAssault() ? zAssaultSizes : (global.tech['resettle'] && global.tech.resettle >= 20 ? zAftermathSizes : false);
     if (table){
         let roll = seededRandom(0,1,true);
