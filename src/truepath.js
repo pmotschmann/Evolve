@@ -39,7 +39,7 @@ import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipAr
          shipFlagship, fleetsFor, fleetWorthForming, shipyardLocations, shipSpaceworthy, sensorUpgrade,
          improvedSensors, dockedFields, shipCanMakeTrip, startPatrol, tradeLegDays, locSystemName, shipDestinations,
          shipCanLaunch, shipManned, refitParts, refitDesign, refitCosts, refitChanged, refitBlocked, refitDrains,
-         applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips } from './ships.js';
+         applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips, massRelaySpeedBoost } from './ships.js';
 
 const outerTruth = {
     spc_titan: {
@@ -9373,7 +9373,7 @@ function drawShipRow(list,i,ship,regionNames){
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
-            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row2.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
             row2.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
@@ -9398,7 +9398,7 @@ function drawShipRow(list,i,ship,regionNames){
             row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="loadFleetShow(${i})"> | <a class="loadFleet" @click="loadFleet(${i})" role="button">${loc('outer_shipyard_fleet_template_load')}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
-            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row1.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
             row1.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
@@ -9623,6 +9623,11 @@ function drawShipRow(list,i,ship,regionNames){
                     if (!pace){ return `0km/s`; }
                     let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
                     return Math.round(speed) + 'km/s';
+                },
+                // Highlight ships sped up by the mass relay
+                speedRelay(id){
+                    let boost = massRelaySpeedBoost(global.space.shipyard.ships[id]);
+                    return boost > 1;
                 },
                 fuelText(id){
                     return groupFuelText(rowGroup(global.space.shipyard.ships[id]));

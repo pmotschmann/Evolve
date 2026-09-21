@@ -951,19 +951,8 @@ export function shipSpeed(ship){
     // Featherlight: avian hulls are built lighter than anyone else's.
     mass /= geneBonus('featherlight');
 
-    let boost = 1;
     // A mass relay pushes only what launches from it.
-    switch (shipDockedAt(ship) || ""){
-        case 'spc_dwarf':
-            boost = p_on['m_relay'] && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
-            break;
-        case 'tau_gas2':
-            boost = p_on['tcm_relay'] && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
-            break;
-        default:
-            boost = 1;
-            break;
-    }
+    let boost = massRelaySpeedBoost(ship);
 // Apply a light-flagship speed bonus to the fleet.
     boost *= 1 + fleetSpeedBonus(ship);
     let speed;
@@ -979,6 +968,17 @@ export function shipSpeed(ship){
         case 'electrokinetic': speed = (global.tech.syard_engine >= 6 ? 140 : 56) / mass * boost; break;
     }
     return ship.class === 'freighter' ? speed * Math.max(0.25, 1 - freightSpeedPenalty(ship) / 100) : speed;
+}
+
+export function massRelaySpeedBoost(ship){
+    switch (shipDockedAt(ship) || ""){
+        case 'spc_dwarf':
+            return p_on['m_relay'] && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
+        case 'tau_gas2':
+            return p_on['tcm_relay'] && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
+        default:
+            return 1;
+    }
 }
 
 export function shipFuelUse(ship){
