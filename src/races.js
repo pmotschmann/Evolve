@@ -4942,6 +4942,8 @@ export const genes = {
     minor_slot_penalty: 0.5,
     // Minimum rank retained by an emergent genus trait with no feeders.
     genus_emergent_floor: 0.1,
+    // Pooled ranks required for one emergent-trait rank.
+    gene_emergent_divisor: 3,
     // Base assigned to each major/genus trait taxonomy.
     gene_strand: ['A','T','C','G'],
     gene_taxonomy: { combat: 'A', production: 'T', resource: 'C', utility: 'G' },
@@ -5186,6 +5188,30 @@ export function slotActive(slot){
     return slotPair(slot) < strandPairCount(slotKind(slot));
 }
 
+// One-based row within a strand block; granted slots return zero.
+export function geneSlotRow(slot){
+    if (geneSlotExtra(slot)){ return 0; }
+    let pair = slotPair(slot);
+    if (slotKind(slot) === 'major'){
+        let held = strandGenusPairs();
+        if (pair < held){ return pair + 1; }
+        let bonus = strandRecessivePairs();
+        let first = strandPairCount('major') - bonus;
+        if (bonus > 0 && pair >= first){ return pair - first + 1; }
+        return pair - held + 1;
+    }
+    return pair + 1;
+}
+
+// The letter a major-strand rung's label carries ahead of its number.
+function geneSlotBlock(slot){
+    if (geneSlotExtra(slot) || slotKind(slot) !== 'major'){ return ''; }
+    let pair = slotPair(slot);
+    if (pair < strandGenusPairs()){ return 'G'; }
+    let bonus = strandRecessivePairs();
+    return bonus > 0 && pair >= strandPairCount('major') - bonus ? 'R' : '';
+}
+
 export function geneSlotLabel(slot){
     if (geneSlotExtra(slot)){
         let slots = geneSlots();
@@ -5196,17 +5222,8 @@ export function geneSlotLabel(slot){
         return `S${n}`;
     }
     // The pair number and which half of it, which is all a slot needs: the tab says which strand.
-    let pair = slotPair(slot);
     let half = slotSide(slot) === 0 ? 'A' : 'B';
-    if (slotKind(slot) === 'major'){
-        let held = strandGenusPairs();
-        if (pair < held){ return `G${pair + 1}${half}`; }
-        let bonus = strandRecessivePairs();
-        let first = strandPairCount('major') - bonus;
-        if (bonus > 0 && pair >= first){ return `R${pair - first + 1}${half}`; }
-        return `${pair - held + 1}${half}`;
-    }
-    return `${pair + 1}${half}`;
+    return `${geneSlotBlock(slot)}${geneSlotRow(slot)}${half}`;
 }
 
 // Return whether a trait uses gene slotting and ranking rules.
@@ -5329,12 +5346,18 @@ export function geneSlotAnswers(slot){
     return base && geneEffectiveBase(slot) === base ? true : false;
 }
 
-// Correctly paired minor-gene rungs produce these slotless traits.
-export const geneEmergent = { A: 'content', T: 'content', C: 'promiscuous', G: 'promiscuous' };
+// Emergent traits indexed by a qualifying rung's row parity.
+export const geneEmergentParity = Object.freeze(['content','promiscuous']);
+
+// The trait a rung grows, or undefined for a slot sitting on no rung.
+export function geneEmergentOf(slot){
+    let row = geneSlotRow(slot);
+    return row > 0 ? geneEmergentParity[row % 2] : undefined;
+}
 
 // Static lookup of emergent gene names.
 const geneEmergentBy = {};
-Object.keys(geneEmergent).forEach(function(b){ geneEmergentBy[geneEmergent[b]] = true; });
+geneEmergentParity.forEach(function(g){ geneEmergentBy[g] = true; });
 const geneEmergentNames = Object.freeze(Object.keys(geneEmergentBy));
 
 export function geneEmergentList(){
@@ -5386,10 +5409,13 @@ function buildGeneRanks(){
         if (aRank <= 0 || bRank <= 0){ continue; }
         if (!geneSlotAnswers(i) || !geneSlotAnswers(i + 1)){ continue; }
         if (!geneSlotMatched(i)){ continue; }
-        let grows = geneEmergent[geneSlotBase(i)];
+        let grows = geneEmergentOf(i);
         if (grows === undefined || out[grows] === undefined){ continue; }
-        out[grows] += Math.min(aRank,bRank);
+        // Add both gene ranks to this rung's emergent pool.
+        out[grows] += aRank + bRank;
     }
+    // Convert each pool to whole trait ranks.
+    geneEmergentNames.forEach(function(g){ out[g] = Math.floor(out[g] / genes.gene_emergent_divisor); });
     return out;
 }
 

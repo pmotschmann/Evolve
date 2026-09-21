@@ -1572,18 +1572,22 @@ if (convertVersion(global['version']) <= 105000){
             return total;
         };
 
+        // Legacy minor-rank saves store trait-to-rank objects; missing values are empty.
+        let ranks = function(held){
+            return held && typeof held === 'object' ? held : {};
+        };
+
+        let geneRanks = ranks(global.genes.minor);
+        let raceRanks = ranks(global.race.minor);
+
         let phage = 0;
-        if (Array.isArray(global.genes.minor)){
-            Object.keys(global.genes.minor).forEach(function(t){
-                phage += spent(global.genes.minor[t], t === 'mastery' ? 2 : 1);
-            });
-        }
+        Object.keys(geneRanks).forEach(function(t){
+            phage += spent(geneRanks[t], t === 'mastery' ? 2 : 1);
+        });
         let genes = 0;
-        if (Array.isArray(global.race.minor)){
-            Object.keys(global.race.minor).forEach(function(t){
-                genes += spent(global.race.minor[t], t === 'mastery' ? 5 : 1);
-            });
-        }
+        Object.keys(raceRanks).forEach(function(t){
+            genes += spent(raceRanks[t], t === 'mastery' ? 5 : 1);
+        });
 
         // Guarded individually: this runs while the save is still being assembled, and a throw here
         // would take the game down before it ever drew a frame.
@@ -1598,12 +1602,8 @@ if (convertVersion(global['version']) <= 105000){
         }
 
         // Zero the ranks themselves, and the live trait values they were feeding.
-        if (Array.isArray(global.genes.minor)){
-            Object.keys(global.genes.minor).forEach(function(t){ delete global.race[t]; });
-        }
-        if (Array.isArray(global.race.minor)){
-            Object.keys(global.race.minor).forEach(function(t){ delete global.race[t]; });
-        }
+        Object.keys(geneRanks).forEach(function(t){ delete global.race[t]; });
+        Object.keys(raceRanks).forEach(function(t){ delete global.race[t]; });
         global.genes.minor = {};
         global.race.minor = {};
 
@@ -1716,7 +1716,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 52;
+global['beta'] = 53;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

@@ -1,6 +1,6 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
-import { traits, traitSkin, genes, geneCatalog, geneEmergent, geneEmergentList } from './../races.js';
+import { traits, traitSkin, genes, geneCatalog, geneEmergentParity, geneEmergentList } from './../races.js';
 
 // The ladder printed on the page is generated from the same rule the game prices with, up to the
 // paired ceiling, so a retune of either constant shows up here without touching this file.
@@ -14,13 +14,10 @@ function rankCostList(){
     return out.join(', ');
 }
 
-// "A-T produces Content, C-G produces Promiscuous", built from the table itself so the page cannot
-// disagree with the game about which rung grows what.
+// List emergent traits from the current row-parity mapping.
 function emergentList(){
-    return Object.keys(genes.gene_pairs).filter(function(b){
-        return b < genes.gene_pairs[b];
-    }).map(function(b){
-        return loc('wiki_genetics_emergent_pair',[b,genes.gene_pairs[b],traitSkin('name',geneEmergent[b])]);
+    return geneEmergentParity.map(function(g,parity){
+        return loc(parity === 0 ? 'wiki_genetics_emergent_row_even' : 'wiki_genetics_emergent_row_odd',[traitSkin('name',g)]);
     }).join(', ');
 }
 
@@ -94,7 +91,8 @@ export function geneticsPage(content){
     infoBoxBuilder(mainContent,{ name: 'emergent', template: 'genetics', paragraphs: 4, break: [3], h_level: 2,
         para_data: {
             1: [geneEmergentList().map(function(g){ return traitSkin('name',g); }).join(' and ')],
-            2: [emergentList()]
+            2: [emergentList()],
+            4: [genes.gene_emergent_divisor]
         }
     });
     sideMenu('add',`genetics-gameplay`,`emergent`,loc('wiki_genetics_emergent'));

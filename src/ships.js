@@ -280,9 +280,13 @@ export function moveShips(step){
 }
 
 export function buildTPShipQueue(action){
-    // Charge queued ships to the active shipyard zone.
+    // Template escorts wait until their flagship has completed.
+    if (action.fleetBuild && !action.fleetBuild.flagship){
+        let builds = global.space.shipyard.fleetBuilds;
+        if (!builds || !Object.prototype.hasOwnProperty.call(builds, action.fleetBuild.id)){ return false; }
+    }
     if (payCosts(action, action.cost)){
-        buildTPShip(deepClone(action.bp), true);
+        buildTPShip(deepClone(action.bp), true, action.fleetBuild);
         return true;
     }
     return false;
@@ -433,7 +437,7 @@ export function shipyardPayer(){
     return { id: 'tp-ship', supply(){ return shipyardZone(); } };
 }
 
-export function buildTPShip(ship, queue){
+export function buildTPShip(ship, queue, fleetBuild){
     let locationName = shipyardZone();
     TPShipInitTransit(ship, locationName);
     // A queued Supply Ship may carry a fit that is no longer offered.
@@ -459,6 +463,22 @@ export function buildTPShip(ship, queue){
     ship.name = name;
 
     global.space.shipyard.ships.push(ship);
+
+    if (fleetBuild){
+        let yard = global.space.shipyard;
+        if (!yard.fleetBuilds || typeof yard.fleetBuilds !== 'object'){ yard.fleetBuilds = {}; }
+        if (fleetBuild.flagship){
+            yard.fleetBuilds[fleetBuild.id] = { fid: formFleet(ship) ? ship.fid : false };
+        }
+        else {
+            let build = yard.fleetBuilds[fleetBuild.id];
+            let flag = build && build.fid ? fleetFlagship(build.fid) : false;
+            if (flag && !shipMoving(flag) && shipDockedAt(flag) === shipyardZone()){
+                joinFleet(ship, build.fid);
+            }
+        }
+    }
+
     drawShips();
     updateCosts();
     if (!queue){
@@ -540,7 +560,8 @@ function weaponDraw(watts, use_inflate){
     return Math.round(watts * banks * use_inflate);
 }
 
-export function shipPower(ship, wiki){
+// Return reactor output, equipment draw, and net reserve for a ship design.
+export function shipPowerStats(ship, wiki){
     let watts = 0;
 
     let out_inflate = 1;
@@ -600,6 +621,7 @@ export function shipPower(ship, wiki){
     }
 
     watts = Math.round(Math.max(watts, powerModifier(watts)));
+    const output = watts;
 
     switch (ship.weapon){
         case 'railgun':
@@ -664,7 +686,16 @@ export function shipPower(ship, wiki){
             break;
     }
 
-    return watts;
+    return {
+        output: output,
+        draw: output - watts,
+        balance: watts
+    };
+}
+
+// Return net reserve; negative values exceed reactor capacity.
+export function shipPower(ship, wiki){
+    return shipPowerStats(ship, wiki).balance;
 }
 
 // --- Ship weapons ------------------------------------------------------------------------------- In unlock.

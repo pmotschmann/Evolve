@@ -13019,6 +13019,7 @@ function midLoop(){
                     cost: costs,
                     type: 'tp-ship',
                     bp: struct.type,
+                    fleetBuild: struct.fleetBuild,
                     doNotAdjustCost: true,
                     // Shipyard queue costs are paid from the active shipyard zone.
                     supply(){ return shipyardZone(); },

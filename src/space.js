@@ -3056,7 +3056,7 @@ const spaceProjects = {
             },
             struct(){
                 return {
-                    d: { count: 0, on: 0, ships: [], expand: true, sort: true, copy: false },
+                    d: { count: 0, on: 0, ships: [], expand: true, sort: true, copy: false, fleetTemplate: [] },
                     p: ['shipyard','space']
                 };
             }

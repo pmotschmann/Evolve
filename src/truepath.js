@@ -31,7 +31,7 @@ import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipAr
          fleetPace, shipDestination, shipPosition, tripDays, regionReachable, shipBound, hastenShip, tradeFleet,
          tradeFreighters, freightCargo, freightLoad, shipFleet, tradeLeader, patrolsUnlocked, shipPatrol,
          advancePatrol, sensorRangeAU, sendShipTo, advanceShip, getRandomShipName, repairSupplyFreighters,
-         shipyardPayer, buildTPShip, shipPower, explorerRetired, shipSpecialAllowed, shipDefaultSpecial, shipParts,
+         shipyardPayer, buildTPShip, shipPower, shipPowerStats, explorerRetired, shipSpecialAllowed, shipDefaultSpecial, shipParts,
          shipPartAvailable, shipSlotOpen, shipSpecial, shipBombardPower, shipFuelUse, tankerFuelRange, shipCosts,
          shipPartKey, shipyardZone, fleetMembers, shipFuelTank, shipFuelAmount, jumpGates, shipLegLeft,
          activeRepairYards, locSystem, shipLeg, shipTripDays, legDays, freightCapacity, canManuallyRefuel,
@@ -8214,6 +8214,8 @@ export function drawShipYard(){
             global.space.shipyard['copy'] = false;
         }
 
+        fleetTemplate();
+
         if (!global.space.shipyard.hasOwnProperty('blueprint')){
             global.space.shipyard['blueprint'] = {
                 class: 'corvette',
@@ -8287,6 +8289,7 @@ export function drawShipYard(){
 
         let assemble = $(`<div class="assemble"></div>`);
         assemble.append(`<button class="button is-info" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button>`);
+        assemble.append(`<button class="button is-info" v-show="fleetDesignerAvailable()" @click="fleetDesigner()">${loc('outer_shipyard_fleet_designer')}</button>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" @change="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" @change="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.copy" @change="redraw()">${loc('outer_shipyard_copy_mode')}</b-checkbox></span>`);
@@ -8309,6 +8312,7 @@ export function drawShipYard(){
         }
 
         plans.append(assemble);
+
         assemble.append(`<div><span>${loc(`outer_shipyard_park`,[global.tech['resettle'] ? tauCetiModules.tau_gas2.info.name() : planetName().dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
         updateCosts();
@@ -8321,6 +8325,12 @@ export function drawShipYard(){
                 v: shipyardView()
             },
             methods: {
+                fleetDesignerAvailable(){
+                    return global.tech['syard_fleet'] ? true : false;
+                },
+                fleetDesigner(){
+                    openFleetDesigner(this.$buefy.modal);
+                },
                 sysLabel(){
                     return systemLabel(shipyardView().sys);
                 },
@@ -8742,13 +8752,14 @@ function queueSpace(){
 }
 
 // Put one ship design on the build queue.
-function queueTPShip(design){
+function queueTPShip(design, fleetBuild){
     if (queueSpace() <= 0){ return false; }
     let blueprint = deepClone(design);
     global.queue.queue.push({
         id: `tp-ship-${Math.rand(0,100000)}`,
         action: 'tp-ship',
         type: blueprint,
+        fleetBuild: fleetBuild ? { id: fleetBuild.id, flagship: fleetBuild.flagship } : false,
         label: blueprint.name,
         cna: false,
         time: 0,
@@ -8758,6 +8769,198 @@ function queueTPShip(design){
         bres: false
     });
     return true;
+}
+
+// Open the Fleet Designer with a blueprint draft.
+function openFleetDesigner(modalApi, draft = deepClone(global.space.shipyard.blueprint)){
+    let modal = modalApi.open({
+        hasModalCard: false,
+        content: '<div id="modalBox" class="modalBox"></div>'
+    });
+    modalCloseButton();
+    let checkExist = setInterval(function(){
+        if ($('#modalBox').length > 0){
+            clearInterval(checkExist);
+            fleetDesignerModal(modal, draft);
+        }
+    }, 50);
+    return modal;
+}
+
+// Populate the opened Fleet Designer modal.
+function fleetDesignerModal(modal, draft){
+    let box = $('#modalBox');
+    box.closest('.animation-content').addClass('fleetDesignerModal');
+    box.append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">' + loc('outer_shipyard_fleet_designer') + '</p>'));
+    let designer = $('<div id="fleetDesigner" class="fleetDesigner"></div>');
+    let controls = $('<section class="fleetTemplateControls" aria-label="' + loc('outer_shipyard_fleet_designer') + '"></section>');
+    controls.append('<div class="fleetDesignSummary"><div class="registry"><span class="has-text-caution">' + loc('outer_shipyard_registry') + '</span><b-input v-model="b.name" maxlength="25" class="nameplate"></b-input></div><div class="fleetDesignStats has-text-info" aria-live="polite"><div>{{ templateStats(b) }}</div><div v-html="powerStats(b)"></div></div></div>');
+    let partGrid = $('<div class="fleetPartGrid"></div>');
+    Object.keys(shipParts).forEach(function(part){
+        let values = '';
+        shipParts[part].forEach(function(value, index){
+            values += '<b-dropdown-item aria-role="listitem" @click="setVal(\'' + part + '\',\'' + value + '\')" class="' + part + ' a' + index + '" data-val="' + value + '" v-show="avail(\'' + part + '\',\'' + index + '\',\'' + value + '\')">{{ lbl(\'' + value + '\', \'' + part + '\') }}</b-dropdown-item>';
+        });
+        let slot = (part === 'special' || part === 'weapon') ? ' v-show="slotOpen(\'' + part + '\')"' : '';
+        partGrid.append('<div class="fleetPart"' + slot + '><span class="fleetPartLabel">' + loc('outer_shipyard_' + part) + '</span><b-dropdown :triggers="[\'click\']" aria-role="list"><template #trigger><button type="button" class="button is-info"><span>{{ lbl(b.' + part + ', \'' + part + '\') }}</span></button></template>' + values + '</b-dropdown></div>');
+    });
+    controls.append(partGrid);
+    designer.append(controls);
+    let template = $('<section class="fleetTemplate" aria-label="' + loc('outer_shipyard_fleet_template') + '"></section>');
+    template.append('<div class="fleetTemplateHead"><span class="has-text-caution">' + loc('outer_shipyard_fleet_template') + '</span><span class="fleetTemplateCommand" v-show="t.length > 0">{{ templateCommand() }}</span></div>');
+    template.append('<div v-show="t.length === 0" class="fleetTemplateEmpty has-text-info">' + loc('outer_shipyard_fleet_template_empty') + '</div>');
+    template.append('<div class="fleetTemplateShips"><div v-for="(ship, index) in t" class="fleetTemplateShip"><div class="fleetTemplateShipHead"><span>{{ templateLabel(ship, index) }}</span><button type="button" class="fleetTemplateRemove has-text-danger" @click="removeTemplate(index)" :aria-label="removeTemplateLabel(ship)">✖</button></div><div class="has-text-info">{{ templateStats(ship) }}</div><div class="fleetTemplatePower" v-html="powerStats(ship)"></div></div></div>');
+    template.append('<div class="fleetTemplateActions"><button type="button" class="button is-info" v-show="t.length === 0" :disabled="!canAddFlagship()" @click="addFlagship()">' + loc('outer_shipyard_fleet_template_flagship') + '</button><button type="button" class="button is-info" v-show="t.length > 0" @click="addEscort()">' + loc('outer_shipyard_fleet_template_escort') + '</button><button type="button" class="button is-primary" v-show="t.length > 0" :disabled="!templateQueueReady()" @click="queueTemplate()">' + loc('outer_shipyard_fleet_template_queue') + '</button><button type="button" class="button is-danger" v-show="t.length > 0" @click="clearTemplate()">' + loc('outer_shipyard_fleet_template_clear') + '</button></div>');
+    template.append('<div class="fleetTemplateStatus has-text-danger" v-show="templateStatus()" role="alert">{{ templateStatus() }}</div>');
+    designer.append(template);
+    box.append(designer);
+    vBind({
+        el: '#fleetDesigner',
+        data: { b: draft, t: fleetTemplate() },
+        methods: {
+            templateLabel(ship, index){
+                let role = loc(index === 0 ? 'outer_shipyard_fleet_template_flagship' : 'outer_shipyard_fleet_template_escort');
+                return role + ': ' + ship.name + ' (' + loc('outer_shipyard_class_' + ship.class) + ')';
+            },
+            templateStats(ship){
+                let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(ship)) + 'km/s';
+                let roleStat = ship.class === 'freighter'
+                    ? loc('supply_freighter_load') + ': ' + freightCapacity(ship)
+                    : ship.class === 'supply_ship'
+                        ? loc('outer_shipyard_special') + ': ' + loc('outer_shipyard_special_' + shipSpecial(ship))
+                        : loc('firepower') + ': ' + shipAttackPower(ship);
+                return loc('speed') + ': ' + speed + ' | ' + roleStat + ' | ' + loc('outer_shipyard_sensors') + ': ' + loc('outer_shipyard_sensor_range',[sensorRange(ship)]);
+            },
+            powerStats(ship){
+                let power = shipPowerStats(ship);
+                let reserve = power.balance >= 0
+                    ? '<span class="has-text-success">+' + power.balance + 'kW ' + loc('outer_shipyard_power_reserve') + '</span>'
+                    : '<span class="has-text-danger">' + power.balance + 'kW ' + loc('outer_shipyard_power_deficit') + '</span>';
+                return loc('power') + ': ' + power.output + 'kW ' + loc('outer_shipyard_power_output')
+                    + ' | ' + power.draw + 'kW ' + loc('outer_shipyard_power_draw') + ' | ' + reserve;
+            },
+            lbl(label, category){
+                return loc(shipPartKey(category,label));
+            },
+            setVal(part, value){
+                if (part === 'class' && value === 'freighter'){
+                    this.b.weapon = 'none';
+                    this.b.special = 'extra_fuel';
+                }
+                else if (part === 'class' && value === 'explorer'){
+                    this.b.engine = 'emdrive';
+                    this.b.weapon = 'railgun';
+                    if (global.tech.syard_armor >= 3){ this.b.armor = 'neutronium'; }
+                    if (global.tech.syard_sensor >= 4){ this.b.sensor = 'quantum'; }
+                    if (global.tech.syard_power >= 4){ this.b.power = 'elerium'; }
+                }
+                else if (part === 'class' && value !== 'freighter' && this.b.class === 'freighter'){
+                    this.b.weapon = 'railgun';
+                }
+                else if (part === 'class' && value !== 'explorer' && this.b.class === 'explorer'){
+                    this.b.engine = 'ion';
+                }
+                if (part === 'class' && !shipSpecialAllowed(this.b.special,value)){
+                    this.b.special = shipDefaultSpecial(value);
+                }
+                if (part === 'class' && value === 'supply_ship'){
+                    this.b.weapon = 'none';
+                }
+                else if (part === 'class' && this.b.class === 'supply_ship' && this.b.weapon === 'none'){
+                    this.b.weapon = 'railgun';
+                }
+                this.b[part] = value;
+                this.$forceUpdate();
+            },
+            slotOpen(part){
+                return shipSlotOpen(part,this.b.class);
+            },
+            avail(part, index, value){
+                return shipPartAvailable(part,index,value,this.b.class);
+            },
+            removeTemplateLabel(ship){
+                return loc('outer_shipyard_fleet_template_remove',[ship.name]);
+            },
+            canAddFlagship(){
+                return global.tech['syard_fleet'] && fleetCommandRating(this.b) > 0 && shipPower(this.b) >= 0;
+            },
+            addFlagship(){
+                if (!this.canAddFlagship()){ return; }
+                let template = fleetTemplate();
+                template.splice(0, template.length, deepClone(this.b));
+                this.b.name = getRandomShipName();
+                this.$forceUpdate();
+            },
+            addEscort(){
+                let template = fleetTemplate();
+                if (template.length === 0 || shipPower(this.b) < 0){ return; }
+                template.push(deepClone(this.b));
+                this.b.name = getRandomShipName();
+                this.$forceUpdate();
+            },
+            removeTemplate(index){
+                fleetTemplate().splice(index, 1);
+                this.$forceUpdate();
+            },
+            clearTemplate(){
+                fleetTemplate().splice(0);
+                this.$forceUpdate();
+            },
+            templateCommand(){
+                let template = fleetTemplate();
+                let used = template.slice(1).reduce(function(total, ship){ return total + fleetCommandCost(ship); }, 0);
+                let rating = template[0] ? fleetCommandRating(template[0]) : 0;
+                return loc('outer_shipyard_fleet_template_command',[used,rating]);
+            },
+            templateQueueReady(){
+                return fleetTemplateValid() && queueSpace() >= fleetTemplate().length;
+            },
+            templateStatus(){
+                let template = fleetTemplate();
+                if (template.length === 0){ return ''; }
+                if (fleetCommandRating(template[0]) <= 0){ return loc('outer_shipyard_fleet_template_flagship_invalid'); }
+                let used = template.slice(1).reduce(function(total, ship){ return total + fleetCommandCost(ship); }, 0);
+                if (used > fleetCommandRating(template[0])){ return loc('outer_shipyard_fleet_template_command_invalid'); }
+                return queueSpace() < template.length ? loc('outer_shipyard_fleet_template_queue_full') : '';
+            },
+            queueTemplate(){
+                let queued = queueFleetTemplate();
+                if (queued <= 0){ return; }
+                fleetTemplate().splice(0);
+                buildQueue();
+                messageQueue(loc('outer_shipyard_fleet_template_queued',[queued]),'info',false,['progress']);
+                modal.close();
+            }
+        }
+    });
+}
+
+// Return the saved Fleet Designer template.
+function fleetTemplate(){
+    let yard = global.space.shipyard;
+    if (!Array.isArray(yard.fleetTemplate)){ yard.fleetTemplate = []; }
+    return yard.fleetTemplate;
+}
+
+// Return whether every ship in a fleet draft can join its flagship.
+function fleetTemplateValid(template = fleetTemplate()){
+    let flagship = template[0];
+    if (!global.tech['syard_fleet'] || !flagship || fleetCommandRating(flagship) <= 0 || shipPower(flagship) < 0){ return false; }
+    let command = template.slice(1).reduce(function(total, ship){ return total + fleetCommandCost(ship); }, 0);
+    return command <= fleetCommandRating(flagship) && template.every(ship => shipPower(ship) >= 0);
+}
+
+// Queue the flagship first, followed by every escort carrying the same fleet-build token.
+function queueFleetTemplate(){
+    let template = fleetTemplate();
+    if (!fleetTemplateValid(template) || queueSpace() < template.length){ return 0; }
+    let yard = global.space.shipyard;
+    yard.fleetBuildId = (yard.fleetBuildId || 0) + 1;
+    let id = yard.fleetBuildId;
+    template.forEach(function(ship, index){
+        queueTPShip(ship, { id: id, flagship: index === 0 });
+    });
+    return template.length;
 }
 
 // Copy a ship design without its runtime state or cargo.
@@ -8953,7 +9156,7 @@ function drawShipRow(list,i,ship,regionNames){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}${escort}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(shipPartKey('sensor',ship.sensor))}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})" role="button">${loc(`outer_shipyard_scrap`)}</a><span v-show="refitShow(${i})"> | <a class="shipRefitOpen" @click="refitAction(${i})" role="button">${loc(`outer_shipyard_refit`)}</a></span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="loadFleetShow(${i})"> | <a class="loadFleet" @click="loadFleet(${i})" role="button">${loc('outer_shipyard_fleet_template_load')}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(shipPartKey('sensor',ship.sensor))}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -8983,7 +9186,7 @@ function drawShipRow(list,i,ship,regionNames){
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
 
-            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="copyFleetShow(${i})"> | <a class="copyFleet" @click="copyFleet(${i})" role="button">${loc(`outer_shipyard_copy_fleet`)}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
+            row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="loadFleetShow(${i})"> | <a class="loadFleet" @click="loadFleet(${i})" role="button">${loc('outer_shipyard_fleet_template_load')}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
@@ -9064,26 +9267,18 @@ function drawShipRow(list,i,ship,regionNames){
                         buildQueue();
                     }
                 },
-                // Offered on a flagship only, and only with the copy controls on: a fleet is named
-                // by the ship leading it, so that row is where "another one of these" belongs.
-                copyFleetShow(id){
-                    let s = global.space.shipyard.ships[id];
-                    return global.space.shipyard['copy'] && global.tech['syard_fleet'] && s && s.flag && s.fid ? true : false;
+                // Show Load Fleet for a flagship while Copy Controls are enabled.
+                loadFleetShow(id){
+                    let ship = global.space.shipyard.ships[id];
+                    return global.space.shipyard.copy && ship && ship.flag && ship.fid ? true : false;
                 },
-                // Queue a sister ship for every hull in the fleet, flagship included.
-                copyFleet(id){
-                    let s = global.space.shipyard.ships[id];
-                    if (!s || !s.fid){ return; }
-                    let queued = 0;
-                    let members = fleetMembers(s.fid);
-                    for (let m=0; m<members.length; m++){
-                        if (!queueTPShip(copyShipDesign(members[m]))){ break; }
-                        queued++;
-                    }
-                    if (queued > 0){
-                        buildQueue();
-                        messageQueue(loc('outer_shipyard_copy_fleet_msg',[queued,members.length]),'info',false,['progress']);
-                    }
+                loadFleet(id){
+                    let flagship = global.space.shipyard.ships[id];
+                    if (!flagship || !flagship.flag || !flagship.fid){ return; }
+                    let members = fleetMembers(flagship.fid);
+                    let template = fleetTemplate();
+                    template.splice(0, template.length, copyShipDesign(flagship), ...members.filter(ship => ship !== flagship).map(copyShipDesign));
+                    openFleetDesigner(this.$buefy.modal, copyShipDesign(flagship));
                 },
                 // Only at a yard, and only while actually docked there rather than crossing to it.
                 scrapAllowed(id){

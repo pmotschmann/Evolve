@@ -2457,6 +2457,161 @@ a {
     overflow: hidden;
 }
 
+// Allow Fleet Designer dropdowns to overflow the modal.
+.modal .animation-content.fleetDesignerModal {
+    overflow: visible;
+    max-height: calc(100vh - 2rem);
+}
+
+.fleetDesignerModal .modalBox {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.fleetDesignerModal {
+    .modalBox {
+        width: min(58rem, calc(100vw - 2rem));
+        text-align: left;
+    }
+
+    .fleetDesigner {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .fleetTemplateControls,
+    .fleetTemplate {
+        padding: .75rem;
+        border: .0625rem solid currentColor;
+        border-radius: .5rem;
+    }
+
+    .fleetDesignSummary,
+    .fleetTemplateHead,
+    .fleetTemplateShipHead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+    }
+
+    .fleetDesignSummary {
+        flex-wrap: wrap;
+        margin-bottom: .75rem;
+    }
+
+    .registry {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+
+        .nameplate {
+            width: 10rem;
+        }
+    }
+
+    .fleetDesignStats,
+    .fleetTemplateShip > div:not(.fleetTemplateShipHead) {
+        font-size: .85rem;
+    }
+
+    .fleetTemplatePower {
+        margin-top: .15rem;
+    }
+
+    .fleetPartGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .5rem .75rem;
+    }
+
+    .fleetPart {
+        display: grid;
+        grid-template-columns: minmax(5.5rem, auto) minmax(0, 1fr);
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .fleetPartLabel {
+        text-align: right;
+    }
+
+    .fleetPart .dropdown,
+    .fleetPart .button {
+        width: 100%;
+    }
+
+    .fleetPart .button {
+        justify-content: space-between;
+    }
+
+    .fleetTemplate {
+        display: grid;
+        gap: .5rem;
+    }
+
+    .fleetTemplateHead {
+        padding-bottom: .5rem;
+        border-bottom: .0625rem solid currentColor;
+    }
+
+    .fleetTemplateCommand {
+        font-size: .85rem;
+    }
+
+    .fleetTemplateEmpty {
+        padding: .4rem 0;
+    }
+
+    .fleetTemplateShips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+        gap: .5rem .75rem;
+    }
+
+    .fleetTemplateShip {
+        min-width: 0;
+        padding: .5rem 0;
+        border-bottom: .0625rem solid currentColor;
+    }
+
+    .fleetTemplateRemove {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .fleetTemplateActions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        padding-top: .25rem;
+
+        .button {
+            margin: 0;
+        }
+    }
+
+    .fleetTemplateStatus {
+        padding-top: .25rem;
+    }
+
+    @media only screen and (max-width: 34rem) {
+        .fleetPartGrid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media only screen and (max-width: 26rem) {
+        .fleetTemplateShips {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
 .actionWidth {
     @media only screen and (max-width: 113rem) {
         max-width: 38rem;
@@ -5591,6 +5746,9 @@ span.inline {
                 margin-right: 0;
                 top: .25rem;
             }
+        }
+        > :first-child {
+            margin-right: 0.25rem;
         }
     }
 
