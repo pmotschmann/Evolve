@@ -2425,7 +2425,7 @@ export function armyRating(val,type,wound,analysis){
             let infernal = geneBonus('infernal');
             if (infernal > 1){
                 army *= infernal;
-                data.push({ k: 'trait_pathetic_name', v: (pathetic - 1) });
+                data.push({ k: 'trait_infernal_name', v: (infernal - 1) });
             }
         }
         if (global.race['holy'] && type === 'hellArmy'){
