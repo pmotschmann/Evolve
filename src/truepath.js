@@ -9619,14 +9619,23 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
-                    let pace = fleetPace(rowGroup(global.space.shipyard.ships[id]));
+                    let ship = global.space.shipyard.ships[id];
+                    if (ship.speed)
+                        return Math.round((149597870.7/225/24/3600) * ship.speed) + 'km/s'
+
+                    let pace = fleetPace(rowGroup(ship));
                     if (!pace){ return `0km/s`; }
                     let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
+
                     return Math.round(speed) + 'km/s';
                 },
                 // Highlight ships sped up by the mass relay
                 speedRelay(id){
-                    let boost = massRelaySpeedBoost(global.space.shipyard.ships[id]);
+                    let ship = global.space.shipyard.ships[id];
+                    if (ship.relayBoost)
+                        return ship.relayBoost > 1;
+
+                    let boost = massRelaySpeedBoost(ship);
                     return boost > 1;
                 },
                 fuelText(id){

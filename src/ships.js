@@ -152,6 +152,8 @@ export function tripDays(trip){
 // Bring a ship to rest at a world.
 export function dockShip(ship, id, pos){
     delete ship.movement;
+    delete ship.speed;
+    delete ship.relayBoost;
     retireShipFields(ship);
     ship.location = makePoint(pos, id);
 }
@@ -2087,6 +2089,10 @@ export function initializeShipTrip(ship, locationName, trip){
     if (!(inGate && legInGate(legs[0]) && legPlace(legs[0]) === gateExit)){
         left = legDays(legs[0]);
     }
+
+    // Save speed values before launch for ship yard ui
+    ship.speed = shipSpeed(ship);
+    ship.relayBoost = massRelaySpeedBoost(ship);
 
     // Liftoff. The destination is the last leg's end, landing point calculated in planShipTrip.
     launchShip(ship, from, legs, left);
