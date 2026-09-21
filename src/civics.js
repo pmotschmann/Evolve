@@ -15,6 +15,7 @@ import { battleLogModal, counterEspionage, counterEspionageZones, intelligenceOf
          intelligenceOfficerTrainingTime, intelligenceOfficerRecoveryTime, trainIntelligenceOfficer,
          dismissIntelligenceOfficer, assignIntelligenceOfficer } from './truepath.js';
 import { fleetCmd, fleetCmdUnlocked, fleetCmdRange } from './ships.js';
+import { hugeAdjust } from './prod.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -944,7 +945,7 @@ function trainSpy(i){
             global.resource.Money.amount -= cost;
             let time = 300;
             if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                time -= (decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
+                time -= hugeAdjust(decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
                 if (time < 10){
                     time = 10;
                 }
@@ -952,7 +953,7 @@ function trainSpy(i){
             if (global.race['infiltrator']){
                 time = Math.round(time / 2);
             }
-            global.civic.foreign[`gov${i}`].trn = time;
+            global.civic.foreign[`gov${i}`].trn = Math.floor(time);
         }
     }
 }
@@ -2027,7 +2028,7 @@ function war_campaign(gov){
         }
 
         if (global.race['slaver'] && global.city['slave_pen']){
-            let max = global.city.slave_pen.count * 4;
+            let max = Math.floor(hugeAdjust(global.city.slave_pen.count * 4));
             if (max > global.resource.Slave.amount){
                 let slaves = Math.floor(seededRandom(0,global.civic.garrison.tactic + 2,true));
                 if (slaves + global.resource.Slave.amount > max){
@@ -2584,7 +2585,7 @@ export function soldierTrainingRate(){
         if (global.blood['lust']){ train += global.blood.lust * 0.002; }
         const militant = govActive('militant',0);
         if (militant){ train *= 1 + (militant / 100); }
-        rate *= 1 + ((decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
+        rate *= 1 + hugeAdjust((decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * train);
     }
     if (global.tech['celestial_warfare'] && global.tech.celestial_warfare >= 5 && global.eden['bunker']){
         let train = 0.1;
@@ -2592,7 +2593,7 @@ export function soldierTrainingRate(){
         if (global.blood['lust']){ train += global.blood.lust * 0.002; }
         const militant = govActive('militant',0);
         if (militant){ train *= 1 + (militant / 100); }
-        rate *= 1 + (global.eden.bunker.count * train);
+        rate *= 1 + hugeAdjust(global.eden.bunker.count * train);
     }
     if (global.race['beast']){ rate *= 1 + (traits.beast.vars()[2] / 100); }
     if (global.race['brute']){ rate += traits.brute.vars()[1] / 40; }
@@ -2609,6 +2610,7 @@ export function soldierRecoveryRate(astroSign = astrologySign()){
     let healing = global.city['hospital'] ? global.city.hospital.count : 0;
     if (global.race['orbit_decayed'] && global.race['truepath']){ healing = Math.min(support_on['operating_base'],p_on['operating_base']); }
     else if (global.race['artifical'] && global.city['boot_camp']){ healing = global.city.boot_camp.count; }
+    healing = hugeAdjust(healing);
     if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){ healing += Math.min(5,global.stats.achieve.lamentis.l); }
     if (astroSign === 'cancer'){ healing = Math.max(0,healing + astroVal('cancer')[0]); }
     if (global.tech['medic'] && global.tech.medic >= 2){ healing *= global.tech.medic; }

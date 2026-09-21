@@ -11,7 +11,7 @@ import { planetName } from './space.js';
 import { supplyZone } from './supply.js';
 import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
-import { actions, getStructNumActive, templeCount } from './actions.js';
+import { actions, getStructNumActive, templeCount, hugeEffect } from './actions.js';
 
 export const job_data = {
     unemployed: {
@@ -73,6 +73,7 @@ export const job_data = {
             if (global.race['high_pop']){
                 tenders /= traits.high_pop.vars()[0];
             }
+            tenders = hugeAdjust(tenders);
             let desc = loc('job_gardener_desc',[
                 job_data.gardener.boost(),
                 actions.space.spc_red.botanical.title(),
@@ -274,9 +275,9 @@ export const job_data = {
                 scavenger *= traits.high_pop.vars()[1] / 100;
             }
             if (!servant){
-                scavenger = +workerScale(scavenger,'scavenger').toFixed(2);
+                scavenger = workerScale(scavenger,'scavenger');
             }
-            let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
+            let desc = loc('job_scavenger_desc',[races[global.race.species].home,+(scavenger).toFixed(2)]);
             if (global.civic.d_job === 'scavenger' && !servant){
                 desc = desc + ' ' + loc('job_default',[job_data.scavenger.name()]);
             }
@@ -306,6 +307,7 @@ export const job_data = {
             }
             return desc;
         },
+        impact(){ return 0.03; },
         stress(){ return 5; },
         color(){ return false; }
     },
@@ -319,7 +321,10 @@ export const job_data = {
             let multiplier = 0.5;
             multiplier *= racialTrait(workers,'water_collector');
             if(global.tech['water'] >= 2){
-                multiplier *= 1 + (global.tech['water'] - 1) * 0.3;
+                multiplier *= 1.3;
+                if(global.tech['water'] >= 3){
+                    multiplier *= 1.3;
+                }
             }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_water_collector_desc',[gain]);
@@ -539,7 +544,7 @@ export const job_data = {
         },
         impact(){
             if (global.tech['science'] && global.tech.science >= 3){
-                return 0.5 + ((global.city['library'] ? global.city.library.count : 0) * 0.01);
+                return 0.5 + hugeAdjust((global.city['library'] ? global.city.library.count : 0) * 0.01);
             }
             return 0.5;
         },
@@ -552,10 +557,10 @@ export const job_data = {
             let impact = +workerScale(job_data.scientist.impact(),'scientist').toFixed(2);
             impact *= racialTrait(global.civic.scientist.workers,'science');
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
-                impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
+                impact *= 1 + (hugeAdjust(global.civic.professor.workers) * hugeAdjust(global.city['wardenclyffe'].on) * 0.01);
             }
             if (global.space['satellite']){
-                impact *= 1 + (global.space.satellite.count * 0.01);
+                impact *= 1 + hugeAdjust(global.space.satellite.count * 0.01);
             }
             if (global.civic.govern.type === 'theocracy'){
                 impact *= 1 - (govEffect.theocracy()[2] / 100);
@@ -595,10 +600,10 @@ export const job_data = {
         name(){ return loc('job_technician'); },
         desc(){
             return loc('job_technician_desc',[
-                job_data.technician.factoryRate(),
-                job_data.technician.craftRate(),
+                hugeEffect(highPopAdjust(job_data.technician.factoryRate()), 1),
+                hugeEffect(highPopAdjust(job_data.technician.craftRate()), 1),
                 job_data.cement_worker.name(),
-                job_data.technician.cementRate()
+                hugeEffect(highPopAdjust(job_data.technician.cementRate()), 1),
             ]);
         },
         factoryRate(){ return 3; },
@@ -630,14 +635,14 @@ export const job_data = {
         name(){ return loc('job_archaeologist'); },
         desc(){
             if(global.race['iceage']){
-                let chance = (100 / actions.underground.industry.archaeological_dig.relic_chance()).toFixed(2);
+                let chance = +(100 / actions.underground.industry.archaeological_dig.relic_chance()).toFixed(2);
                 return loc('job_archaeologist_underground_desc', [chance]);
             }
             else{
                 let value = highPopAdjust(250000);
                 let sup = hellSupression('ruins');
-                let know = Math.round(value * sup.supress);
-                return loc('job_archaeologist_desc',[know.toLocaleString()]);
+                let know = hugeEffect(value * sup.supress, 0);
+                return loc('job_archaeologist_desc',[(know).toLocaleString()]);
             }
         },
         stress(){ return global.race['iceage'] ? 5 : 1; },
@@ -657,13 +662,13 @@ export const job_data = {
                 }
             }
             if (global.race['warlord'] && global.portal['mortuary'] && global.portal['corpse_pile']){
-                let corpse = (global.portal?.corpse_pile?.count || 0) * (p_on['mortuary'] || 0);
+                let corpse = hugeAdjust(global.portal?.corpse_pile?.count || 0) * hugeAdjust(p_on['mortuary'] || 0);
                 if (corpse > 0){
                     ascend = 1 + corpse / 800;
                 }
             }
-            let min = Math.floor((150 + attact) * resist * ascend);
-            let max = Math.floor((250 + attact) * resist * ascend);
+            let min = hugeAdjust((150 + attact) * resist * ascend, 0);
+            let max = hugeAdjust((250 + attact) * resist * ascend, 0);
             
             return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
         },
@@ -675,7 +680,7 @@ export const job_data = {
         desc(){
             let desc = loc('job_elysium_miner_desc',[loc('eden_elysium_name')]);
             if (global.tech['elysium'] && global.tech.elysium >= 12){
-                desc += ` ${loc('eden_restaurant_effect',[0.15,loc(`eden_restaurant_bd`)])}.`;
+                desc += ` ${loc('eden_restaurant_effect',[hugeEffect(0.15, 2),loc(`eden_restaurant_bd`)])}.`;
             }
             return desc;
         },
@@ -793,6 +798,13 @@ export function jobScale(num){
         return num * traits.high_pop.vars()[0];
     }
     return num;
+}
+
+export function hugeScale(v){ //building cost/creep/power modifier and some other things
+    if (global.race['humongous']){
+        v *= traits.humongous.vars()[1];
+    }
+    return v;
 }
 
 // Scale and round a whole stack of people.

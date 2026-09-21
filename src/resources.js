@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, active_rituals } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcDeepPower, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, messageQueue, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, fathomCheck, geneBonus, geneFlat, geneRank, geneVars, templeOutputBonus} from './races.js';
-import { templeCount, actions } from './actions.js';
+import { templeCount, actions, hugeEffect } from './actions.js';
 import { workerScale, job_data } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { syndicate, womlingArtisans } from './truepath.js';
@@ -12,7 +12,7 @@ import { freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeed
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
-import { highPopAdjust, production, teamster, technicianCount, infiltratorFactor } from './prod.js';
+import { highPopAdjust, hugeAdjust, production, teamster, technicianBonus, infiltratorFactor } from './prod.js';
 import { astrologySign, astroVal } from './seasons.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyPools, supplyPool, supplyZone, supplyRegions, poolRegions, supplyRegionName, regCrates, regContainers, regAmount, regMax, regDiff, poolMod, syncTotal, zoneCitizens, CAPITAL } from './supply.js';
@@ -249,8 +249,9 @@ export function craftCost(manual=false){
             }
         });
     }
-    if (global.race['high_pop'] && !manual){
+    if ((global.race['high_pop'] || global.race['humongous']) && !manual){
         let rate = 1 / traits.high_pop.vars()[0];
+        rate = hugeAdjust(rate);
         Object.keys(costs).forEach(function(res){
             for (let i=0; i<costs[res].length; i++){
                 costs[res][i].a = Math.round(costs[res][i].a * rate);
@@ -258,7 +259,7 @@ export function craftCost(manual=false){
         });
     }
     if(global.surface['refinery_funnel'] && p_on['refinery_funnel']){
-        costs['Super_Fuel'][1].a *= 1 + p_on['refinery_funnel'];
+        costs['Super_Fuel'][1].a *= 1 + hugeAdjust(p_on['refinery_funnel']);
     }
     return costs;
 }
@@ -336,7 +337,7 @@ export const craftingRatio = (function(){
             }
             if (global.tech['foundry'] >= 2){
                 let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
-                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
+                let foundries = hugeAdjust(global.city.foundry.count) * infiltratorFactor('city','foundry') + hugeAdjust(global.underground.under_foundry?.count || 0);
                 crafting.general.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * skill,
@@ -357,12 +358,12 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 4 && global.city['sawmill']){
                 crafting.Plywood.add.push({
                     name: loc(`city_sawmill`),
-                    manual: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill'),
-                    auto: global.city['sawmill'].count * 0.02 * infiltratorFactor('city','sawmill')
+                    manual: hugeAdjust(global.city['sawmill'].count) * 0.02 * infiltratorFactor('city','sawmill'),
+                    auto: hugeAdjust(global.city['sawmill'].count) * 0.02 * infiltratorFactor('city','sawmill')
                 });
             }
             if (global.tech['foundry'] >= 6){
-                let foundries = global.city.foundry.count * infiltratorFactor('city','foundry') + (global.underground.under_foundry?.count || 0);
+                let foundries = hugeAdjust(global.city.foundry.count) * infiltratorFactor('city','foundry') + hugeAdjust(global.underground.under_foundry?.count || 0);
                 crafting.Brick.add.push({
                     name: loc(`city_foundry`),
                     manual: foundries * 0.02,
@@ -372,21 +373,21 @@ export const craftingRatio = (function(){
             if (global.tech['foundry'] >= 7){
                 crafting.general.add.push({
                     name: loc(`city_factory`) + ` (${loc(`tab_city5`)})`,
-                    manual: p_on['factory'] * 0.05 * infiltratorFactor('city','factory'),
-                    auto: p_on['factory'] * 0.05 * infiltratorFactor('city','factory')
+                    manual: hugeAdjust(p_on['factory']) * 0.05 * infiltratorFactor('city','factory'),
+                    auto: hugeAdjust(p_on['factory']) * 0.05 * infiltratorFactor('city','factory')
                 });
                 if (global.tech['mars'] >= 4){
                     crafting.general.add.push({
                         name: loc(`city_factory`) + ` (${loc(`tab_space`)})`,
-                        manual: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory'),
-                        auto: p_on['red_factory'] * 0.05 * infiltratorFactor('spc_red','red_factory')
+                        manual: hugeAdjust(p_on['red_factory']) * 0.05 * infiltratorFactor('spc_red','red_factory'),
+                        auto: hugeAdjust(p_on['red_factory']) * 0.05 * infiltratorFactor('spc_red','red_factory')
                     });
                 }
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     crafting.general.add.push({
                         name: loc(`interstellar_int_factory_title`),
-                        manual: p_on['int_factory'] * 0.1,
-                        auto: p_on['int_factory'] * 0.1
+                        manual: hugeAdjust(p_on['int_factory']) * 0.1,
+                        auto: hugeAdjust(p_on['int_factory']) * 0.1
                     });
                 }
             }
@@ -394,7 +395,7 @@ export const craftingRatio = (function(){
             // sits outside the foundry >= 7 gate above because it is the job doing the work, not a
             // factory automating it.
             {
-                let rate = technicianCount() * (job_data.technician.craftRate() / 100);
+                let rate = technicianBonus(job_data.technician.craftRate());
                 if (rate > 0){
                     crafting.general.add.push({
                         name: job_data.technician.name(),
@@ -407,7 +408,7 @@ export const craftingRatio = (function(){
             // it is worth nothing on its own — and nothing at all while the descender is stopped.
             if (global.space['workshop'] && support_on['workshop'] && support_on['industrial_complex']
                 && actions.space.spc_venus.descender.operating()){
-                let rate = support_on['workshop'] * support_on['industrial_complex']
+                let rate = support_on['workshop'] * hugeAdjust(support_on['industrial_complex'])
                     * (actions.space.spc_venus.workshop.crafting() / 100);
                 crafting.general.add.push({
                     name: loc(`space_workshop_title`),
@@ -425,15 +426,15 @@ export const craftingRatio = (function(){
             if (global.portal['hell_factory'] && p_on['hell_factory']){
                 crafting.general.add.push({
                     name: loc(`portal_factory_title`),
-                    manual: p_on['hell_factory'] * 0.25,
-                    auto: p_on['hell_factory'] * 0.25
+                    manual: hugeAdjust(p_on['hell_factory']) * 0.25,
+                    auto: hugeAdjust(p_on['hell_factory']) * 0.25
                 });
             }
             if (global.space['fabrication'] && support_on['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
-                    manual: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication'),
-                    auto: support_on['fabrication'] * global.civic.colonist.workers * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication')
+                    manual: hugeAdjust(support_on['fabrication']) * hugeAdjust(global.civic.colonist.workers) * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication'),
+                    auto: hugeAdjust(support_on['fabrication']) * hugeAdjust(global.civic.colonist.workers) * (noEarth ? highPopAdjust(0.05) : highPopAdjust(0.02)) * infiltratorFactor('spc_red','fabrication')
                 });
             }
             if (global.race['artisan']){
@@ -446,13 +447,13 @@ export const craftingRatio = (function(){
             if (p_on['stellar_forge']){
                 crafting.Mythril.add.push({
                     name: loc(`interstellar_stellar_forge_title`),
-                    manual: p_on['stellar_forge'] * 0.05,
-                    auto: p_on['stellar_forge'] * 0.05
+                    manual: hugeAdjust(p_on['stellar_forge']) * 0.05,
+                    auto: hugeAdjust(p_on['stellar_forge']) * 0.05
                 });
                 crafting.general.add.push({
                     name: loc(`interstellar_stellar_forge_title`),
                     manual: 0,
-                    auto: p_on['stellar_forge'] * 0.1
+                    auto: hugeAdjust(p_on['stellar_forge']) * 0.1
                 });
             }
             if (p_on['hell_forge']){
@@ -460,7 +461,7 @@ export const craftingRatio = (function(){
                 crafting.general.add.push({
                     name: loc(`portal_hell_forge_title`),
                     manual: 0,
-                    auto: p_on['hell_forge'] * 0.75 * sup.supress
+                    auto: hugeAdjust(p_on['hell_forge']) * 0.75 * sup.supress
                 });
                 crafting.Scarletite.multi.push({
                     name: loc(`portal_ruins_supressed`),
@@ -472,14 +473,14 @@ export const craftingRatio = (function(){
                 crafting.general.add.push({
                     name: loc(`tau_home_tau_factory`),
                     manual: 0,
-                    auto: (support_on['tau_factory'] * (global.tech['isolation'] ? 2.75 : 0.9))
+                    auto: hugeAdjust(support_on['tau_factory'] * (global.tech['isolation'] ? 2.75 : 0.9))
                 });
             }
             if (global.tech['isolation'] && global.tauceti['colony'] && support_on['colony']){
                 crafting.general.add.push({
                     name: loc(`tau_home_colony`),
-                    manual: support_on['colony'] * 0.5,
-                    auto: support_on['colony'] * 0.5
+                    manual: hugeAdjust(support_on['colony']) * 0.5,
+                    auto: hugeAdjust(support_on['colony']) * 0.5
                 });
             }
             if ((support_on['zero_g_lab'] && p_on['zero_g_lab']) || (support_on['infectious_disease_lab'] && p_on['infectious_disease_lab'])){
@@ -491,7 +492,7 @@ export const craftingRatio = (function(){
                 });
             }
             if (global.tech['alien_crafting'] && support_on['infectious_disease_lab'] && p_on['infectious_disease_lab']){
-                let qCraft = 1 + (0.65 * Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']));
+                let qCraft = 1 + hugeAdjust(0.65 * Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']));
                 crafting.Quantium.multi.push({
                     name: loc(`tech_infectious_disease_lab_alt`),
                     manual: 1,
@@ -502,7 +503,7 @@ export const craftingRatio = (function(){
                 crafting.Super_Fuel.multi.push({
                     name: loc(`surface_refinery_funnel`),
                     manual: 1,
-                    auto: 1 + (0.15 * p_on['refinery_funnel'])
+                    auto: 1 + hugeAdjust(0.15 * p_on['refinery_funnel'])
                 });
             }
             if (global.tech['core'] >= 3 && p_on['core_blacksmith']){
@@ -512,8 +513,8 @@ export const craftingRatio = (function(){
                 }
                 crafting.general.add.push({
                     name: loc(`underground_core_blacksmith`),
-                    manual: p_on['core_blacksmith'] * 0.2 * mineshaft_effect,
-                    auto: p_on['core_blacksmith'] * 0.2 * mineshaft_effect
+                    manual: hugeAdjust(p_on['core_blacksmith']) * 0.2 * mineshaft_effect,
+                    auto: hugeAdjust(p_on['core_blacksmith']) * 0.2 * mineshaft_effect
                 });
             }
             if (global.underground['blacksmith_perk']){
@@ -526,8 +527,8 @@ export const craftingRatio = (function(){
             if (global.tech['crater'] >= 3 && support_on['crater_fabrication']){
                 crafting.general.add.push({
                     name: loc(`surface_crater_fabrication`),
-                    manual: support_on['crater_fabrication'] * highPopAdjust(global.civic.crater_worker.workers) * 0.05,
-                    auto: support_on['crater_fabrication'] * highPopAdjust(global.civic.crater_worker.workers) * 0.05
+                    manual: hugeAdjust(support_on['crater_fabrication']) * hugeAdjust(highPopAdjust(global.civic.crater_worker.workers)) * 0.05,
+                    auto: hugeAdjust(support_on['crater_fabrication']) * hugeAdjust(highPopAdjust(global.civic.crater_worker.workers)) * 0.05
                 });
             }
             if (global.race['crafty']){
@@ -1807,7 +1808,7 @@ export function blackMarketRate(res, pool){
 export function blackMarketPrice(res, pool){
     const entry = black_market_values[res];
     if (!entry){ return 0; }
-    let price = entry.p * blackMarketRate(res, pool);
+    let price = hugeAdjust(entry.p) * blackMarketRate(res, pool);
     // The pressures that move the open market move this one too.
     if (global.race['inflation']){ price *= 1 + (global.race.inflation / 300); }
     return +price.toFixed(1);
@@ -1852,6 +1853,7 @@ export function tradeVolumeBonus(){
     if (global.race['truepath'] && !rivalCollapsed()){
         rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
     }
+    rate = hugeAdjust(rate);
     return rate;
 }
 
@@ -2024,7 +2026,7 @@ export function marketItem(mount,market_item,name,color,full){
                 return loc('resource_market_auto_sell_desc',[rate,unit,price]);
             },
             aBuy(res){
-                let rate = tradeRatio[res];
+                /*let rate = tradeRatio[res];
                 let dealVal = govActive('dealmaker',0);
                 if (dealVal){
                     rate *= 1 + (dealVal / 100);
@@ -2061,10 +2063,11 @@ export function marketItem(mount,market_item,name,color,full){
                 }
                 if (global.race['truepath'] && !rivalCollapsed()){
                     rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
-                }
+                }*/
+                let rate = tradeRatio[res] * tradeVolumeBonus();
                 rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
-                let price = tradeBuyPrice(res);
+                let price = tradeBuyPrice(res) / hugeAdjust(1);
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
             },
             purchase(res){
@@ -2665,12 +2668,15 @@ export function tradeSellPrice(res){
     if (global.race['conniving']){
         divide--;
     }
-    let price = global.resource[res].value * tradeRatio[res] / divide;
+    let price = 1 / divide;
+    if(res){
+        let price = global.resource[res].value * tradeRatio[res] / divide;
+    }
     if (global.city['wharf']){
-        price = price * (1 + (global.city['wharf'].count * 0.01));
+        price = price * (1 + hugeAdjust(global.city['wharf'].count * 0.01));
     }
     if (global.space['gps'] && global.space['gps'].count > 3){
-        price = price * (1 + (global.space['gps'].count * 0.01));
+        price = price * (1 + hugeAdjust(global.space['gps'].count * 0.01));
     }
     if (global.tech['railway']){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
@@ -2687,6 +2693,9 @@ export function tradeSellPrice(res){
         price *= 1 - wariness;
     }
     price *= production('psychic_cash');
+    if (res){
+        price = hugeAdjust(price);
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -2708,10 +2717,10 @@ export function tradeBuyPrice(res){
     }
     let price = rate * tradeRatio[res];
     if (global.city['wharf']){
-        price = price * (0.99 ** global.city['wharf'].count);
+        price = price * (0.99 ** hugeAdjust(global.city['wharf'].count));
     }
     if (global.space['gps'] && global.space['gps'].count > 3){
-        price = price * (0.99 ** global.space['gps'].count);
+        price = price * (0.99 ** hugeAdjust(global.space['gps'].count));
     }
     if (global.tech['railway']){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
@@ -2733,6 +2742,7 @@ export function tradeBuyPrice(res){
     if(global.underground['trade']){
         price *= (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
     }
+    price = hugeAdjust(price);
     price = +(price).toFixed(1);
     return price;
 }
@@ -3657,7 +3667,7 @@ export function crateValue(){
         create_value *= 1.1;
     }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return Math.round(spatialReasoning(create_value));
+    return spatialReasoning(create_value);
 }
 
 export function containerValue(){
@@ -3680,7 +3690,7 @@ export function containerValue(){
         container_value *= 1 + (traits.pack_rat.vars(1)[0] / 100 * fathom);
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-    return Math.round(spatialReasoning(container_value));
+    return spatialReasoning(container_value);
 }
 
 function initMarket(){
@@ -4195,11 +4205,11 @@ function initEjector(){
             data: global.interstellar.mass_ejector,
             methods: {
                 max(num){
-                    return num * 1000;
+                    return num * actions.interstellar.int_blackhole.mass_ejector.volume();
                 },
                 real(num){
                     if (p_on['mass_ejector'] < num){
-                        return ` (${loc('interstellar_mass_ejector_active',[p_on['mass_ejector'] * 1000])})`;
+                        return ` (${loc('interstellar_mass_ejector_active',[p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume()])})`;
                     }
                     return '';
                 },
@@ -4247,8 +4257,8 @@ export function loadEjector(name,color){
             methods: {
                 ejectMore(r){
                     let keyMutipler = keyMultiplier();
-                    if (keyMutipler + global.interstellar.mass_ejector.total > p_on['mass_ejector'] * 1000){
-                        keyMutipler = p_on['mass_ejector'] * 1000 - global.interstellar.mass_ejector.total;
+                    if (keyMutipler + global.interstellar.mass_ejector.total > p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume()){
+                        keyMutipler = p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume() - global.interstellar.mass_ejector.total;
                     }
                     global.interstellar.mass_ejector[r] += keyMutipler;
                     global.interstellar.mass_ejector.total += keyMutipler;
@@ -4302,8 +4312,8 @@ export function loadSupply(name,color){
         res.append($(`<span class="current">{{ e.${name} }}</span>`));
         res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="supplyMore('${name}')"><span>&raquo;</span></span>`));
 
-        let volume = sizeApproximation(supplyValue[name].out);
-        res.append($(`<span class="mass">${loc('portal_transport_item',[`<span class="has-text-caution">${volume}</span>`,`<span class="has-text-success">${supplyValue[name].in}</span>`])}</span>`));
+        let volume = sizeApproximation(Math.floor(hugeAdjust(supplyValue[name].out)));
+        res.append($(`<span class="mass">${loc('portal_transport_item',[`<span class="has-text-caution">${volume}</span>`,`<span class="has-text-success">${hugeEffect(supplyValue[name].in)}</span>`])}</span>`));
 
         if (!global.portal.transport.cargo.hasOwnProperty(name)){
             global.portal.transport.cargo[name] = 0;
@@ -4433,7 +4443,8 @@ export const spatialReasoning = (function(){
             global.race['cataclysm'] ? global.race.cataclysm : '0',
             global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
             global.genes['ancients'] || '0',
-            global.civic['priest'] ? global.civic.priest.workers : '0'
+            global.civic['priest'] ? global.civic.priest.workers : '0',
+            hugeAdjust(1)
         ].join('-');
 
         if (!spatial[tkey]){
@@ -4482,9 +4493,10 @@ export const spatialReasoning = (function(){
                     if (global.race['high_pop']){
                         priest = highPopAdjust(priest);
                     }
+                    priest = hugeAdjust(priest);
                     temple += priest * global.civic.priest.workers;
                 }
-                modifier *= 1 + (faithTempleCount() * temple);
+                modifier *= 1 + hugeAdjust(faithTempleCount() * temple);
             }
             if (!type){
                 if (global['pillars']){
@@ -4492,6 +4504,7 @@ export const spatialReasoning = (function(){
                     modifier *= harmonic[1];
                 }
             }
+            modifier = hugeAdjust(modifier);
             spatial[tkey] = {};
             spatial[tkey][key] = modifier;
         }
@@ -4617,6 +4630,7 @@ export const plasmidBonus = (function (){
             global.race['spiritual'] || '0',
             global.tech['outpost_boost'] || '0',
             p_on['alien_outpost'] || '0',
+            hugeAdjust(1)
         ].join('-');
 
         if (!plasma[key]){
