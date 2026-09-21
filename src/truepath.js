@@ -19,7 +19,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
-import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap } from './stars.js';
+import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap, starConstants } from './stars.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyRegionName, activeSupplyRegions, capitalGone, supplyPool, partitioned, regAmount, poolMod,
          syncTotal } from './supply.js';
@@ -8613,7 +8613,7 @@ export function drawShipYard(){
                     return loc('outer_shipyard_sensor_range',[sensorRange(global.space.shipyard.blueprint)]);
                 },
                 speedText(){
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
+                    let speed = shipSpeed(global.space.shipyard.blueprint) * starConstants.KM_S_PER_SHIPUNIT;
                     return Math.round(speed) + 'km/s';
                 },
                 fuelText(){
@@ -9032,7 +9032,7 @@ function fleetDesignerModal(modal, draft){
                 return role + ': ' + ship.name + ' (' + loc('outer_shipyard_class_' + ship.class) + ')';
             },
             templateStats(ship){
-                let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(ship)) + 'km/s';
+                let speed = Math.round(shipSpeed(ship) * starConstants.KM_S_PER_SHIPUNIT) + 'km/s';
                 let roleStat = ship.class === 'freighter'
                     ? loc('supply_freighter_load') + ': ' + freightCapacity(ship)
                     : ship.class === 'supply_ship'
@@ -9621,11 +9621,11 @@ function drawShipRow(list,i,ship,regionNames){
                 speedText(id){
                     let ship = global.space.shipyard.ships[id];
                     if (ship.speed)
-                        return Math.round((149597870.7/225/24/3600) * ship.speed) + 'km/s'
+                        return Math.round(ship.speed * starConstants.KM_S_PER_SHIPUNIT) + 'km/s'
 
                     let pace = fleetPace(rowGroup(ship));
                     if (!pace){ return `0km/s`; }
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
+                    let speed = shipSpeed(pace) * starConstants.KM_S_PER_SHIPUNIT;
 
                     return Math.round(speed) + 'km/s';
                 },
@@ -10986,7 +10986,7 @@ function shipDispatchModal(id, modal){
     let slowest = fleetPace(group);
     let fuel = shipFuelUse(slowest);
     let fuelText = fuel.res ? `${fuel.burn} ${global.resource[fuel.res].name}/s` : `N/A`;
-    let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(slowest));
+    let speed = Math.round(shipSpeed(slowest) * starConstants.KM_S_PER_SHIPUNIT);
     let damage = Math.max(...group.map(s => s.damage));
     let hullClass = damage <= 10 ? `has-text-success` : (damage >= 65 ? `has-text-danger` : (damage >= 40 ? `has-text-caution` : ``));
     let sum = fn => group.reduce((t,s) => t + fn(s), 0);
@@ -11306,7 +11306,7 @@ function shipRefitModal(id, modal){
             return watts < 0 ? `<span class="has-text-danger">${watts}kW</span>` : `${watts}kW`;
         };
         let speedText = function(bp){
-            return Math.round((149597870.7/225/24/3600) * shipSpeed(bp)) + 'km/s';
+            return Math.round(shipSpeed(bp) * starConstants.KM_S_PER_SHIPUNIT) + 'km/s';
         };
         let fuelText = function(bp){
             let fuel = shipFuelUse(bp);
