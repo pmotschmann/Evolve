@@ -6001,6 +6001,38 @@ export function trackInfestation(){
     if (fleetCmdUnlocked()){ fleetCmdDay(); }
 }
 
+// Prevent infestation from spiralling infinitely. Once current infestation reaches the softcap, crashing enemy ships 
+// start accidentally hitting existing zombies, which effectively reduces their incoming numbers. 
+// infestationSoftCapCrushed indicates the amount crushed by a landed ship, reaching a hardcap at 2*softcap.
+// Thresholds are the same as zFleetHulls.
+export function infestationSoftCap(resettle){
+    let resettleStage = resettle ?? global.tech.resettle ?? 0;
+    if (global.tech.overmind) // Bleed Overmind
+        return Math.Infinity;
+    if (resettleStage < 11) // Initial resettlement
+        return 25000;
+    if (resettleStage >= 11 && resettleStage < 14) // Zombie Intelligence Tech
+        return 40000;
+    if (resettleStage >= 14 && resettleStage < 19) // Zombie Counter Tech, before Assault
+        return 80000;
+    if (resettleStage == 19) // Sever Uplink Assault
+        return 160000;
+    if (resettleStage >= 20) // After Assault
+        return 80000;
+}
+export function infestationSoftCapCrushed(current, amount){
+    let softCap = infestationSoftCap();
+    if (current <= softCap) // Not enough infestation on surface to hit anything accidentally
+        return 0;
+
+    if (current >= softCap * 2) // Hardcap, on average hits the same amount as incoming
+        return Math.round(amount * seededRandom(0.75, 1.25, true));
+
+    // Quadratically increasing up to hardcap
+    let x = current / softCap - 1; //0..1
+    return Math.round(amount * (x * x) * seededRandom(0.75, 1.25, true));
+}
+
 // Regions the resettlement arc keeps off the board until Titan is properly reoccupied. Until then their
 // hordes are unknown and their ruins are not yours to worry about.
 const titanRegions = ['spc_titan','spc_enceladus'];
@@ -6680,8 +6712,15 @@ function zFleetMove(fleet){
             // two percent of hull it lost getting here.
             let load = Math.max(0,Math.round(ship.load * (1 - ship.damage / 200)));
             if (load <= 0){ return; }
-            global.race.zhorde[at] += load;
-            zMessage(loc('zfleet_landing',[ship.name,regionName(at),load.toLocaleString()]),'danger');
+
+            let crushed = infestationSoftCapCrushed(global.race.zhorde[at], load);
+
+            global.race.zhorde[at] += load - crushed;
+            if (crushed == 0)
+                zMessage(loc('zfleet_landing',[ship.name,regionName(at),load.toLocaleString()]),'danger');
+            else
+                zMessage(loc('zfleet_landing_crushed',[ship.name,regionName(at),load.toLocaleString(), crushed.toLocaleString()]),'danger');
+
             // A landing on a region whose horde was a secret gives the game away.
             if (!global.race['zfound']){ global.race['zfound'] = {}; }
             global.race.zfound[at] = true;

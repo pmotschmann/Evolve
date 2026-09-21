@@ -9798,6 +9798,7 @@
   "zfleet_uplink_banner_survive":"Survive for %0 days",
   "zfleet_launch": "An infested %0 has broken orbit and is on course for %1. It will arrive in %2 days.",
   "zfleet_landing": "The %0 has crashed into %1. Its hold has spilled %2 undead onto the surface.",
+  "zfleet_landing_crushed": "The %0 has crashed into %1, obliterating %3 undead on impact. Its hold has spilled %2 undead onto the surface.",
   "zfleet_tau_strike": "%0 infested warships have broken orbit together on a course out of the system. They are running for %1.",
   "infestation_discovered":"A horde of undead creatures wreaked havoc on %0 during the night.",
   "space_infestation": "Infestation",
