@@ -37,8 +37,13 @@ function toNodes(value, context){
     return [value];
 }
 
-// Only elements can take classes, attributes or children; document and window cannot.
+// Only elements have classes and attributes; document and window do not.
 function isElement(node){ return node && node.nodeType === 1; }
+
+// Text and comment nodes expose appendChild too, but only these node types can contain children.
+function canHaveChildren(node){
+    return node && (node.nodeType === 1 || node.nodeType === 9 || node.nodeType === 11);
+}
 
 // ---------------------------------------------------------------------------------------------
 // Event bookkeeping for namespaced listener removal.
@@ -369,11 +374,15 @@ class DomList {
     }
 
     append(...args){
-        return this._insert(args, (target, batch) => { for (const n of batch){ target.appendChild(n); } });
+        return this._insert(args, (target, batch) => {
+            if (!canHaveChildren(target)){ return; }
+            for (const n of batch){ target.appendChild(n); }
+        });
     }
 
     prepend(...args){
         return this._insert(args, (target, batch) => {
+            if (!canHaveChildren(target)){ return; }
             for (let i = batch.length - 1; i >= 0; i--){ target.insertBefore(batch[i], target.firstChild); }
         });
     }

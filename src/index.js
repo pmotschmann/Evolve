@@ -933,8 +933,8 @@ export function index(){
                     <span role="button" class="zero has-text-advanced" @click="clearLog(m.view)">${loc('message_log_clear')}</span>
                     <span role="button" class="zero has-text-advanced" @click="clearLog()">${loc('message_log_clear_all')}</span>
                 </div>
-                <h2 class="is-sr-only">${loc('message_filters')}</h2>
-                <div id="msgQueueFilters" class="hscroll msgQueueFilters"></div>
+                <h2 class="is-sr-only" id="srMsgFiltersHeading">${loc('message_filters')}</h2>
+                <div id="msgQueueFilters" class="hscroll msgQueueFilters" role="radiogroup" aria-labelledby="srMsgFiltersHeading" @keydown="filterKey($event)"></div>
                 <h2 class="is-sr-only">${loc('messages')}</h2>
                 <div id="msgQueueLog" aria-live="polite"></div>
             </div>
@@ -957,7 +957,7 @@ export function index(){
     });
     message_filters.forEach(function (filter){
         $(`#msgQueueFilters`).append(`
-            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" aria-disabled="${filter === 'all' ? 'true' : 'false'}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis" role="button">${loc('message_log_' + filter)}</span>
+            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" aria-checked="${filter === 'all' ? 'true' : 'false'}" tabindex="${filter === 'all' ? '0' : '-1'}" @click="swapFilter('${filter}')" v-show="s.${filter}.vis" role="radio">${loc('message_log_' + filter)}</span>
         `);
     });
     vBind({
@@ -969,8 +969,8 @@ export function index(){
         methods: {
             swapFilter(filter){
                 if (message_logs.view !== filter){
-                    $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-disabled', 'false');
-                    $(`#msgQueueFilter-${filter}`).addClass('is-active').attr('aria-disabled', 'true');
+                    $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-checked', 'false').attr('tabindex', '-1');
+                    $(`#msgQueueFilter-${filter}`).addClass('is-active').attr('aria-checked', 'true').attr('tabindex', '0');
                     message_logs.view = filter;
                     let queue = $(`#msgQueueLog`);
                     clearElement(queue);
@@ -993,6 +993,38 @@ export function index(){
                         global.lastMsg[tag] = [];
                     });
                 }
+            },
+            filterKey(event){
+                if (event.altKey || event.ctrlKey || event.metaKey) return;
+                const radio = event.target.closest('[role="radio"]');
+                if (!radio) return;
+                // get all visible fake radio buttons from the container div
+                const radios = Array.from(event.currentTarget.querySelectorAll('[role="radio"]'))
+                    .filter(r => window.getComputedStyle(r).display !== 'none');
+                let radioIndex = radios.indexOf(radio);
+                switch (event.key) {
+                    case 'ArrowRight':
+                    case 'ArrowDown':
+                        radioIndex++;
+                        if (radioIndex >= radios.length){
+                            radioIndex = 0;
+                        }
+                        break;
+                    case 'ArrowLeft':
+                    case 'ArrowUp':
+                        radioIndex--;
+                        if (radioIndex < 0){
+                            radioIndex = radios.length-1;
+                        }
+                        break;
+                    case ' ':
+                        break; // just break on space to have click triggered later
+                    default:
+                        return; // do nothing with other keys
+                }
+                radios[radioIndex].focus();
+                radios[radioIndex].click();
+                event.preventDefault();
             },
             trigModal(){
                 this.$buefy.modal.open({
@@ -1022,7 +1054,6 @@ export function index(){
                             </div>
                         `);
                         let catMax = $(`
-                            <hr>
                             <div>
                                 <div>
                                     <span class="has-text-warning">${loc('message_log_settings_length')}</span>
@@ -1030,7 +1061,6 @@ export function index(){
                             </div>
                         `);
                         let catSave = $(`
-                            <hr>
                             <div>
                                 <div>
                                     <span class="has-text-warning">${loc('message_log_settings_save')}</span>
@@ -1038,8 +1068,8 @@ export function index(){
                             </div>
                         `);
                         body.append(catVis);
-                        body.append(catMax);
-                        body.append(catSave);
+                        body.append('<hr>', catMax);
+                        body.append('<hr>', catSave);
                         
                         let visSet = ``;
                         let maxSet = ``;
@@ -1048,9 +1078,9 @@ export function index(){
                         let maxInputs = {};
                         let saveInputs = {};
                         message_filters.forEach(function (filter){
-                            visSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-checkbox class="patrol" v-model="s.${filter}.vis" :disabled="checkDisabled('${filter}',s.${filter}.vis)" :input="check('${filter}')"></b-checkbox></div>`;
-                            maxSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="maxVal('${filter}')" min="1" v-model="mi.${filter}" :controls="false"></b-numberinput></div>`;
-                            saveSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="saveVal('${filter}')" min="0" :max="s.${filter}.max" v-model="si.${filter}" :controls="false"></b-numberinput></div>`;
+                            visSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><label for="msg_visSet_${filter}_switch">${loc('message_log_' + filter)}</label> <b-checkbox class="patrol" v-model="s.${filter}.vis" :disabled="checkDisabled('${filter}',s.${filter}.vis)" :input="check('${filter}')" input-id="msg_visSet_${filter}_switch"></b-checkbox></div>`;
+                            maxSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span id="msg_maxSet_${filter}_label">${loc('message_log_' + filter)}</span> <b-numberinput :input="maxVal('${filter}')" min="1" v-model="mi.${filter}" :controls="false" aria-labelledby="msg_maxSet_${filter}_label"></b-numberinput></div>`;
+                            saveSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span id="msg_saveSet_${filter}_label">${loc('message_log_' + filter)}</span> <b-numberinput :input="saveVal('${filter}')" min="0" :max="s.${filter}.max" v-model="si.${filter}" :controls="false" aria-labelledby="msg_saveSet_${filter}_label"></b-numberinput></div>`;
                             
                             maxInputs[filter] = global.settings.msgFilters[filter].max;
                             saveInputs[filter] = global.settings.msgFilters[filter].save;
@@ -1084,8 +1114,8 @@ export function index(){
                                         Object.keys(global.settings.msgFilters).forEach(function (filt){
                                             if (global.settings.msgFilters[filt].vis && !haveVis){
                                                 haveVis = true;
-                                                $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
-                                                $(`#msgQueueFilter-${filt}`).addClass('is-active');
+                                                $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active').attr('aria-checked', 'false').attr('tabindex', '-1');
+                                                $(`#msgQueueFilter-${filt}`).addClass('is-active').attr('aria-checked', 'true').attr('tabindex', '0');
                                                 message_logs.view = filt;
                                                 let queue = $(`#msgQueueLog`);
                                                 clearElement(queue);
