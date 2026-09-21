@@ -6310,13 +6310,17 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
             multiplier += traits.pack_mentality.vars()[0];
         }
     }
-    if (structure === 'stone_house'){
+    if (['stone_house', 'surface_apartment'].includes('structure')){
         if (global.race['solitary']){
             multiplier += traits.solitary.vars()[1];
         }
         if (global.race['pack_mentality']){
             multiplier -= traits.pack_mentality.vars()[1];
         }
+    }
+    
+    if (['hollow','stone_house','surface_apartment'].includes(structure)){
+        base *= geneBonus('frugal', false, true);
     }
     if (['under_mine', 'under_coal_mine', 'smelter', 'coal_power', 'under_factory', 'oil_pump', 'fluid_depot', 'under_oil_power', 'nanite_factory'].includes(structure)){
         multiplier -= govActive('dirty_jobs',0);

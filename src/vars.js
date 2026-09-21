@@ -2408,7 +2408,8 @@ if (!global.city['hot']){
 
 [
     'unemployed','leadership','warmonger','gardener','aberrant_magnificent','rev','tax',
-    'shrine','blood_thirst','broadcast','vr','zoo','bliss_den','restaurant','cap','potential'
+    'shrine','blood_thirst','broadcast','vr','zoo','bliss_den','restaurant','under_bonfire',
+    'glamour','cap','potential'
 ].forEach(function(k){
     if (!global.city.morale.hasOwnProperty(k)){
         global.city.morale[k] = 0;

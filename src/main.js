@@ -3704,7 +3704,7 @@ function fastLoop(){
                 mVal /= 2;
             }
             else {
-                signalVal = p_on['wardenclyffe'];
+                signalVal = p_on['wardenclyffe'] || 0;
             }
             global.city.morale.broadcast = hugeAdjust(signalVal) * mVal;
             morale += hugeAdjust(signalVal) * mVal;
@@ -3832,6 +3832,9 @@ function fastLoop(){
             global.city.morale.warmonger = 0;
         }
 
+        morale += global.race['glamour'] * geneVars('glamour')[0];
+        global.city.morale.glamour = global.race['glamour'] * geneVars('glamour')[0];
+        
         let mBaseCap = 100;
         mBaseCap += global.city['casino'] ? hugeAdjust(p_on['casino']) : 0;
         mBaseCap += global.space['spc_casino'] ? hugeAdjust(p_on['spc_casino']) : 0;
@@ -3952,7 +3955,6 @@ function fastLoop(){
             morale = moraleCap + (morale - moraleCap) * gasVal / 100;
         }
         // Glamour: the fey are simply pleasanter to live among.
-        morale *= geneBonus('glamour');
         global.city.morale.cap = moraleCap;
         global.city.morale.current = morale;
 
@@ -10700,9 +10702,14 @@ function midLoop(){
             };
         }
 
+        let rawHousing = caps[global.race.species];
         if (global.race['lone_survivor']){
             breakdown.c[global.race.species][loc('base')] = '1v';
             caps[global.race.species] = 1;
+            rawHousing = caps[global.race.species];
+        }
+        else if (caps[global.race.species] > 0){ //todo: this works in Lone Survivor (it probably shouldn't)
+            caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
         }
 
         // Apply storage supplied by deployed Supply Ships.
@@ -11468,11 +11475,6 @@ function midLoop(){
                 }
             }
         });
-
-        const rawHousing = caps[global.race.species];
-        if (caps[global.race.species] > 0){ //todo: this works in Lone Survivor (it probably shouldn't)
-            caps[global.race.species] = Math.round(caps[global.race.species] * geneBonus('ruminant'));
-        }
 
         // Track population by housing zone for local upkeep.
         setZoneHousing(fitHousing(regCapAccum[global.race.species] || {}, rawHousing, caps[global.race.species]), global.resource[global.race.species].amount);

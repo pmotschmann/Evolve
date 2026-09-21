@@ -2715,7 +2715,7 @@ export const tauCetiModules = {
                 }
                 return effectText + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
-            powered(){ return powerCostMod(7500, true); },
+            powered(){ return 7500; },
             switchable(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100; },
             operating(){
                 if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100){ return false; }

@@ -2703,7 +2703,7 @@ export function tradeSellPrice(res){
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
     if (global.race['cunning']){
-        rate *= (1 - geneVars('cunning')[0] / 100) ** geneRank('cunning');
+        rate *= geneBonus('cunning',false, true);
     }
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);

@@ -1132,7 +1132,7 @@ export function genCivName(alt){
 export function costMultiplier(structure,offset,base,multiplier,cat){
     // Frugal: the small genus needs less of everything to put a roof up.
     if (['basic_housing','cottage','apartment'].includes(structure)){
-        base = base * (2 - geneBonus('frugal'));
+        base *= geneBonus('frugal', false, true);
     }
     if (!cat){
         cat = 'city';
@@ -1917,7 +1917,7 @@ export function powerCostMod(energy, mega){
         energy *= 1.5;
     }
     // Frostbound: the polar genus runs its buildings colder.
-    energy *= 2 - geneBonus('frostbound');
+    energy *= geneBonus('frostbound', false, true);
     energy *= (mega || !global.race['humongous']) ? 1 : hugeAdjust(1);
     return +(energy).toFixed(2);
 }
