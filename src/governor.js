@@ -336,7 +336,7 @@ const names = {
     angelic: ['Lightbringer','Illuminous','Sparks','Chrub','Halo','Star','Pompous','Radiant','Fluffy','Fabio'],
     synthetic: ['HK47','D2R2','Bishop','Wally','Number5','Sunny','Data','Beta','Dot','Motoko'],
     eldritch: ['Tentacle','Faceless','Horror','Darkness','Void','Dreamer','Mindflayer','Whisper','Paranoia','Empty'],
-    primordial: ['Rocky','Runner','Plume','Green','Walk','Tar','Jungle','Bone','Wild','Prime'],
+    primordial: ['Archilles','Storm','Al','Red','Blue','Grozyr','Rudy','Jho','Fang','Krush']
 };
 
 function genGovernor(setSize){

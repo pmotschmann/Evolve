@@ -3292,7 +3292,7 @@ const iceAgeModules = {
                 storage: {
                     res(res){
                         let list = {
-                            'Power_Bones': 50
+                            'Power_Bones': hugeAdjust(50)
                         };
                         return res ? (list[res] || 0) : list;
                     },
