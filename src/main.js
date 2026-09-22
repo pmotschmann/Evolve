@@ -2723,6 +2723,17 @@ function fastLoop(){
             }
         }
 
+        if (global.tauceti['gas_relay']){
+            if (p_on['gas_relay']){
+                if (global.tauceti.gas_relay.charged < 10000){
+                    global.tauceti.gas_relay.charged++;
+                }
+            }
+            else {
+                global.tauceti.gas_relay.charged = 0;
+            }
+        }
+
         // Troop Lander
         if (global.space['fob'] && global.space['lander']){
             if (p_on['fob']){
@@ -3389,7 +3400,7 @@ function fastLoop(){
         }
 
         // Ship Yard
-        if ((p_on['shipyard'] || p_on['adv_shipyard'])){
+        if ((p_on['shipyard'] || p_on['adv_shipyard'] || p_on['gas_shipyard'])){
             global.settings.showShipYard = true;
         }
         else {
@@ -13649,7 +13660,7 @@ function longLoop(){
                         refreshDock(ship, genXYZcoord(shipPort(ship)));
                     }
                     // Repair ships provide docked hull repair.
-                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || repairShipYards().includes(shipDockedAt(ship)))){
+                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || p_on['gas_shipyard'] || repairShipYards().includes(shipDockedAt(ship)))){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
                         // anywhere else it is patched up every other day (see the cadence above).
                         ship.damage -= atShipyard(ship) ? yardRepair * day_step : fieldRepair * fieldDays;
