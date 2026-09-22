@@ -227,6 +227,12 @@ const spaceProjects = {
                     : [{ s: global.space.moon_base.s_max - global.space.moon_base.support }];
             },
             support(){ return 1; },
+            s_type: ['moon','red'],
+            support_provider: true,
+            support_for: {
+                moon(){ return this.support(); },
+                red(){ return global.tech['luna'] && global.tech.luna >= 3 ? this.support() : 0; }
+            },
             effect(){
                 let orbitEffect = '';
                 if (decayPerks() && global.tech['broadcast'] && !global.race['joyless']){
@@ -664,6 +670,7 @@ const spaceProjects = {
                 return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
             },
             support(){ return global.race['cataclysm'] || global.race['fasting'] ? 2 : 1; },
+            s_type: 'red',
             action(args){
                 if (payCosts(this)){
                     incrementStruct('red_tower');
@@ -2758,6 +2765,8 @@ const spaceProjects = {
                 return `<div>${loc('plus_max_resource',[jobScale(3),loc('job_space_miner')])}</div>${elerium}<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div><div class="has-text-caution">${loc('space_belt_station_effect4',[food,this.powered(),global.resource.Food.name])}</div>`;
             },
             support(){ return jobScale(3); },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(fuel_adjust(2.5,true)) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(3); },
             refresh: true,
             storage: {
@@ -3598,6 +3607,8 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[hugeEffect(helium, 2),this.powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[hugeEffect(food, 0),global.resource.Food.name])}</div>`;
             },
             support(){ return 5; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(int_fuel_adjust(5)) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(10); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -3651,6 +3662,7 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div><span>${loc('plus_max_citizens',[citizens])}</span>, <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span></div>`;
             },
             support(){ return 1; },
+            s_type: 'alpha',
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -4314,6 +4326,9 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div><div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[uranium,global.resource.Uranium.name])}</div>${det}<div class="has-text-caution">${loc('city_fission_power_effect',[hugeEffect(fuel)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             support(){ return 1; },
+            s_type: 'alpha',
+            support_fuel(){ return { r: 'Uranium', a: hugeAdjust(0.28) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -4733,6 +4748,8 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_nexus_effect1',[this.support()])}</div><div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div><div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[deuterium,global.resource.Deuterium.name])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('interstellar_nexus_effect2',[this.powered(),hugeEffect(350, 0)])}</div>`;
             },
             support(){ return 2; },
+            support_fuel(){ return { r: 'Money', a: hugeAdjust(350) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(8); },
             powerBalancer(){
                 return [{ s: global.interstellar.nexus.s_max - global.interstellar.nexus.support }];
@@ -5838,7 +5855,8 @@ const galaxyProjects = {
                     color: 'success',
                 };
             },
-            support: 'starbase'
+            support: 'starbase',
+            support_condition(){ return !!p_on['s_gate']; }
         },
         gateway_mission: {
             id: 'galaxy-gateway_mission',
@@ -5924,6 +5942,8 @@ const galaxyProjects = {
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[hugeEffect(25)])}</div><div>${loc('galaxy_gateway_support',[this.support()])}</div><div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[hugeEffect(helium, 2),this.powered(wiki)])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[hugeEffect(food, 0),global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(int_fuel_adjust(25)) }; },
+            support_fuel_adjust: false,
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 12 : 0); },
             powerBalancer(){
                 return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
@@ -5984,6 +6004,8 @@ const galaxyProjects = {
                     return num_starbases_on ? 0.25 * num_starbases_on * mult : 0;
                 }
             },
+            s_type: 'gateway',
+            support_provider: true,
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 if(global.race['fasting']){
@@ -6361,6 +6383,7 @@ const galaxyProjects = {
                 return `${gateway}<div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[deuterium,global.resource.Deuterium.name])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
             },
             support(){ return 0.5; },
+            s_type: 'gateway',
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
@@ -6440,6 +6463,7 @@ const galaxyProjects = {
                 return know;
             },
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
+            s_type: 'gateway',
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
@@ -7102,7 +7126,8 @@ const galaxyProjects = {
                     color: 'danger',
                 };
             },
-            support: 'foothold'
+            support: 'foothold',
+            support_condition(){ return !!p_on['s_gate']; }
         },
         alien2_mission: {
             id: 'galaxy-alien2_mission',

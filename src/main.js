@@ -7,7 +7,7 @@ import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, syncSupplyZones, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
 import { defineJobs, job_data, loadFoundry, farmerValue, jobScale, jobStack, workerScale, limitCraftsmen, loadServants, craftsmanCap, craftsmanMax, craftsmanCapacity, craftsmanCapacityByZone, craftBenchByZone, hugeScale } from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, smelterInfiltratedShare,setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, initStructureGrids, getStructureGrids, supportGridValue, nf_resources, replicator, replicatorLines, luxGoodPrice, smelterUnlocked, smelterFuelConfig, smelterCapacityByZone, smelterInfiltratedShare,setupRituals, maxRitualNum, ritual_types, factoryData } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer, rivalCollapsed, collapseRival } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, checkPowerRequirements, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, start_iceage, orbitDecayed, postBuild, skipRequirement, structName, templeCount, initStruct, casino_vault, casinoEarn, doCallbacks, cLabels } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, piracy, spaceTech, universe_affixes, galaxyRegions, gatewayArmada, galaxy_ship_types, spaceSectors } from './space.js';
@@ -282,70 +282,8 @@ if (global['new']){
     messageQueue(loc('new'), 'warning',false,['progress']);
     global['new'] = false;
 }
-if (global.city['mass_driver']){
-    p_on['mass_driver'] = global.city['mass_driver'].on;
-}
-if (global.portal['turret']){
-    p_on['turret'] = global.portal.turret.on;
-}
-if (global.interstellar['starport']){
-    p_on['starport'] = global.interstellar.starport.on;
-}
 if (global.interstellar['fusion']){
     int_on['fusion'] = global.interstellar.fusion.on;
-}
-if (global.interstellar['s_gate']){
-    p_on['s_gate'] = global.interstellar.s_gate.on;
-}
-if (global.portal['hell_forge']){
-    p_on['hell_forge'] = global.portal.hell_forge.on;
-}
-if (global.portal['demon_forge']){
-    p_on['demon_forge'] = global.portal.demon_forge.on;
-}
-if (global.space['sam']){
-    p_on['sam'] = global.space.sam.on;
-}
-if (global.space['operating_base']){
-    p_on['operating_base'] = global.space.operating_base.on;
-    support_on['operating_base'] = global.space.operating_base.on;
-}
-if (global.space['fob']){
-    p_on['fob'] = global.space.fob.on;
-}
-if (global.tauceti['fusion_generator']){
-    p_on['fusion_generator'] = global.tauceti.fusion_generator.on;
-}
-if (global.tauceti['antimatter_reactor']){
-    p_on['antimatter_reactor'] = global.tauceti.antimatter_reactor.on;
-}
-if (global.eden['encampment']){
-    p_on['encampment'] = global.eden.encampment.on;
-}
-if (global.eden['soul_engine']){
-    p_on['soul_engine'] = global.eden.soul_engine.on;
-    support_on['soul_engine'] = global.eden.soul_engine.on;
-}
-if (global.eden['corruptor']){
-    p_on['corruptor'] = global.eden.corruptor.on;
-}
-if (global.eden['ectoplasm_processor']){
-    p_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
-    support_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
-}
-if (global.eden['research_station']){
-    p_on['research_station'] = global.eden.research_station.on;
-    support_on['research_station'] = global.eden.research_station.on;
-}
-if (global.eden['bunker']){
-    p_on['bunker'] = global.eden.bunker.on;
-    support_on['bunker'] = global.eden.bunker.on;
-}
-if (global.eden['spirit_vacuum']){
-    p_on['spirit_vacuum'] = global.eden.spirit_vacuum.on;
-}
-if (global.eden['spirit_battery']){
-    p_on['spirit_battery'] = global.eden.spirit_battery.on;
 }
 if (global.city['replicator'] && global.race?.replicator?.pow && global.race?.governor?.config?.replicate?.pow?.on){
     if (Object.values(global.race.governor.tasks || {}).includes('replicate')){
@@ -364,6 +302,7 @@ if (global.race['shapeshifter']){
 }
 setupRituals();
 
+initStructureGrids();
 Object.keys(gridDefs()).forEach(function(gridtype){
     powerGrid(gridtype);
 });
@@ -2383,66 +2322,55 @@ function fastLoop(){
             power_generated[loc('underground_core_tap_perk')] = output; //the default core tap gets overridden even if it doesn't exist so a replacement is used.
         }
 
-        [
-            {r:'city',s:'coal_power'},{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
-            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'},{r:'tau_red',s:'antimatter_reactor'},
-            {r:'industry', s:'under_coal_power'},{r:'industry', s:'under_oil_power'},{r:'core', s:'core_tap'},{r:'crater', s:'crater_fission'},{r:'crater', s:'rocket_engine'}
-        ].forEach(function(generator){
-            let space = convertSpaceSector(generator.r);
-            let region = generator.r === 'city' ? generator.r : space;
-            let c_action = generator.r === 'city' ? actions.city : actions[space][generator.r];
-            let title = typeof c_action[generator.s].title === 'string' ? c_action[generator.s].title : c_action[generator.s].title();
+        const structureGrids = getStructureGrids();
+        structureGrids.generators.forEach(function(generator){
+            const { sector, struct, region, c_action } = generator;
+            const state = global[region][struct];
+            const title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
 
-            if (global[region][generator.s] && global[region][generator.s]['on']){
-                let watts = c_action[generator.s].powered() * infiltratorFactor(generator.r, generator.s);
-                p_on[generator.s] = global[region][generator.s].on;
+            if (state && state.on){
+                const watts = c_action.powered() * infiltratorFactor(sector,struct);
+                p_on[struct] = state.on;
+                if (typeof c_action.power_limit === 'function'){ p_on[struct] = Math.min(p_on[struct],c_action.power_limit()); }
+                if (typeof c_action.support === 'function' && c_action.support() < 0){
+                    p_on[struct] = Math.min(p_on[struct],support_on[struct] || 0);
+                }
 
-                if (c_action[generator.s].hasOwnProperty('p_fuel')){
-                    let s_fuels = c_action[generator.s].p_fuel();
-                    if (!Array.isArray(s_fuels)){
-                        s_fuels = [s_fuels];
-                    }
-                    for (let j=0; j<s_fuels.length; j++){
-                        let fuel = s_fuels[j];
-                        let fuel_cost = fuel.a;
-                        if(['Oil', 'Super_Fuel'].includes(fuel.r) && ['industry', 'core', 'wastes', 'crater'].includes(region)){
-                            fuel_cost = ice_fuel_adjust(fuel_cost);
+                if (c_action.hasOwnProperty('p_fuel')){
+                    let fuels = c_action.p_fuel();
+                    if (!Array.isArray(fuels)){ fuels = [fuels]; }
+                    fuels.forEach(function(fuel){
+                        let fuelCost = fuel.a;
+                        if (c_action.p_fuel_adjust !== false && ['Oil','Super_Fuel'].includes(fuel.r) && ['industry','core','wastes','crater'].includes(sector)){
+                            fuelCost = ice_fuel_adjust(fuelCost);
                         }
-                        else if (['Oil','Helium_3'].includes(fuel.r) && region !== 'city'){
-                            fuel_cost = region === 'space' ? +fuel_adjust(fuel_cost,true) : +int_fuel_adjust(fuel_cost);
+                        else if (c_action.p_fuel_adjust !== false && ['Oil','Helium_3'].includes(fuel.r) && sector !== 'city'){
+                            fuelCost = region === 'space' ? +fuel_adjust(fuelCost,true) : +int_fuel_adjust(fuelCost);
                         }
-
-                        let mb_consume = p_on[generator.s] * fuel_cost;
-                        breakdown.p.consume[fuel.r][title] = -(mb_consume);
-                        for (let k=0; k<p_on[generator.s]; k++){
-                            // Generators consume fuel from the world where they operate.
-                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost), false, supplyRegionKey(generator.r))){
-                                mb_consume -= (p_on[generator.s] * fuel_cost) - (k * fuel_cost);
-                                p_on[generator.s] = k;
+                        let consumed = p_on[struct] * fuelCost;
+                        breakdown.p.consume[fuel.r][title] = -consumed;
+                        for (let index=0; index<p_on[struct]; index++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuelCost), false, supplyRegionKey(sector))){
+                                consumed -= (p_on[struct] * fuelCost) - (index * fuelCost);
+                                p_on[struct] = index;
                                 break;
                             }
                         }
-                    }
+                    });
                 }
 
-                let power = p_on[generator.s] * watts;
+                const power = p_on[struct] * watts;
                 max_power += power;
                 power_grid -= power;
-                power_generated[title] = -(power);
+                power_generated[title] = -power;
 
-                let genOnSel = `#${region}-${generator.s} .on`;
-                if (p_on[generator.s] !== global[region][generator.s].on){
-                    powerBadge(genOnSel,true,`ON ${p_on[generator.s]}/${global[region][generator.s].on}`);
-                }
-                else {
-                    powerBadge(genOnSel,false,`ON`);
-                }
+                const selector = '#' + region + '-' + struct + ' .on';
+                powerBadge(selector,p_on[struct] !== state.on,p_on[struct] !== state.on ? 'ON ' + p_on[struct] + '/' + state.on : 'ON');
             }
             else {
                 power_generated[title] = 0;
-                p_on[generator.s] = 0;
-                let genOnSel = `#${region}-${generator.s} .on`;
-                powerBadge(genOnSel,false,`ON`);
+                p_on[struct] = 0;
+                powerBadge('#' + region + '-' + struct + ' .on',false,'ON');
             }
         });
 
@@ -2460,53 +2388,6 @@ function fastLoop(){
                 // Display on the right side of the breakdown to demonstrate that there is no global production scaling
                 breakdown.p.consume['Uranium'][loc('city_coal_ash')] = ash;
             }
-        }
-
-        if (global.space['hydrogen_plant']){
-            let output = actions.space.spc_titan.hydrogen_plant.powered() * infiltratorFactor('spc_titan','hydrogen_plant');
-            if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
-                global.space.hydrogen_plant.on = global.space.electrolysis.on;
-            }
-            let power = global.space.hydrogen_plant.on * output;
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('space_hydrogen_plant_title')] = -(power);
-        }
-
-        if (global.portal['incinerator']){
-            let output = actions.portal.prtl_wasteland.incinerator.powered();
-            let power = global.portal.incinerator.on * output;
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('portal_incinerator_title')] = -(power);
-        }
-
-        if (global.portal['inferno_power']){
-            let fuels = actions.portal.prtl_ruins.inferno_power.fuel;
-            let operating = global.portal.inferno_power.on;
-
-            Object.keys(fuels).forEach(function(fuel){
-                let amount = hugeAdjust(fuels[fuel]);
-                let consume = operating * amount;
-                while (consume * time_multiplier > global.resource[fuel].amount + (global.resource[fuel].diff > 0 ? global.resource[fuel].diff * time_multiplier : 0) && consume > 0){
-                    operating--;
-                    consume -= amount;
-                }
-                breakdown.p.consume[fuel][loc('portal_inferno_power_title')] = -(consume);
-                modRes(fuel, -(consume * time_multiplier), false, 'prtl_ruins');
-            });
-            let power = operating * actions.portal.prtl_ruins.inferno_power.powered();
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('portal_inferno_power_title')] = -(power);
-        }
-
-        if (global.eden['soul_engine'] && global.tech['asphodel'] && global.tech.asphodel >= 4){
-            let power = (support_on['soul_engine'] || 0) * actions.eden.eden_asphodel.soul_engine.powered();
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('eden_soul_engine_title')] = -(power);
         }
 
         if (global.space['swarm_satellite'] && global.space['swarm_control']){
@@ -2723,6 +2604,17 @@ function fastLoop(){
             }
         }
 
+        if (global.tauceti['gas_relay']){
+            if (p_on['gas_relay']){
+                if (global.tauceti.gas_relay.charged < 10000){
+                    global.tauceti.gas_relay.charged++;
+                }
+            }
+            else {
+                global.tauceti.gas_relay.charged = 0;
+            }
+        }
+
         // Troop Lander
         if (global.space['fob'] && global.space['lander']){
             if (p_on['fob']){
@@ -2803,160 +2695,89 @@ function fastLoop(){
             if (global.space.descender.on > ready){ global.space.descender.on = ready; }
         }
 
-        // Moon Bases, Spaceports, Etc
-        [
-            { a: 'space', r: 'spc_moon', s: 'moon_base', g: 'moon' },
-            { a: 'space', r: 'spc_red', s: 'spaceport', g: 'red' },
-            { a: 'space', r: 'spc_titan', s: 'electrolysis', g: 'titan' },
-            { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
-            { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
-            { a: 'space', r: 'spc_venus', s: 'cloud_city', g: 'venus' },
-            { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
-            { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
-            { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
-            { a: 'eden', r: 'eden_asphodel', s: 'encampment', g: 'asphodel' },
-            { a: 'surface', r: 'wastes', s: 'great_heater', g: 'wastes'},
-            { a: 'surface', r: 'crater', s: 'crater_headquarters', g: 'crater'}
-        ].forEach(function(sup){
-            sup['r2'] = sup['r2'] || sup.r;
-            if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
-                if (!p_structs.includes(`${sup.r}:${sup.s}`)){
-                    p_on[sup.s] = global[sup.a][sup.s].on;
-                }
+        // Support grids
+        Object.values(structureGrids.support).forEach(function(group){
+            const anchor = group.anchor;
+            const anchorState = anchor && global[anchor.region][anchor.struct];
+            if (!anchorState){
+                group.consumers.forEach(function(consumer){ support_on[consumer.struct] = 0; });
+                return;
+            }
 
-                if (actions[sup.a][sup.r][sup.s].hasOwnProperty('support_fuel')){
-                    let s_fuels = actions[sup.a][sup.r][sup.s].support_fuel();
-                    if (!Array.isArray(s_fuels)){
-                        s_fuels = [s_fuels];
-                    }
-                    for (let j=0; j<s_fuels.length; j++){
-                        let fuel = s_fuels[j];
-                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? (sup.a === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
-                        let mb_consume = p_on[sup.s] * fuel_cost;
-                        const sup_action = actions[sup.a][sup.r][sup.s];
-                        const sup_title = typeof sup_action.title === 'string' ? sup_action.title : sup_action.title();
-                        breakdown.p.consume[fuel.r][`${sup_title}+${sup_action.id}`] = -(mb_consume);
-                        for (let i=0; i<p_on[sup.s]; i++){
-                            // The support structure's own world: `sup.a` is the container it counts
-                            // under, `sup.r` the place it is.
-                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost), false, supplyRegionKey(sup.r))){
-                                mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
-                                p_on[sup.s] = i;
+            const enabled = !group.info?.support_condition || group.info.support_condition();
+            let capacity = 0;
+            if (enabled){ group.providers.forEach(function(provider){
+                const state = global[provider.region][provider.struct];
+                if (!state){ return; }
+                let active = typeof provider.c_action.powered === 'function'
+                    ? (p_on[provider.struct] || 0)
+                    : (state.on === undefined ? (state.count > 0 ? 1 : 0) : state.on);
+                if (provider.c_action.hasOwnProperty('support_fuel')){
+                    let fuels = provider.c_action.support_fuel();
+                    if (!Array.isArray(fuels)){ fuels = [fuels]; }
+                    fuels.forEach(function(fuel){
+                        const fuelCost = provider.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3'].includes(fuel.r)
+                            ? (provider.region === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
+                            : fuel.a);
+                        const title = typeof provider.c_action.title === 'string' ? provider.c_action.title : provider.c_action.title();
+                        let consumed = active * fuelCost;
+                        breakdown.p.consume[fuel.r][title + '+' + provider.c_action.id] = -consumed;
+                        for (let index=0; index<active; index++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuelCost), false, supplyRegionKey(provider.sector))){
+                                consumed -= (active * fuelCost) - (index * fuelCost);
+                                active = index;
                                 break;
                             }
                         }
-                        let supOnSel = `#space-${sup.s} .on`;
-                        if (p_on[sup.s] < global[sup.a][sup.s].on){
-                            powerBadge(supOnSel,true,`ON ${p_on[sup.s]}/${global[sup.a][sup.s].on}`);
-                        }
-                        else {
-                            powerBadge(supOnSel,false,`ON`);
-                        }
-                    }
+                    });
                 }
+                p_on[provider.struct] = active;
+                const output = supportGridValue(provider,group.type) * infiltratorFactor(provider.sector,provider.struct);
+                capacity += active * output;
+                const selector = '#' + provider.region + '-' + provider.struct + ' .on';
+                powerBadge(selector,active !== (state.on || 0),active !== (state.on || 0) ? 'ON ' + active + '/' + state.on : 'ON');
+            }); }
+            anchorState.s_max = capacity;
 
-                global[sup.a][sup.s].s_max = p_on[sup.s] * actions[sup.a][sup.r][sup.s].support();
-                // Reduce support capacity by the provider's infiltrator penalty.
-                const sup_infil = infiltratorFactor(sup.r, sup.s);
-                if (sup_infil < 1){
-                    global[sup.a][sup.s].s_max = Math.floor(global[sup.a][sup.s].s_max * sup_infil);
+            let used = 0;
+            global.support[group.type].forEach(function(key){
+                const consumer = structureGrids.entries.get(key);
+                if (!consumer){ return; }
+                const state = global[consumer.region][consumer.struct];
+                if (!state){ support_on[consumer.struct] = 0; return; }
+                const supportSize = Math.max(0,-consumer.c_action.support());
+                let active = state.on || 0;
+                if (!group.unlimited && supportSize > 0){
+                    active = Math.min(active,Math.max(0,Math.floor((capacity - used) / supportSize)));
                 }
-                switch (sup.g){
-                    case 'moon':
-                        {
-                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] * actions.space.spc_home.nav_beacon.support() : 0;
-                        }
-                        break;
-                    case 'red':
-                        {
-                            global[sup.a][sup.s].s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] * actions.space.spc_red.red_tower.support() : 0;
-                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] * actions.space.spc_home.nav_beacon.support() : 0;
-                        }
-                        break;
-                    case 'tau_home':
-                        {
-                            global[sup.a][sup.s].s_max += p_on['tau_farm'] ? p_on['tau_farm'] : 0;
-                        }
-                        break;
-                    case 'asphodel':
-                        {
-                            global[sup.a][sup.s].s_max += (p_on['rectory'] ? p_on['rectory'] : 0) * actions.eden.eden_asphodel.rectory.support();
-                            global[sup.a][sup.s].s_max += (p_on['corruptor'] ? p_on['corruptor'] : 0) * actions.eden.eden_asphodel.corruptor.support();
-                        }
-                        break;
-                    case 'wastes':
-                        {
-                            global[sup.a][sup.s].s_max += (p_on['surface_farm'] ? p_on['surface_farm'] : 0) * actions.surface.wastes.surface_farm.support();
-                            global[sup.a][sup.s].s_max += actions.surface.wastes.grand_dome.support();
-                            global[sup.a][sup.s].s_max = +global[sup.a][sup.s].s_max.toFixed(1);
-                        }
-                        break;
-                    case 'crater':
-                        {
-                            global[sup.a][sup.s].s_max += (p_on['crater_fission'] ? p_on['crater_fission'] : 0) * actions.surface.crater.crater_fission.support();
-                            global[sup.a][sup.s].s_max += (p_on['rocket_engine'] ? p_on['rocket_engine'] : 0) * actions.surface.crater.rocket_engine.support();
-                        }
-                        break;
-                }
-            }
-
-            if (global[sup.a][sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
-                global[sup.a][sup.s].s_max = 0;
-            }
-
-            if (global[sup.a][sup.s]){
-                let used_support = 0;
-                let area_structs = global.support[sup.g].map(x => x.split(':')[1]);
-                for (var i = 0; i < area_structs.length; i++){
-                    if (global[sup.a][area_structs[i]]){
-                        let id = actions[sup.a][sup.r2][area_structs[i]].id;
-                        let supportSize = actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support') ? actions[sup.a][sup.r2][area_structs[i]].support() * -1 : 1;
-                        let operating = global[sup.a][area_structs[i]].on;
-                        let remaining_support = global[sup.a][sup.s].s_max - used_support;
-
-                        let areaOnSel = `#${id} .on`;
-                        if ((operating * supportSize > remaining_support) && !sup.oc){
-                            operating = Math.floor(remaining_support / supportSize);
-                            powerBadge(areaOnSel,true,`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
-                        }
-                        else {
-                            powerBadge(areaOnSel,false,`ON`);
-                        }
-
-                        if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
-                            let s_fuels = actions[sup.a][sup.r2][area_structs[i]].support_fuel();
-                            if (!Array.isArray(s_fuels)){
-                                s_fuels = [s_fuels];
-                            }
-                            for (let j=0; j<s_fuels.length; j++){
-                                let fuel = s_fuels[j];
-                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? (sup.a === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
-                                let mb_consume = operating * fuel_cost;
-                                const area_action = actions[sup.a][sup.r2][area_structs[i]];
-                                const area_title = typeof area_action.title === 'string' ? area_action.title : area_action.title();
-                                // Attribute support costs to the zone the support covers.
-                                breakdown.p.consume[fuel.r][`${area_title}+${supplyRegionKey(sup.r2)}`] = -(mb_consume);
-                                for (let i=0; i<operating; i++){
-                                    // These structures are drawn from `sup.r2`, the area the support
-                                    // covers, which is not always the world the support itself is on.
-                                    if (!modRes(fuel.r, -(time_multiplier * fuel_cost), false, supplyRegionKey(sup.r2))){
-                                        mb_consume -= (operating * fuel_cost) - (i * fuel_cost);
-                                        operating -= i;
-                                        break;
-                                    }
-                                }
+                if (consumer.c_action.hasOwnProperty('support_fuel')){
+                    let fuels = consumer.c_action.support_fuel();
+                    if (!Array.isArray(fuels)){ fuels = [fuels]; }
+                    fuels.forEach(function(fuel){
+                        const fuelCost = consumer.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3'].includes(fuel.r)
+                            ? (consumer.region === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
+                            : fuel.a);
+                        const title = typeof consumer.c_action.title === 'string' ? consumer.c_action.title : consumer.c_action.title();
+                        let consumed = active * fuelCost;
+                        breakdown.p.consume[fuel.r][title + '+' + consumer.c_action.id] = -consumed;
+                        for (let index=0; index<active; index++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuelCost), false, supplyRegionKey(consumer.sector))){
+                                consumed -= (active * fuelCost) - (index * fuelCost);
+                                active = index;
+                                break;
                             }
                         }
-
-                        used_support += operating * supportSize;
-                        support_on[area_structs[i]] = operating;
-                    }
-                    else {
-                        support_on[area_structs[i]] = 0;
-                    }
+                    });
                 }
-                global[sup.a][sup.s].support = used_support;
-            }
+                used += active * supportSize;
+                support_on[consumer.struct] = active;
+                if (consumer.region === 'interstellar'){ int_on[consumer.struct] = active; }
+                else if (consumer.region === 'galaxy' || consumer.sector === 'prtl_lake'){ gal_on[consumer.struct] = active; }
+                else if (consumer.sector === 'prtl_spire'){ spire_on[consumer.struct] = active; }
+                const selector = '#' + consumer.region + '-' + consumer.struct + ' .on';
+                powerBadge(selector,active !== state.on,active !== state.on ? 'ON ' + active + '/' + state.on : 'ON');
+            });
+            anchorState.support = used;
         });
 
         let womling_technician = 1;
@@ -2993,36 +2814,6 @@ function fastLoop(){
             breakdown.p.consume.Deuterium[loc('interstellar_int_factory_title')] = -(d_consume);
         }
 
-        if (support_on['water_freighter'] && support_on['water_freighter'] > 0){
-            let h_cost = hugeAdjust(fuel_adjust(5,true));
-            let h_consume = support_on['water_freighter'] * h_cost;
-            for (let i=0; i<support_on['water_freighter']; i++){
-                if (!modRes('Helium_3', -(time_multiplier * h_cost), false, 'spc_enceladus')){
-                    h_consume -= (support_on['water_freighter'] * h_cost) - (i * h_cost);
-                    support_on['water_freighter'] -= i;
-                    break;
-                }
-            }
-            breakdown.p.consume.Helium_3[loc('space_water_freighter_title')] = -(h_consume);
-        }
-
-        // Starports
-        if (global.interstellar['starport'] && global.interstellar['starport'].count > 0){
-            let fuel_cost = +hugeAdjust(int_fuel_adjust(5));
-            let mb_consume = p_on['starport'] * fuel_cost;
-            breakdown.p.consume.Helium_3[loc('interstellar_alpha_starport_title')] = -(mb_consume);
-            for (let i=0; i<p_on['starport']; i++){
-                if (!modRes('Helium_3', -(time_multiplier * fuel_cost), false, 'int_alpha')){
-                    mb_consume -= (p_on['starport'] * fuel_cost) - (i * fuel_cost);
-                    p_on['starport'] -= i;
-                    break;
-                }
-            }
-            global.interstellar.starport.s_max = p_on['starport'] * actions.interstellar.int_alpha.starport.support();
-            global.interstellar.starport.s_max += p_on['habitat'] * actions.interstellar.int_alpha.habitat.support();
-            global.interstellar.starport.s_max += p_on['xfer_station'] * actions.interstellar.int_proxima.xfer_station.support();
-        }
-
         // Droids
         let miner_droids = {
             adam: 0,
@@ -3031,108 +2822,21 @@ function fastLoop(){
             alum: 0,
         };
 
-        if (global.interstellar['starport']){
-            let used_support = 0;
-            let structs = global.support.alpha.map(x => x.split(':')[1]);
-            for (var i = 0; i < structs.length; i++){
-                if (global.interstellar[structs[i]]){
-                    let operating = global.interstellar[structs[i]].on;
-                    let id = actions.interstellar.int_alpha[structs[i]].id;
-                    let alphaOnSel = `#${id} .on`;
-                    if (used_support + operating > global.interstellar.starport.s_max){
-                        operating -=  (used_support + operating) - global.interstellar.starport.s_max;
-                        powerBadge(alphaOnSel,true,`ON ${operating}/${global.interstellar[structs[i]].on}`);
-                    }
-                    else {
-                        powerBadge(alphaOnSel,false,`ON`);
-                    }
-                    used_support += operating;
-                    int_on[structs[i]] = operating;
-                }
-                else {
-                    int_on[structs[i]] = 0;
-                }
-            }
-            global.interstellar.starport.support = used_support;
+        if (global.interstellar.hasOwnProperty('mining_droid') && global.interstellar.mining_droid.count > 0){
+            let on_droid = int_on['mining_droid'];
+            let max_droid = global.interstellar.mining_droid.on;
+            let eff = max_droid > 0 ? on_droid / max_droid : 0;
+            let remaining = max_droid;
 
-            if (global.interstellar.hasOwnProperty('mining_droid') && global.interstellar.mining_droid.count > 0){
-                let on_droid = int_on['mining_droid'];
-                let max_droid = global.interstellar.mining_droid.on;
-                let eff = max_droid > 0 ? on_droid / max_droid : 0;
-                let remaining = max_droid;
-
-                ['adam','uran','coal','alum'].forEach(function(res){
-                    remaining -= global.interstellar.mining_droid[res];
-                    if (remaining < 0) {
-                        global.interstellar.mining_droid[res] += remaining;
-                        remaining = 0;
-                    }
-                    miner_droids[res] = global.interstellar.mining_droid[res] * eff;
-                });
-            }
+            ['adam','uran','coal','alum'].forEach(function(res){
+                remaining -= global.interstellar.mining_droid[res];
+                if (remaining < 0) {
+                    global.interstellar.mining_droid[res] += remaining;
+                    remaining = 0;
+                }
+                miner_droids[res] = global.interstellar.mining_droid[res] * eff;
+            });
         }
-
-        // Starbase
-        if (global.galaxy['starbase'] && global.galaxy['starbase'].count > 0){
-            let fuel_cost = +hugeAdjust(int_fuel_adjust(25));
-            let mb_consume = p_on['starbase'] * fuel_cost;
-            breakdown.p.consume.Helium_3[loc('galaxy_starbase')] = -(mb_consume);
-            for (let i=0; i<p_on['starbase']; i++){
-                if (!modRes('Helium_3', -(time_multiplier * fuel_cost), false, 'gxy_gateway')){
-                    mb_consume -= (p_on['starbase'] * fuel_cost) - (i * fuel_cost);
-                    p_on['starbase'] -= i;
-                    break;
-                }
-            }
-            if (p_on['s_gate']){
-                global.galaxy.starbase.s_max = p_on['starbase'] * actions.galaxy.gxy_gateway.starbase.support();
-                if (p_on['gateway_station']){
-                    global.galaxy.starbase.s_max += p_on['gateway_station'] * actions.galaxy.gxy_stargate.gateway_station.support();
-                }
-                if (p_on['telemetry_beacon']){
-                    global.galaxy.starbase.s_max += p_on['telemetry_beacon'] * actions.galaxy.gxy_stargate.telemetry_beacon.support();
-                }
-                if (p_on['ship_dock']){
-                    global.galaxy.starbase.s_max += p_on['ship_dock'] * actions.galaxy.gxy_gateway.ship_dock.support();
-                }
-            }
-            else {
-                global.galaxy.starbase.s_max = 0;
-            }
-        }
-
-        if (global.galaxy['starbase']){
-            let used_support = 0;
-            let gateway_structs = global.support.gateway.map(x => x.split(':')[1]);
-            for (var i = 0; i < gateway_structs.length; i++){
-                if (global.galaxy[gateway_structs[i]]){
-                    let operating = global.galaxy[gateway_structs[i]].on;
-                    let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
-                    let operating_cost = -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
-                    let max_operating = Math.floor((global.galaxy.starbase.s_max - used_support) / operating_cost);
-                    let gxyOnSel = `#${id} .on`;
-                    if (operating > max_operating){
-                        operating = max_operating;
-                        powerBadge(gxyOnSel,true,`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
-                    }
-                    else {
-                        powerBadge(gxyOnSel,false,`ON`);
-                    }
-                    used_support += operating * operating_cost;
-                    gal_on[gateway_structs[i]] = operating;
-                }
-                else {
-                    gal_on[gateway_structs[i]] = 0;
-                }
-            }
-            global.galaxy.starbase.support = used_support;
-        }
-
-        // Foothold
-        if (global.galaxy['foothold'] && global.galaxy.foothold.count > 0){
-            global.galaxy.foothold.s_max = p_on['s_gate'] * p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
-        }
-
         // Guard Post
         if (global.portal['guard_post']){
             global.portal.guard_post.s_max = global.portal.guard_post.count * actions.portal.prtl_ruins.guard_post.support();
@@ -3153,133 +2857,6 @@ function fastLoop(){
 
             global.portal.guard_post.support = global.portal.guard_post.on;
         }
-
-        // harbor
-        if (global.portal['harbor']){
-            global.portal.harbor.s_max = p_on['harbor'] * actions.portal.prtl_lake.harbor.support();
-        }
-
-        // Purifier
-        if (global.portal['purifier']){
-            global.portal.purifier.s_max = +(p_on['purifier'] * actions.portal.prtl_spire.purifier.support()).toFixed(2);
-
-            let used_support = 0;
-            let purifier_structs = global.support.spire.map(x => x.split(':')[1]);
-            for (var i = 0; i < purifier_structs.length; i++){
-                if (global.portal[purifier_structs[i]]){
-                    let operating = global.portal[purifier_structs[i]].on;
-                    let id = actions.portal.prtl_spire[purifier_structs[i]].id;
-                    let prtlOnSel = `#${id} .on`;
-                    if (used_support + operating > global.portal.purifier.s_max){
-                        operating -= (used_support + operating) - global.portal.purifier.s_max;
-                        powerBadge(prtlOnSel,true,`ON ${operating}/${global.portal[purifier_structs[i]].on}`);
-                    }
-                    else {
-                        powerBadge(prtlOnSel,false,`ON`);
-                    }
-                    used_support += operating * -(actions.portal.prtl_spire[purifier_structs[i]].support());
-                    spire_on[purifier_structs[i]] = operating;
-                }
-                else {
-                    spire_on[purifier_structs[i]] = 0;
-                }
-            }
-            global.portal.purifier.support = used_support;
-        }
-
-        // Space Station
-        if (global.space['space_station'] && global.space['space_station'].count > 0){
-            let fuel_cost = +hugeAdjust(fuel_adjust(2.5,true));
-            let ss_consume = p_on['space_station'] * fuel_cost;
-            breakdown.p.consume.Helium_3[loc('space_belt_station_title')] = -(ss_consume);
-            for (let i=0; i<p_on['space_station']; i++){
-                if (!modRes('Helium_3', -(time_multiplier * fuel_cost), false, 'spc_belt')){
-                    ss_consume -= (p_on['space_station'] * fuel_cost) - (i * fuel_cost);
-                    p_on['space_station'] -= i;
-                    break;
-                }
-            }
-        }
-
-        if (global.space['space_station']){
-            let used_support = 0;
-            let belt_structs = global.support.belt.map(x => x.split(':')[1]);
-            for (var i = 0; i < belt_structs.length; i++){
-                if (global.space[belt_structs[i]]){
-                    let operating = global.space[belt_structs[i]].on;
-                    let id = actions.space.spc_belt[belt_structs[i]].id;
-                    let beltOnSel = `#${id} .on`;
-                    if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) > global.space.space_station.s_max){
-                        let excess = used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
-                        operating -= Math.ceil(excess / -(actions.space.spc_belt[belt_structs[i]].support()));
-                        powerBadge(beltOnSel,true,`ON ${operating}/${global.space[belt_structs[i]].on}`);
-                    }
-                    else {
-                        powerBadge(beltOnSel,false,`ON`);
-                    }
-                    used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support()));
-                    support_on[belt_structs[i]] = operating;
-                }
-                else {
-                    support_on[belt_structs[i]] = 0;
-                }
-            }
-            global.space.space_station.support = used_support;
-        }
-
-        if (global.interstellar['nexus'] && global.interstellar['nexus'].count > 0){
-            let cash_cost = hugeAdjust(350);
-            let mb_consume = p_on['nexus'] * cash_cost;
-            breakdown.p.consume.Money[loc('interstellar_nexus_bd')] = -(mb_consume);
-            for (let i=0; i<p_on['nexus']; i++){
-                if (!modRes('Money', -(time_multiplier * cash_cost))){
-                    mb_consume -= (p_on['nexus'] * cash_cost) - (i * cash_cost);
-                    p_on['nexus'] -= i;
-                    break;
-                }
-            }
-            global.interstellar.nexus.s_max = p_on['nexus'] * actions.interstellar.int_nebula.nexus.support();
-        }
-
-        if (global.interstellar['nexus']){
-            let used_support = 0;
-            let structs = global.support.nebula.map(x => x.split(':')[1]);
-            for (var i = 0; i < structs.length; i++){
-                if (global.interstellar[structs[i]]){
-                    let operating = global.interstellar[structs[i]].on;
-                    let id = actions.interstellar.int_nebula[structs[i]].id;
-                    let nebOnSel = `#${id} .on`;
-                    if (used_support + operating > global.interstellar.nexus.s_max){
-                        operating -=  (used_support + operating) - global.interstellar.nexus.s_max;
-                        powerBadge(nebOnSel,true,`ON ${operating}/${global.interstellar[structs[i]].on}`);
-                    }
-                    else {
-                        powerBadge(nebOnSel,false,`ON`);
-                    }
-                    used_support += operating;
-                    int_on[structs[i]] = operating;
-                }
-                else {
-                    int_on[structs[i]] = 0;
-                }
-            }
-            global.interstellar.nexus.support = used_support;
-        }
-
-        // Transfer Station
-        if (global.interstellar['xfer_station'] && p_on['xfer_station']){
-            let fuel_cost = hugeAdjust(0.28);
-            let xfer_consume = p_on['xfer_station'] * fuel_cost;
-            breakdown.p.consume.Uranium[loc('interstellar_xfer_station_title')] = -(xfer_consume);
-            for (let i=0; i<p_on['xfer_station']; i++){
-                if (!modRes('Uranium', -(time_multiplier * fuel_cost), false, 'int_proxima')){
-                    xfer_consume -= (p_on['xfer_station'] * fuel_cost) - (i * fuel_cost);
-                    p_on['xfer_station'] -= i;
-                    break;
-                }
-            }
-        }
-
         // Foward Operating Base
         if (global.space['fob'] && p_on['fob']){
             let fuel_cost = +fuel_adjust(125,true);
@@ -3389,7 +2966,7 @@ function fastLoop(){
         }
 
         // Ship Yard
-        if ((p_on['shipyard'] || p_on['adv_shipyard'])){
+        if ((p_on['shipyard'] || p_on['adv_shipyard'] || p_on['gas_shipyard'])){
             global.settings.showShipYard = true;
         }
         else {
@@ -6169,7 +5746,7 @@ function fastLoop(){
                 if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 2){
                     steel_base *= 1.1;
                 }
-                for (i = 4; i <= 6; i++) {
+                for (let i = 4; i <= 6; i++) {
                     if (global.tech['smelting'] >= i){
                         steel_base *= 1.2;
                     }
@@ -9763,7 +9340,7 @@ function fastLoop(){
     // is covering; the first live fast loop binds anything that appeared during catch-up.
     let easter = webWorker.offline ? { active: false } : eventActive('easter');
     if (easter.active){
-        for (i=1; i<=18; i++){
+        for (let i=1; i<=18; i++){
             const egg = document.getElementById(`egg${i}`);
             if (egg && !egg.classList.contains('binded')){
                 easterEggBind(i);
@@ -9774,14 +9351,14 @@ function fastLoop(){
 
     let halloween = webWorker.offline ? { active: false } : eventActive('halloween');
     if (halloween.active){
-        for (i=1; i<=8; i++){
+        for (let i=1; i<=8; i++){
             const treat = document.getElementById(`treat${i}`);
             if (treat && !treat.classList.contains('binded')){
                 trickOrTreatBind(i,false);
                 treat.classList.add('binded');
             }
         }
-        for (i=1; i<=8; i++){
+        for (let i=1; i<=8; i++){
             const trick = document.getElementById(`trick${i}`);
             if (trick && !trick.classList.contains('binded')){
                 trickOrTreatBind(i,true);
@@ -13651,7 +13228,7 @@ function longLoop(){
                         refreshDock(ship, genXYZcoord(shipPort(ship)));
                     }
                     // Repair ships provide docked hull repair.
-                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || repairShipYards().includes(shipDockedAt(ship)))){
+                    if (ship.damage > 0 && (p_on['shipyard'] || p_on['adv_shipyard'] || p_on['gas_shipyard'] || repairShipYards().includes(shipDockedAt(ship)))){
                         // In dry dock the crews have the yard's facilities and work the hull daily;
                         // anywhere else it is patched up every other day (see the cadence above).
                         ship.damage -= atShipyard(ship) ? yardRepair * day_step : fieldRepair * fieldDays;

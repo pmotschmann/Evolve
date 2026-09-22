@@ -7656,13 +7656,15 @@ export function getStructNumActive(c_action,wiki){
         // This means that the wiki can be wrong, but we can at least check "max" support
         if (!found_support) {
             let grids = gridDefs();
-            let s_r = grids[c_action.s_type].r;
+            // Retain the configured count until its support grid has an anchor.
+            let grid = grids[c_action.s_type];
+            let s_r = grid ? grid.r : false;
+            let anchor = s_r && grid.rs && global[s_r] ? global[s_r][grid.rs] : false;
             if (s_r === 'galaxy' && !isStargateOn(wiki)){
                 num_on = 0;
             }
-            else {
-                let s_rs = grids[c_action.s_type].rs;
-                let max_s = Math.floor(global[s_r][s_rs].s_max / -c_action.support());
+            else if (anchor && anchor.hasOwnProperty('s_max')){
+                let max_s = Math.floor(anchor.s_max / -c_action.support());
                 num_on = Math.min(num_on, max_s);
             }
         }
