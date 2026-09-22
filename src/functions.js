@@ -3434,6 +3434,9 @@ export function getWeaselTechLevelRequirement(level){
 // Scale custom-race lab values to twentieths of a gene unit.
 export const genomeScale = 20;
 
+// Custom-race complexity tax per trait past the free allowance in a taxonomy (half a gene unit).
+export const complexityTax = genomeScale / 2;
+
 // Return a custom-race trait cost at a fractional rank.
 export function genomeRankCost(cost, rank, positive){
     if (rank < 1){
@@ -3491,13 +3494,13 @@ export function calcGenomeScore(genome,wiki,tRanks){
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
-                gene_cost -= (max_complexity - complexity[taxonomy]) * genomeScale;
+                gene_cost -= (max_complexity - complexity[taxonomy]) * complexityTax;
             }
             complexity[taxonomy]++;
         }
         else {
             if (neg_complexity[taxonomy] >= max_complexity){
-                gene_cost += neg_complexity[taxonomy] * genomeScale;
+                gene_cost += neg_complexity[taxonomy] * complexityTax;
             }
             neg_complexity[taxonomy]++;
         }

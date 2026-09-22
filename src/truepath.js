@@ -8555,7 +8555,7 @@ export function renderTauCeti(){
     });
 }
 
-// Return a yard's on-screen home name.
+// Return a shipyard's localized home name.
 export function yardLabel(zone){
     switch (zone){
         case 'tau_gas':
@@ -8620,7 +8620,7 @@ export function drawShipYard(){
         let plans = $(`<div id="shipPlans"></div>`);
         yard.append(plans);
 
-        // Show the primary-yard selector when both yards are operating.
+        // Show the selector when both shipyards are operating.
         if (yardChoiceUnlocked()){
             let yards = ``;
             primaryYards.forEach(function(zone){
@@ -9151,7 +9151,7 @@ function queueSpace(){
 function queueTPShip(design, fleetBuild){
     if (queueSpace() <= 0){ return false; }
     let blueprint = deepClone(design);
-    // Queue designs do not carry an automated-route assignment.
+    // Remove automated routing from queued designs.
     delete blueprint.autoRoute;
     global.queue.queue.push({
         id: `tp-ship-${Math.rand(0,100000)}`,
@@ -10266,7 +10266,7 @@ export function tritonWar(){
 
         let wound_cap = Math.ceil(jobScale(global.space.fob.enemy) / 5);
 
-        // FOB wounds are those outside the home garrison.
+        // Count wounded units deployed outside the home garrison.
         let wounded = Math.max(0, global.civic.garrison.wounded - Math.max(0,garrisonSize()));
         let defense = armyRating(global.space.fob.troops,'army',wounded);
 

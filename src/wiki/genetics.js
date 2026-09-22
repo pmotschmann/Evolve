@@ -1,15 +1,13 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
-import { traits, traitSkin, genes, geneCatalog, geneEmergentParity, geneEmergentList } from './../races.js';
+import { traits, traitSkin, genes, geneCatalog, geneEmergentParity, geneEmergentList, geneRankBase } from './../races.js';
 
 // The ladder printed on the page is generated from the same rule the game prices with, up to the
 // paired ceiling, so a retune of either constant shows up here without touching this file.
 function rankCostList(){
     let out = [];
-    let cost = genes.gene_slot_cost;
     for (let r=2; r<=genes.gene_rank_paired; r++){
-        cost = Math.round(cost * genes.gene_rank_growth);
-        out.push(loc('wiki_genetics_rank_step',[r,cost]));
+        out.push(loc('wiki_genetics_rank_step',[r,geneRankBase(r)]));
     }
     return out.join(', ');
 }

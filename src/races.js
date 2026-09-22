@@ -3,7 +3,7 @@ import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, 
 import { loc } from './locale.js';
 import { defineIndustry, factoryData, nf_resources } from './industry.js';
 import { jobScale, jobStack, loadFoundry, job_data } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue } from './functions.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, fibonacci } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass, craftCost, supplyValue } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
@@ -2635,7 +2635,7 @@ export const traits = {
         desc(v){ return loc('trait_tactical',v); },
         type: 'minor',
         base: 'A',
-        vars(r=1){ return [4*r]; },
+        vars(r=1){ return [3*r]; },
     },
     analytical: { // Science output
         name(){ return loc('trait_analytical_name'); },
@@ -2839,7 +2839,7 @@ export const traits = {
         desc(v){ return loc('trait_quartermaster',v); },
         type: 'minor',
         base: 'G',
-        vars(r=1){ return [4*r]; },
+        vars(r=1){ return [3*r]; },
     },
     steward: { // Maximum storage, regular resources only
         name(){ return loc('trait_steward_name'); },
@@ -4926,13 +4926,14 @@ export const genes = {
     genus_rank_start: 20,
     genus_break_ranks: 10,
     // Base cost and increment for sealed recessive pairs.
-    strand_recessive_base: 20,
-    strand_recessive_step: 10,
+    strand_recessive_base: 10,
+    strand_recessive_step: 5,
     strand_slots: 2,            // slots on a pair: [X] - [Y]
-    strand_cap: 12,             // most pairs either strand can ever hold; fixes the index ranges
+    // Maximum pairs per strand; changing it requires a slot-index migration.
+    strand_cap: 24,
     // Minimum Versatile rank that unlocks the extra minor pair.
     versatility_pair_rank: 0.5,
-    strand_version: 9,          // bumped to re-lay every strand on load after a layout change
+    strand_version: 11,         // Rebuild saved strand layouts after this layout change.
     // Layout version that migrates Powered's labor bonus to Tireless.
     strand_split_powered: 8,
     gene_unlock_phage: 25,
@@ -4953,9 +4954,8 @@ export const genes = {
     // Which base answers which. A gene pairs with the slot bearing its own base; the rung it sits on
     // is what makes that slot's partner the complement.
     gene_pairs: { A: 'T', T: 'A', C: 'G', G: 'C' },
-    // Every rank costs this much more than the one before it, all the way up. The ladder is grown
-    // from gene_slot_cost rather than written out, so the two can never drift apart.
-    gene_rank_growth: 1.85,
+    // Fibonacci offset used to calculate rank costs.
+    gene_rank_offset: 3,
     // Plasmids per limit break.
     gene_break_cost: [5,10,25,50],
     // Past the table the price climbs by a flat step rather than a multiplier.
@@ -5106,11 +5106,14 @@ export function strandPairCount(kind){
     return Math.min(genes.strand_cap, pairs);
 }
 
-// Base pairs a custom design bought outright in the gene lab.
+// Return recessive pairs purchased by the custom design.
 export function strandRecessivePairs(){
+    let held = global.race['geneRecess'] || 0;
     let key = customSlotKey();
-    if (!key || !global['custom'] || !global.custom[key]){ return 0; }
-    return global.custom[key]['recessive'] || 0;
+    if (key && global['custom'] && global.custom[key]){
+        held += global.custom[key]['recessive'] || 0;
+    }
+    return held;
 }
 
 // What the next recessive pair costs, given how many the design already holds.
@@ -5400,11 +5403,10 @@ function buildGeneRanks(){
     geneEmergentNames.forEach(function(g){ out[g] = 0; });
     let slots = geneSlots();
     let step = genes.strand_slots;
-    let majorFrom = strandBase('major');
-    let majorTo = majorFrom + (strandGenusPairs() * step);
-    for (let i=0; i+1<slots.length; i+=step){
-        // Genus rungs do not contribute to gene emergents.
-        if (i >= majorFrom && i < majorTo){ continue; }
+    // Count only minor-strand pairs that can produce emergent genes.
+    let from = strandBase('minor');
+    let to = from + strandSpan();
+    for (let i=from; i+1<to && i+1<slots.length; i+=step){
         let a = slots[i], b = slots[i + 1];
         if (!a || !a.g || !b || !b.g){ continue; }
         let aRank = minorEmergentSlotRank(i);
@@ -5562,6 +5564,8 @@ export function geneSlotMatched(slot){
 
 // An unbonded gene runs at half strength.
 export function geneWeak(gene){
+    // Emergent genes inherit bonded strength from their paired rungs.
+    if (geneEmergentBy[gene]){ return false; }
     if (geneWeakMap === null){ geneWeakMap = {}; }
     let held = geneWeakMap[gene];
     if (held === undefined){
@@ -5655,12 +5659,14 @@ function geneInSlot(slot){
     return s && s.g ? s.g : false;
 }
 
-// Rank 1 is the slot price; each rank after it is the previous one grown by gene_rank_growth and
-// rounded, so the whole ladder follows from what a slot costs.
+// Return the unmodified Fibonacci price for a rank.
+export function geneRankBase(rank){
+    return fibonacci(rank + genes.gene_rank_offset);
+}
+
+// Calculate the price of a rank after its slot has been purchased.
 export function geneRankCost(rank,gene,slot){
-    let cost = genes.gene_slot_cost;
-    for (let r=2; r<=rank; r++){ cost = Math.round(cost * genes.gene_rank_growth); }
-    return Math.max(1,Math.floor(cost * geneCostMod(gene) * geneCostDiscount(gene)));
+    return Math.max(1,Math.floor(geneRankBase(rank) * geneCostMod(gene) * geneCostDiscount(gene)));
 }
 
 export function geneBreakCost(slot){
@@ -5848,6 +5854,14 @@ function finishPlacement(slot,trait,opts){
     return slot;
 }
 
+// Add a recessive major pair when space remains; otherwise return false.
+function growRecessivePair(){
+    if (strandPairCount('major') >= genes.strand_cap){ return false; }
+    global.race['geneRecess'] = (global.race['geneRecess'] || 0) + 1;
+    bumpGeneCache();
+    return true;
+}
+
 // Whether either strand has anywhere at all to put a trait.
 export function strandRoom(trait){
     let slots = geneSlots();
@@ -5914,6 +5928,8 @@ function placeGenusPair(pair){
 // Lay this run's traits out on a fresh strand.
 export function layoutStrand(){
     bumpGeneCache();
+    // Recalculate pairs added by earlier strand layouts.
+    delete global.race['geneRecess'];
     let slots = geneSlots();
     let breaks = geneBreaks();
 
@@ -6007,7 +6023,17 @@ export function layoutStrand(){
             if (b.length > 0){ order.push(b.shift()); }
         }
     });
-    order.concat(loose).forEach(function(t){ placeTrait(t); });
+    // Add recessive pairs for imported majors before using minor-strand slots.
+    order.concat(loose).forEach(function(t){
+        if (placeTrait(t,{ overflow: false }) !== false){ return; }
+        if (growRecessivePair()){
+            if (placeTrait(t,{ overflow: false }) !== false){ return; }
+            // The new pair took nothing, so it is handed back.
+            global.race['geneRecess']--;
+            bumpGeneCache();
+        }
+        placeTrait(t);
+    });
 
     // Minor genes last, into whatever the majors left behind.
     carried.forEach(function(c){
@@ -6176,6 +6202,14 @@ export function randomMinorTrait(){
     let gene = pool[Math.floor(seededRandom(0,pool.length))];
     geneTempUnlocks()[gene] = 1;
     return gene;
+}
+
+// Unlock a specific discoverable gene, returning false when unavailable or already found.
+export function findMinorTrait(gene){
+    if (!traits[gene] || genes.gene_specials.includes(gene)){ return false; }
+    if (geneUnlocked(gene) || !geneSuited(gene) || !geneRoster().includes(gene)){ return false; }
+    geneTempUnlocks()[gene] = 1;
+    return true;
 }
 
 function checkPurgatory(s,t,dv){

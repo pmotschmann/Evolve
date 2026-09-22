@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, complexityTax, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank,
          genes, geneBaseOf, genusFeeders, genusStrandTraits, geneCrossingUnlocked, traitSkin,
@@ -8905,6 +8905,16 @@ function labRecessiveRoom(genome){
     return Math.max(0,genes.strand_cap - labPairs(genome,'major'));
 }
 
+// Return the maximum number of pairs available to a custom design.
+function labRecessiveMax(genome){
+    return Math.max(0,genes.strand_cap - labPairs({
+        genus: genome.genus,
+        hybrid: genome.hybrid,
+        ranks: genome.ranks,
+        recessive: 0
+    },'major'));
+}
+
 // Whether a slot is on one of the design's recessive pairs.
 function labIsRecessive(genome,slot){
     let from = labRecessiveFrom(genome);
@@ -9030,21 +9040,49 @@ function labBlocked(genome,trait){
     return false;
 }
 
-// Give a home to anything the design carries that is not in a slot yet.
-function labAutoPlace(genome){
+// Find a compatible slot, preferring an already oriented pair.
+function labOpenSlot(genome,kind,trait){
+    let open = false, fresh = false;
+    labSlots(genome,kind).forEach(function(i){
+        if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
+        if (!labFits(genome,i,trait)){ return; }
+        if (labPairBase(genome,i)){ open = i; }
+        else if (fresh === false){ fresh = i; }
+    });
+    return open !== false ? open : fresh;
+}
+
+// Order unplaced traits to keep complementary traits in the same pair.
+function labPlaceOrder(genome){
+    let byBase = { A: [], T: [], C: [], G: [] }, loose = [];
     genome.traitlist.forEach(function(t){
         if (!traits[t] || genome.slots[t] !== undefined){ return; }
-        let open = false, fresh = false;
-        ['major','minor'].forEach(function(kind){
-            if (open !== false){ return; }
-            labSlots(genome,kind).forEach(function(i){
-                if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
-                if (!labFits(genome,i,t)){ return; }
-                if (labPairBase(genome,i)){ open = i; }
-                else if (fresh === false){ fresh = i; }
-            });
-        });
-        let pick = open !== false ? open : fresh;
+        let b = geneBaseOf(t);
+        if (byBase[b]){ byBase[b].push(t); } else { loose.push(t); }
+    });
+    let order = [];
+    [['A','T'],['C','G']].forEach(function(rung){
+        let a = byBase[rung[0]], b = byBase[rung[1]];
+        while (a.length > 0 || b.length > 0){
+            if (a.length > 0){ order.push(a.shift()); }
+            if (b.length > 0){ order.push(b.shift()); }
+        }
+    });
+    return order.concat(loose);
+}
+
+// Place unassigned traits, adding recessive major pairs before using minor slots.
+function labAutoPlace(genome){
+    labPlaceOrder(genome).forEach(function(t){
+        if (genome.slots[t] !== undefined){ return; }
+        let pick = labOpenSlot(genome,'major',t);
+        if (pick === false && labRecessiveRoom(genome) > 0){
+            genome.recessive = (genome.recessive || 0) + 1;
+            pick = labOpenSlot(genome,'major',t);
+            // The new pair took nothing, so it is handed back.
+            if (pick === false){ genome.recessive--; }
+        }
+        if (pick === false){ pick = labOpenSlot(genome,'minor',t); }
         if (pick !== false){ genome.slots[t] = pick; }
     });
 }
@@ -9058,6 +9096,9 @@ function labInRange(genome,slot){
 
 // Put the genus where it belongs, and drop anything the design no longer carries or that no longer fits.
 function labNormalize(genome){
+    // Remove purchased pairs that no longer fit the strand.
+    let max = labRecessiveMax(genome);
+    if ((genome.recessive || 0) > max){ genome.recessive = max; }
     let locked = labGenusTraits(genome);
     // The genus owns the opening slots outright; anything else sitting there is evicted.
     Object.keys(genome.slots).forEach(function(t){
@@ -9267,7 +9308,7 @@ export function ascendLab(hybrid,wiki){
         ranks: global.custom[slot]?.ranks || {},
         // A design written before the lab knew about slots has no arrangement of its own.
         slots: (global.custom[slot]?.v || 1) >= 2 && global.custom[slot]?.slots ? deepClone(global.custom[slot].slots) : {},
-        bonus: global.custom[slot]?.recessive || 0,
+        recessive: global.custom[slot]?.recessive || 0,
         fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
@@ -9731,6 +9772,10 @@ export function ascendLab(hybrid,wiki){
                         genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
+                        // Rebuild layouts imported from a different slot span.
+                        if (importCustom['slotSpan'] !== genes.strand_cap * genes.strand_slots){
+                            genome.slots = {};
+                        }
                         genome.genes = labScore(genome);
 
                         error.msg = "";
@@ -9744,6 +9789,8 @@ export function ascendLab(hybrid,wiki){
                 let exportGenome = deepClone(genome);
                 exportGenome['ranks'] = tRanks;
                 exportGenome['rankVersion'] = 2;
+                // Store the slot span used by this exported layout.
+                exportGenome['slotSpan'] = genes.strand_cap * genes.strand_slots;
                 const downloadToFile = (content, filename, contentType) => {
                     const a = document.createElement('a');
                     const file = new Blob([content], {type: contentType});
@@ -10240,7 +10287,7 @@ function geneCost(genome,trait,tRanks){
             complexity[taxonomy]--;
         }
         if (complexity[taxonomy] > max_complexity){
-            gene_cost += (complexity[taxonomy] - max_complexity) * genomeScale;
+            gene_cost += (complexity[taxonomy] - max_complexity) * complexityTax;
         }
     }
     else {
@@ -10248,7 +10295,7 @@ function geneCost(genome,trait,tRanks){
             neg_complexity[taxonomy]--;
         }
         if (neg_complexity[taxonomy] >= max_complexity){
-            gene_cost += neg_complexity[taxonomy] * genomeScale;
+            gene_cost += neg_complexity[taxonomy] * complexityTax;
         }
     }
 

@@ -427,7 +427,7 @@ export function seedStarterSupplyRoutes(){
     return Number(earthReady) + Number(marsReady) + Number(titanReady) + Number(outerReady);
 }
 
-// Selectable Shadow-path yards, in display order.
+// Shadow-path shipyards in selector order.
 export const primaryYards = ['spc_dwarf','tau_gas'];
 
 export function ceresYardBuilt(){
@@ -438,12 +438,12 @@ export function gasYardBuilt(){
     return global.tauceti && global.tauceti['gas_shipyard'] && global.tauceti.gas_shipyard.count > 0 ? true : false;
 }
 
-// Return whether both selectable yards are operating.
+// Return whether both selectable shipyards are operating.
 export function yardChoiceUnlocked(){
     return !global.tech['resettle'] && ceresYardBuilt() && gasYardBuilt();
 }
 
-// Return the selected operational yard, falling back to Ceres.
+// Return the selected operating yard, or Ceres as a fallback.
 export function shipyardPrimary(){
     let pick = global.space && global.space['shipyard'] ? global.space.shipyard['primary'] : false;
     return pick === 'tau_gas' && gasYardBuilt() ? 'tau_gas' : 'spc_dwarf';
@@ -2758,9 +2758,9 @@ const repairStations = {
             ? (global.space['repair_yard'] && global.space.repair_yard.count > 0 && p_on['repair_yard'] ? true : false)
             : (global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false);
     } },
-    // Repair station for the Isolation path.
+    // Isolation-path repair station.
     tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } },
-    // Repair station for the Shadow path.
+    // Shadow-path repair station.
     tau_gas:   { avail(){ return !global.tech['resettle'] && global.tauceti['gas_shipyard'] && global.tauceti.gas_shipyard.count > 0 ? true : false; } }
 };
 
