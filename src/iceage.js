@@ -2964,6 +2964,7 @@ const iceAgeModules = {
                     }
                 },
                 support(){ return -1; },
+                s_type: 'wastes',
                 powered(){ return 0; },
                 action(args){
                     if (payCosts(this)){
@@ -3091,6 +3092,7 @@ const iceAgeModules = {
                 support(){
                     return global.race['artifical'] ? 0.1 : 0;
                 },
+                s_type: 'wastes',
                 powered(){ return powerCostMod(global.race['artifical'] ? 16 : 8); },
                 storage: {
                     res(res){
@@ -3352,6 +3354,8 @@ const iceAgeModules = {
                     }
                     return 30 / hugeScale(1);
                 },
+                s_type: 'wastes',
+                support_provider: true,
                 eco_area(wiki){
                     let count = (wiki?.count ?? 0) + (global.surface.grand_dome?.count || 0);
                     if (count < 100){
@@ -4164,6 +4168,7 @@ const iceAgeModules = {
                         <span>+${-(this.powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[+(this.p_fuel().a).toFixed(2)])}</span>`;
                 },
                 support(){ return 0.5; },
+                s_type: 'crater',
                 powered(){ return powerModifier(-45); },
                 p_fuel(){ return { r: 'Uranium', a: hugeAdjust(0.1) }; },
                 action(args){
@@ -4512,6 +4517,7 @@ const iceAgeModules = {
                 },
                 special(){ return global.tech['super_fuel'] >= 2; },
                 support(){ return 1; },
+                s_type: 'crater',
                 smelting(){
                     return Math.floor(global.civic.crater_worker.workers / jobScale(3));
                 },

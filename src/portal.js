@@ -2285,6 +2285,8 @@ const fortressModules = {
                 Coal: 100,
                 Oil: 80
             },
+            p_fuel_adjust: false,
+            p_fuel(){ return Object.entries(this.fuel).map(([r,a]) => ({ r, a: hugeAdjust(a) })); },
             effect(wiki){
                 let fuel = this.fuel;
                 return `<div>${loc('space_dwarf_reactor_effect1',[-(this.powered(wiki))])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[hugeEffect(fuel.Infernite),global.resource.Infernite.name,hugeEffect(fuel.Coal),global.resource.Coal.name,hugeEffect(fuel.Oil),global.resource.Oil.name])}</div>`;

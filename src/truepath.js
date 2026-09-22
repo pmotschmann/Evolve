@@ -214,6 +214,7 @@ const outerTruth = {
                 return 2;
             },
             powered(){ return powerModifier(-22); },
+            power_limit(){ return global.space.electrolysis?.on || 0; },
             action(){
                 if (payCosts(this)){
                     incrementStruct('hydrogen_plant');
@@ -970,6 +971,8 @@ const outerTruth = {
             },
             s_type: 'enceladus',
             support(){ return -1; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(fuel_adjust(5,true)) }; },
+            support_fuel_adjust: false,
             powered(){ return 0; },
             action(){
                 if (payCosts(this)){
@@ -1615,7 +1618,7 @@ const outerTruth = {
                 let desc = `<div>+${loc(`galaxy_alien2_support`,[this.support(),planetName().eris])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[this.powered(),+(fuel).toFixed(1),global.resource[this.p_fuel().r].name])}</div>`;
             },
-            support(){ return 5; },
+            support(){ return p_on["ai_core2"] ? 5 : 0; },
             powered(){ return powerCostMod(25); },
             p_fuel(){ return { r: 'Uranium', a: hugeAdjust(5) }; },
             action(){
@@ -3292,6 +3295,7 @@ export const tauCetiModules = {
                 return desc;
             },
             support(){ return 1; },
+            s_type: 'tau_home',
             powered(){ return powerCostMod(global.tech['isolation'] ? 1 : 4); },
             storage: {
                 res(res){
@@ -5241,6 +5245,7 @@ export const tauCetiModules = {
             },
             nav(){ return global.tech['resettle'] ? true : false; },
             support: 'patrol_ship',
+            support_unlimited: true,
         },
         roid_mission: {
             id: 'tauceti-roid_mission',
@@ -5407,6 +5412,7 @@ export const tauCetiModules = {
                 Unobtainium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 72000, 1.26, 'tauceti'); },
             },
             support(){ return -1; },
+            s_type: 'tau_roid',
             powered(){ return powerCostMod(10); },
             effect(){
                 let pos = +(production('synthesizer')).toFixed(4);
