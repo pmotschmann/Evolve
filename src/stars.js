@@ -145,6 +145,13 @@ const starConstants = {
     // base-10 log.
     SKY_MIN_PX: 0.6,
     SKY_MAX_PX: 2.6,
+    // Details-panel layout and close-zoom threshold.
+    INFO_TITLE_PX: 15,
+    INFO_LINE_PX: 12,
+    INFO_LINE_GAP: 4,
+    INFO_PAD: 8,
+    INFO_GAP_PX: 14,
+    INFO_ZOOM_CLOSE: 0.4,
     SKY_LOG_FAINT: -4.5,
     SKY_LOG_BRIGHT: 0,
     // How much of the frame the visible half of the sky covers.
@@ -645,7 +652,7 @@ starConstants.NAMED_STYLES = starConstants.NAMED_STYLES.concat(Object.values(sta
 // Stars (entries with a `startype`) are placed by fixed x,y,z coordinates — in AU, measured from the Sun at the origin —
 // rather than by a distance + orbital angle.
 export const starData = {
-    spc_sun: { hex: 'c3b', x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', label: loc('star_sun'), zlabel: loc('star_sun') },
+    spc_sun: { hex: 'c3b', x: 0, y: 0, z: 0, dist: 0, orbit: 0, size: 2, startype: 'G', lum: 1, mass: 1, label: loc('star_sun'), zlabel: loc('star_sun') },
     // `gate` draws it on the solar map as an open ring rather than a world (see drawGate).
     // An artificial structure still has to obey Kepler: 60 days is the period of anything at 0.3 AU.
     spc_sun_gate: { dist: 0.3, orbit: 60, size: 0.1, belt: true, gate: true, inc: 0, ecc: 0 },
@@ -685,1945 +692,1945 @@ export const starData = {
     spc_eris: { dist: 68, orbit: 204060, size: 0.082, inc: 44, ecc: 0.436 },
     // Tau Ceti system. Planets orbit the tauceti star (star: 'tauceti') rather than the Sun,
     // Tau Ceti (G-type): 753,314.5 AU from the Sun (11.91 ly).
-    tauceti: { hex: 'c53', x: -213157.815, y: 25792.379, z: -722067.292, dist: 753314.5, orbit: -2, size: 1.778, startype: 'G', label: loc('star_tauceti'), zlabel: loc('star_tauceti') },
+    tauceti: { hex: 'c53', x: -213157.815, y: 25792.379, z: -722067.292, dist: 753314.5, orbit: -2, size: 1.823, startype: 'G', lum: 0.4988, mass: 0.797, label: loc('star_tauceti'), zlabel: loc('star_tauceti') },
     tau_home: { dist: 0.5, orbit: 129, size: 0.296, star: 'tauceti', unlock: 'tau_home', hz: true, inc: 0 },
     tau_red: { dist: 1.24, orbit: 504, size: 0.234, star: 'tauceti', unlock: 'tau_red', hz: true, inc: 2.2 },
     tau_gas: { dist: 5.6, orbit: 4839, size: 0.635, star: 'tauceti', unlock: 'tau_gas', inc: 1.5 },
     tau_gas2: { dist: 8.2, orbit: 8576, size: 0.574, star: 'tauceti', unlock: 'tau_gas2', inc: 2.8 },
     tau_roid: { dist: 15, orbit: 21217, size: 0.234, star: 'tauceti', belt: true, unlock: 'tau_roid', inc: 9 },
     // Epsilon Eridani (K-type): 664,133.6 AU from the Sun (10.50 ly).
-    eridani: { hex: '191', x: -427082.379, y: -121211.607, z: -493945.105, dist: 664133.6, orbit: -2, size: 1.72, startype: 'K', label: loc('star_eridani'), zlabel: loc('star_eridani') },
+    eridani: { hex: '191', x: -427082.379, y: -121211.607, z: -493945.105, dist: 664133.6, orbit: -2, size: 1.661, startype: 'K', lum: 0.2849, mass: 0.616, label: loc('star_eridani'), zlabel: loc('star_eridani') },
     // Gliese 65 (M-type): 560,941.3 AU from the Sun (8.87 ly).
     // The map carried only BL Cet; UV Cet joins it below, so this is component A now.
-    gliese65: { hex: 'd2e', x: -138124.928, y: 10901.934, z: -543560.337, dist: 560941.3, orbit: -2, size: 0.894, startype: 'M', label: loc('star_gliese65'), zlabel: loc('star_gliese65') + ' A' },
+    gliese65: { hex: 'd2e', x: -138124.928, y: 10901.934, z: -543560.337, dist: 560941.3, orbit: -2, size: 0.79, startype: 'M', lum: 0.001622, mass: 0.123, label: loc('star_gliese65'), zlabel: loc('star_gliese65') + ' A' },
     // YZ Ceti (M-type): 766,620.4 AU from the Sun (12.12 ly).
-    yzceti: { hex: 'd43', x: -129026.649, y: 75381.207, z: -751915.278, dist: 766620.4, orbit: -2, size: 1.02, startype: 'M', label: loc('star_yzceti'), zlabel: loc('star_yzceti') },
+    yzceti: { hex: 'd43', x: -129026.649, y: 75381.207, z: -751915.278, dist: 766620.4, orbit: -2, size: 0.832, startype: 'M', lum: 0.002657, mass: 0.154, label: loc('star_yzceti'), zlabel: loc('star_yzceti') },
     // Alpha Centauri A (G-type): 277,940 AU from the Sun (4.39 ly).
-    alphacentauri: { hex: 'e1e', x: 199021.346, y: -193985.2, z: -3296.913, dist: 277940, orbit: -2, size: 2.209, startype: 'G', label: loc('star_alpha_centauri'), zlabel: loc('star_alpha_centauri') + ' A' },
+    alphacentauri: { hex: 'e1e', x: 199021.346, y: -193985.2, z: -3296.913, dist: 277940, orbit: -2, size: 2.178, startype: 'G', lum: 1.427, mass: 1.07, label: loc('star_alpha_centauri'), zlabel: loc('star_alpha_centauri') + ' A' },
     // Alpha Centauri B (K-type): companion, 22.2 AU from Alpha Centauri A.
-    alphacentaurib: { hex: 'e4e', x: 199007.422, y: -193999.315, z: -3306.891, dist: 277940, orbit: -2, size: 1.855, startype: 'K', zlabel: loc('star_alpha_centauri') + ' B' },
+    alphacentaurib: { hex: 'e4e', x: 199007.422, y: -193999.315, z: -3306.891, dist: 277940, orbit: -2, size: 1.867, startype: 'K', lum: 0.5193, mass: 1, zlabel: loc('star_alpha_centauri') + ' B' },
     // Proxima Centauri (M-type): companion, 14,024.7 AU from Alpha Centauri A.
-    proximacentauri: { hex: '1c9', x: 186242.736, y: -193265.541, z: -9031.026, dist: 268550.7, orbit: -2, size: 0.785, startype: 'M', zlabel: loc('star_proxima_centauri') },
+    proximacentauri: { hex: '1c9', x: 186242.736, y: -193265.541, z: -9031.026, dist: 268550.7, orbit: -2, size: 0.785, startype: 'M', lum: 0.001567, mass: 0.122, zlabel: loc('star_proxima_centauri') },
     // Barnard's Star (M-type): 377,100.4 AU from the Sun (5.96 ly).
-    barnardsstar: { hex: 'f35', x: 313522.226, y: 188447.979, z: 91628.876, dist: 377100.4, orbit: -2, size: 0.885, startype: 'M', label: loc('star_barnards_star'), zlabel: loc('star_barnards_star') },
+    barnardsstar: { hex: 'f35', x: 313522.226, y: 188447.979, z: 91628.876, dist: 377100.4, orbit: -2, size: 0.963, startype: 'M', lum: 0.00536, mass: 0.196, label: loc('star_barnards_star'), zlabel: loc('star_barnards_star') },
     // Sirius A (A-type): 543,932.9 AU from the Sun (8.60 ly).
-    sirius: { hex: '118', x: -364922.001, y: -394498.07, z: -84060.919, dist: 543932.9, orbit: -2, size: 2.615, startype: 'A', label: loc('star_sirius'), zlabel: loc('star_sirius') + ' A' },
+    sirius: { hex: '118', x: -364922.001, y: -394498.07, z: -84060.919, dist: 543932.9, orbit: -2, size: 2.668, startype: 'A', lum: 26.87, mass: 2.31, label: loc('star_sirius'), zlabel: loc('star_sirius') + ' A' },
     // Sirius B (D-type): companion, 16.3 AU from Sirius A.
-    siriusb: { hex: 'b7f', x: -364913.661, y: -394507.91, z: -84050.947, dist: 543932.9, orbit: -2, size: 0.183, startype: 'D', zlabel: loc('star_sirius') + ' B' },
+    siriusb: { hex: 'b7f', x: -364913.661, y: -394507.91, z: -84050.947, dist: 543932.9, orbit: -2, size: 0.183, startype: 'D', lum: 0.056, mass: 1.02, zlabel: loc('star_sirius') + ' B' },
     // Procyon A (F-type): 724,855.2 AU from the Sun (11.46 ly).
-    procyon: { hex: '315', x: -587528.977, y: -391866.327, z: 163296.042, dist: 724855.2, orbit: -2, size: 2.864, startype: 'F', label: loc('star_procyon'), zlabel: loc('star_procyon') + ' A' },
+    procyon: { hex: '315', x: -587528.977, y: -391866.327, z: 163296.042, dist: 724855.2, orbit: -2, size: 2.744, startype: 'F', lum: 6.016, mass: 1.29, label: loc('star_procyon'), zlabel: loc('star_procyon') + ' A' },
     // Procyon B (D-type): companion, 16.8 AU from Procyon A.
-    procyonb: { hex: '374', x: -587529.648, y: -391871.902, z: 163280.248, dist: 724855.2, orbit: -2, size: 0.219, startype: 'D', zlabel: loc('star_procyon') + ' B' },
+    procyonb: { hex: '374', x: -587529.648, y: -391871.902, z: 163280.248, dist: 724855.2, orbit: -2, size: 0.222, startype: 'D', lum: 0.00049, mass: 0.602, zlabel: loc('star_procyon') + ' B' },
     // Wolf 359 (M-type): 496,808.9 AU from the Sun (7.86 ly).
-    wolf359: { hex: '457', x: -121170.806, y: -249036.778, z: 412452.866, dist: 496808.9, orbit: -2, size: 0.759, startype: 'M', label: loc('star_wolf359'), zlabel: loc('star_wolf359') },
+    wolf359: { hex: '457', x: -121170.806, y: -249036.778, z: 412452.866, dist: 496808.9, orbit: -2, size: 0.722, startype: 'M', lum: 0.0008948, mass: 0.0246, label: loc('star_wolf359'), zlabel: loc('star_wolf359') },
     // Ross 128 (M-type): 696,122.6 AU from the Sun (11.01 ly).
-    ross128: { hex: '4e7', x: 905.425, y: -352688.658, z: 600163.744, dist: 696122.6, orbit: -2, size: 0.888, startype: 'M', label: loc('star_ross128'), zlabel: loc('star_ross128') },
+    ross128: { hex: '4e7', x: 905.425, y: -352688.658, z: 600163.744, dist: 696122.6, orbit: -2, size: 0.926, startype: 'M', lum: 0.004369, mass: 0.146, label: loc('star_ross128'), zlabel: loc('star_ross128') },
     // 61 Cygni A (K-type): 721,218.5 AU from the Sun (11.40 ly).
-    cygni: { hex: '27f', x: 95890.548, y: 711066.78, z: -73110.388, dist: 721218.5, orbit: -2, size: 1.631, startype: 'K', label: loc('star_61cygni'), zlabel: loc('star_61cygni') + ' A' },
+    cygni: { hex: '27f', x: 95890.548, y: 711066.78, z: -73110.388, dist: 721218.5, orbit: -2, size: 1.546, startype: 'K', lum: 0.1188, mass: 0.473, label: loc('star_61cygni'), zlabel: loc('star_61cygni') + ' A' },
     // 61 Cygni B (K-type): companion, 107.5 AU from 61 Cygni A.
-    cygnib: { hex: '450', x: 95921.541, y: 711052.121, z: -73212.235, dist: 721218.5, orbit: -2, size: 1.543, startype: 'K', zlabel: loc('star_61cygni') + ' B' },
+    cygnib: { hex: '450', x: 95921.541, y: 711052.121, z: -73212.235, dist: 721218.5, orbit: -2, size: 1.566, startype: 'K', lum: 0.08267, mass: 0.433, zlabel: loc('star_61cygni') + ' B' },
     // Sigma Draconis (K-type): 1,188,887.9 AU from the Sun (18.80 ly).
-    sigmadraconis: { hex: '811', x: -216244.617, y: 1081871.754, z: 442996.974, dist: 1188887.9, orbit: -2, size: 1.766, startype: 'K', label: loc('star_sigma_draconis'), zlabel: loc('star_sigma_draconis') },
+    sigmadraconis: { hex: '811', x: -216244.617, y: 1081871.754, z: 442996.974, dist: 1188887.9, orbit: -2, size: 1.628, startype: 'K', lum: 0.3057, mass: 0.556, label: loc('star_sigma_draconis'), zlabel: loc('star_sigma_draconis') },
     // Altair (A-type): 1,058,039.5 AU from the Sun (16.73 ly).
-    altair: { hex: '8a1', x: 702887.087, y: 773658.946, z: -163857.331, dist: 1058039.5, orbit: -2, size: 2.676, startype: 'A', label: loc('star_altair'), zlabel: loc('star_altair') },
+    altair: { hex: '8a1', x: 702887.087, y: 773658.946, z: -163857.331, dist: 1058039.5, orbit: -2, size: 2.676, startype: 'A', lum: 10.6, mass: 1.86, label: loc('star_altair'), zlabel: loc('star_altair') },
     // Kapteyn's Star (M-type): 811,431.7 AU from the Sun (12.83 ly).
-    kapteynsstar: { hex: 'a6e', x: -218783.221, y: -618913.395, z: -476971.217, dist: 811431.7, orbit: -2, size: 1.079, startype: 'M', label: loc('star_kapteyns_star'), zlabel: loc('star_kapteyns_star') },
+    kapteynsstar: { hex: 'a6e', x: -218783.221, y: -618913.395, z: -476971.217, dist: 811431.7, orbit: -2, size: 1.169, startype: 'M', lum: 0.01861, mass: 0.315, label: loc('star_kapteyns_star'), zlabel: loc('star_kapteyns_star') },
     // Teegarden's Star (M-type): 790,321.7 AU from the Sun (12.50 ly).
-    teegardensstar: { hex: 'b5a', x: -593895.814, y: 213075.04, z: -475915.162, dist: 790321.7, orbit: -2, size: 0.775, startype: 'M', label: loc('star_teegardens_star'), zlabel: loc('star_teegardens_star') },
+    teegardensstar: { hex: 'b5a', x: -593895.814, y: 213075.04, z: -475915.162, dist: 790321.7, orbit: -2, size: 0.54, startype: 'M', lum: 0.00034, mass: 0.0321, label: loc('star_teegardens_star'), zlabel: loc('star_teegardens_star') },
     // TZ Arietis (M-type): 921,927.6 AU from the Sun (14.58 ly).
-    tzarietis: { hex: '0a0', x: -536255.491, y: 339547.226, z: -668646.616, dist: 921927.6, orbit: -2, size: 1.02, startype: 'M', label: loc('star_tz_arietis'), zlabel: loc('star_tz_arietis') },
+    tzarietis: { hex: '0a0', x: -536255.491, y: 339547.226, z: -668646.616, dist: 921927.6, orbit: -2, size: 0.846, startype: 'M', lum: 0.002924, mass: 0.122, label: loc('star_tz_arietis'), zlabel: loc('star_tz_arietis') },
     // Eta Cassiopeiae A (G-type): 1,221,714.9 AU from the Sun (19.32 ly).
-    etacassiopeiae: { hex: 'a0d', x: -656022.661, y: 1025003.755, z: -107651.061, dist: 1221714.9, orbit: -2, size: 2.04, startype: 'G', label: loc('star_eta_cassiopeiae'), zlabel: loc('star_eta_cassiopeiae') + ' A' },
+    etacassiopeiae: { hex: 'a0d', x: -656022.661, y: 1025003.755, z: -107651.061, dist: 1221714.9, orbit: -2, size: 2.026, startype: 'G', lum: 1.152, mass: 0.964, label: loc('star_eta_cassiopeiae'), zlabel: loc('star_eta_cassiopeiae') + ' A' },
     // Eta Cassiopeiae B (K-type): companion, 76.9 AU from Eta Cassiopeiae A.
-    etacassiopeiaeb: { hex: '98f', x: -655981.85, y: 1025035.83, z: -107594.324, dist: 1221714.9, orbit: -2, size: 1.625, startype: 'K', zlabel: loc('star_eta_cassiopeiae') + ' B' },
+    etacassiopeiaeb: { hex: '98f', x: -655981.85, y: 1025035.83, z: -107594.324, dist: 1221714.9, orbit: -2, size: 0.804, startype: 'K', lum: 0.02756, mass: 0.0251, zlabel: loc('star_eta_cassiopeiae') + ' B' },
     // 70 Ophiuchi A (K-type): 1,054,699.3 AU from the Sun (16.68 ly).
-    ophiuchi: { hex: '0f6', x: 896439.745, y: 515338.608, z: 207876.371, dist: 1054699.3, orbit: -2, size: 1.822, startype: 'K', label: loc('star_70_ophiuchi'), zlabel: loc('star_70_ophiuchi') + ' A' },
+    ophiuchi: { hex: '0f6', x: 896439.745, y: 515338.608, z: 207876.371, dist: 1054699.3, orbit: -2, size: 1.803, startype: 'K', lum: 0.4571, mass: 0.798, label: loc('star_70_ophiuchi'), zlabel: loc('star_70_ophiuchi') + ' A' },
     // 70 Ophiuchi B (K-type): companion, 27.5 AU from 70 Ophiuchi A.
-    ophiuchib: { hex: '66f', x: 896450.012, y: 515330.517, z: 207852.148, dist: 1054699.3, orbit: -2, size: 1.637, startype: 'K', zlabel: loc('star_70_ophiuchi') + ' B' },
+    ophiuchib: { hex: '66f', x: 896450.012, y: 515330.517, z: 207852.148, dist: 1054699.3, orbit: -2, size: 1.674, startype: 'K', lum: 0.1646, mass: 0.606, zlabel: loc('star_70_ophiuchi') + ' B' },
     // DX Cancri (M-type): 738,639.6 AU from the Sun (11.68 ly).
-    dxcancri: { hex: 'cdb', x: -596219.327, y: -182448.568, z: 396009.416, dist: 738639.6, orbit: -2, size: 0.775, startype: 'M', label: loc('star_dx_cancri'), zlabel: loc('star_dx_cancri') },
+    dxcancri: { hex: 'cdb', x: -596219.327, y: -182448.568, z: 396009.416, dist: 738639.6, orbit: -2, size: 0.71, startype: 'M', lum: 0.000794, mass: 0.093, label: loc('star_dx_cancri'), zlabel: loc('star_dx_cancri') },
     // AD Leonis (M-type): 1,024,122.4 AU from the Sun (16.19 ly).
-    adleonis: { hex: 'f14', x: -477396.733, y: -352688.267, z: 834583.753, dist: 1024122.4, orbit: -2, size: 1.2, startype: 'M', label: loc('star_ad_leonis'), zlabel: loc('star_ad_leonis') },
+    adleonis: { hex: 'f14', x: -477396.733, y: -352688.267, z: 834583.753, dist: 1024122.4, orbit: -2, size: 1.301, startype: 'M', lum: 0.02349, mass: 0.441, label: loc('star_ad_leonis'), zlabel: loc('star_ad_leonis') },
     // EV Lacertae (M-type): 1,041,966.2 AU from the Sun (16.48 ly).
-    evlacertae: { hex: '00f', x: -186823.196, y: 997634.01, z: -235620.328, dist: 1041966.2, orbit: -2, size: 1.02, startype: 'M', label: loc('star_ev_lacertae'), zlabel: loc('star_ev_lacertae') },
+    evlacertae: { hex: '00f', x: -186823.196, y: 997634.01, z: -235620.328, dist: 1041966.2, orbit: -2, size: 1.283, startype: 'M', lum: 0.01807, mass: 0.661, label: loc('star_ev_lacertae'), zlabel: loc('star_ev_lacertae') },
     // Kruger 60 A (M-type): 827,068.7 AU from the Sun (13.08 ly).
-    kruger60: { hex: '945', x: -209693.304, y: 800044.563, z: -54.443, dist: 827068.7, orbit: -2, size: 1.2, startype: 'M', label: loc('star_kruger_60'), zlabel: loc('star_kruger_60') + ' A' },
+    kruger60: { hex: '945', x: -209693.304, y: 800044.563, z: -54.443, dist: 827068.7, orbit: -2, size: 1.047, startype: 'M', lum: 0.007244, mass: 0.23, label: loc('star_kruger_60'), zlabel: loc('star_kruger_60') + ' A' },
     // Kruger 60 B (M-type): companion, 31.7 AU from Kruger 60 A.
-    kruger60b: { hex: '6e6', x: -209715.123, y: 800038.845, z: -32.203, dist: 827068.7, orbit: -2, size: 1.02, startype: 'M', zlabel: loc('star_kruger_60') + ' B' },
+    kruger60b: { hex: '6e6', x: -209715.123, y: 800038.845, z: -32.203, dist: 827068.7, orbit: -2, size: 1.02, startype: 'M', lum: 0.006391, mass: 0.23, zlabel: loc('star_kruger_60') + ' B' },
     // YZ Canis Minoris (M-type): 1,235,289.5 AU from the Sun (19.53 ly).
-    yzcanisminoris: { hex: 'ecd', x: -973702.123, y: -703704.877, z: 287478.163, dist: 1235289.5, orbit: -2, size: 1.02, startype: 'M', label: loc('star_yz_canis_minoris'), zlabel: loc('star_yz_canis_minoris') },
+    yzcanisminoris: { hex: 'ecd', x: -973702.123, y: -703704.877, z: 287478.163, dist: 1235289.5, orbit: -2, size: 1.167, startype: 'M', lum: 0.01162, mass: 0.368, label: loc('star_yz_canis_minoris'), zlabel: loc('star_yz_canis_minoris') },
     // Epsilon Indi A (K-type): 750,482 AU from the Sun (11.87 ly).
-    epsilonindi: { hex: '71a', x: 459040.021, y: -202531.303, z: -558109.846, dist: 750482, orbit: -2, size: 1.709, startype: 'K', label: loc('star_epsilon_indi'), zlabel: loc('star_epsilon_indi') + ' A' },
+    epsilonindi: { hex: '71a', x: 459040.021, y: -202531.303, z: -558109.846, dist: 750482, orbit: -2, size: 1.716, startype: 'K', lum: 0.2348, mass: 0.625, label: loc('star_epsilon_indi'), zlabel: loc('star_epsilon_indi') + ' A' },
     // Epsilon Indi Ba & Bb (T-type brown dwarf binary, 2.65 AU apart) orbit an invisible barycenter
     // (`hidden`, not drawn) at their midpoint. They are bodies of it (so they orbit it) but still
     // Epsilon Indi Ba/Bb (T-type): companion, 1,463.8 AU from Epsilon Indi A.
-    epsilonindib: { hex: 'e04', x: 457885.928, y: -202710.048, z: -558992.292, dist: 750482, orbit: -2, size: 0.632, startype: 'T', hidden: true },
+    epsilonindib: { hex: 'e04', x: 457885.928, y: -202710.048, z: -558992.292, dist: 750482, orbit: -2, size: 0.632, startype: 'T', lum: 0.00001863, hidden: true },
     epsilonindiba: { dist: 1.33, orbit: 4139, size: 0.632, star: 'epsilonindib', bodystar: 'T', zlabel: loc('star_epsilon_indi') + ' BA' },
     epsilonindibb: { dist: 1.33, orbit: 4139, size: 0.632, star: 'epsilonindib', bodystar: 'T', zlabel: loc('star_epsilon_indi') + ' BB' },
     // Gliese 570 A (K-type): 1,214,148.7 AU from the Sun (19.20 ly).
-    gliese570: { hex: 'dcf', x: 949177.543, y: -378832.087, z: 655519.159, dist: 1214148.7, orbit: -2, size: 1.72, startype: 'K', label: loc('star_gliese_570'), zlabel: loc('star_gliese_570') + ' A' },
+    gliese570: { hex: 'dcf', x: 949177.543, y: -378832.087, z: 655519.159, dist: 1214148.7, orbit: -2, size: 1.766, startype: 'K', lum: 0.2505, mass: 0.843, label: loc('star_gliese_570'), zlabel: loc('star_gliese_570') + ' A' },
     // Gliese 570 B & C (M-type binary, 0.8 AU apart) orbit an invisible barycenter (`hidden`, not
     // drawn) at their midpoint. They are treated as bodies of it (so they orbit it) but still render
     // as stars via `bodystar` + label. Two circumbinary planets orbit the barycenter further out,
     // Gliese 570 B/C (G-type): companion, 146.6 AU from Gliese 570 A.
-    gliese570bc: { hex: '5ac', x: 949089.095, y: -378855.488, z: 655633.69, dist: 1214148.7, orbit: -2, size: 1.4, startype: 'G', hidden: true },
+    gliese570bc: { hex: '5ac', x: 949089.095, y: -378855.488, z: 655633.69, dist: 1214148.7, orbit: -2, size: 1.4, startype: 'G', lum: 0.2127, mass: 0.9, hidden: true },
     gliese570b: { dist: 0.4, orbit: 337, size: 1.4, star: 'gliese570bc', bodystar: 'M', zlabel: loc('star_gliese_570') + ' B' },
     gliese570c: { dist: 0.4, orbit: 337, size: 1.4, star: 'gliese570bc', bodystar: 'M', zlabel: loc('star_gliese_570') + ' C' },
     // Gliese 570 D (T-type): companion, 1,540.6 AU from Gliese 570 A.
-    gliese570d: { hex: '33b', x: 948312.726, y: -378790.836, z: 656793.425, dist: 1214148.7, orbit: -2, size: 0.632, startype: 'T', zlabel: loc('star_gliese_570') + ' D' },
+    gliese570d: { hex: '33b', x: 948312.726, y: -378790.836, z: 656793.425, dist: 1214148.7, orbit: -2, size: 0.616, startype: 'T', lum: 0.000002, mass: 0.014, zlabel: loc('star_gliese_570') + ' D' },
     // Wolf 1061 (M-type): 888,540.1 AU from the Sun (14.05 ly).
-    wolf1061: { hex: '648', x: 812336.061, y: 47574.594, z: 356861.682, dist: 888540.1, orbit: -2, size: 1.2, startype: 'M', label: loc('star_wolf_1061'), zlabel: loc('star_wolf_1061') },
+    wolf1061: { hex: '648', x: 812336.061, y: 47574.594, z: 356861.682, dist: 888540.1, orbit: -2, size: 1.178, startype: 'M', lum: 0.0137, mass: 0.341, label: loc('star_wolf_1061'), zlabel: loc('star_wolf_1061') },
     // Groombridge 1618 (K-type): 1,004,627.1 AU from the Sun (15.89 ly).
-    groombridge1618: { hex: '4f3', x: -597833.655, y: 150541.573, z: 793226.14, dist: 1004627.1, orbit: -2, size: 1.587, startype: 'K', label: loc('star_groombridge_1618'), zlabel: loc('star_groombridge_1618') },
+    groombridge1618: { hex: '4f3', x: -597833.655, y: 150541.573, z: 793226.14, dist: 1004627.1, orbit: -2, size: 1.592, startype: 'K', lum: 0.09827, mass: 0.597, label: loc('star_groombridge_1618'), zlabel: loc('star_groombridge_1618') },
     // 40 Eridani A (K-type): 1,033,349.4 AU from the Sun (16.34 ly). Triple: a K0 dwarf with a
     // white dwarf and a red dwarf orbiting each other some 400 AU out.
-    eridani40: { hex: 'a8f', x: -760960.965, y: -288344.331, z: -636872.774, dist: 1033349.4, orbit: -2, size: 1.8, startype: 'K', label: loc('star_40_eridani'), zlabel: loc('star_40_eridani') + ' A' },
+    eridani40: { hex: 'a8f', x: -760960.965, y: -288344.331, z: -636872.774, dist: 1033349.4, orbit: -2, size: 1.824, startype: 'K', lum: 0.4324, mass: 0.779, label: loc('star_40_eridani'), zlabel: loc('star_40_eridani') + ' A' },
     // 40 Eridani B (D-type white dwarf): companion, 418.7 AU from 40 Eridani A.
-    eridani40b: { hex: '499', x: -761042.474, y: -288672.923, z: -636626.477, dist: 1033349.4, orbit: -2, size: 0.233, startype: 'D', zlabel: loc('star_40_eridani') + ' B' },
+    eridani40b: { hex: '499', x: -761042.474, y: -288672.923, z: -636626.477, dist: 1033349.4, orbit: -2, size: 0.233, startype: 'D', lum: 0.0134, mass: 0.573, zlabel: loc('star_40_eridani') + ' B' },
     // 40 Eridani C (M-type): companion, 392 AU from 40 Eridani A and 46.8 AU from the white dwarf.
-    eridani40c: { hex: '44e', x: -761061.01, y: -288630.021, z: -636623.769, dist: 1033349.4, orbit: -2, size: 1.114, startype: 'M', zlabel: loc('star_40_eridani') + ' C' },
+    eridani40c: { hex: '44e', x: -761061.01, y: -288630.021, z: -636623.769, dist: 1033349.4, orbit: -2, size: 1.158, startype: 'M', lum: 0.01027, mass: 0.341, zlabel: loc('star_40_eridani') + ' C' },
     // 36 Ophiuchi A (K-type): 1,227,744 AU from the Sun (19.41 ly). A triple of K dwarfs.
-    ophiuchi36: { hex: '788', x: 1218355.571, y: -36598.555, z: 147056.784, dist: 1227744, orbit: -2, size: 1.732, startype: 'K', label: loc('star_36_ophiuchi'), zlabel: loc('star_36_ophiuchi') + ' A' },
+    ophiuchi36: { hex: '788', x: 1218355.571, y: -36598.555, z: 147056.784, dist: 1227744, orbit: -2, size: 1.725, startype: 'K', lum: 0.342, mass: 0.804, label: loc('star_36_ophiuchi'), zlabel: loc('star_36_ophiuchi') + ' A' },
     // 36 Ophiuchi B (K-type): companion, 29 AU from 36 Ophiuchi A.
-    ophiuchi36b: { hex: '6a0', x: 1218358.479, y: -36609.241, z: 147030.032, dist: 1227744, orbit: -2, size: 1.789, startype: 'K', zlabel: loc('star_36_ophiuchi') + ' B' },
+    ophiuchi36b: { hex: '6a0', x: 1218358.479, y: -36609.241, z: 147030.032, dist: 1227744, orbit: -2, size: 1.759, startype: 'K', lum: 0.3623, mass: 0.869, zlabel: loc('star_36_ophiuchi') + ' B' },
     // 36 Ophiuchi C (K-type): distant companion, 4,364 AU from 36 Ophiuchi A.
-    ophiuchi36c: { hex: '07c', x: 1218779.549, y: -33227.176, z: 144318.453, dist: 1227744, orbit: -2, size: 1.637, startype: 'K', zlabel: loc('star_36_ophiuchi') + ' C' },
+    ophiuchi36c: { hex: '07c', x: 1218779.549, y: -33227.176, z: 144318.453, dist: 1227744, orbit: -2, size: 1.603, startype: 'K', lum: 0.1572, mass: 0.721, zlabel: loc('star_36_ophiuchi') + ' C' },
     // HR 7703 A (K-type): 1,240,114.7 AU from the Sun (19.61 ly).
-    hr7703: { hex: 'e2b', x: 1059390.403, y: 97030.649, z: -637308.014, dist: 1240114.7, orbit: -2, size: 1.732, startype: 'K', label: loc('star_hr_7703'), zlabel: loc('star_hr_7703') + ' A' },
+    hr7703: { hex: 'e2b', x: 1059390.403, y: 97030.649, z: -637308.014, dist: 1240114.7, orbit: -2, size: 1.733, startype: 'K', lum: 0.3053, mass: 0.837, label: loc('star_hr_7703'), zlabel: loc('star_hr_7703') + ' A' },
     // HR 7703 B (M-type): companion, 178.7 AU from HR 7703 A.
-    hr7703b: { hex: '45a', x: 1059353.659, y: 96877.48, z: -637392.387, dist: 1240114.7, orbit: -2, size: 1.2, startype: 'M', zlabel: loc('star_hr_7703') + ' B' },
+    hr7703b: { hex: '45a', x: 1059353.659, y: 96877.48, z: -637392.387, dist: 1240114.7, orbit: -2, size: 1.2, startype: 'M', lum: 0.01224, mass: 0.37, zlabel: loc('star_hr_7703') + ' B' },
     // 82 Eridani (G-type): 1,246,130.8 AU from the Sun (19.70 ly).
-    eridani82: { hex: '2fe', x: -229324.232, y: -656542.819, z: -1034023.178, dist: 1246130.8, orbit: -2, size: 1.918, startype: 'G', label: loc('star_82_eridani'), zlabel: loc('star_82_eridani') },
+    eridani82: { hex: '2fe', x: -229324.232, y: -656542.819, z: -1034023.178, dist: 1246130.8, orbit: -2, size: 1.842, startype: 'G', lum: 0.5514, mass: 0.674, label: loc('star_82_eridani'), zlabel: loc('star_82_eridani') },
     // Delta Pavonis (G-type): 1,258,062 AU from the Sun (19.89 ly). A G8 subgiant, so it is drawn
     // slightly larger than the G dwarfs and its habitable zone sits further out.
-    deltapavonis: { hex: 'eb9', x: 917575.298, y: -534741.764, z: -674408.559, dist: 1258062, orbit: -2, size: 2.209, startype: 'G', label: loc('star_delta_pavonis'), zlabel: loc('star_delta_pavonis') },
+    deltapavonis: { hex: 'eb9', x: 917575.298, y: -534741.764, z: -674408.559, dist: 1258062, orbit: -2, size: 2.143, startype: 'G', lum: 1.167, mass: 0.937, label: loc('star_delta_pavonis'), zlabel: loc('star_delta_pavonis') },
     // Lalande 21185 (M-type): 525,177 AU from the Sun (8.30 ly).
-    lalande21185: { hex: '7ab', x: -217487.254, y: -19480.634, z: 477630.322, dist: 525177, orbit: -2, size: 1.254, startype: 'M', label: loc('star_lalande21185'), zlabel: loc('star_lalande21185') },
+    lalande21185: { hex: '7ab', x: -217487.254, y: -19480.634, z: 477630.322, dist: 525177, orbit: -2, size: 1.325, startype: 'M', lum: 0.02834, mass: 0.444, label: loc('star_lalande21185'), zlabel: loc('star_lalande21185') },
     // Ross 154 (M-type): 613,834.8 AU from the Sun (9.71 ly).
-    ross154: { hex: '2b1', x: 592249.371, y: 118420.349, z: -109592.027, dist: 613834.8, orbit: -2, size: 1.2, startype: 'M', label: loc('star_ross154'), zlabel: loc('star_ross154') },
+    ross154: { hex: '2b1', x: 592249.371, y: 118420.349, z: -109592.027, dist: 613834.8, orbit: -2, size: 0.973, startype: 'M', lum: 0.005766, mass: 0.219, label: loc('star_ross154'), zlabel: loc('star_ross154') },
     // Ross 248 (M-type): 651,744.3 AU from the Sun (10.31 ly).
-    ross248: { hex: '5f3', x: -213144.088, y: 585898.378, z: -189903.322, dist: 651744.3, orbit: -2, size: 0.894, startype: 'M', label: loc('star_ross248'), zlabel: loc('star_ross248') },
+    ross248: { hex: '5f3', x: -213144.088, y: 585898.378, z: -189903.322, dist: 651744.3, orbit: -2, size: 0.885, startype: 'M', lum: 0.00302, mass: 0.147, label: loc('star_ross248'), zlabel: loc('star_ross248') },
     // Lacaille 9352 (M-type): 678,200.6 AU from the Sun (10.72 ly).
-    lacaille9352: { hex: '151', x: 275218.805, y: 24566.519, z: -619360.258, dist: 678200.6, orbit: -2, size: 1.355, startype: 'M', label: loc('star_lacaille9352'), zlabel: loc('star_lacaille9352') },
+    lacaille9352: { hex: '151', x: 275218.805, y: 24566.519, z: -619360.258, dist: 678200.6, orbit: -2, size: 1.522, startype: 'M', lum: 0.05569, mass: 0.722, label: loc('star_lacaille9352'), zlabel: loc('star_lacaille9352') },
     // EZ Aquarii (M-type): 702,536.8 AU from the Sun (11.11 ly).
-    ezaquarii: { hex: 'd75', x: 260754.881, y: 280307.529, z: -589060.731, dist: 702536.8, orbit: -2, size: 0.894, startype: 'M', label: loc('star_ezaquarii'), zlabel: loc('star_ezaquarii') },
+    ezaquarii: { hex: 'd75', x: 260754.881, y: 280307.529, z: -589060.731, dist: 702536.8, orbit: -2, size: 1.028, startype: 'M', lum: 0.004088, mass: 0.232, label: loc('star_ezaquarii'), zlabel: loc('star_ezaquarii') },
     // Struve 2398 (M-type): 726,693.7 AU from the Sun (11.49 ly).
-    struve2398: { hex: '2d8', x: 8230.584, y: 662621.062, z: 298243.672, dist: 726693.7, orbit: -2, size: 1.2, startype: 'M', label: loc('star_struve2398'), zlabel: loc('star_struve2398') + ' A' },
+    struve2398: { hex: '2d8', x: 8230.584, y: 662621.062, z: 298243.672, dist: 726693.7, orbit: -2, size: 1.259, startype: 'M', lum: 0.02057, mass: 0.435, label: loc('star_struve2398'), zlabel: loc('star_struve2398') + ' A' },
     // Struve 2398 B (M-type): M3.5 dwarf companion, 45 AU from Struve 2398 A.
-    struve2398b: { hex: '5b7', x: 8273.129, y: 662626.622, z: 298230.14, dist: 726693.7, orbit: -2, size: 1.2, startype: 'M', zlabel: loc('star_struve2398') + ' B' },
+    struve2398b: { hex: '5b7', x: 8273.129, y: 662626.622, z: 298230.14, dist: 726693.7, orbit: -2, size: 1.096, startype: 'M', lum: 0.01088, mass: 0.262, zlabel: loc('star_struve2398') + ' B' },
     // Groombridge 34 (M-type): 734,805.2 AU from the Sun (11.62 ly).
-    groombridge34: { hex: '312', x: -312946.227, y: 622849.542, z: -232511.796, dist: 734805.2, orbit: -2, size: 1.327, startype: 'M', label: loc('star_groombridge34'), zlabel: loc('star_groombridge34') + ' A' },
+    groombridge34: { hex: '312', x: -312946.227, y: 622849.542, z: -232511.796, dist: 734805.2, orbit: -2, size: 1.349, startype: 'M', lum: 0.03152, mass: 0.51, label: loc('star_groombridge34'), zlabel: loc('star_groombridge34') + ' A' },
     // Groombridge 34 B (M-type): M3.5 dwarf companion, 125.7 AU from Groombridge 34 A.
-    groombridge34b: { hex: 'e65', x: -313058.463, y: 622807.066, z: -232474.486, dist: 734805.2, orbit: -2, size: 1.2, startype: 'M', zlabel: loc('star_groombridge34') + ' B' },
+    groombridge34b: { hex: 'e65', x: -313058.463, y: 622807.066, z: -232474.486, dist: 734805.2, orbit: -2, size: 0.804, startype: 'M', lum: 0.02756, mass: 0.0251, zlabel: loc('star_groombridge34') + ' B' },
     // Gliese 1061 (M-type): 757,876.5 AU from the Sun (11.98 ly).
-    gliese1061: { hex: '2d5', x: -142241.102, y: -434411.095, z: -604509.111, dist: 757876.5, orbit: -2, size: 0.894, startype: 'M', label: loc('star_gliese1061'), zlabel: loc('star_gliese1061') },
+    gliese1061: { hex: '2d5', x: -142241.102, y: -434411.095, z: -604509.111, dist: 757876.5, orbit: -2, size: 0.813, startype: 'M', lum: 0.00185, mass: 0.144, label: loc('star_gliese1061'), zlabel: loc('star_gliese1061') },
     // Luyten's Star (M-type): 780,930.7 AU from the Sun (12.35 ly).
-    luytensstar: { hex: '83b', x: -648982.214, y: -410976.247, z: 140617.84, dist: 780930.7, orbit: -2, size: 1.077, startype: 'M', label: loc('star_luytensstar'), zlabel: loc('star_luytensstar') },
+    luytensstar: { hex: '83b', x: -648982.214, y: -410976.247, z: 140617.84, dist: 780930.7, orbit: -2, size: 1.191, startype: 'M', lum: 0.01376, mass: 0.409, label: loc('star_luytensstar'), zlabel: loc('star_luytensstar') },
     // Lacaille 8760 (M-type): 818,795.8 AU from the Sun (12.95 ly).
-    lacaille8760: { hex: '53d', x: 585078.569, y: 39930.09, z: -571415.051, dist: 818795.8, orbit: -2, size: 1.428, startype: 'M', label: loc('star_lacaille8760'), zlabel: loc('star_lacaille8760') },
+    lacaille8760: { hex: '53d', x: 585078.569, y: 39930.09, z: -571415.051, dist: 818795.8, orbit: -2, size: 1.95, startype: 'M', lum: 0.1446, mass: 1.17, label: loc('star_lacaille8760'), zlabel: loc('star_lacaille8760') },
     // SCR 1845-6357 (M-type): 826,166 AU from the Sun (13.06 ly).
-    scr1845: { hex: '5b0', x: 665907.921, y: -361272.051, z: -329544.131, dist: 826166, orbit: -2, size: 0.663, startype: 'M', label: loc('star_scr1845'), zlabel: loc('star_scr1845') + ' A' },
+    scr1845: { hex: '5b0', x: 665907.921, y: -361272.051, z: -329544.131, dist: 826166, orbit: -2, size: 0.62, startype: 'M', lum: 0.0002857, mass: 0.08, label: loc('star_scr1845'), zlabel: loc('star_scr1845') + ' A' },
     // SCR 1845-6357 B (T-type): brown dwarf companion, 1.4 AU from SCR 1845-6357 A.
-    scr1845b: { hex: '471', x: 665907.12, y: -361273.178, z: -329544.514, dist: 826166, orbit: -2, size: 0.632, startype: 'T', zlabel: loc('star_scr1845') + ' B' },
+    scr1845b: { hex: '471', x: 665907.12, y: -361273.178, z: -329544.514, dist: 826166, orbit: -2, size: 0.632, startype: 'T', lum: 0.000008, zlabel: loc('star_scr1845') + ' B' },
     // DEN 1048-3956 (M-type): 834,351.9 AU from the Sun (13.19 ly).
-    den1048: { hex: '52c', x: 120425.2, y: -788470.43, z: 244857.613, dist: 834351.9, orbit: -2, size: 0.663, startype: 'M', label: loc('star_den1048'), zlabel: loc('star_den1048') },
+    den1048: { hex: '52c', x: 120425.2, y: -788470.43, z: 244857.613, dist: 834351.9, orbit: -2, size: 0.663, startype: 'M', lum: 0.001141, mass: 0.085, label: loc('star_den1048'), zlabel: loc('star_den1048') },
     // Ross 614 (M-type): 848,945.5 AU from the Sun (13.42 ly).
-    ross614: { hex: 'b83', x: -708412.737, y: -458791.644, z: -91488.11, dist: 848945.5, orbit: -2, size: 1.02, startype: 'M', label: loc('star_ross614'), zlabel: loc('star_ross614') },
+    ross614: { hex: 'b83', x: -708412.737, y: -458791.644, z: -91488.11, dist: 848945.5, orbit: -2, size: 1.128, startype: 'M', lum: 0.00846, mass: 0.13, label: loc('star_ross614'), zlabel: loc('star_ross614') },
     // Gliese 1 (M-type): 896,425.4 AU from the Sun (14.17 ly).
-    gliese1: { hex: '81b', x: 209403.756, y: -61814.687, z: -869429.465, dist: 896425.4, orbit: -2, size: 1.327, startype: 'M', label: loc('star_gliese1'), zlabel: loc('star_gliese1') },
+    gliese1: { hex: '81b', x: 209403.756, y: -61814.687, z: -869429.465, dist: 896425.4, orbit: -2, size: 1.379, startype: 'M', lum: 0.03444, mass: 0.671, label: loc('star_gliese1'), zlabel: loc('star_gliese1') },
     // Gliese 687 (M-type): 938,464 AU from the Sun (14.84 ly).
-    gliese687: { hex: 'eb1', x: -119088.111, y: 787217.482, z: 496811.094, dist: 938464, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese687'), zlabel: loc('star_gliese687') },
+    gliese687: { hex: 'eb1', x: -119088.111, y: 787217.482, z: 496811.094, dist: 938464, orbit: -2, size: 1.202, startype: 'M', lum: 0.01622, mass: 0.307, label: loc('star_gliese687'), zlabel: loc('star_gliese687') },
     // Gliese 674 (M-type): 939,077.1 AU from the Sun (14.85 ly).
-    gliese674: { hex: '8d4', x: 891786.742, y: -272579.855, z: -110825.959, dist: 939077.1, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese674'), zlabel: loc('star_gliese674') },
+    gliese674: { hex: '8d4', x: 891786.742, y: -272579.855, z: -110825.959, dist: 939077.1, orbit: -2, size: 1.383, startype: 'M', lum: 0.02672, mass: 0.538, label: loc('star_gliese674'), zlabel: loc('star_gliese674') },
     // LHS 292 (M-type): 940,430.5 AU from the Sun (14.87 ly).
-    lhs292: { hex: '531', x: -110597.972, y: -697913.901, z: 620559.241, dist: 940430.5, orbit: -2, size: 0.775, startype: 'M', label: loc('star_lhs292'), zlabel: loc('star_lhs292') },
+    lhs292: { hex: '531', x: -110597.972, y: -697913.901, z: 620559.241, dist: 940430.5, orbit: -2, size: 0.607, startype: 'M', lum: 0.0004421, mass: 0.0634, label: loc('star_lhs292'), zlabel: loc('star_lhs292') },
     // Gliese 876 (M-type): 963,683.1 AU from the Sun (15.24 ly).
-    gliese876: { hex: 'eb2', x: 299935.23, y: 383955.508, z: -831445.83, dist: 963683.1, orbit: -2, size: 1.226, startype: 'M', label: loc('star_gliese876'), zlabel: loc('star_gliese876') },
+    gliese876: { hex: 'eb2', x: 299935.23, y: 383955.508, z: -831445.83, dist: 963683.1, orbit: -2, size: 1.269, startype: 'M', lum: 0.01689, mass: 0.391, label: loc('star_gliese876'), zlabel: loc('star_gliese876') },
     // Gliese 1245 (M-type): 967,775.5 AU from the Sun (15.30 ly).
-    gliese1245: { hex: '753', x: 184953.099, y: 939081.762, z: 143203.637, dist: 967775.5, orbit: -2, size: 0.894, startype: 'M', label: loc('star_gliese1245'), zlabel: loc('star_gliese1245') + ' A' },
+    gliese1245: { hex: '753', x: 184953.099, y: 939081.762, z: 143203.637, dist: 967775.5, orbit: -2, size: 0.902, startype: 'M', lum: 0.002804, mass: 0.151, label: loc('star_gliese1245'), zlabel: loc('star_gliese1245') + ' A' },
     // Gliese 1245 B (M-type): M6 dwarf companion, 35.6 AU from Gliese 1245 A.
-    gliese1245b: { hex: '91e', x: 184926.336, y: 939090.367, z: 143181.763, dist: 967775.5, orbit: -2, size: 0.775, startype: 'M', zlabel: loc('star_gliese1245') + ' B' },
+    gliese1245b: { hex: '91e', x: 184926.336, y: 939090.367, z: 143181.763, dist: 967775.5, orbit: -2, size: 0.736, startype: 'M', lum: 0.001244, mass: 0.0584, zlabel: loc('star_gliese1245') + ' B' },
     // LHS 288 (M-type): 996,593.7 AU from the Sun (15.76 ly).
-    lhs288: { hex: '2c7', x: 311628.137, y: -945967.647, z: -35102.573, dist: 996593.7, orbit: -2, size: 0.894, startype: 'M', label: loc('star_lhs288'), zlabel: loc('star_lhs288') },
+    lhs288: { hex: '2c7', x: 311628.137, y: -945967.647, z: -35102.573, dist: 996593.7, orbit: -2, size: 0.62, startype: 'M', lum: 0.0008174, mass: 0.0378, label: loc('star_lhs288'), zlabel: loc('star_lhs288') },
     // Gliese 1002 (M-type): 999,587.1 AU from the Sun (15.81 ly).
-    gliese1002: { hex: 'b52', x: -16284.807, y: 378551.276, z: -924990.911, dist: 999587.1, orbit: -2, size: 0.894, startype: 'M', label: loc('star_gliese1002'), zlabel: loc('star_gliese1002') },
+    gliese1002: { hex: 'b52', x: -16284.807, y: 378551.276, z: -924990.911, dist: 999587.1, orbit: -2, size: 0.712, startype: 'M', lum: 0.001222, mass: 0.0738, label: loc('star_gliese1002'), zlabel: loc('star_gliese1002') },
     // Gliese 412 (M-type): 1,011,659.4 AU from the Sun (16.00 ly).
-    gliese412: { hex: '6e7', x: -448966.251, y: 91321.181, z: 901967.006, dist: 1011659.4, orbit: -2, size: 1.4, startype: 'M', label: loc('star_gliese412'), zlabel: loc('star_gliese412') + ' A' },
+    gliese412: { hex: '6e7', x: -448966.251, y: 91321.181, z: 901967.006, dist: 1011659.4, orbit: -2, size: 1.313, startype: 'M', lum: 0.02933, mass: 0.438, label: loc('star_gliese412'), zlabel: loc('star_gliese412') + ' A' },
     // Gliese 412 B (M-type): M6 dwarf companion, 153 AU from Gliese 412 A.
-    gliese412b: { hex: '332', x: -448837.812, y: 91274.378, z: 902035.664, dist: 1011659.4, orbit: -2, size: 0.775, startype: 'M', zlabel: loc('star_gliese412') + ' B' },
+    gliese412b: { hex: '332', x: -448837.812, y: 91274.378, z: 902035.664, dist: 1011659.4, orbit: -2, size: 0.59, startype: 'M', lum: 0.0006184, mass: 0.0374, zlabel: loc('star_gliese412') + ' B' },
     // Gliese 832 (M-type): 1,024,535.5 AU from the Sun (16.20 ly).
-    gliese832: { hex: '862', x: 694603.235, y: -132841.054, z: -741318.088, dist: 1024535.5, orbit: -2, size: 1.4, startype: 'M', label: loc('star_gliese832'), zlabel: loc('star_gliese832') },
+    gliese832: { hex: '862', x: 694603.235, y: -132841.054, z: -741318.088, dist: 1024535.5, orbit: -2, size: 1.414, startype: 'M', lum: 0.03709, mass: 0.869, label: loc('star_gliese832'), zlabel: loc('star_gliese832') },
     // Gliese 1005 (M-type): 1,028,598.2 AU from the Sun (16.26 ly).
-    gliese1005: { hex: 'c3c', x: 25989.848, y: 243959.963, z: -998910.614, dist: 1028598.2, orbit: -2, size: 1.02, startype: 'M', label: loc('star_gliese1005'), zlabel: loc('star_gliese1005') },
+    gliese1005: { hex: 'c3c', x: 25989.848, y: 243959.963, z: -998910.614, dist: 1028598.2, orbit: -2, size: 1.016, startype: 'M', lum: 0.006508, mass: 0.117, label: loc('star_gliese1005'), zlabel: loc('star_gliese1005') },
     // Gliese 682 (M-type): 1,032,902.3 AU from the Sun (16.33 ly).
-    gliese682: { hex: '005', x: 995446.58, y: -248457.356, z: -119340.785, dist: 1032902.3, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese682'), zlabel: loc('star_gliese682') },
+    gliese682: { hex: '005', x: 995446.58, y: -248457.356, z: -119340.785, dist: 1032902.3, orbit: -2, size: 1.155, startype: 'M', lum: 0.01092, mass: 0.343, label: loc('star_gliese682'), zlabel: loc('star_gliese682') },
     // Gliese 316.1 (M-type): 1,062,430.4 AU from the Sun (16.80 ly).
-    gliese3161: { hex: 'db6', x: -757530.872, y: -395194.328, z: 631448.157, dist: 1062430.4, orbit: -2, size: 0.663, startype: 'M', label: loc('star_gliese3161'), zlabel: loc('star_gliese3161') + ' A' },
+    gliese3161: { hex: 'db6', x: -757530.872, y: -395194.328, z: 631448.157, dist: 1062430.4, orbit: -2, size: 0.631, startype: 'M', lum: 0.0005558, mass: 0.102, label: loc('star_gliese3161'), zlabel: loc('star_gliese3161') + ' A' },
     // Gliese 316.1 B (M-type): M7 dwarf companion, 13.6 AU from Gliese 316.1 A.
-    gliese3161b: { hex: 'd10', x: -757524.185, y: -395206.107, z: 631448.807, dist: 1062430.4, orbit: -2, size: 0.693, startype: 'M', zlabel: loc('star_gliese3161') + ' B' },
+    gliese3161b: { hex: 'd10', x: -757524.185, y: -395206.107, z: 631448.807, dist: 1062430.4, orbit: -2, size: 0.693, startype: 'M', lum: 0.001362, mass: 0.09, zlabel: loc('star_gliese3161') + ' B' },
     // Gliese 3379 (M-type): 1,074,220.3 AU from the Sun (16.99 ly).
-    gliese3379: { hex: 'c86', x: -961744.94, y: -439556.081, z: -189173.069, dist: 1074220.3, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese3379'), zlabel: loc('star_gliese3379') },
+    gliese3379: { hex: 'c86', x: -961744.94, y: -439556.081, z: -189173.069, dist: 1074220.3, orbit: -2, size: 1.096, startype: 'M', lum: 0.008732, mass: 0.307, label: loc('star_gliese3379'), zlabel: loc('star_gliese3379') },
     // Gliese 445 (M-type): 1,083,749.9 AU from the Sun (17.14 ly).
-    gliese445: { hex: '09f', x: -512495.776, y: 683891.836, z: 666448.693, dist: 1083749.9, orbit: -2, size: 1.02, startype: 'M', label: loc('star_gliese445'), zlabel: loc('star_gliese445') },
+    gliese445: { hex: '09f', x: -512495.776, y: 683891.836, z: 666448.693, dist: 1083749.9, orbit: -2, size: 1.047, startype: 'M', lum: 0.007244, mass: 0.239, label: loc('star_gliese445'), zlabel: loc('star_gliese445') },
     // UCAC4 195-119117 (M-type): 1,098,737 AU from the Sun (17.37 ly).
-    ucac4195: { hex: 'f5e', x: 930476.996, y: -580671.582, z: 65239.27, dist: 1098737, orbit: -2, size: 0.693, startype: 'M', label: loc('star_ucac4195'), zlabel: loc('star_ucac4195') },
+    ucac4195: { hex: 'f5e', x: 930476.996, y: -580671.582, z: 65239.27, dist: 1098737, orbit: -2, size: 0.693, startype: 'M', lum: 0.000646, mass: 0.09, label: loc('star_ucac4195'), zlabel: loc('star_ucac4195') },
     // Gliese 3323 (M-type): 1,108,672.8 AU from the Sun (17.53 ly).
-    gliese3323: { hex: 'dd5', x: -880844.557, y: -437838.537, z: -511434.918, dist: 1108672.8, orbit: -2, size: 1.02, startype: 'M', label: loc('star_gliese3323'), zlabel: loc('star_gliese3323') },
+    gliese3323: { hex: 'dd5', x: -880844.557, y: -437838.537, z: -511434.918, dist: 1108672.8, orbit: -2, size: 0.925, startype: 'M', lum: 0.004326, mass: 0.163, label: loc('star_gliese3323'), zlabel: loc('star_gliese3323') },
     // Gliese 526 (M-type): 1,121,027.5 AU from the Sun (17.73 ly).
-    gliese526: { hex: 'e66', x: 335066.997, y: -49623.998, z: 1068630.103, dist: 1121027.5, orbit: -2, size: 1.327, startype: 'M', label: loc('star_gliese526'), zlabel: loc('star_gliese526') },
+    gliese526: { hex: 'e66', x: 335066.997, y: -49623.998, z: 1068630.103, dist: 1121027.5, orbit: -2, size: 1.526, startype: 'M', lum: 0.05418, mass: 0.679, label: loc('star_gliese526'), zlabel: loc('star_gliese526') },
     // Stein 2051 (M-type): 1,138,051.7 AU from the Sun (18.00 ly).
-    stein2051: { hex: '6df', x: -958344.288, y: 596456.243, z: 144836.944, dist: 1138051.7, orbit: -2, size: 1.02, startype: 'M', label: loc('star_stein2051'), zlabel: loc('star_stein2051') + ' A' },
+    stein2051: { hex: '6df', x: -958344.288, y: 596456.243, z: 144836.944, dist: 1138051.7, orbit: -2, size: 1.124, startype: 'M', lum: 0.01073, mass: 0.263, label: loc('star_stein2051'), zlabel: loc('star_stein2051') + ' A' },
     // Stein 2051 B (D-type): white dwarf companion, 49.8 AU from Stein 2051 A.
-    stein2051b: { hex: 'a9f', x: -958347.129, y: 596440.249, z: 144884.009, dist: 1138051.7, orbit: -2, size: 0.214, startype: 'D', zlabel: loc('star_stein2051') + ' B' },
+    stein2051b: { hex: 'a9f', x: -958347.129, y: 596440.249, z: 144884.009, dist: 1138051.7, orbit: -2, size: 0.214, startype: 'D', lum: 0.003, mass: 0.675, zlabel: loc('star_stein2051') + ' B' },
     // Gliese 251 (M-type): 1,151,912.6 AU from the Sun (18.21 ly).
-    gliese251: { hex: '92e', x: -1110494.37, y: -56961.286, z: 300766.1, dist: 1151912.6, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese251'), zlabel: loc('star_gliese251') },
+    gliese251: { hex: '92e', x: -1110494.37, y: -56961.286, z: 300766.1, dist: 1151912.6, orbit: -2, size: 1.202, startype: 'M', lum: 0.01622, mass: 0.337, label: loc('star_gliese251'), zlabel: loc('star_gliese251') },
     // Gliese 1224 (M-type): 1,159,239.1 AU from the Sun (18.33 ly).
-    gliese1224: { hex: 'c44', x: 828810.56, y: 481669.937, z: -651845.416, dist: 1159239.1, orbit: -2, size: 1.02, startype: 'M', label: loc('star_gliese1224'), zlabel: loc('star_gliese1224') },
+    gliese1224: { hex: 'c44', x: 828810.56, y: 481669.937, z: -651845.416, dist: 1159239.1, orbit: -2, size: 0.844, startype: 'M', lum: 0.002992, mass: 0.196, label: loc('star_gliese1224'), zlabel: loc('star_gliese1224') },
     // LSR 1835+3259 (M-type): 1,173,339.1 AU from the Sun (18.55 ly).
-    lsr1835: { hex: 'b1a', x: 531613.187, y: 985085.729, z: 351736.048, dist: 1173339.1, orbit: -2, size: 0.663, startype: 'M', label: loc('star_lsr1835'), zlabel: loc('star_lsr1835') },
+    lsr1835: { hex: 'b1a', x: 531613.187, y: 985085.729, z: 351736.048, dist: 1173339.1, orbit: -2, size: 0.645, startype: 'M', lum: 0.000339, mass: 0.0395, label: loc('star_lsr1835'), zlabel: loc('star_lsr1835') },
     // Gliese 205 (M-type): 1,176,551 AU from the Sun (18.60 ly).
-    gliese205: { hex: '877', x: -989078.348, y: -502540.926, z: -391725.589, dist: 1176551, orbit: -2, size: 1.4, startype: 'M', label: loc('star_gliese205'), zlabel: loc('star_gliese205') },
+    gliese205: { hex: '877', x: -989078.348, y: -502540.926, z: -391725.589, dist: 1176551, orbit: -2, size: 1.746, startype: 'M', lum: 0.1091, mass: 1.06, label: loc('star_gliese205'), zlabel: loc('star_gliese205') },
     // Gliese 229 (M-type): 1,188,339.3 AU from the Sun (18.79 ly).
-    gliese229: { hex: 'aac', x: -745335.438, y: -845782.332, z: -375869.169, dist: 1188339.3, orbit: -2, size: 1.661, startype: 'M', label: loc('star_gliese229'), zlabel: loc('star_gliese229') + ' A' },
+    gliese229: { hex: 'aac', x: -745335.438, y: -845782.332, z: -375869.169, dist: 1188339.3, orbit: -2, size: 1.667, startype: 'M', lum: 0.08889, mass: 1.76, label: loc('star_gliese229'), zlabel: loc('star_gliese229') + ' A' },
     // Gliese 229 B (T-type): brown dwarf companion, 44.8 AU from Gliese 229 A.
-    gliese229b: { hex: '587', x: -745301.32, y: -845811.323, z: -375871.586, dist: 1188339.3, orbit: -2, size: 0.632, startype: 'T', zlabel: loc('star_gliese229') + ' B' },
+    gliese229b: { hex: '587', x: -745301.32, y: -845811.323, z: -375871.586, dist: 1188339.3, orbit: -2, size: 0.632, startype: 'T', lum: 0.000008, zlabel: loc('star_gliese229') + ' B' },
     // Ross 47 (M-type): 1,194,517.9 AU from the Sun (18.89 ly).
-    ross47: { hex: 'ccb', x: -1145524.905, y: -279422.463, z: -191229.485, dist: 1194517.9, orbit: -2, size: 1.02, startype: 'M', label: loc('star_ross47'), zlabel: loc('star_ross47') },
+    ross47: { hex: 'ccb', x: -1145524.905, y: -279422.463, z: -191229.485, dist: 1194517.9, orbit: -2, size: 1.064, startype: 'M', lum: 0.008139, mass: 0.222, label: loc('star_ross47'), zlabel: loc('star_ross47') },
     // Gliese 693 (M-type): 1,214,721.5 AU from the Sun (19.21 ly).
-    gliese693: { hex: 'eb4', x: 1068695.749, y: -491444.967, z: -303182.245, dist: 1214721.5, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese693'), zlabel: loc('star_gliese693') },
+    gliese693: { hex: 'eb4', x: 1068695.749, y: -491444.967, z: -303182.245, dist: 1214721.5, orbit: -2, size: 1.135, startype: 'M', lum: 0.01236, mass: 0.337, label: loc('star_gliese693'), zlabel: loc('star_gliese693') },
     // Gliese 754 (M-type): 1,218,806.3 AU from the Sun (19.27 ly).
-    gliese754: { hex: '5a5', x: 1104389.603, y: -148146.062, z: -493827.043, dist: 1218806.3, orbit: -2, size: 1.02, startype: 'M', label: loc('star_gliese754'), zlabel: loc('star_gliese754') },
+    gliese754: { hex: '5a5', x: 1104389.603, y: -148146.062, z: -493827.043, dist: 1218806.3, orbit: -2, size: 0.956, startype: 'M', lum: 0.005004, mass: 0.246, label: loc('star_gliese754'), zlabel: loc('star_gliese754') },
     // Gliese 908 (M-type): 1,218,941.7 AU from the Sun (19.27 ly).
-    gliese908: { hex: 'cce', x: -41398.594, y: 664742.204, z: -1020893.164, dist: 1218941.7, orbit: -2, size: 1.4, startype: 'M', label: loc('star_gliese908'), zlabel: loc('star_gliese908') },
+    gliese908: { hex: 'cce', x: -41398.594, y: 664742.204, z: -1020893.164, dist: 1218941.7, orbit: -2, size: 1.412, startype: 'M', lum: 0.03839, mass: 0.571, label: loc('star_gliese908'), zlabel: loc('star_gliese908') },
     // Gliese 752 (M-type): 1,220,057.8 AU from the Sun (19.29 ly).
-    gliese752: { hex: '3df', x: 926948.333, y: 790205.838, z: -69875.759, dist: 1220057.8, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese752'), zlabel: loc('star_gliese752') + ' A' },
+    gliese752: { hex: '3df', x: 926948.333, y: 790205.838, z: -69875.759, dist: 1220057.8, orbit: -2, size: 1.46, startype: 'M', lum: 0.04104, mass: 0.597, label: loc('star_gliese752'), zlabel: loc('star_gliese752') + ' A' },
     // Gliese 752 B (M-type): M8 dwarf companion, 444.7 AU from Gliese 752 A.
-    gliese752b: { hex: '1af', x: 927095.567, y: 790000.638, z: -70241.737, dist: 1220057.8, orbit: -2, size: 0.663, startype: 'M', zlabel: loc('star_gliese752') + ' B' },
+    gliese752b: { hex: '1af', x: 927095.567, y: 790000.638, z: -70241.737, dist: 1220057.8, orbit: -2, size: 0.497, startype: 'M', lum: 0.0001954, mass: 0.0441, zlabel: loc('star_gliese752') + ' B' },
     // Gliese 588 (M-type): 1,220,527.1 AU from the Sun (19.30 ly).
-    gliese588: { hex: '1e0', x: 1060129.542, y: -547762.98, z: 256451.649, dist: 1220527.1, orbit: -2, size: 1.327, startype: 'M', label: loc('star_gliese588'), zlabel: loc('star_gliese588') },
+    gliese588: { hex: '1e0', x: 1060129.542, y: -547762.98, z: 256451.649, dist: 1220527.1, orbit: -2, size: 1.525, startype: 'M', lum: 0.04307, mass: 1.05, label: loc('star_gliese588'), zlabel: loc('star_gliese588') },
     // Gliese 661 (M-type): 1,232,977.5 AU from the Sun (19.50 ly).
-    gliese661: { hex: 'd1f', x: 319345.938, y: 945459.439, z: 724125.777, dist: 1232977.5, orbit: -2, size: 1.2, startype: 'M', label: loc('star_gliese661'), zlabel: loc('star_gliese661') },
+    gliese661: { hex: 'd1f', x: 319345.938, y: 945459.439, z: 724125.777, dist: 1232977.5, orbit: -2, size: 1.485, startype: 'M', lum: 0.0377, mass: 0.881, label: loc('star_gliese661'), zlabel: loc('star_gliese661') },
     // QY Aurigae (M-type): 1,248,465.2 AU from the Sun (19.74 ly).
-    qyaurigae: { hex: 'e11', x: -1173685.128, y: 21423.911, z: 425052.508, dist: 1248465.2, orbit: -2, size: 1.02, startype: 'M', label: loc('star_qyaurigae'), zlabel: loc('star_qyaurigae') },
+    qyaurigae: { hex: 'e11', x: -1173685.128, y: 21423.911, z: 425052.508, dist: 1248465.2, orbit: -2, size: 1.128, startype: 'M', lum: 0.00977, mass: 0.329, label: loc('star_qyaurigae'), zlabel: loc('star_qyaurigae') },
     // Gliese 65 B (M-type): M6 dwarf companion, 11 AU from Gliese 65 A.
-    gliese65b: { hex: '9f3', x: -138135.223, y: 10899.179, z: -543557.776, dist: 560941.3, orbit: -2, size: 0.775, startype: 'M', zlabel: loc('star_gliese65') + ' B' },
+    gliese65b: { hex: '9f3', x: -138135.223, y: 10899.179, z: -543557.776, dist: 560941.3, orbit: -2, size: 0.74, startype: 'M', lum: 0.001047, mass: 0.15, zlabel: loc('star_gliese65') + ' B' },
     // Vega (A-type): 1,583,850.2 AU from the Sun (25.04 ly).
-    vega: { hex: '621', x: 573518.038, y: 1381062.323, z: 521847.911, dist: 1583850.2, orbit: -2, size: 3.219, startype: 'A', label: loc('star_vega'), zlabel: loc('star_vega') },
+    vega: { hex: '621', x: 573518.038, y: 1381062.323, z: 521847.911, dist: 1583850.2, orbit: -2, size: 3.253, startype: 'A', lum: 51.53, mass: 2.27, label: loc('star_vega'), zlabel: loc('star_vega') },
     // Arcturus (K-type red giant): 2,322,017.4 AU from the Sun (36.72 ly).
-    arcturus: { hex: 'a75', x: 799525.78, y: 214981.098, z: 2169402.332, dist: 2322017.4, orbit: -2, size: 10.08, startype: 'KIII', label: loc('star_arcturus'), zlabel: loc('star_arcturus') },
+    arcturus: { hex: 'a75', x: 799525.78, y: 214981.098, z: 2169402.332, dist: 2322017.4, orbit: -2, size: 9.841, startype: 'KIII', lum: 180.5, mass: 1.05, label: loc('star_arcturus'), zlabel: loc('star_arcturus') },
     // Pollux (K-type red giant): 2,136,573.5 AU from the Sun (33.78 ly). 8.8 solar radii.
-    pollux: { hex: '33e', x: -1916263.438, y: -415335.98, z: 848750.137, dist: 2136573.5, orbit: -2, size: 5.933, startype: 'KIII', label: loc('star_pollux'), zlabel: loc('star_pollux') },
+    pollux: { hex: '33e', x: -1916263.438, y: -415335.98, z: 848750.137, dist: 2136573.5, orbit: -2, size: 5.959, startype: 'KIII', lum: 39.27, mass: 2.18, label: loc('star_pollux'), zlabel: loc('star_pollux') },
     // Fomalhaut (A-type): 1,588,974.7 AU from the Sun (25.13 ly). 1.842 solar radii.
-    fomalhaut: { hex: 'bbc', x: 631179.495, y: 235839.405, z: -1439038.854, dist: 1588974.7, orbit: -2, size: 2.714, startype: 'A', label: loc('star_fomalhaut'), zlabel: loc('star_fomalhaut') },
+    fomalhaut: { hex: 'bbc', x: 631179.495, y: 235839.405, z: -1439038.854, dist: 1588974.7, orbit: -2, size: 2.692, startype: 'A', lum: 16.29, mass: 1.69, label: loc('star_fomalhaut'), zlabel: loc('star_fomalhaut') },
     // Fomalhaut's companions.
     // K4Ve, 0.713 solar radii, 24.79 ly.
-    fomalhautb: { hex: '7c2', x: 646278.719, y: 184548.866, z: -1416567.238, dist: 1567927.7, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_fomalhaut') + ' B' },
+    fomalhautb: { hex: '7c2', x: 646278.719, y: 184548.866, z: -1416567.238, dist: 1567927.7, orbit: -2, size: 1.705, startype: 'K', lum: 0.2126, mass: 0.803, zlabel: loc('star_fomalhaut') + ' B' },
     // M4.0Ve, 0.274 solar radii, 25.04 ly.
-    fomalhautc: { hex: '23e', x: 629704.516, y: 387892.142, z: -1400009.279, dist: 1583355.3, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_fomalhaut') + ' C' },
+    fomalhautc: { hex: '23e', x: 629704.516, y: 387892.142, z: -1400009.279, dist: 1583355.3, orbit: -2, size: 1.041, startype: 'M', lum: 0.006462, mass: 0.23, zlabel: loc('star_fomalhaut') + ' C' },
     // Zeta Tucanae -- single.
     // F9.5V, 1.142 solar radii, 28.07 ly.
-    zetatucanae: { hex: 'dff', x: 678907.894, y: -858968.23, z: -1397542.88, dist: 1775350.2, orbit: -2, size: 2.137, startype: 'F', label: loc('star_zeta_tucanae'), zlabel: loc('star_zeta_tucanae') },
+    zetatucanae: { hex: 'dff', x: 678907.894, y: -858968.23, z: -1397542.88, dist: 1775350.2, orbit: -2, size: 2.018, startype: 'F', lum: 1.173, mass: 1.12, label: loc('star_zeta_tucanae'), zlabel: loc('star_zeta_tucanae') },
     // Beta Hydri -- single.
     // G0V, 1.814 solar radii, 24.33 ly.
-    betahydri: { hex: 'a7f', x: 674280.642, y: -971175.411, z: -984430.207, dist: 1538485.9, orbit: -2, size: 2.694, startype: 'G', label: loc('star_beta_hydri'), zlabel: loc('star_beta_hydri') },
+    betahydri: { hex: 'a7f', x: 674280.642, y: -971175.411, z: -984430.207, dist: 1538485.9, orbit: -2, size: 2.67, startype: 'G', lum: 3.251, mass: 1.13, label: loc('star_beta_hydri'), zlabel: loc('star_beta_hydri') },
     // Gliese 33 -- single.
     // K2.5V, 0.783 solar radii, 24.25 ly.
-    gliese33: { hex: '21c', x: -429732.758, y: 700898.19, z: -1294635.896, dist: 1533626.6, orbit: -2, size: 1.77, startype: 'K', label: loc('star_gliese33'), zlabel: loc('star_gliese33') },
+    gliese33: { hex: '21c', x: -429732.758, y: 700898.19, z: -1294635.896, dist: 1533626.6, orbit: -2, size: 1.707, startype: 'K', lum: 0.2915, mass: 0.77, label: loc('star_gliese33'), zlabel: loc('star_gliese33') },
     // Mu Cassiopeiae -- single.
     // G5Vb, 0.79 solar radii, 25.03 ly.
-    mucassiopeiae: { hex: '9c4', x: -907822.006, y: 1278746.047, z: -216823.076, dist: 1583143.9, orbit: -2, size: 1.778, startype: 'G', label: loc('star_mu_cassiopeiae'), zlabel: loc('star_mu_cassiopeiae') },
+    mucassiopeiae: { hex: '9c4', x: -907822.006, y: 1278746.047, z: -216823.076, dist: 1583143.9, orbit: -2, size: 1.802, startype: 'G', lum: 0.4743, mass: 0.761, label: loc('star_mu_cassiopeiae'), zlabel: loc('star_mu_cassiopeiae') },
     // p Eridani -- 2 components.
     // K2V, 0.783 solar radii, 26.71 ly.
-    peridani: { hex: '772', x: 286070.634, y: -803745.351, z: -1457914.775, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_p_eridani'), zlabel: loc('star_p_eridani') + ' A' },
+    peridani: { hex: '772', x: 286070.634, y: -803745.351, z: -1457914.775, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', lum: 0.3715, mass: 0.793, label: loc('star_p_eridani'), zlabel: loc('star_p_eridani') + ' A' },
     // K2V, 0.783 solar radii, 26.71 ly.
-    peridanib: { hex: '65c', x: 286140.573, y: -803793.303, z: -1457874.613, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', zlabel: loc('star_p_eridani') + ' B' },
+    peridanib: { hex: '65c', x: 286140.573, y: -803793.303, z: -1457874.613, dist: 1689188.7, orbit: -2, size: 1.77, startype: 'K', lum: 0.2071, mass: 0.82, zlabel: loc('star_p_eridani') + ' B' },
     // 107 Piscium -- single.
     // K1V, 0.797 solar radii, 24.93 ly.
-    piscium107: { hex: '9b9', x: -896122.772, y: 782399.763, z: -1034741.632, dist: 1576666, orbit: -2, size: 1.785, startype: 'K', label: loc('star_107_piscium'), zlabel: loc('star_107_piscium') },
+    piscium107: { hex: '9b9', x: -896122.772, y: 782399.763, z: -1034741.632, dist: 1576666, orbit: -2, size: 1.831, startype: 'K', lum: 0.4627, mass: 0.792, label: loc('star_107_piscium'), zlabel: loc('star_107_piscium') },
     // Gliese 105 -- 3 components.
     // K3V, 0.755 solar radii, 23.58 ly.
-    gliese105: { hex: '390', x: -963614.796, y: 287226.887, z: -1100920.23, dist: 1490999, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese105'), zlabel: loc('star_gliese105') + ' A' },
+    gliese105: { hex: '390', x: -963614.796, y: 287226.887, z: -1100920.23, dist: 1490999, orbit: -2, size: 1.597, startype: 'K', lum: 0.199, mass: 0.55, label: loc('star_gliese105'), zlabel: loc('star_gliese105') + ' A' },
     // M3.5V, 0.3 solar radii, 23.58 ly.
-    gliese105b: { hex: '88d', x: -964172.016, y: 286206.988, z: -1100697.958, dist: 1490999, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_gliese105') + ' B' },
+    gliese105b: { hex: '88d', x: -964172.016, y: 286206.988, z: -1100697.958, dist: 1490999, orbit: -2, size: 1.095, startype: 'M', lum: 0.009333, mass: 0.243, zlabel: loc('star_gliese105') + ' B' },
     // M6V, 0.137 solar radii, 23.58 ly.
-    gliese105c: { hex: '139', x: -963608.578, y: 287254.909, z: -1100918.361, dist: 1490999, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_gliese105') + ' C' },
+    gliese105c: { hex: '139', x: -963608.578, y: 287254.909, z: -1100918.361, dist: 1490999, orbit: -2, size: 0.74, startype: 'M', lum: 0.001771, mass: 0.102, zlabel: loc('star_gliese105') + ' C' },
     // Delta Eridani -- single.
     // K0+IV, 2.33 solar radii, 29.64 ly.
-    deltaeridani: { hex: '431', x: -1238018.752, y: -404341.67, z: -1348452.409, dist: 1874701.7, orbit: -2, size: 3.053, startype: 'K', label: loc('star_delta_eridani'), zlabel: loc('star_delta_eridani') },
+    deltaeridani: { hex: '431', x: -1238018.752, y: -404341.67, z: -1348452.409, dist: 1874701.7, orbit: -2, size: 3.014, startype: 'K', lum: 2.968, mass: 1.13, label: loc('star_delta_eridani'), zlabel: loc('star_delta_eridani') },
     // Pi3 Orionis -- single.
     // F6V, 1.359 solar radii, 26.17 ly.
-    pi3orionis: { hex: 'cf3', x: -1492525.898, y: -302356.552, z: -648442.458, dist: 1655152.8, orbit: -2, size: 2.332, startype: 'F', label: loc('star_pi3_orionis'), zlabel: loc('star_pi3_orionis') },
+    pi3orionis: { hex: 'cf3', x: -1492525.898, y: -302356.552, z: -648442.458, dist: 1655152.8, orbit: -2, size: 2.19, startype: 'F', lum: 2.216, mass: 1.02, label: loc('star_pi3_orionis'), zlabel: loc('star_pi3_orionis') },
     // Gliese 183 -- single.
     // K3+V, 0.755 solar radii, 28.85 ly.
-    gliese183: { hex: '9a6', x: -1469681.817, y: -688182.093, z: -833150.147, dist: 1824198, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese183'), zlabel: loc('star_gliese183') },
+    gliese183: { hex: '9a6', x: -1469681.817, y: -688182.093, z: -833150.147, dist: 1824198, orbit: -2, size: 1.811, startype: 'K', lum: 0.3177, mass: 0.724, label: loc('star_gliese183'), zlabel: loc('star_gliese183') },
     // Gliese 185 -- 2 components.
     // K7, 0.63 solar radii, 27.28 ly.
-    gliese185: { hex: '97f', x: -1079497.261, y: -962578.557, z: -940084.14, dist: 1725001.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese185'), zlabel: loc('star_gliese185') + ' A' },
+    gliese185: { hex: '97f', x: -1079497.261, y: -962578.557, z: -940084.14, dist: 1725001.5, orbit: -2, size: 1.36, startype: 'K', lum: 0.05451, mass: 0.64, label: loc('star_gliese185'), zlabel: loc('star_gliese185') + ' A' },
     // M2V, 0.446 solar radii, 27.28 ly.
-    gliese185b: { hex: '0c2', x: -1079497.839, y: -962571.529, z: -940090.673, dist: 1725001.5, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_gliese185') + ' B' },
+    gliese185b: { hex: '0c2', x: -1079497.839, y: -962571.529, z: -940090.673, dist: 1725001.5, orbit: -2, size: 1.336, startype: 'M', lum: 0.01881, mass: 0.44, zlabel: loc('star_gliese185') + ' B' },
     // Gamma Leporis -- 2 components.
     // F6V, 1.359 solar radii, 29.04 ly.
-    gammaleporis: { hex: '6a2', x: -1146307.221, y: -1220512.055, z: -755081.714, dist: 1836795.7, orbit: -2, size: 2.332, startype: 'F', label: loc('star_gamma_leporis'), zlabel: loc('star_gamma_leporis') + ' A' },
+    gammaleporis: { hex: '6a2', x: -1146307.221, y: -1220512.055, z: -755081.714, dist: 1836795.7, orbit: -2, size: 2.171, startype: 'F', lum: 2.001, mass: 1.01, label: loc('star_gamma_leporis'), zlabel: loc('star_gamma_leporis') + ' A' },
     // K2.5V(k), 0.783 solar radii, 29.04 ly.
-    gammaleporisb: { hex: '549', x: -1146971.4, y: -1219976.714, z: -754938.237, dist: 1836795.7, orbit: -2, size: 1.77, startype: 'K', zlabel: loc('star_gamma_leporis') + ' B' },
+    gammaleporisb: { hex: '549', x: -1146971.4, y: -1219976.714, z: -754938.237, dist: 1836795.7, orbit: -2, size: 1.732, startype: 'K', lum: 0.3063, mass: 0.649, zlabel: loc('star_gamma_leporis') + ' B' },
     // Chi1 Orionis -- single.
     // G0V, 1.1 solar radii, 28.26 ly.
-    chi1orionis: { hex: '0f3', x: -1765480.957, y: -262531.251, z: -85187.654, dist: 1786925.5, orbit: -2, size: 2.098, startype: 'G', label: loc('star_chi1_orionis'), zlabel: loc('star_chi1_orionis') },
+    chi1orionis: { hex: '0f3', x: -1765480.957, y: -262531.251, z: -85187.654, dist: 1786925.5, orbit: -2, size: 2.024, startype: 'G', lum: 1.176, mass: 1.13, label: loc('star_chi1_orionis'), zlabel: loc('star_chi1_orionis') },
     // Gliese 250 -- 2 components.
     // K3.5V, 0.755 solar radii, 28.52 ly.
-    gliese250: { hex: '669', x: -1427347.938, y: -1100667.761, z: -68147.21, dist: 1803728.3, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese250'), zlabel: loc('star_gliese250') + ' A' },
+    gliese250: { hex: '669', x: -1427347.938, y: -1100667.761, z: -68147.21, dist: 1803728.3, orbit: -2, size: 1.698, startype: 'K', lum: 0.2307, mass: 0.599, label: loc('star_gliese250'), zlabel: loc('star_gliese250') + ' A' },
     // M2.5V, 0.421 solar radii, 28.52 ly.
-    gliese250b: { hex: 'cff', x: -1427062.134, y: -1101023.77, z: -68381.43, dist: 1803728.3, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_gliese250') + ' B' },
+    gliese250b: { hex: 'cff', x: -1427062.134, y: -1101023.77, z: -68381.43, dist: 1803728.3, orbit: -2, size: 1.425, startype: 'M', lum: 0.03757, mass: 0.606, zlabel: loc('star_gliese250') + ' B' },
     // Gliese 338 -- 2 components.
     // K7V, 0.63 solar radii, 20.66 ly.
-    gliese338: { hex: 'a3b', x: -927583.264, y: 249664.623, z: 885403.133, dist: 1306400.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese338'), zlabel: loc('star_gliese338') + ' A' },
+    gliese338: { hex: 'a3b', x: -927583.264, y: 249664.623, z: 885403.133, dist: 1306400.3, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.709, label: loc('star_gliese338'), zlabel: loc('star_gliese338') + ' A' },
     // M0V, 0.588 solar radii, 20.66 ly.
-    gliese338b: { hex: '76d', x: -927508.039, y: 249659.854, z: 885483.28, dist: 1306400.3, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_gliese338') + ' B' },
+    gliese338b: { hex: '76d', x: -927508.039, y: 249659.854, z: 885483.28, dist: 1306400.3, orbit: -2, size: 1.534, startype: 'M', lum: 0.06918, mass: 0.647, zlabel: loc('star_gliese338') + ' B' },
     // Xi Ursae Majoris -- 3 components.
     // F8.5:V, 1.221 solar radii, 28.49 ly.
-    xiursaemajoris: { hex: 'dc6', x: -616358.645, y: -166389.761, z: 1684741.597, dist: 1801648.6, orbit: -2, size: 2.21, startype: 'F', label: loc('star_xi_ursae_majoris'), zlabel: loc('star_xi_ursae_majoris') + ' A' },
+    xiursaemajoris: { hex: 'dc6', x: -616358.645, y: -166389.761, z: 1684741.597, dist: 1801648.6, orbit: -2, size: 2.21, startype: 'F', lum: 1.95, mass: 1.09, label: loc('star_xi_ursae_majoris'), zlabel: loc('star_xi_ursae_majoris') + ' A' },
     // G2V, 1.012 solar radii, 28.49 ly.
-    xiursaemajorisb: { hex: '47f', x: -616364.475, y: -166393.574, z: 1684739.087, dist: 1801648.6, orbit: -2, size: 2.012, startype: 'G', zlabel: loc('star_xi_ursae_majoris') + ' B' },
+    xiursaemajorisb: { hex: '47f', x: -616364.475, y: -166393.574, z: 1684739.087, dist: 1801648.6, orbit: -2, size: 1.921, startype: 'G', lum: 0.7866, mass: 0.896, zlabel: loc('star_xi_ursae_majoris') + ' B' },
     // T8.5, 0.097 solar radii, 28.49 ly.
-    xiursaemajorisc: { hex: '842', x: -612509.829, y: -168298.161, z: 1685955.284, dist: 1801648.6, orbit: -2, size: 0.623, startype: 'T', zlabel: loc('star_xi_ursae_majoris') + ' C' },
+    xiursaemajorisc: { hex: '842', x: -612509.829, y: -168298.161, z: 1685955.284, dist: 1801648.6, orbit: -2, size: 0.623, startype: 'T', lum: 0.000001, zlabel: loc('star_xi_ursae_majoris') + ' C' },
     // Groombridge 1830 -- single.
     // K1V_Fe-1.5, 0.68 solar radii, 29.91 ly.
-    groombridge1830: { hex: 'a1f', x: -517937.384, y: 105083.795, z: 1816506.546, dist: 1891823.9, orbit: -2, size: 1.649, startype: 'K', label: loc('star_groombridge1830'), zlabel: loc('star_groombridge1830') },
+    groombridge1830: { hex: 'a1f', x: -517937.384, y: 105083.795, z: 1816506.546, dist: 1891823.9, orbit: -2, size: 1.595, startype: 'K', lum: 0.238, mass: 0.629, label: loc('star_groombridge1830'), zlabel: loc('star_groombridge1830') },
     // Beta Canum Venaticorum -- single.
     // G0V, 1.1 solar radii, 27.63 ly.
-    betacanumvenaticorum: { hex: 'd76', x: -319423.155, y: 307031.411, z: 1690518.065, dist: 1747612.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_beta_canum_venaticorum'), zlabel: loc('star_beta_canum_venaticorum') },
+    betacanumvenaticorum: { hex: 'd76', x: -319423.155, y: 307031.411, z: 1690518.065, dist: 1747612.9, orbit: -2, size: 2.028, startype: 'G', lum: 1.141, mass: 0.968, label: loc('star_beta_canum_venaticorum'), zlabel: loc('star_beta_canum_venaticorum') },
     // Beta Comae Berenices -- single.
     // F9.5V, 1.142 solar radii, 30.00 ly.
-    betacomaeberenices: { hex: 'afd', x: 110183.857, y: 104571.578, z: 1891032.454, dist: 1897124, orbit: -2, size: 2.137, startype: 'F', label: loc('star_beta_comae_berenices'), zlabel: loc('star_beta_comae_berenices') },
+    betacomaeberenices: { hex: 'afd', x: 110183.857, y: 104571.578, z: 1891032.454, dist: 1897124, orbit: -2, size: 2.038, startype: 'F', lum: 1.259, mass: 0.943, label: loc('star_beta_comae_berenices'), zlabel: loc('star_beta_comae_berenices') },
     // 61 Virginis -- single.
     // G6.5V, 0.949 solar radii, 27.84 ly.
-    virginis61: { hex: '9be', x: 843675.501, y: -941645.097, z: 1224887.289, dist: 1760350.2, orbit: -2, size: 1.948, startype: 'G', label: loc('star_61_virginis'), zlabel: loc('star_61_virginis') },
+    virginis61: { hex: '9be', x: 843675.501, y: -941645.097, z: 1224887.289, dist: 1760350.2, orbit: -2, size: 1.941, startype: 'G', lum: 0.7621, mass: 0.794, label: loc('star_61_virginis'), zlabel: loc('star_61_virginis') },
     // Xi Bootis -- 2 components.
     // G7Ve, 0.927 solar radii, 22.03 ly.
-    xibootis: { hex: 'd48', x: 614288.588, y: 261836.966, z: 1222544.5, dist: 1393027, orbit: -2, size: 1.926, startype: 'G', label: loc('star_xi_bootis'), zlabel: loc('star_xi_bootis') + ' A' },
+    xibootis: { hex: 'd48', x: 614288.588, y: 261836.966, z: 1222544.5, dist: 1393027, orbit: -2, size: 1.774, startype: 'G', lum: 0.5325, mass: 0.764, label: loc('star_xi_bootis'), zlabel: loc('star_xi_bootis') + ' A' },
     // K5Ve, 0.701 solar radii, 22.03 ly.
-    xibootisb: { hex: '288', x: 614245.035, y: 261840.92, z: 1222565.537, dist: 1393027, orbit: -2, size: 1.675, startype: 'K', zlabel: loc('star_xi_bootis') + ' B' },
+    xibootisb: { hex: '288', x: 614245.035, y: 261840.92, z: 1222565.537, dist: 1393027, orbit: -2, size: 1.276, startype: 'K', lum: 0.0935, mass: 0.205, zlabel: loc('star_xi_bootis') + ' B' },
     // 41 Arae -- 2 components.
     // G9V, 0.853 solar radii, 28.67 ly.
-    arae41: { hex: '452', x: 1720150.209, y: -549006.908, z: -166487.158, dist: 1813296.3, orbit: -2, size: 1.847, startype: 'G', label: loc('star_41_arae'), zlabel: loc('star_41_arae') + ' A' },
+    arae41: { hex: '452', x: 1720150.209, y: -549006.908, z: -166487.158, dist: 1813296.3, orbit: -2, size: 1.836, startype: 'G', lum: 0.4827, mass: 0.837, label: loc('star_41_arae'), zlabel: loc('star_41_arae') + ' A' },
     // M0VpCa-3Cr-1, 0.588 solar radii, 28.67 ly.
-    arae41b: { hex: '9e7', x: 1720135.217, y: -549069.369, z: -166436.058, dist: 1813296.3, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_41_arae') + ' B' },
+    arae41b: { hex: '9e7', x: 1720135.217, y: -549069.369, z: -166436.058, dist: 1813296.3, orbit: -2, size: 1.602, startype: 'M', lum: 0.08158, mass: 0.57, zlabel: loc('star_41_arae') + ' B' },
     // Gliese 667 -- 3 components.
     // K3, 0.755 solar radii, 23.62 ly.
-    gliese667: { hex: 'be8', x: 1478374.797, y: -211961.346, z: 37164.083, dist: 1493954.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese667'), zlabel: loc('star_gliese667') + ' A' },
+    gliese667: { hex: 'be8', x: 1478374.797, y: -211961.346, z: 37164.083, dist: 1493954.8, orbit: -2, size: 1.738, startype: 'K', lum: 0.2818, mass: 0.78, label: loc('star_gliese667'), zlabel: loc('star_gliese667') + ' A' },
     // K4, 0.713 solar radii, 23.62 ly.
-    gliese667b: { hex: 'd34', x: 1478373.455, y: -211968.378, z: 37177.364, dist: 1493954.8, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_gliese667') + ' B' },
+    gliese667b: { hex: 'd34', x: 1478373.455, y: -211968.378, z: 37177.364, dist: 1493954.8, orbit: -2, size: 1.689, startype: 'K', lum: 0.2042, mass: 0.73, zlabel: loc('star_gliese667') + ' B' },
     // M1.5V, 0.482 solar radii, 23.62 ly.
-    gliese667c: { hex: 'ed6', x: 1478377.275, y: -211993.73, z: 36879.733, dist: 1493954.8, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_gliese667') + ' C' },
+    gliese667c: { hex: 'ed6', x: 1478377.275, y: -211993.73, z: 36879.733, dist: 1493954.8, orbit: -2, size: 1.296, startype: 'M', lum: 0.0244, mass: 0.587, zlabel: loc('star_gliese667') + ' C' },
     // Gliese 673 -- single.
     // K7V, 0.63 solar radii, 25.16 ly.
-    gliese673: { hex: 'd26', x: 1357835.789, y: 626190.165, z: 543510.953, dist: 1590986, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese673'), zlabel: loc('star_gliese673') },
+    gliese673: { hex: 'd26', x: 1357835.789, y: 626190.165, z: 543510.953, dist: 1590986, orbit: -2, size: 1.484, startype: 'K', lum: 0.0818, mass: 0.554, label: loc('star_gliese673'), zlabel: loc('star_gliese673') },
     // Mu Herculis -- 3 components.
     // G5IV, 1.73 solar radii, 27.20 ly.
-    muherculis: { hex: '6db', x: 945365.011, y: 1229296.237, z: 743873.615, dist: 1719951.2, orbit: -2, size: 2.631, startype: 'G', label: loc('star_mu_herculis'), zlabel: loc('star_mu_herculis') + ' A' },
+    muherculis: { hex: '6db', x: 945365.011, y: 1229296.237, z: 743873.615, dist: 1719951.2, orbit: -2, size: 2.56, startype: 'G', lum: 2.272, mass: 0.914, label: loc('star_mu_herculis'), zlabel: loc('star_mu_herculis') + ' A' },
     // M3.5V, 0.3 solar radii, 27.20 ly.
-    muherculisb: { hex: 'af7', x: 945451.719, y: 1229112.224, z: 744067.459, dist: 1719951.2, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_mu_herculis') + ' B' },
+    muherculisb: { hex: 'af7', x: 945451.719, y: 1229112.224, z: 744067.459, dist: 1719951.2, orbit: -2, size: 1.095, startype: 'M', lum: 0.008489, mass: 0.27, zlabel: loc('star_mu_herculis') + ' B' },
     // M4V, 0.274 solar radii, 27.20 ly.
-    muherculisc: { hex: '1b1', x: 945463.919, y: 1229092.394, z: 744084.715, dist: 1719951.2, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_mu_herculis') + ' C' },
+    muherculisc: { hex: '1b1', x: 945463.919, y: 1229092.394, z: 744084.715, dist: 1719951.2, orbit: -2, size: 1.047, startype: 'M', lum: 0.007095, mass: 0.23, zlabel: loc('star_mu_herculis') + ' C' },
     // Chi Draconis -- single.
     // F7V, 1.324 solar radii, 26.28 ly.
-    chidraconis: { hex: '34c', x: -341293.189, y: 1426375.556, z: 781699.855, dist: 1661951.5, orbit: -2, size: 2.301, startype: 'F', label: loc('star_chi_draconis'), zlabel: loc('star_chi_draconis') },
+    chidraconis: { hex: '34c', x: -341293.189, y: 1426375.556, z: 781699.855, dist: 1661951.5, orbit: -2, size: 2.188, startype: 'F', lum: 1.787, mass: 1.02, label: loc('star_chi_draconis'), zlabel: loc('star_chi_draconis') },
     // Gliese 785 -- single.
     // K2+V, 0.783 solar radii, 28.74 ly.
-    gliese785: { hex: '38d', x: 1524970.779, y: 426483.448, z: -892154.996, dist: 1817516, orbit: -2, size: 1.77, startype: 'K', label: loc('star_gliese785'), zlabel: loc('star_gliese785') },
+    gliese785: { hex: '38d', x: 1524970.779, y: 426483.448, z: -892154.996, dist: 1817516, orbit: -2, size: 1.778, startype: 'K', lum: 0.3736, mass: 0.721, label: loc('star_gliese785'), zlabel: loc('star_gliese785') },
     // Gliese 884 -- single.
     // K7+Vk, 0.63 solar radii, 26.85 ly.
-    gliese884: { hex: '2f1', x: 584586.289, y: 442737.806, z: -1531527.567, dist: 1698038.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese884'), zlabel: loc('star_gliese884') },
+    gliese884: { hex: '2f1', x: 584586.289, y: 442737.806, z: -1531527.567, dist: 1698038.5, orbit: -2, size: 1.559, startype: 'K', lum: 0.1026, mass: 0.849, label: loc('star_gliese884'), zlabel: loc('star_gliese884') },
     // Gliese 892 -- single.
     // K3V, 0.755 solar radii, 21.34 ly.
-    gliese892: { hex: '192', x: -458536.447, y: 1266799.865, z: -75289.049, dist: 1349335.4, orbit: -2, size: 1.738, startype: 'K', label: loc('star_gliese892'), zlabel: loc('star_gliese892') },
+    gliese892: { hex: '192', x: -458536.447, y: 1266799.865, z: -75289.049, dist: 1349335.4, orbit: -2, size: 1.778, startype: 'K', lum: 0.3058, mass: 0.721, label: loc('star_gliese892'), zlabel: loc('star_gliese892') },
     // Gamma Pavonis -- single.
     // F9VFe-1.4CH-0.7, 1.167 solar radii, 30.20 ly.
-    gammapavonis: { hex: 'd4a', x: 1237388.708, y: -768512.287, z: -1234962.253, dist: 1909679, orbit: -2, size: 2.161, startype: 'F', label: loc('star_gammapavonis'), zlabel: loc('star_gammapavonis') },
+    gammapavonis: { hex: 'd4a', x: 1237388.708, y: -768512.287, z: -1234962.253, dist: 1909679, orbit: -2, size: 2.038, startype: 'F', lum: 1.321, mass: 0.861, label: loc('star_gammapavonis'), zlabel: loc('star_gammapavonis') },
     // Kappa1 Ceti -- single.
     // G5V, 0.977 solar radii, 30.26 ly.
-    kappa1ceti: { hex: 'ac2', x: -1397027.855, y: 43335.435, z: -1306670.848, dist: 1913361.8, orbit: -2, size: 1.977, startype: 'G', label: loc('star_kappa1ceti'), zlabel: loc('star_kappa1ceti') },
+    kappa1ceti: { hex: 'ac2', x: -1397027.855, y: 43335.435, z: -1306670.848, dist: 1913361.8, orbit: -2, size: 1.871, startype: 'G', lum: 0.7332, mass: 0.884, label: loc('star_kappa1ceti'), zlabel: loc('star_kappa1ceti') },
     // HD 102365 -- 2 components.
     // G2V, 1.012 solar radii, 30.40 ly.
-    hd102365: { hex: '6e2', x: 609044.617, y: -1691772.253, z: 679790.792, dist: 1922275.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_hd102365'), zlabel: loc('star_hd102365') + ' A' },
+    hd102365: { hex: '6e2', x: 609044.617, y: -1691772.253, z: 679790.792, dist: 1922275.8, orbit: -2, size: 1.926, startype: 'G', lum: 0.7775, mass: 0.863, label: loc('star_hd102365'), zlabel: loc('star_hd102365') + ' A' },
     // M4V, 0.274 solar radii, 30.40 ly.
-    hd102365b: { hex: '2cb', x: 609148.456, y: -1691671.48, z: 679948.516, dist: 1922275.8, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd102365') + ' B' },
+    hd102365b: { hex: '2cb', x: 609148.456, y: -1691671.48, z: 679948.516, dist: 1922275.8, orbit: -2, size: 0.564, startype: 'M', lum: 0.0006069, mass: 0.23, zlabel: loc('star_hd102365') + ' B' },
     // 20 Crateris -- 2 components.
     // K0V, 0.813 solar radii, 31.18 ly.
-    crateris20: { hex: 'ea4', x: 446836.147, y: -1693921.67, z: 904721.543, dist: 1971688.2, orbit: -2, size: 1.803, startype: 'K', label: loc('star_crateris20'), zlabel: loc('star_crateris20') + ' A' },
+    crateris20: { hex: 'ea4', x: 446836.147, y: -1693921.67, z: 904721.543, dist: 1971688.2, orbit: -2, size: 1.756, startype: 'K', lum: 0.3775, mass: 0.817, label: loc('star_crateris20'), zlabel: loc('star_crateris20') + ' A' },
     // DC, 0.013 solar radii, 31.18 ly.
-    crateris20b: { hex: '132', x: 446979.893, y: -1693906.074, z: 904679.736, dist: 1971688.2, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_crateris20') + ' B' },
+    crateris20b: { hex: '132', x: 446979.893, y: -1693906.074, z: 904679.736, dist: 1971688.2, orbit: -2, size: 0.228, startype: 'D', lum: 0.0021, mass: 0.61, zlabel: loc('star_crateris20') + ' B' },
     // 61 Ursae Majoris -- single.
     // G8V, 0.914 solar radii, 31.23 ly.
-    ursaemajoris61: { hex: '7b9', x: -565705.241, y: -35090.707, z: 1892172.903, dist: 1975239.8, orbit: -2, size: 1.912, startype: 'G', label: loc('star_ursaemajoris61'), zlabel: loc('star_ursaemajoris61') },
+    ursaemajoris61: { hex: '7b9', x: -565705.241, y: -35090.707, z: 1892172.903, dist: 1975239.8, orbit: -2, size: 1.84, startype: 'G', lum: 0.5917, mass: 0.906, label: loc('star_ursaemajoris61'), zlabel: loc('star_ursaemajoris61') },
     // HD 151288 -- single.
     // K7.5Ve, 0.630 solar radii, 32.11 ly.
-    hd151288: { hex: '3b3', x: 888136.262, y: 1282348.343, z: 1300574.381, dist: 2030935, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd151288'), zlabel: loc('star_hd151288') },
+    hd151288: { hex: '3b3', x: 888136.262, y: 1282348.343, z: 1300574.381, dist: 2030935, orbit: -2, size: 1.547, startype: 'K', lum: 0.107, mass: 0.624, label: loc('star_hd151288'), zlabel: loc('star_hd151288') },
     // 12 Ophiuchi -- single.
     // K1V, 0.797 solar radii, 32.27 ly.
-    ophiuchi12: { hex: '9a4', x: 1743705.476, y: 425877.347, z: 971017.091, dist: 2040773, orbit: -2, size: 1.785, startype: 'K', label: loc('star_ophiuchi12'), zlabel: loc('star_ophiuchi12') },
+    ophiuchi12: { hex: '9a4', x: 1743705.476, y: 425877.347, z: 971017.091, dist: 2040773, orbit: -2, size: 1.922, startype: 'K', lum: 0.592, mass: 1.01, label: loc('star_ophiuchi12'), zlabel: loc('star_ophiuchi12') },
     // HD 10780 -- single.
     // K0V, 0.813 solar radii, 32.75 ly.
-    hd10780: { hex: '583', x: -1305325.908, y: 1606905.519, z: 59845.559, dist: 2071135.6, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd10780'), zlabel: loc('star_hd10780') },
+    hd10780: { hex: '583', x: -1305325.908, y: 1606905.519, z: 59845.559, dist: 2071135.6, orbit: -2, size: 1.831, startype: 'K', lum: 0.5223, mass: 0.811, label: loc('star_hd10780'), zlabel: loc('star_hd10780') },
     // HD 122064 -- single.
     // K3V, 0.755 solar radii, 32.83 ly.
-    hd122064: { hex: '3e8', x: -410768.197, y: 1152666.905, z: 1677652.261, dist: 2076508.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd122064'), zlabel: loc('star_hd122064') },
+    hd122064: { hex: '3e8', x: -410768.197, y: 1152666.905, z: 1677652.261, dist: 2076508.8, orbit: -2, size: 1.738, startype: 'K', lum: 0.2818, mass: 0.673, label: loc('star_hd122064'), zlabel: loc('star_hd122064') },
     // HD 103932 -- single.
     // K4+V, 0.713 solar radii, 33.18 ly.
-    hd103932: { hex: '0fd', x: 559380.284, y: -1654119.631, z: 1163660.518, dist: 2098362.2, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd103932'), zlabel: loc('star_hd103932') },
+    hd103932: { hex: '0fd', x: 559380.284, y: -1654119.631, z: 1163660.518, dist: 2098362.2, orbit: -2, size: 1.789, startype: 'K', lum: 0.2494, mass: 0.829, label: loc('star_hd103932'), zlabel: loc('star_hd103932') },
     // Alpha Mensae -- 2 components.
     // G7V, 0.927 solar radii, 33.31 ly.
-    alphamensae: { hex: '82c', x: 501321.965, y: -1776579.254, z: -1014892.745, dist: 2106552.8, orbit: -2, size: 1.926, startype: 'G', label: loc('star_alphamensae'), zlabel: loc('star_alphamensae') + ' A' },
+    alphamensae: { hex: '82c', x: 501321.965, y: -1776579.254, z: -1014892.745, dist: 2106552.8, orbit: -2, size: 1.973, startype: 'G', lum: 0.832, mass: 0.952, label: loc('star_alphamensae'), zlabel: loc('star_alphamensae') + ' A' },
     // M3.5, 0.300 solar radii, 33.31 ly.
-    alphamensaeb: { hex: '78c', x: 501329.6, y: -1776563.027, z: -1014917.379, dist: 2106552.8, orbit: -2, size: 1.095, startype: 'M', zlabel: loc('star_alphamensae') + ' B' },
+    alphamensaeb: { hex: '78c', x: 501329.6, y: -1776563.027, z: -1014917.379, dist: 2106552.8, orbit: -2, size: 1.095, startype: 'M', lum: 0.009333, mass: 0.27, zlabel: loc('star_alphamensae') + ' B' },
     // HD 17925 -- single.
     // K1V, 0.797 solar radii, 33.79 ly.
-    hd17925: { hex: '4a2', x: -1099527.199, y: -235191.052, z: -1817295.642, dist: 2137016.2, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd17925'), zlabel: loc('star_hd17925') },
+    hd17925: { hex: '4a2', x: -1099527.199, y: -235191.052, z: -1817295.642, dist: 2137016.2, orbit: -2, size: 1.782, startype: 'K', lum: 0.409, mass: 0.798, label: loc('star_hd17925'), zlabel: loc('star_hd17925') },
     // HD 154363 -- 2 components.
     // K4/5V, 0.713 solar radii, 34.13 ly.
-    hd154363: { hex: '7df', x: 1944328.438, y: 534371.434, z: 769680.557, dist: 2158326.7, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd154363'), zlabel: loc('star_hd154363') + ' A' },
+    hd154363: { hex: '7df', x: 1944328.438, y: 534371.434, z: 769680.557, dist: 2158326.7, orbit: -2, size: 1.647, startype: 'K', lum: 0.1539, mass: 0.623, label: loc('star_hd154363'), zlabel: loc('star_hd154363') + ' A' },
     // M1.5V, 0.482 solar radii, 34.13 ly.
-    hd154363b: { hex: '9ce', x: 1945001.734, y: 534515.841, z: 767877.032, dist: 2158326.7, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_hd154363') + ' B' },
+    hd154363b: { hex: '9ce', x: 1945001.734, y: 534515.841, z: 767877.032, dist: 2158326.7, orbit: -2, size: 1.523, startype: 'M', lum: 0.05091, mass: 0.706, zlabel: loc('star_hd154363') + ' B' },
     // Iota Persei -- single.
     // G0V, 1.100 solar radii, 34.50 ly.
-    iotapersei: { hex: '605', x: -1763619.537, y: 1253442.283, z: -280250.842, dist: 2181745.2, orbit: -2, size: 2.098, startype: 'G', label: loc('star_iotapersei'), zlabel: loc('star_iotapersei') },
+    iotapersei: { hex: '605', x: -1763619.537, y: 1253442.283, z: -280250.842, dist: 2181745.2, orbit: -2, size: 2.432, startype: 'G', lum: 2.476, mass: 1.23, label: loc('star_iotapersei'), zlabel: loc('star_iotapersei') },
     // Gliese 635 -- 2 components.
     // G0IV, 2.640 solar radii, 34.95 ly.
-    gliese635: { hex: '400', x: 1022531.181, y: 1340449.049, z: 1429347.385, dist: 2210295.8, orbit: -2, size: 3.25, startype: 'G', label: loc('star_gliese635'), zlabel: loc('star_gliese635') + ' A' },
+    gliese635: { hex: '400', x: 1022531.181, y: 1340449.049, z: 1429347.385, dist: 2210295.8, orbit: -2, size: 3.25, startype: 'G', lum: 7.004, mass: 1.76, label: loc('star_gliese635'), zlabel: loc('star_gliese635') + ' A' },
     // K0V, 0.813 solar radii, 34.95 ly.
-    gliese635b: { hex: 'da9', x: 1022532.99, y: 1340446.985, z: 1429348.027, dist: 2210295.8, orbit: -2, size: 1.803, startype: 'K', zlabel: loc('star_gliese635') + ' B' },
+    gliese635b: { hex: 'da9', x: 1022532.99, y: 1340446.985, z: 1429348.027, dist: 2210295.8, orbit: -2, size: 1.803, startype: 'K', lum: 0.4571, mass: 0.183, zlabel: loc('star_gliese635') + ' B' },
     // HD 13445 -- 2 components.
     // K1.5V, 0.797 solar radii, 35.10 ly.
-    hd13445: { hex: 'fe6', x: 107732.803, y: -1037839.059, z: -1959158.546, dist: 2219688.8, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd13445'), zlabel: loc('star_hd13445') + ' A' },
+    hd13445: { hex: 'fe6', x: 107732.803, y: -1037839.059, z: -1959158.546, dist: 2219688.8, orbit: -2, size: 1.793, startype: 'K', lum: 0.4171, mass: 0.856, label: loc('star_hd13445'), zlabel: loc('star_hd13445') + ' A' },
     // DQ6, 0.013 solar radii, 35.10 ly.
-    hd13445b: { hex: '80f', x: 107725.273, y: -1037857.573, z: -1959149.152, dist: 2219688.8, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_hd13445') + ' B' },
+    hd13445b: { hex: '80f', x: 107725.273, y: -1037857.573, z: -1959149.152, dist: 2219688.8, orbit: -2, size: 0.228, startype: 'D', lum: 0.002, mass: 0.6, zlabel: loc('star_hd13445') + ' B' },
     // HD 223778 -- 2 components.
     // K3V, 0.755 solar radii, 35.54 ly.
-    hd223778: { hex: '97b', x: -1067602.349, y: 1911067.862, z: 509542.45, dist: 2247573.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd223778'), zlabel: loc('star_hd223778') + ' A' },
+    hd223778: { hex: '97b', x: -1067602.349, y: 1911067.862, z: 509542.45, dist: 2247573.9, orbit: -2, size: 1.99, startype: 'K', lum: 0.435, mass: 1.13, label: loc('star_hd223778'), zlabel: loc('star_hd223778') + ' A' },
     // M2:, 0.446 solar radii, 35.54 ly.
-    hd223778b: { hex: 'd29', x: -1067583.958, y: 1911077.8, z: 509543.709, dist: 2247573.9, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_hd223778') + ' B' },
+    hd223778b: { hex: 'd29', x: -1067583.958, y: 1911077.8, z: 509543.709, dist: 2247573.9, orbit: -2, size: 1.336, startype: 'M', lum: 0.02884, mass: 0.44, zlabel: loc('star_hd223778') + ' B' },
     // 8 Trianguli -- single.
     // G0.5VFe-0.5, 1.100 solar radii, 35.59 ly.
-    trianguli8: { hex: '804', x: -1611895.127, y: 1239392.962, z: -964740.129, dist: 2250560.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_trianguli8'), zlabel: loc('star_trianguli8') },
+    trianguli8: { hex: '804', x: -1611895.127, y: 1239392.962, z: -964740.129, dist: 2250560.9, orbit: -2, size: 2.098, startype: 'G', lum: 1.349, mass: 0.944, label: loc('star_trianguli8'), zlabel: loc('star_trianguli8') },
     // Gliese 519 -- single.
     // K7.5V, 0.630 solar radii, 35.69 ly.
-    gliese519: { hex: 'b60', x: 114512.978, y: 495827.617, z: 2198917.593, dist: 2257032.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese519'), zlabel: loc('star_gliese519') },
+    gliese519: { hex: 'b60', x: 114512.978, y: 495827.617, z: 2198917.593, dist: 2257032.7, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 1.05, label: loc('star_gliese519'), zlabel: loc('star_gliese519') },
     // HD 115404 -- 2 components.
     // K2V, 0.783 solar radii, 35.83 ly.
-    hd115404: { hex: '53e', x: 414251.343, y: -198465.751, z: 2219167.751, dist: 2266207.9, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd115404'), zlabel: loc('star_hd115404') + ' A' },
+    hd115404: { hex: '53e', x: 414251.343, y: -198465.751, z: 2219167.751, dist: 2266207.9, orbit: -2, size: 1.7, startype: 'K', lum: 0.289, mass: 0.602, label: loc('star_hd115404'), zlabel: loc('star_hd115404') + ' A' },
     // M0.5V, 0.544 solar radii, 35.83 ly.
-    hd115404b: { hex: '997', x: 414327.268, y: -198436.904, z: 2219156.157, dist: 2266207.9, orbit: -2, size: 1.475, startype: 'M', zlabel: loc('star_hd115404') + ' B' },
+    hd115404b: { hex: '997', x: 414327.268, y: -198436.904, z: 2219156.157, dist: 2266207.9, orbit: -2, size: 1.552, startype: 'M', lum: 0.07143, mass: 0.839, zlabel: loc('star_hd115404') + ' B' },
     // Denebola -- single.
     // A3Va, 1.861 solar radii, 35.88 ly.
-    denebola: { hex: 'cbd', x: -247354.251, y: -703979.927, z: 2142683.078, dist: 2268890.2, orbit: -2, size: 2.728, startype: 'A', label: loc('star_denebola'), zlabel: loc('star_denebola') },
+    denebola: { hex: 'cbd', x: -247354.251, y: -703979.927, z: 2142683.078, dist: 2268890.2, orbit: -2, size: 2.583, startype: 'A', lum: 13.39, mass: 1.76, label: loc('star_denebola'), zlabel: loc('star_denebola') },
     // HD 160346 -- single.
     // K3-V, 0.755 solar radii, 35.88 ly.
-    hd160346: { hex: '0b0', x: 1912987.366, y: 1007298.94, z: 688252.002, dist: 2268890.2, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd160346'), zlabel: loc('star_hd160346') },
+    hd160346: { hex: '0b0', x: 1912987.366, y: 1007298.94, z: 688252.002, dist: 2268890.2, orbit: -2, size: 1.809, startype: 'K', lum: 0.3439, mass: 0.673, label: loc('star_hd160346'), zlabel: loc('star_hd160346') },
     // Zavijava -- single.
     // F9V, 1.167 solar radii, 35.88 ly.
-    zavijava: { hex: '1eb', x: 10143.716, y: -1108566.373, z: 1980049.542, dist: 2269277.1, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zavijava'), zlabel: loc('star_zavijava') },
+    zavijava: { hex: '1eb', x: 10143.716, y: -1108566.373, z: 1980049.542, dist: 2269277.1, orbit: -2, size: 2.524, startype: 'F', lum: 3.204, mass: 1.25, label: loc('star_zavijava'), zlabel: loc('star_zavijava') },
     // HD 166620 -- single.
     // K2V, 0.783 solar radii, 36.19 ly.
-    hd166620: { hex: '48e', x: 871162.345, y: 1896967.36, z: 938460.029, dist: 2288693.1, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd166620'), zlabel: loc('star_hd166620') },
+    hd166620: { hex: '48e', x: 871162.345, y: 1896967.36, z: 938460.029, dist: 2288693.1, orbit: -2, size: 1.793, startype: 'K', lum: 0.3677, mass: 0.745, label: loc('star_hd166620'), zlabel: loc('star_hd166620') },
     // 54 Piscium -- 2 components.
     // K0.5V, 0.813 solar radii, 36.23 ly.
-    piscium54: { hex: 'f4f', x: -836027.489, y: 1497573.511, z: -1519186.709, dist: 2291199.8, orbit: -2, size: 1.803, startype: 'K', label: loc('star_piscium54'), zlabel: loc('star_piscium54') + ' A' },
+    piscium54: { hex: 'f4f', x: -836027.489, y: 1497573.511, z: -1519186.709, dist: 2291199.8, orbit: -2, size: 1.857, startype: 'K', lum: 0.4952, mass: 0.858, label: loc('star_piscium54'), zlabel: loc('star_piscium54') + ' A' },
     // T7.5, 0.095 solar radii, 36.23 ly.
-    piscium54b: { hex: '029', x: -835706.901, y: 1497896.652, z: -1519044.514, dist: 2291199.8, orbit: -2, size: 0.616, startype: 'T', zlabel: loc('star_piscium54') + ' B' },
+    piscium54b: { hex: '029', x: -835706.901, y: 1497896.652, z: -1519044.514, dist: 2291199.8, orbit: -2, size: 0.616, startype: 'T', lum: 0.000003, mass: 0.0122, zlabel: loc('star_piscium54') + ' B' },
     // Theta Persei -- 2 components.
     // F8V, 1.221 solar radii, 36.37 ly.
-    thetapersei: { hex: '21d', x: -1766377.234, y: 1421956.096, z: -383932.076, dist: 2299880.8, orbit: -2, size: 2.21, startype: 'F', label: loc('star_thetapersei'), zlabel: loc('star_thetapersei') + ' A' },
+    thetapersei: { hex: '21d', x: -1766377.234, y: 1421956.096, z: -383932.076, dist: 2299880.8, orbit: -2, size: 2.265, startype: 'F', lum: 2.308, mass: 1.25, label: loc('star_thetapersei'), zlabel: loc('star_thetapersei') + ' A' },
     // M1.5V, 0.482 solar radii, 36.37 ly.
-    thetaperseib: { hex: 'c1a', x: -1766240.962, y: 1422135.137, z: -383895.856, dist: 2299880.8, orbit: -2, size: 1.389, startype: 'M', zlabel: loc('star_thetapersei') + ' B' },
+    thetaperseib: { hex: 'c1a', x: -1766240.962, y: 1422135.137, z: -383895.856, dist: 2299880.8, orbit: -2, size: 1.631, startype: 'M', lum: 0.06697, mass: 0.673, zlabel: loc('star_thetapersei') + ' B' },
     // 41 Serpentis -- single.
     // F6V, 1.359 solar radii, 36.42 ly.
-    serpentis41: { hex: '0ee', x: 1423811.867, y: 748451.618, z: 1648105.03, dist: 2302969.9, orbit: -2, size: 2.332, startype: 'F', label: loc('star_serpentis41'), zlabel: loc('star_serpentis41') },
+    serpentis41: { hex: '0ee', x: 1423811.867, y: 748451.618, z: 1648105.03, dist: 2302969.9, orbit: -2, size: 2.34, startype: 'F', lum: 2.621, mass: 0.9, label: loc('star_serpentis41'), zlabel: loc('star_serpentis41') },
     // HD 74576 -- single.
     // K3V, 0.755 solar radii, 36.50 ly.
-    hd74576: { hex: '404', x: -422114.112, y: -2267771.113, z: 89223.224, dist: 2308446.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd74576'), zlabel: loc('star_hd74576') },
+    hd74576: { hex: '404', x: -422114.112, y: -2267771.113, z: 89223.224, dist: 2308446.9, orbit: -2, size: 1.767, startype: 'K', lum: 0.3346, mass: 0.905, label: loc('star_hd74576'), zlabel: loc('star_hd74576') },
     // 11 Leonis Minoris -- single.
     // G8Va, 0.914 solar radii, 36.64 ly.
-    leonisminoris11: { hex: 'ae6', x: -1539466.513, y: -229963.956, z: 1716751.555, dist: 2317342.5, orbit: -2, size: 1.912, startype: 'G', label: loc('star_leonisminoris11'), zlabel: loc('star_leonisminoris11') },
+    leonisminoris11: { hex: 'ae6', x: -1539466.513, y: -229963.956, z: 1716751.555, dist: 2317342.5, orbit: -2, size: 1.991, startype: 'G', lum: 0.8085, mass: 1.03, label: loc('star_leonisminoris11'), zlabel: loc('star_leonisminoris11') },
     // HD 85512 -- single.
     // K6Vk:, 0.669 solar radii, 36.78 ly.
-    hd85512: { hex: '3c9', x: 67340.343, y: -2301575.471, z: 330158.613, dist: 2326110.3, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd85512'), zlabel: loc('star_hd85512') },
+    hd85512: { hex: '3c9', x: 67340.343, y: -2301575.471, z: 330158.613, dist: 2326110.3, orbit: -2, size: 1.549, startype: 'K', lum: 0.1253, mass: 0.322, label: loc('star_hd85512'), zlabel: loc('star_hd85512') },
     // HD 38 -- 2 components.
     // K6V, 0.669 solar radii, 37.58 ly.
-    hd38: { hex: '234', x: -951170.83, y: 2072707.305, z: -667853.864, dist: 2376314.4, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd38'), zlabel: loc('star_hd38') + ' A' },
+    hd38: { hex: '234', x: -951170.83, y: 2072707.305, z: -667853.864, dist: 2376314.4, orbit: -2, size: 1.572, startype: 'K', lum: 0.09444, mass: 0.682, label: loc('star_hd38'), zlabel: loc('star_hd38') + ' A' },
     // M0.5V, 0.544 solar radii, 37.58 ly.
-    hd38b: { hex: '83d', x: -951148.645, y: 2072695.937, z: -667920.736, dist: 2376314.4, orbit: -2, size: 1.475, startype: 'M', zlabel: loc('star_hd38') + ' B' },
+    hd38b: { hex: '83d', x: -951148.645, y: 2072695.937, z: -667920.736, dist: 2376314.4, orbit: -2, size: 1.527, startype: 'M', lum: 0.08249, mass: 0.589, zlabel: loc('star_hd38') + ' B' },
     // Muphrid -- single.
     // G0IV, 2.640 solar radii, 37.17 ly.
-    muphrid: { hex: '089', x: 683137.552, y: 63234.665, z: 2248249.629, dist: 2350596.1, orbit: -2, size: 3.25, startype: 'G', label: loc('star_muphrid'), zlabel: loc('star_muphrid') },
+    muphrid: { hex: '089', x: 683137.552, y: 63234.665, z: 2248249.629, dist: 2350596.1, orbit: -2, size: 3.182, startype: 'G', lum: 7.832, mass: 1.58, label: loc('star_muphrid'), zlabel: loc('star_muphrid') },
     // HD 245409 -- 2 components.
     // K6V, 0.669 solar radii, 37.26 ly.
-    hd245409: { hex: 'fa3', x: -2244507.079, y: -559896.5, z: -449281.241, dist: 2356512.2, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd245409'), zlabel: loc('star_hd245409') + ' A' },
+    hd245409: { hex: 'fa3', x: -2244507.079, y: -559896.5, z: -449281.241, dist: 2356512.2, orbit: -2, size: 1.539, startype: 'K', lum: 0.08699, mass: 0.697, label: loc('star_hd245409'), zlabel: loc('star_hd245409') + ' A' },
     // M4.0Ve, 0.274 solar radii, 37.26 ly.
-    hd245409b: { hex: '3fc', x: -2244164.404, y: -561602.045, z: -448864.149, dist: 2356512.2, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd245409') + ' B' },
+    hd245409b: { hex: '3fc', x: -2244164.404, y: -561602.045, z: -448864.149, dist: 2356512.2, orbit: -2, size: 1.047, startype: 'M', lum: 0.007095, mass: 0.23, zlabel: loc('star_hd245409') + ' B' },
     // HD 222237b -- single.
     // K3+V, 0.755 solar radii, 37.33 ly.
-    hd222237b: { hex: '701', x: 1106728.528, y: -1311093.304, z: -1621526.805, dist: 2360754.7, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd222237b'), zlabel: loc('star_hd222237b') },
+    hd222237b: { hex: '701', x: 1106728.528, y: -1311093.304, z: -1621526.805, dist: 2360754.7, orbit: -2, size: 1.738, startype: 'K', lum: 0.1926, mass: 0.78, label: loc('star_hd222237b'), zlabel: loc('star_hd222237b') },
     // HD 16157 -- single.
     // K7V, 0.630 solar radii, 37.66 ly.
-    hd16157: { hex: '299', x: -212834.772, y: -1044323.71, z: -2129668.347, dist: 2381469.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd16157'), zlabel: loc('star_hd16157') },
+    hd16157: { hex: '299', x: -212834.772, y: -1044323.71, z: -2129668.347, dist: 2381469.7, orbit: -2, size: 1.73, startype: 'K', lum: 0.1142, mass: 0.64, label: loc('star_hd16157'), zlabel: loc('star_hd16157') },
     // HD 131511 -- single.
     // K0.5V, 0.813 solar radii, 37.93 ly.
-    hd131511: { hex: '917', x: 1068177.327, y: 465579.009, z: 2096568.611, dist: 2398617.6, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd131511'), zlabel: loc('star_hd131511') },
+    hd131511: { hex: '917', x: 1068177.327, y: 465579.009, z: 2096568.611, dist: 2398617.6, orbit: -2, size: 1.865, startype: 'K', lum: 0.5205, mass: 0.914, label: loc('star_hd131511'), zlabel: loc('star_hd131511') },
     // HD 99279 -- 2 components.
     // K5-V, 0.701 solar radii, 39.52 ly.
-    hd99279: { hex: '7ad', x: 969429.685, y: -2303652.134, z: -21405.079, dist: 2499413, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd99279'), zlabel: loc('star_hd99279') + ' A' },
+    hd99279: { hex: '7ad', x: 969429.685, y: -2303652.134, z: -21405.079, dist: 2499413, orbit: -2, size: 1.857, startype: 'K', lum: 0.2455, mass: 1.11, label: loc('star_hd99279'), zlabel: loc('star_hd99279') + ' A' },
     // K7-V(k), 0.630 solar radii, 39.52 ly.
-    hd99279b: { hex: 'bc1', x: 969371.406, y: -2303676.101, z: -21464.986, dist: 2499413, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_hd99279') + ' B' },
+    hd99279b: { hex: 'bc1', x: 969371.406, y: -2303676.101, z: -21464.986, dist: 2499413, orbit: -2, size: 1.63, startype: 'K', lum: 0.1124, mass: 0.64, zlabel: loc('star_hd99279') + ' B' },
     // Gliese 1075 -- single.
     // K7Vk, 0.630 solar radii, 38.13 ly.
-    gliese1075: { hex: 'a2d', x: -130587.522, y: -1929917.404, z: -1440209.631, dist: 2411604.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese1075'), zlabel: loc('star_gliese1075') },
+    gliese1075: { hex: 'a2d', x: -130587.522, y: -1929917.404, z: -1440209.631, dist: 2411604.9, orbit: -2, size: 1.708, startype: 'K', lum: 0.111, mass: 1.28, label: loc('star_gliese1075'), zlabel: loc('star_gliese1075') },
     // Zeta Doradus -- single.
     // F9VFe-0.5, 1.167 solar radii, 38.14 ly.
-    zetadoradus: { hex: '368', x: -133728.932, y: -1928690.988, z: -1441884.388, dist: 2411796.6, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zetadoradus'), zlabel: loc('star_zetadoradus') },
+    zetadoradus: { hex: '368', x: -133728.932, y: -1928690.988, z: -1441884.388, dist: 2411796.6, orbit: -2, size: 2.017, startype: 'F', lum: 1.341, mass: 1.04, label: loc('star_zetadoradus'), zlabel: loc('star_zetadoradus') },
     // HD 125072 -- single.
     // K3IV, 1.812 solar radii, 38.55 ly.
-    hd125072: { hex: 'fe8', x: 1689660.838, y: -1756229.007, z: 68695.919, dist: 2438034.7, orbit: -2, size: 2.692, startype: 'K', label: loc('star_hd125072'), zlabel: loc('star_hd125072') },
+    hd125072: { hex: 'fe8', x: 1689660.838, y: -1756229.007, z: 68695.919, dist: 2438034.7, orbit: -2, size: 1.811, startype: 'K', lum: 0.3502, mass: 0.83, label: loc('star_hd125072'), zlabel: loc('star_hd125072') },
     // HD 97101 -- 2 components.
     // K7V, 0.630 solar radii, 38.75 ly.
-    hd97101: { hex: '599', x: -878287.737, y: -291648.839, z: 2268903.352, dist: 2450381.8, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd97101'), zlabel: loc('star_hd97101') + ' A' },
+    hd97101: { hex: '599', x: -878287.737, y: -291648.839, z: 2268903.352, dist: 2450381.8, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.677, label: loc('star_hd97101'), zlabel: loc('star_hd97101') + ' A' },
     // M2V, 0.446 solar radii, 38.75 ly.
-    hd97101b: { hex: 'bac', x: -878619.792, y: -291830.822, z: 2268751.385, dist: 2450381.8, orbit: -2, size: 1.336, startype: 'M', zlabel: loc('star_hd97101') + ' B' },
+    hd97101b: { hex: 'bac', x: -878619.792, y: -291830.822, z: 2268751.385, dist: 2450381.8, orbit: -2, size: 1.49, startype: 'M', lum: 0.05434, mass: 0.563, zlabel: loc('star_hd97101') + ' B' },
     // Iota Pegasi -- single.
     // F5V, 1.473 solar radii, 38.83 ly.
-    iotapegasi: { hex: 'f7a', x: 301485.3, y: 2218174.326, z: -1008800.481, dist: 2455375.6, orbit: -2, size: 2.427, startype: 'F', label: loc('star_iotapegasi'), zlabel: loc('star_iotapegasi') },
+    iotapegasi: { hex: 'f7a', x: 301485.3, y: 2218174.326, z: -1008800.481, dist: 2455375.6, orbit: -2, size: 2.468, startype: 'F', lum: 3.673, mass: 1.5, label: loc('star_iotapegasi'), zlabel: loc('star_iotapegasi') },
     // Lambda Serpentis -- single.
     // G0-V, 1.100 solar radii, 38.86 ly.
-    lambdaserpentis: { hex: '481', x: 1699122.795, y: 477496.42, z: 1710532.989, dist: 2457833.2, orbit: -2, size: 2.098, startype: 'G', label: loc('star_lambdaserpentis'), zlabel: loc('star_lambdaserpentis') },
+    lambdaserpentis: { hex: '481', x: 1699122.795, y: 477496.42, z: 1710532.989, dist: 2457833.2, orbit: -2, size: 2.055, startype: 'G', lum: 1.209, mass: 0.587, label: loc('star_lambdaserpentis'), zlabel: loc('star_lambdaserpentis') },
     // HD 110380 -- 2 components.
     // F0mF2V, 1.728 solar radii, 41.54 ly.
-    hd110380: { hex: 'fc1', x: 588495.414, y: -1114603.968, z: 2304646.634, dist: 2626797.5, orbit: -2, size: 2.629, startype: 'F', label: loc('star_hd110380'), zlabel: loc('star_hd110380') + ' A' },
+    hd110380: { hex: 'fc1', x: 588495.414, y: -1114603.968, z: 2304646.634, dist: 2626797.5, orbit: -2, size: 2.449, startype: 'F', lum: 4.517, mass: 1.3, label: loc('star_hd110380'), zlabel: loc('star_hd110380') + ' A' },
     // F1-F2V, 1.679 solar radii, 41.54 ly.
-    hd110380b: { hex: 'a61', x: 588509.342, y: -1114595.413, z: 2304647.214, dist: 2626797.5, orbit: -2, size: 2.592, startype: 'F', zlabel: loc('star_hd110380') + ' B' },
+    hd110380b: { hex: 'a61', x: 588509.342, y: -1114595.413, z: 2304647.214, dist: 2626797.5, orbit: -2, size: 2.592, startype: 'F', lum: 4.537, mass: 1.5, zlabel: loc('star_hd110380') + ' B' },
     // Zeta2 Reticuli -- single.
     // G1V, 1.060 solar radii, 39.27 ly.
-    zeta2reticuli: { hex: 'f7d', x: 262982.872, y: -1666090.411, z: -1822576.922, dist: 2483305, orbit: -2, size: 2.059, startype: 'G', label: loc('star_zeta2reticuli'), zlabel: loc('star_zeta2reticuli') },
+    zeta2reticuli: { hex: 'f7d', x: 262982.872, y: -1666090.411, z: -1822576.922, dist: 2483305, orbit: -2, size: 1.937, startype: 'G', lum: 0.9355, mass: 1.01, label: loc('star_zeta2reticuli'), zlabel: loc('star_zeta2reticuli') },
     // Zeta1 Reticuli -- single.
     // G2.5VHdel1, 1.012 solar radii, 39.28 ly.
-    zeta1reticuli: { hex: '824', x: 266789.652, y: -1666332.93, z: -1823293.732, dist: 2484399.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_zeta1reticuli'), zlabel: loc('star_zeta1reticuli') },
+    zeta1reticuli: { hex: '824', x: 266789.652, y: -1666332.93, z: -1823293.732, dist: 2484399.8, orbit: -2, size: 1.865, startype: 'G', lum: 0.7291, mass: 0.932, label: loc('star_zeta1reticuli'), zlabel: loc('star_zeta1reticuli') },
     // Zeta Trianguli Australis -- single.
     // F9V, 1.167 solar radii, 39.36 ly.
-    zetatrianguliaustralis: { hex: '11f', x: 1832608.941, y: -1563493.342, z: -626299.967, dist: 2489019.6, orbit: -2, size: 2.161, startype: 'F', label: loc('star_zetatrianguliaustralis'), zlabel: loc('star_zetatrianguliaustralis') },
+    zetatrianguliaustralis: { hex: '11f', x: 1832608.941, y: -1563493.342, z: -626299.967, dist: 2489019.6, orbit: -2, size: 1.998, startype: 'F', lum: 1.221, mass: 1.12, label: loc('star_zetatrianguliaustralis'), zlabel: loc('star_zetatrianguliaustralis') },
     // HD 72673 -- single.
     // K1V, 0.797 solar radii, 39.67 ly.
-    hd72673: { hex: '56e', x: -761182.971, y: -2380895.933, z: 217525.208, dist: 2509060, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd72673'), zlabel: loc('star_hd72673') },
+    hd72673: { hex: '56e', x: -761182.971, y: -2380895.933, z: 217525.208, dist: 2509060, orbit: -2, size: 1.757, startype: 'K', lum: 0.4051, mass: 0.777, label: loc('star_hd72673'), zlabel: loc('star_hd72673') },
     // HD 37394 -- 2 components.
     // K0V, 0.813 solar radii, 40.02 ly.
-    hd37394: { hex: '483', x: -2301965.301, y: 912133.615, z: 523838.779, dist: 2530896.9, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd37394'), zlabel: loc('star_hd37394') + ' A' },
+    hd37394: { hex: '483', x: -2301965.301, y: 912133.615, z: 523838.779, dist: 2530896.9, orbit: -2, size: 1.82, startype: 'K', lum: 0.4693, mass: 0.792, label: loc('star_hd37394'), zlabel: loc('star_hd37394') + ' A' },
     // M1.0V, 0.501 solar radii, 40.02 ly.
-    hd37394b: { hex: '4e3', x: -2301823.087, y: 911828.885, z: 524992.957, dist: 2530896.9, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_hd37394') + ' B' },
+    hd37394b: { hex: '4e3', x: -2301823.087, y: 911828.885, z: 524992.957, dist: 2530896.9, orbit: -2, size: 1.416, startype: 'M', lum: 0.02374, mass: 0.5, zlabel: loc('star_hd37394') + ' B' },
     // HD 175224 -- 2 components.
     // K5Ve, 0.701 solar radii, 40.26 ly.
-    hd175224: { hex: '7d5', x: 2206674.76, y: -788251.91, z: -995988.089, dist: 2546123.9, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd175224'), zlabel: loc('star_hd175224') + ' A' },
+    hd175224: { hex: '7d5', x: 2206674.76, y: -788251.91, z: -995988.089, dist: 2546123.9, orbit: -2, size: 1.089, startype: 'K', lum: 0.0308, mass: 0.7, label: loc('star_hd175224'), zlabel: loc('star_hd175224') + ' A' },
     // K7Ve, 0.630 solar radii, 40.26 ly.
-    hd175224b: { hex: 'dfd', x: 2206692.151, y: -788225.207, z: -995970.693, dist: 2546123.9, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_hd175224') + ' B' },
+    hd175224b: { hex: 'dfd', x: 2206692.151, y: -788225.207, z: -995970.693, dist: 2546123.9, orbit: -2, size: 1.737, startype: 'K', lum: 0.145, mass: 0.64, zlabel: loc('star_hd175224') + ' B' },
     // 85 Pegasi -- single.
     // G5VbFe-2, 0.977 solar radii, 40.18 ly.
-    pegasi85: { hex: '4fa', x: -702549.587, y: 1972302.447, z: -1439596.285, dist: 2540864.1, orbit: -2, size: 1.977, startype: 'G', label: loc('star_pegasi85'), zlabel: loc('star_pegasi85') },
+    pegasi85: { hex: '4fa', x: -702549.587, y: 1972302.447, z: -1439596.285, dist: 2540864.1, orbit: -2, size: 1.948, startype: 'G', lum: 0.6868, mass: 0.824, label: loc('star_pegasi85'), zlabel: loc('star_pegasi85') },
     // HD 196877 -- single.
     // K7V, 0.630 solar radii, 40.25 ly.
-    hd196877: { hex: 'a1b', x: 1948039.403, y: -495586.933, z: -1561930.53, dist: 2545602.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd196877'), zlabel: loc('star_hd196877') },
+    hd196877: { hex: 'a1b', x: 1948039.403, y: -495586.933, z: -1561930.53, dist: 2545602.3, orbit: -2, size: 1.754, startype: 'K', lum: 0.1294, mass: 1.53, label: loc('star_hd196877'), zlabel: loc('star_hd196877') },
     // Beta Trianguli Australis -- single.
     // F1V, 1.679 solar radii, 40.52 ly.
-    betatrianguliaustralis: { hex: '9fb', x: 1997862.257, y: -1569614.51, z: -335556.558, dist: 2562760.5, orbit: -2, size: 2.592, startype: 'F', label: loc('star_betatrianguliaustralis'), zlabel: loc('star_betatrianguliaustralis') },
+    betatrianguliaustralis: { hex: '9fb', x: 1997862.257, y: -1569614.51, z: -335556.558, dist: 2562760.5, orbit: -2, size: 2.704, startype: 'F', lum: 7.705, mass: 1.64, label: loc('star_betatrianguliaustralis'), zlabel: loc('star_betatrianguliaustralis') },
     // HD 21531 -- single.
     // K5V, 0.701 solar radii, 40.75 ly.
-    hd21531: { hex: 'f9d', x: -1327603.512, y: -763643.601, z: -2072524.429, dist: 2577021.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd21531'), zlabel: loc('star_hd21531') },
+    hd21531: { hex: 'f9d', x: -1327603.512, y: -763643.601, z: -2072524.429, dist: 2577021.6, orbit: -2, size: 1.673, startype: 'K', lum: 0.1414, mass: 0.835, label: loc('star_hd21531'), zlabel: loc('star_hd21531') },
     // HD 133640 -- 2 components.
     // F5V, 1.473 solar radii, 42.22 ly.
-    hd133640: { hex: '8c0', x: 242859.045, y: 1431265.864, z: 2241124.926, dist: 2670232.8, orbit: -2, size: 2.427, startype: 'F', label: loc('star_hd133640'), zlabel: loc('star_hd133640') + ' A' },
+    hd133640: { hex: '8c0', x: 242859.045, y: 1431265.864, z: 2241124.926, dist: 2670232.8, orbit: -2, size: 1.79, startype: 'F', lum: 1.064, mass: 1.33, label: loc('star_hd133640'), zlabel: loc('star_hd133640') + ' A' },
     // G9:, 0.853 solar radii, 42.22 ly.
-    hd133640b: { hex: 'fb4', x: 242861.031, y: 1431302.835, z: 2241101.099, dist: 2670232.8, orbit: -2, size: 1.847, startype: 'G', zlabel: loc('star_hd133640') + ' B' },
+    hd133640b: { hex: 'fb4', x: 242861.031, y: 1431302.835, z: 2241101.099, dist: 2670232.8, orbit: -2, size: 1.883, startype: 'G', lum: 0.5931, mass: 0.9, zlabel: loc('star_hd133640') + ' B' },
     // Lambda Aurigae -- single.
     // G1.5IV-VFe-1, 1.060 solar radii, 40.97 ly.
-    lambdaaurigae: { hex: 'a99', x: -2530610.16, y: 552688.168, z: 69680.158, dist: 2591198, orbit: -2, size: 2.059, startype: 'G', label: loc('star_lambdaaurigae'), zlabel: loc('star_lambdaaurigae') },
+    lambdaaurigae: { hex: 'a99', x: -2530610.16, y: 552688.168, z: 69680.158, dist: 2591198, orbit: -2, size: 2.213, startype: 'G', lum: 1.591, mass: 0.886, label: loc('star_lambdaaurigae'), zlabel: loc('star_lambdaaurigae') },
     // HD 69830 -- single.
     // G8:V, 0.914 solar radii, 41.03 ly.
-    hd69830: { hex: '350', x: -1466875.823, y: -2061305.361, z: 575895.806, dist: 2594679.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd69830'), zlabel: loc('star_hd69830') },
+    hd69830: { hex: '350', x: -1466875.823, y: -2061305.361, z: 575895.806, dist: 2594679.3, orbit: -2, size: 1.873, startype: 'G', lum: 0.5946, mass: 0.828, label: loc('star_hd69830'), zlabel: loc('star_hd69830') },
     // Copernicus -- 2 components.
     // K0IV-V, 0.813 solar radii, 41.05 ly.
-    copernicus: { hex: 'e16', x: -1966599.37, y: -593550.823, z: 1587617.576, dist: 2596217.5, orbit: -2, size: 1.803, startype: 'K', label: loc('star_copernicus'), zlabel: loc('star_copernicus') + ' A' },
+    copernicus: { hex: 'e16', x: -1966599.37, y: -593550.823, z: 1587617.576, dist: 2596217.5, orbit: -2, size: 1.911, startype: 'K', lum: 0.5829, mass: 0.729, label: loc('star_copernicus'), zlabel: loc('star_copernicus') + ' A' },
     // M4.5V, 0.217 solar radii, 41.05 ly.
-    copernicusb: { hex: '539', x: -1965971.338, y: -594235.698, z: 1588139.119, dist: 2596217.5, orbit: -2, size: 0.932, startype: 'M', zlabel: loc('star_copernicus') + ' B' },
+    copernicusb: { hex: '539', x: -1965971.338, y: -594235.698, z: 1588139.119, dist: 2596217.5, orbit: -2, size: 0.932, startype: 'M', lum: 0.004455, mass: 0.184, zlabel: loc('star_copernicus') + ' B' },
     // HD 190007 -- single.
     // K5V, 0.701 solar radii, 41.47 ly.
-    hd190007: { hex: 'd2a', x: 1819497.789, y: 1775579.587, z: -644367.035, dist: 2622682.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd190007'), zlabel: loc('star_hd190007') },
+    hd190007: { hex: 'd2a', x: 1819497.789, y: 1775579.587, z: -644367.035, dist: 2622682.6, orbit: -2, size: 1.675, startype: 'K', lum: 0.1738, mass: 0.567, label: loc('star_hd190007'), zlabel: loc('star_hd190007') },
     // HD 104304B -- single.
     // G8IV, 2.194 solar radii, 41.64 ly.
-    hd104304b: { hex: '1aa', x: 380447.925, y: -1632391.231, z: 2030683.684, dist: 2633081.5, orbit: -2, size: 2.962, startype: 'G', label: loc('star_hd104304b'), zlabel: loc('star_hd104304b') },
+    hd104304b: { hex: '1aa', x: 380447.925, y: -1632391.231, z: 2030683.684, dist: 2633081.5, orbit: -2, size: 2.962, startype: 'G', lum: 4.263, mass: 1.06, label: loc('star_hd104304b'), zlabel: loc('star_hd104304b') },
     // HD 101581 -- single.
     // K4.5Vk:, 0.713 solar radii, 41.69 ly.
-    hd101581: { hex: '5b1', x: 859746.494, y: -2375009.736, z: 756726.441, dist: 2636753.7, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd101581'), zlabel: loc('star_hd101581') },
+    hd101581: { hex: '5b1', x: 859746.494, y: -2375009.736, z: 756726.441, dist: 2636753.7, orbit: -2, size: 1.619, startype: 'K', lum: 0.178, mass: 0.53, label: loc('star_hd101581'), zlabel: loc('star_hd101581') },
     // HD 82106 -- single.
     // K3V, 0.755 solar radii, 41.71 ly.
-    hd82106: { hex: '3a3', x: -1407955.163, y: -1545734.12, z: 1608285.861, dist: 2637842.9, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd82106'), zlabel: loc('star_hd82106') },
+    hd82106: { hex: '3a3', x: -1407955.163, y: -1545734.12, z: 1608285.861, dist: 2637842.9, orbit: -2, size: 1.711, startype: 'K', lum: 0.2622, mass: 0.662, label: loc('star_hd82106'), zlabel: loc('star_hd82106') },
     // HD 158633 -- single.
     // K0, 0.813 solar radii, 41.72 ly.
-    hd158633: { hex: 'e47', x: -290523.281, y: 2189365.625, z: 1443611.683, dist: 2638511, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd158633'), zlabel: loc('star_hd158633') },
+    hd158633: { hex: 'e47', x: -290523.281, y: 2189365.625, z: 1443611.683, dist: 2638511, orbit: -2, size: 1.803, startype: 'K', lum: 0.4571, mass: 0.855, label: loc('star_hd158633'), zlabel: loc('star_hd158633') },
     // HD 14412 -- single.
     // G8V, 0.914 solar radii, 41.86 ly.
-    hd14412: { hex: 'fcc', x: -731901.249, y: -502166.709, z: -2494104.113, dist: 2647339.5, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd14412'), zlabel: loc('star_hd14412') },
+    hd14412: { hex: 'fcc', x: -731901.249, y: -502166.709, z: -2494104.113, dist: 2647339.5, orbit: -2, size: 1.755, startype: 'G', lum: 0.4454, mass: 0.841, label: loc('star_hd14412'), zlabel: loc('star_hd14412') },
     // HD 147513 -- single.
     // G5V, 0.977 solar radii, 42.05 ly.
-    hd147513: { hex: '6fc', x: 2503619.632, y: -831830.909, z: 333872.638, dist: 2659233.9, orbit: -2, size: 1.977, startype: 'G', label: loc('star_hd147513'), zlabel: loc('star_hd147513') },
+    hd147513: { hex: '6fc', x: 2503619.632, y: -831830.909, z: 333872.638, dist: 2659233.9, orbit: -2, size: 1.992, startype: 'G', lum: 1.054, mass: 1.13, label: loc('star_hd147513'), zlabel: loc('star_hd147513') },
     // 36 Ursae Majoris -- 2 components.
     // F8V, 1.221 solar radii, 42.22 ly.
-    ursaemajoris36: { hex: 'eb8', x: -1491006.605, y: 717835.504, z: 2095541.318, dist: 2670146.4, orbit: -2, size: 2.21, startype: 'F', label: loc('star_ursaemajoris36'), zlabel: loc('star_ursaemajoris36') + ' A' },
+    ursaemajoris36: { hex: 'eb8', x: -1491006.605, y: 717835.504, z: 2095541.318, dist: 2670146.4, orbit: -2, size: 2.21, startype: 'F', lum: 1.95, mass: 1.3, label: loc('star_ursaemajoris36'), zlabel: loc('star_ursaemajoris36') + ' A' },
     // K7Ve, 0.630 solar radii, 42.22 ly.
-    ursaemajoris36b: { hex: 'fa9', x: -1492143.065, y: 718349.482, z: 2094556.043, dist: 2670146.4, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_ursaemajoris36') + ' B' },
+    ursaemajoris36b: { hex: 'fa9', x: -1492143.065, y: 718349.482, z: 2094556.043, dist: 2670146.4, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.126, zlabel: loc('star_ursaemajoris36') + ' B' },
     // HD 36003 -- single.
     // K5V, 0.701 solar radii, 42.17 ly.
-    hd36003: { hex: '48c', x: -2244086.74, y: -1113805.964, z: -913516.384, dist: 2666646.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd36003'), zlabel: loc('star_hd36003') },
+    hd36003: { hex: '48c', x: -2244086.74, y: -1113805.964, z: -913516.384, dist: 2666646.1, orbit: -2, size: 1.712, startype: 'K', lum: 0.2105, mass: 0.48, label: loc('star_hd36003'), zlabel: loc('star_hd36003') },
     // HD 40307 -- single.
     // K2.5V, 0.783 solar radii, 42.18 ly.
-    hd40307: { hex: '238', x: -47639.378, y: -2301636.31, z: -1347434.607, dist: 2667466.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd40307'), zlabel: loc('star_hd40307') },
+    hd40307: { hex: '238', x: -47639.378, y: -2301636.31, z: -1347434.607, dist: 2667466.8, orbit: -2, size: 1.637, startype: 'K', lum: 0.2275, mass: 0.483, label: loc('star_hd40307'), zlabel: loc('star_hd40307') },
     // HD 172051 -- single.
     // G6V, 0.949 solar radii, 42.50 ly.
-    hd172051: { hex: '204', x: 2603380.205, y: 587895.189, z: -318084.875, dist: 2687822, orbit: -2, size: 1.948, startype: 'G', label: loc('star_hd172051'), zlabel: loc('star_hd172051') },
+    hd172051: { hex: '204', x: 2603380.205, y: 587895.189, z: -318084.875, dist: 2687822, orbit: -2, size: 1.845, startype: 'G', lum: 0.6515, mass: 0.836, label: loc('star_hd172051'), zlabel: loc('star_hd172051') },
     // HD 27274 -- single.
     // K4.5Vk:, 0.713 solar radii, 42.54 ly.
-    hd27274: { hex: '3ab', x: -256684.119, y: -1905867.779, z: -1881656.539, dist: 2690511.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd27274'), zlabel: loc('star_hd27274') },
+    hd27274: { hex: '3ab', x: -256684.119, y: -1905867.779, z: -1881656.539, dist: 2690511.1, orbit: -2, size: 1.716, startype: 'K', lum: 0.2171, mass: 0.806, label: loc('star_hd27274'), zlabel: loc('star_hd27274') },
     // Capella -- single.
     // G3III:, 10.020 solar radii, 42.80 ly.
-    capella: { hex: '67a', x: -2574659.232, y: 807418.34, z: 215508.411, dist: 2706887.2, orbit: -2, size: 6.331, startype: 'G', label: loc('star_capella'), zlabel: loc('star_capella') },
+    capella: { hex: '67a', x: -2574659.232, y: 807418.34, z: 215508.411, dist: 2706887.2, orbit: -2, size: 6.922, startype: 'G', lum: 78.7, mass: 2.57, label: loc('star_capella'), zlabel: loc('star_capella') },
     // HD 98712 -- 2 components.
     // K7V, 0.630 solar radii, 44.76 ly.
-    hd98712: { hex: 'd4d', x: 234227.173, y: -2228548.603, z: 1729823.622, dist: 2830826.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd98712'), zlabel: loc('star_hd98712') + ' A' },
+    hd98712: { hex: 'd4d', x: 234227.173, y: -2228548.603, z: 1729823.622, dist: 2830826.9, orbit: -2, size: 1.428, startype: 'K', lum: 0.08881, mass: 0.032, label: loc('star_hd98712'), zlabel: loc('star_hd98712') + ' A' },
     // M2.5Ve, 0.421 solar radii, 44.76 ly.
-    hd98712b: { hex: 'aab', x: 234183.303, y: -2228522.306, z: 1729863.44, dist: 2830826.9, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd98712') + ' B' },
+    hd98712b: { hex: 'aab', x: 234183.303, y: -2228522.306, z: 1729863.44, dist: 2830826.9, orbit: -2, size: 0.948, startype: 'M', lum: 0.01429, mass: 0.116, zlabel: loc('star_hd98712') + ' B' },
     // HD 211970 -- single.
     // K7Vk:, 0.630 solar radii, 42.83 ly.
-    hd211970: { hex: '939', x: 1556489.092, y: -652854.58, z: -2118054.774, dist: 2708326.7, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd211970'), zlabel: loc('star_hd211970') },
+    hd211970: { hex: '939', x: 1556489.092, y: -652854.58, z: -2118054.774, dist: 2708326.7, orbit: -2, size: 1.574, startype: 'K', lum: 0.1003, mass: 0.991, label: loc('star_hd211970'), zlabel: loc('star_hd211970') },
     // HD 170657 -- single.
     // K2V, 0.783 solar radii, 43.00 ly.
-    hd170657: { hex: '8cb', x: 2633316.542, y: 648610.797, z: -201076.184, dist: 2719463.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd170657'), zlabel: loc('star_hd170657') },
+    hd170657: { hex: '8cb', x: 2633316.542, y: 648610.797, z: -201076.184, dist: 2719463.8, orbit: -2, size: 1.756, startype: 'K', lum: 0.3502, mass: 0.788, label: loc('star_hd170657'), zlabel: loc('star_hd170657') },
     // HD 29697 -- single.
     // K4V, 0.713 solar radii, 43.09 ly.
-    hd29697: { hex: 'aa0', x: -2611349.799, y: 83324.021, z: -775120.085, dist: 2725234.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd29697'), zlabel: loc('star_hd29697') },
+    hd29697: { hex: 'aa0', x: -2611349.799, y: 83324.021, z: -775120.085, dist: 2725234.3, orbit: -2, size: 1.685, startype: 'K', lum: 0.1785, mass: 0.581, label: loc('star_hd29697'), zlabel: loc('star_hd29697') },
     // HD 128165 -- single.
     // K3, 0.755 solar radii, 43.16 ly.
-    hd128165: { hex: 'd4b', x: -90119.92, y: 1443213.077, z: 2314983.385, dist: 2729493.3, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd128165'), zlabel: loc('star_hd128165') },
+    hd128165: { hex: 'd4b', x: -90119.92, y: 1443213.077, z: 2314983.385, dist: 2729493.3, orbit: -2, size: 1.738, startype: 'K', lum: 0.2818, mass: 0.755, label: loc('star_hd128165'), zlabel: loc('star_hd128165') },
     // 58 Eridani -- single.
     // G2.5IV-V, 1.012 solar radii, 43.18 ly.
-    eridani58: { hex: '43c', x: -1828636.221, y: -1297805.644, z: -1558787.025, dist: 2730938.8, orbit: -2, size: 2.012, startype: 'G', label: loc('star_eridani58'), zlabel: loc('star_eridani58') },
+    eridani58: { hex: '43c', x: -1828636.221, y: -1297805.644, z: -1558787.025, dist: 2730938.8, orbit: -2, size: 1.922, startype: 'G', lum: 0.8863, mass: 0.96, label: loc('star_eridani58'), zlabel: loc('star_eridani58') },
     // HD 214749 -- single.
     // K4.5Vk, 0.713 solar radii, 43.30 ly.
-    hd214749: { hex: '67b', x: 1237680.117, y: 452127.968, z: -2400463.792, dist: 2738338.6, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd214749'), zlabel: loc('star_hd214749') },
+    hd214749: { hex: '67b', x: 1237680.117, y: 452127.968, z: -2400463.792, dist: 2738338.6, orbit: -2, size: 1.679, startype: 'K', lum: 0.1908, mass: 0.573, label: loc('star_hd214749'), zlabel: loc('star_hd214749') },
     // HD 120476a -- 2 components.
     // K4V, 0.713 solar radii, 44.02 ly.
-    hd120476a: { hex: '084', x: 502659.91, y: 359382.419, z: 2714392.643, dist: 2783837.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd120476a'), zlabel: loc('star_hd120476a') + ' A' },
+    hd120476a: { hex: '084', x: 502659.91, y: 359382.419, z: 2714392.643, dist: 2783837.3, orbit: -2, size: 2.001, startype: 'K', lum: 0.361, mass: 0.962, label: loc('star_hd120476a'), zlabel: loc('star_hd120476a') + ' A' },
     // K6V, 0.669 solar radii, 44.02 ly.
-    hd120476ab: { hex: '80d', x: 502694.539, y: 359348.886, z: 2714390.67, dist: 2783837.3, orbit: -2, size: 1.636, startype: 'K', zlabel: loc('star_hd120476a') + ' B' },
+    hd120476ab: { hex: '80d', x: 502694.539, y: 359348.886, z: 2714390.67, dist: 2783837.3, orbit: -2, size: 1.636, startype: 'K', lum: 0.1512, mass: 0.69, zlabel: loc('star_hd120476a') + ' B' },
     // Titawin -- 2 components.
     // F9V, 1.167 solar radii, 43.96 ly.
-    titawin: { hex: 'ead', x: -1740561.615, y: 1933029.015, z: -981149.942, dist: 2780073.9, orbit: -2, size: 2.161, startype: 'F', label: loc('star_titawin'), zlabel: loc('star_titawin') + ' A' },
+    titawin: { hex: 'ead', x: -1740561.615, y: 1933029.015, z: -981149.942, dist: 2780073.9, orbit: -2, size: 2.407, startype: 'F', lum: 2.715, mass: 1.03, label: loc('star_titawin'), zlabel: loc('star_titawin') + ' A' },
     // M4.5V, 0.217 solar radii, 43.96 ly.
-    titawinb: { hex: '0fb', x: -1740802.957, y: 1932547.261, z: -981670.652, dist: 2780073.9, orbit: -2, size: 0.932, startype: 'M', zlabel: loc('star_titawin') + ' B' },
+    titawinb: { hex: '0fb', x: -1740802.957, y: 1932547.261, z: -981670.652, dist: 2780073.9, orbit: -2, size: 0.932, startype: 'M', lum: 0.004455, mass: 0.184, zlabel: loc('star_titawin') + ' B' },
     // Gliese 215 -- single.
     // K7V, 0.630 solar radii, 44.00 ly.
-    gliese215: { hex: '8fc', x: -2325950.542, y: 1303576.968, z: 796971.923, dist: 2782898.3, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese215'), zlabel: loc('star_gliese215') },
+    gliese215: { hex: '8fc', x: -2325950.542, y: 1303576.968, z: 796971.923, dist: 2782898.3, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.59, label: loc('star_gliese215'), zlabel: loc('star_gliese215') },
     // HD 10436 -- single.
     // K5Vbe, 0.701 solar radii, 44.09 ly.
-    hd10436: { hex: '4e9', x: -1740991.809, y: 2176607.413, z: 74624.78, dist: 2788232.6, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd10436'), zlabel: loc('star_hd10436') },
+    hd10436: { hex: '4e9', x: -1740991.809, y: 2176607.413, z: 74624.78, dist: 2788232.6, orbit: -2, size: 1.623, startype: 'K', lum: 0.1406, mass: 0.715, label: loc('star_hd10436'), zlabel: loc('star_hd10436') },
     // Theta Ursae Majoris -- single.
     // F7V, 1.324 solar radii, 44.18 ly.
-    thetaursaemajoris: { hex: '865', x: -1890480.137, y: 490237.884, z: 1997823.523, dist: 2793840.9, orbit: -2, size: 2.301, startype: 'F', label: loc('star_thetaursaemajoris'), zlabel: loc('star_thetaursaemajoris') },
+    thetaursaemajoris: { hex: '865', x: -1890480.137, y: 490237.884, z: 1997823.523, dist: 2793840.9, orbit: -2, size: 3.103, startype: 'F', lum: 8.279, mass: 1.68, label: loc('star_thetaursaemajoris'), zlabel: loc('star_thetaursaemajoris') },
     // HD 145417 -- single.
     // K3VFe-1.7, 0.755 solar radii, 44.35 ly.
-    hd145417: { hex: 'ad3', x: 2357279.067, y: -1501873.298, z: -229666.629, dist: 2804484.8, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd145417'), zlabel: loc('star_hd145417') },
+    hd145417: { hex: 'ad3', x: 2357279.067, y: -1501873.298, z: -229666.629, dist: 2804484.8, orbit: -2, size: 1.569, startype: 'K', lum: 0.2055, mass: 0.814, label: loc('star_hd145417'), zlabel: loc('star_hd145417') },
     // Alshain -- 2 components.
     // G8IV, 2.194 solar radii, 44.36 ly.
-    alshain: { hex: '59a', x: 1908012.1, y: 1984480.213, z: -539859.778, dist: 2805373.5, orbit: -2, size: 2.962, startype: 'G', label: loc('star_alshain'), zlabel: loc('star_alshain') + ' A' },
+    alshain: { hex: '59a', x: 1908012.1, y: 1984480.213, z: -539859.778, dist: 2805373.5, orbit: -2, size: 3.487, startype: 'G', lum: 5.666, mass: 1.2, label: loc('star_alshain'), zlabel: loc('star_alshain') + ' A' },
     // M3, 0.361 solar radii, 44.36 ly.
-    alshainb: { hex: '2d4', x: 1907908.259, y: 1984601.802, z: -539779.801, dist: 2805373.5, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_alshain') + ' B' },
+    alshainb: { hex: '2d4', x: 1907908.259, y: 1984601.802, z: -539779.801, dist: 2805373.5, orbit: -2, size: 1.202, startype: 'M', lum: 0.01233, mass: 0.37, zlabel: loc('star_alshain') + ' B' },
     // HD 22496 -- single.
     // K5V, 0.701 solar radii, 44.36 ly.
-    hd22496: { hex: '775', x: -356637.525, y: -1691645.976, z: -2209600.541, dist: 2805564.3, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd22496'), zlabel: loc('star_hd22496') },
+    hd22496: { hex: '775', x: -356637.525, y: -1691645.976, z: -2209600.541, dist: 2805564.3, orbit: -2, size: 1.636, startype: 'K', lum: 0.1328, mass: 0.547, label: loc('star_hd22496'), zlabel: loc('star_hd22496') },
     // 17 Piscium -- single.
     // F7V, 1.324 solar radii, 44.53 ly.
-    piscium17: { hex: '5de', x: -72924.147, y: 1694798.072, z: -2248212.555, dist: 2816401.6, orbit: -2, size: 2.301, startype: 'F', label: loc('star_piscium17'), zlabel: loc('star_piscium17') },
+    piscium17: { hex: '5de', x: -72924.147, y: 1694798.072, z: -2248212.555, dist: 2816401.6, orbit: -2, size: 2.483, startype: 'F', lum: 3.116, mass: 1.12, label: loc('star_piscium17'), zlabel: loc('star_piscium17') },
     // Gliese 400 -- 2 components.
     // K7/M0V, 0.630 solar radii, 45.22 ly.
-    gliese400: { hex: '84f', x: -1370705.088, y: -35884.94, z: 2509888.276, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese400'), zlabel: loc('star_gliese400') + ' A' },
+    gliese400: { hex: '84f', x: -1370705.088, y: -35884.94, z: 2509888.276, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', lum: 0.1339, mass: 0.64, label: loc('star_gliese400'), zlabel: loc('star_gliese400') + ' A' },
     // K7/M0V, 0.630 solar radii, 45.22 ly.
-    gliese400b: { hex: '2ac', x: -1370725.174, y: -35862.511, z: 2509877.627, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', zlabel: loc('star_gliese400') + ' B' },
+    gliese400b: { hex: '2ac', x: -1370725.174, y: -35862.511, z: 2509877.627, dist: 2860010.4, orbit: -2, size: 1.587, startype: 'K', lum: 0.1339, mass: 0.64, zlabel: loc('star_gliese400') + ' B' },
     // HD 154577 -- single.
     // K2.5Vk:, 0.783 solar radii, 44.77 ly.
-    hd154577: { hex: '561', x: 2391960.047, y: -1391087.924, z: -599318.439, dist: 2831215.5, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd154577'), zlabel: loc('star_hd154577') },
+    hd154577: { hex: '561', x: 2391960.047, y: -1391087.924, z: -599318.439, dist: 2831215.5, orbit: -2, size: 1.647, startype: 'K', lum: 0.2389, mass: 0.653, label: loc('star_hd154577'), zlabel: loc('star_hd154577') },
     // HD 166 -- single.
     // G8V, 0.914 solar radii, 44.90 ly.
-    hd166: { hex: '403', x: -865265.427, y: 2223464.755, z: -1539524.068, dist: 2839474.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd166'), zlabel: loc('star_hd166') },
+    hd166: { hex: '403', x: -865265.427, y: 2223464.755, z: -1539524.068, dist: 2839474.3, orbit: -2, size: 1.874, startype: 'G', lum: 0.6287, mass: 0.998, label: loc('star_hd166'), zlabel: loc('star_hd166') },
     // Errai -- single.
     // K1III-IVCN1, 7.970 solar radii, 44.98 ly.
-    errai: { hex: 'c77', x: -1329683.988, y: 2399577.763, z: 751295.818, dist: 2844376.6, orbit: -2, size: 5.646, startype: 'KIII', label: loc('star_errai'), zlabel: loc('star_errai') },
+    errai: { hex: 'c77', x: -1329683.988, y: 2399577.763, z: 751295.818, dist: 2844376.6, orbit: -2, size: 4.441, startype: 'KIII', lum: 11.57, mass: 1.31, label: loc('star_errai'), zlabel: loc('star_errai') },
     // Chalawan -- single.
     // G1-VFe-0.5, 1.060 solar radii, 45.30 ly.
-    chalawan: { hex: '235', x: -1280516.535, y: 94429.932, z: 2560621.149, dist: 2864510.5, orbit: -2, size: 2.059, startype: 'G', label: loc('star_chalawan'), zlabel: loc('star_chalawan') },
+    chalawan: { hex: '235', x: -1280516.535, y: 94429.932, z: 2560621.149, dist: 2864510.5, orbit: -2, size: 2.13, startype: 'G', lum: 1.388, mass: 0.895, label: loc('star_chalawan'), zlabel: loc('star_chalawan') },
     // 10 Tauri -- single.
     // F9IV-V, 1.167 solar radii, 45.40 ly.
-    tauri10: { hex: '3ca', x: -2136340.813, y: -191585.271, z: -1908833.41, dist: 2871289.3, orbit: -2, size: 2.161, startype: 'F', label: loc('star_tauri10'), zlabel: loc('star_tauri10') },
+    tauri10: { hex: '3ca', x: -2136340.813, y: -191585.271, z: -1908833.41, dist: 2871289.3, orbit: -2, size: 2.317, startype: 'F', lum: 2.094, mass: 0.755, label: loc('star_tauri10'), zlabel: loc('star_tauri10') },
     // HD 281621 -- single.
     // K7V, 0.630 solar radii, 45.41 ly.
-    hd281621: { hex: '319', x: -2677596.412, y: 799667.375, z: -662368.889, dist: 2871884.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd281621'), zlabel: loc('star_hd281621') },
+    hd281621: { hex: '319', x: -2677596.412, y: 799667.375, z: -662368.889, dist: 2871884.9, orbit: -2, size: 1.614, startype: 'K', lum: 0.07626, mass: 0.83, label: loc('star_hd281621'), zlabel: loc('star_hd281621') },
     // HD 23356 -- single.
     // K2V, 0.783 solar radii, 45.46 ly.
-    hd23356: { hex: 'b6b', x: -1594482.004, y: -953643.207, z: -2193714.619, dist: 2874750.8, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd23356'), zlabel: loc('star_hd23356') },
+    hd23356: { hex: 'b6b', x: -1594482.004, y: -953643.207, z: -2193714.619, dist: 2874750.8, orbit: -2, size: 1.745, startype: 'K', lum: 0.3191, mass: 0.785, label: loc('star_hd23356'), zlabel: loc('star_hd23356') },
     // HD 5133 -- single.
     // K2.5Vk:, 0.783 solar radii, 45.47 ly.
-    hd5133: { hex: '165', x: 73697.937, y: -145268.089, z: -2871119.574, dist: 2875736.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd5133'), zlabel: loc('star_hd5133') },
+    hd5133: { hex: '165', x: 73697.937, y: -145268.089, z: -2871119.574, dist: 2875736.7, orbit: -2, size: 1.723, startype: 'K', lum: 0.2986, mass: 0.837, label: loc('star_hd5133'), zlabel: loc('star_hd5133') },
     // HD 20010 -- 2 components.
     // G7V, 0.927 solar radii, 45.93 ly.
-    hd20010: { hex: 'aa7', x: -1061903.095, y: -1051901.144, z: -2490698.246, dist: 2904774, orbit: -2, size: 1.926, startype: 'G', label: loc('star_hd20010'), zlabel: loc('star_hd20010') + ' A' },
+    hd20010: { hex: 'aa7', x: -1061903.095, y: -1051901.144, z: -2490698.246, dist: 2904774, orbit: -2, size: 2.567, startype: 'G', lum: 3.557, mass: 0.882, label: loc('star_hd20010'), zlabel: loc('star_hd20010') + ' A' },
     // F6V, 1.359 solar radii, 45.93 ly.
-    hd20010b: { hex: 'be9', x: -1061910.461, y: -1051964.119, z: -2490668.508, dist: 2904774, orbit: -2, size: 2.332, startype: 'F', zlabel: loc('star_hd20010') + ' B' },
+    hd20010b: { hex: 'be9', x: -1061910.461, y: -1051964.119, z: -2490668.508, dist: 2904774, orbit: -2, size: 1.435, startype: 'F', lum: 0.2268, mass: 0.95, zlabel: loc('star_hd20010') + ' B' },
     // HD 211415 -- single.
     // G0V, 1.100 solar radii, 45.88 ly.
-    hd211415: { hex: 'e60', x: 1690440.643, y: -648522.82, z: -2267024.479, dist: 2901305.1, orbit: -2, size: 2.098, startype: 'G', label: loc('star_hd211415'), zlabel: loc('star_hd211415') },
+    hd211415: { hex: 'e60', x: 1690440.643, y: -648522.82, z: -2267024.479, dist: 2901305.1, orbit: -2, size: 2.016, startype: 'G', lum: 1.09, mass: 0.925, label: loc('star_hd211415'), zlabel: loc('star_hd211415') },
     // HD 120467 -- single.
     // K6Va, 0.669 solar radii, 45.89 ly.
-    hd120467: { hex: '17d', x: 1741438.947, y: -1443888.606, z: 1817660.642, dist: 2901950.1, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd120467'), zlabel: loc('star_hd120467') },
+    hd120467: { hex: '17d', x: 1741438.947, y: -1443888.606, z: 1817660.642, dist: 2901950.1, orbit: -2, size: 1.734, startype: 'K', lum: 0.1854, mass: 0.698, label: loc('star_hd120467'), zlabel: loc('star_hd120467') },
     // HD 61606B -- single.
     // K7V, 0.630 solar radii, 45.94 ly.
-    hd61606b: { hex: 'ca6', x: -2139551.22, y: -1911111.726, z: 460007.747, dist: 2905449.1, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd61606b'), zlabel: loc('star_hd61606b') },
+    hd61606b: { hex: 'ca6', x: -2139551.22, y: -1911111.726, z: 460007.747, dist: 2905449.1, orbit: -2, size: 1.751, startype: 'K', lum: 0.1315, mass: 0.123, label: loc('star_hd61606b'), zlabel: loc('star_hd61606b') },
     // HD 110315 -- single.
     // K4.5V, 0.713 solar radii, 46.02 ly.
-    hd110315: { hex: 'e8a', x: 215394.883, y: -565098.066, z: 2846553.254, dist: 2910085.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd110315'), zlabel: loc('star_hd110315') },
+    hd110315: { hex: 'e8a', x: 215394.883, y: -565098.066, z: 2846553.254, dist: 2910085.3, orbit: -2, size: 1.743, startype: 'K', lum: 0.2108, mass: 0.837, label: loc('star_hd110315'), zlabel: loc('star_hd110315') },
     // 18 Scorpii -- single.
     // G2Va, 1.012 solar radii, 46.11 ly.
-    scorpii18: { hex: 'c76', x: 2537905.615, y: 208440.12, z: 1420657.032, dist: 2915935.3, orbit: -2, size: 2.012, startype: 'G', label: loc('star_scorpii18'), zlabel: loc('star_scorpii18') },
+    scorpii18: { hex: 'c76', x: 2537905.615, y: 208440.12, z: 1420657.032, dist: 2915935.3, orbit: -2, size: 1.996, startype: 'G', lum: 1.011, mass: 0.974, label: loc('star_scorpii18'), zlabel: loc('star_scorpii18') },
     // HD 188088 -- 2 components.
     // K3VaCN1, 0.755 solar radii, 46.13 ly.
-    hd188088: { hex: '05f', x: 2548103.433, y: 787448.533, z: -1182563.94, dist: 2917424.2, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd188088'), zlabel: loc('star_hd188088') + ' A' },
+    hd188088: { hex: '05f', x: 2548103.433, y: 787448.533, z: -1182563.94, dist: 2917424.2, orbit: -2, size: 2.289, startype: 'K', lum: 0.8005, mass: 1.16, label: loc('star_hd188088'), zlabel: loc('star_hd188088') + ' A' },
     // M5, 0.196 solar radii, 46.13 ly.
-    hd188088b: { hex: '8f2', x: 2547867.148, y: 787404.456, z: -1183102.272, dist: 2917424.2, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_hd188088') + ' B' },
+    hd188088b: { hex: '8f2', x: 2547867.148, y: 787404.456, z: -1183102.272, dist: 2917424.2, orbit: -2, size: 0.885, startype: 'M', lum: 0.00302, mass: 0.162, zlabel: loc('star_hd188088') + ' B' },
     // HD 150689 -- single.
     // K3V, 0.755 solar radii, 46.38 ly.
-    hd150689: { hex: '03d', x: 2817368.397, y: -783128.786, z: 229127.695, dist: 2933147.6, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd150689'), zlabel: loc('star_hd150689') },
+    hd150689: { hex: '03d', x: 2817368.397, y: -783128.786, z: 229127.695, dist: 2933147.6, orbit: -2, size: 1.705, startype: 'K', lum: 0.249, mass: 0.653, label: loc('star_hd150689'), zlabel: loc('star_hd150689') },
     // HD 234078 -- single.
     // K7V, 0.630 solar radii, 46.49 ly.
-    hd234078: { hex: 'cb6', x: -221555.501, y: 1251030.702, z: 2651721.72, dist: 2940372.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd234078'), zlabel: loc('star_hd234078') },
+    hd234078: { hex: 'cb6', x: -221555.501, y: 1251030.702, z: 2651721.72, dist: 2940372.9, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.693, label: loc('star_hd234078'), zlabel: loc('star_hd234078') },
     // HD 173818 -- single.
     // K5V, 0.701 solar radii, 46.51 ly.
-    hd173818: { hex: '59d', x: 2566089.479, y: 1436408.77, z: -39732.54, dist: 2941031.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd173818'), zlabel: loc('star_hd173818') },
+    hd173818: { hex: '59d', x: 2566089.479, y: 1436408.77, z: -39732.54, dist: 2941031.1, orbit: -2, size: 1.753, startype: 'K', lum: 0.1486, mass: 0.898, label: loc('star_hd173818'), zlabel: loc('star_hd173818') },
     // 1 Eridani -- single.
     // F7V, 1.324 solar radii, 46.56 ly.
-    eridani1: { hex: '071', x: -1269682.856, y: -483163.469, z: -2612617.608, dist: 2944709.2, orbit: -2, size: 2.301, startype: 'F', label: loc('star_eridani1'), zlabel: loc('star_eridani1') },
+    eridani1: { hex: '071', x: -1269682.856, y: -483163.469, z: -2612617.608, dist: 2944709.2, orbit: -2, size: 2.277, startype: 'F', lum: 2.432, mass: 1.34, label: loc('star_eridani1'), zlabel: loc('star_eridani1') },
     // HD 144579 -- 2 components.
     // G8V, 0.914 solar radii, 46.83 ly.
-    hd144579: { hex: 'e0d', x: 914262.892, y: 1746546.711, z: 2210488.887, dist: 2961851.3, orbit: -2, size: 1.912, startype: 'G', label: loc('star_hd144579'), zlabel: loc('star_hd144579') + ' A' },
+    hd144579: { hex: 'e0d', x: 914262.892, y: 1746546.711, z: 2210488.887, dist: 2961851.3, orbit: -2, size: 1.757, startype: 'G', lum: 0.4207, mass: 0.686, label: loc('star_hd144579'), zlabel: loc('star_hd144579') + ' A' },
     // M4.0V, 0.274 solar radii, 46.83 ly.
-    hd144579b: { hex: '179', x: 913736.869, y: 1745991.753, z: 2211144.704, dist: 2961851.3, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd144579') + ' B' },
+    hd144579b: { hex: '179', x: 913736.869, y: 1745991.753, z: 2211144.704, dist: 2961851.3, orbit: -2, size: 1.047, startype: 'M', lum: 0.007244, mass: 0.23, zlabel: loc('star_hd144579') + ' B' },
     // Eta Cephei -- single.
     // K0IV, 1.951 solar radii, 46.86 ly.
-    etacephei: { hex: '433', x: -397368.439, y: 2875363.206, z: 598135.51, dist: 2963677, orbit: -2, size: 2.794, startype: 'K', label: loc('star_etacephei'), zlabel: loc('star_etacephei') },
+    etacephei: { hex: '433', x: -397368.439, y: 2875363.206, z: 598135.51, dist: 2963677, orbit: -2, size: 4.005, startype: 'K', lum: 8.756, mass: 1.14, label: loc('star_etacephei'), zlabel: loc('star_etacephei') },
     // 26 Draconis -- single.
     // G0V, 1.100 solar radii, 47.08 ly.
-    draconis26: { hex: '223', x: -43442.311, y: 2506323.055, z: 1606155.617, dist: 2977125.9, orbit: -2, size: 2.098, startype: 'G', label: loc('star_draconis26'), zlabel: loc('star_draconis26') },
+    draconis26: { hex: '223', x: -43442.311, y: 2506323.055, z: 1606155.617, dist: 2977125.9, orbit: -2, size: 2.11, startype: 'G', lum: 1.346, mass: 1.19, label: loc('star_draconis26'), zlabel: loc('star_draconis26') },
     // 3 Ursae Majoris -- single.
     // G0.5V, 1.100 solar radii, 47.09 ly.
-    ursaemajoris3: { hex: 'b4f', x: -2105978.176, y: 1188997.13, z: 1738094.836, dist: 2978226.3, orbit: -2, size: 2.098, startype: 'G', label: loc('star_ursaemajoris3'), zlabel: loc('star_ursaemajoris3') },
+    ursaemajoris3: { hex: 'b4f', x: -2105978.176, y: 1188997.13, z: 1738094.836, dist: 2978226.3, orbit: -2, size: 1.922, startype: 'G', lum: 0.9169, mass: 0.962, label: loc('star_ursaemajoris3'), zlabel: loc('star_ursaemajoris3') },
     // HD 97584 -- 2 components.
     // K4V, 0.713 solar radii, 47.18 ly.
-    hd97584: { hex: '019', x: -1482164.058, y: 1651906.521, z: 1993828.566, dist: 2983447.3, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd97584'), zlabel: loc('star_hd97584') + ' A' },
+    hd97584: { hex: '019', x: -1482164.058, y: 1651906.521, z: 1993828.566, dist: 2983447.3, orbit: -2, size: 1.712, startype: 'K', lum: 0.2384, mass: 0.649, label: loc('star_hd97584'), zlabel: loc('star_hd97584') + ' A' },
     // M2.5V, 0.421 solar radii, 47.18 ly.
-    hd97584b: { hex: '25a', x: -1482215.653, y: 1651944.862, z: 1993758.444, dist: 2983447.3, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd97584') + ' B' },
+    hd97584b: { hex: '25a', x: -1482215.653, y: 1651944.862, z: 1993758.444, dist: 2983447.3, orbit: -2, size: 1.386, startype: 'M', lum: 0.03259, mass: 0.375, zlabel: loc('star_hd97584') + ' B' },
     // Theta Bootis -- 2 components.
     // F7V, 1.324 solar radii, 47.22 ly.
-    thetabootis: { hex: '083', x: -100840.293, y: 1505468.449, z: 2577176.227, dist: 2986376, orbit: -2, size: 2.301, startype: 'F', label: loc('star_thetabootis'), zlabel: loc('star_thetabootis') + ' A' },
+    thetabootis: { hex: '083', x: -100840.293, y: 1505468.449, z: 2577176.227, dist: 2986376, orbit: -2, size: 2.629, startype: 'F', lum: 4.215, mass: 1.65, label: loc('star_thetabootis'), zlabel: loc('star_thetabootis') + ' A' },
     // M2.5V, 0.421 solar radii, 47.22 ly.
-    thetabootisb: { hex: '322', x: -100114.098, y: 1504877.788, z: 2577549.482, dist: 2986376, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_thetabootis') + ' B' },
+    thetabootisb: { hex: '322', x: -100114.098, y: 1504877.788, z: 2577549.482, dist: 2986376, orbit: -2, size: 1.378, startype: 'M', lum: 0.03104, mass: 0.519, zlabel: loc('star_thetabootis') + ' B' },
     // HD 120036 -- 2 components.
     // K7V, 0.630 solar radii, 47.56 ly.
-    hd120036: { hex: '0ab', x: 1908708.2, y: -1811714.592, z: 1456011.331, dist: 3007564.8, orbit: -2, size: 1.587, startype: 'K', label: loc('star_hd120036'), zlabel: loc('star_hd120036') + ' A' },
+    hd120036: { hex: '0ab', x: 1908708.2, y: -1811714.592, z: 1456011.331, dist: 3007564.8, orbit: -2, size: 1.535, startype: 'K', lum: 0.1113, mass: 0.664, label: loc('star_hd120036'), zlabel: loc('star_hd120036') + ' A' },
     // K6V, 0.669 solar radii, 47.56 ly.
-    hd120036b: { hex: '4c8', x: 1908605.728, y: -1811771.429, z: 1456074.935, dist: 3007564.8, orbit: -2, size: 1.636, startype: 'K', zlabel: loc('star_hd120036') + ' B' },
+    hd120036b: { hex: '4c8', x: 1908605.728, y: -1811771.429, z: 1456074.935, dist: 3007564.8, orbit: -2, size: 1.611, startype: 'K', lum: 0.1042, mass: 1.09, zlabel: loc('star_hd120036') + ' B' },
     // Gliese 334 -- 2 components.
     // K7V, 0.630 solar radii, 47.29 ly.
-    gliese334: { hex: 'cfe', x: -1431020.747, y: -2306172.967, z: 1255427.158, dist: 2990376.5, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese334'), zlabel: loc('star_gliese334') + ' A' },
+    gliese334: { hex: 'cfe', x: -1431020.747, y: -2306172.967, z: 1255427.158, dist: 2990376.5, orbit: -2, size: 1.722, startype: 'K', lum: 0.1088, mass: 0.856, label: loc('star_gliese334'), zlabel: loc('star_gliese334') + ' A' },
     // M6Ve, 0.137 solar radii, 47.29 ly.
-    gliese334b: { hex: '7ae', x: -1431094.15, y: -2306179.737, z: 1255331.044, dist: 2990376.5, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_gliese334') + ' B' },
+    gliese334b: { hex: '7ae', x: -1431094.15, y: -2306179.737, z: 1255331.044, dist: 2990376.5, orbit: -2, size: 0.74, startype: 'M', lum: 0.001771, mass: 0.102, zlabel: loc('star_gliese334') + ' B' },
     // HD 110833 -- single.
     // K3, 0.755 solar radii, 47.30 ly.
-    hd110833: { hex: 'a62', x: -726798.034, y: 1015171.885, z: 2718441.472, dist: 2991443.4, orbit: -2, size: 1.738, startype: 'K', label: loc('star_hd110833'), zlabel: loc('star_hd110833') },
+    hd110833: { hex: 'a62', x: -726798.034, y: 1015171.885, z: 2718441.472, dist: 2991443.4, orbit: -2, size: 1.744, startype: 'K', lum: 0.3453, mass: 0.608, label: loc('star_hd110833'), zlabel: loc('star_hd110833') },
     // Gliese 331.0 -- 2 components.
     // A7V(n), 1.750 solar radii, 47.96 ly.
-    gliese3310: { hex: '773', x: -2269779.05, y: 338718.748, z: 1983443.262, dist: 3033261.4, orbit: -2, size: 2.646, startype: 'A', label: loc('star_gliese3310'), zlabel: loc('star_gliese3310') + ' A' },
+    gliese3310: { hex: '773', x: -2269779.05, y: 338718.748, z: 1983443.262, dist: 3033261.4, orbit: -2, size: 2.574, startype: 'A', lum: 8.959, mass: 1.77, label: loc('star_gliese3310'), zlabel: loc('star_gliese3310') + ' A' },
     // M1V, 0.501 solar radii, 47.96 ly.
-    gliese3310b: { hex: 'e55', x: -2269769.038, y: 338768.693, z: 1983446.19, dist: 3033261.4, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_gliese3310') + ' B' },
+    gliese3310b: { hex: 'e55', x: -2269769.038, y: 338768.693, z: 1983446.19, dist: 3033261.4, orbit: -2, size: 1.416, startype: 'M', lum: 0.02374, mass: 0.5, zlabel: loc('star_gliese3310') + ' B' },
     // Gliese 546 -- single.
     // K6V, 0.669 solar radii, 47.37 ly.
-    gliese546: { hex: '448', x: 720182.311, y: 731167.881, z: 2814558.259, dist: 2995831.6, orbit: -2, size: 1.636, startype: 'K', label: loc('star_gliese546'), zlabel: loc('star_gliese546') },
+    gliese546: { hex: '448', x: 720182.311, y: 731167.881, z: 2814558.259, dist: 2995831.6, orbit: -2, size: 1.636, startype: 'K', lum: 0.138, mass: 0.781, label: loc('star_gliese546'), zlabel: loc('star_gliese546') },
     // 111 Tauri -- 2 components.
     // F8V, 1.221 solar radii, 47.55 ly.
-    tauri111: { hex: '392', x: -2935523.633, y: -370882.151, z: -536909.976, dist: 3007178.9, orbit: -2, size: 2.21, startype: 'F', label: loc('star_tauri111'), zlabel: loc('star_tauri111') + ' A' },
+    tauri111: { hex: '392', x: -2935523.633, y: -370882.151, z: -536909.976, dist: 3007178.9, orbit: -2, size: 2.21, startype: 'F', lum: 1.95, mass: 1.11, label: loc('star_tauri111'), zlabel: loc('star_tauri111') + ' A' },
     // K4V, 0.713 solar radii, 47.55 ly.
-    tauri111b: { hex: 'b89', x: -2934084.909, y: -367962.782, z: -546693.727, dist: 3007178.9, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_tauri111') + ' B' },
+    tauri111b: { hex: 'b89', x: -2934084.909, y: -367962.782, z: -546693.727, dist: 3007178.9, orbit: -2, size: 1.702, startype: 'K', lum: 0.2071, mass: 0.577, zlabel: loc('star_tauri111') + ' B' },
     // HD 221503 -- single.
     // K6V, 0.669 solar radii, 47.45 ly.
-    hd221503: { hex: 'c54', x: 561028.495, y: 910698.993, z: -2803736.522, dist: 3000843.9, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd221503'), zlabel: loc('star_hd221503') },
+    hd221503: { hex: 'c54', x: 561028.495, y: 910698.993, z: -2803736.522, dist: 3000843.9, orbit: -2, size: 1.733, startype: 'K', lum: 0.1583, mass: 0.94, label: loc('star_hd221503'), zlabel: loc('star_hd221503') },
     // 72 Herculis -- single.
     // G0V, 1.100 solar radii, 47.57 ly.
-    herculis72: { hex: 'c82', x: 1426868.538, y: 2104767.623, z: 1608076.919, dist: 3008639.6, orbit: -2, size: 2.098, startype: 'G', label: loc('star_herculis72'), zlabel: loc('star_herculis72') },
+    herculis72: { hex: 'c82', x: 1426868.538, y: 2104767.623, z: 1608076.919, dist: 3008639.6, orbit: -2, size: 2.121, startype: 'G', lum: 1.201, mass: 0.86, label: loc('star_herculis72'), zlabel: loc('star_herculis72') },
     // HD 57095 -- 2 components.
     // K1V, 0.797 solar radii, 47.60 ly.
-    hd57095: { hex: 'c83', x: -590068.972, y: -2842484.482, z: -796192.938, dist: 3010286.1, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd57095'), zlabel: loc('star_hd57095') + ' A' },
+    hd57095: { hex: 'c83', x: -590068.972, y: -2842484.482, z: -796192.938, dist: 3010286.1, orbit: -2, size: 1.785, startype: 'K', lum: 0.4074, mass: 0.86, label: loc('star_hd57095'), zlabel: loc('star_hd57095') + ' A' },
     // K4V, 0.713 solar radii, 47.60 ly.
-    hd57095b: { hex: 'a2a', x: -590061.756, y: -2842483.156, z: -796203.018, dist: 3010286.1, orbit: -2, size: 1.689, startype: 'K', zlabel: loc('star_hd57095') + ' B' },
+    hd57095b: { hex: 'a2a', x: -590061.756, y: -2842483.156, z: -796203.018, dist: 3010286.1, orbit: -2, size: 1.689, startype: 'K', lum: 0.2042, mass: 0.73, zlabel: loc('star_hd57095') + ' B' },
     // AG+10 687 -- single.
     // F0, 1.728 solar radii, 47.64 ly.
-    ag10687: { hex: 'a80', x: -2851707.588, y: -937601.762, z: -257643.841, dist: 3012924.4, orbit: -2, size: 2.629, startype: 'F', label: loc('star_ag10687'), zlabel: loc('star_ag10687') },
+    ag10687: { hex: 'a80', x: -2851707.588, y: -937601.762, z: -257643.841, dist: 3012924.4, orbit: -2, size: 0.723, startype: 'F', lum: 0.04176, mass: 1.61, label: loc('star_ag10687'), zlabel: loc('star_ag10687') },
     // HD 45088 -- single.
     // K2Ve, 0.783 solar radii, 47.67 ly.
-    hd45088: { hex: 'e1b', x: -2928478.14, y: -698195.609, z: 162513.089, dist: 3014941.4, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd45088'), zlabel: loc('star_hd45088') },
+    hd45088: { hex: 'e1b', x: -2928478.14, y: -698195.609, z: 162513.089, dist: 3014941.4, orbit: -2, size: 1.77, startype: 'K', lum: 0.3715, mass: 0.446, label: loc('star_hd45088'), zlabel: loc('star_hd45088') },
     // Psi Capricorni -- single.
     // F5V, 1.473 solar radii, 47.73 ly.
-    psicapricorni: { hex: 'd62', x: 2309019.606, y: 840582.036, z: -1752789.577, dist: 3018347.4, orbit: -2, size: 2.427, startype: 'F', label: loc('star_psicapricorni'), zlabel: loc('star_psicapricorni') },
+    psicapricorni: { hex: 'd62', x: 2309019.606, y: 840582.036, z: -1752789.577, dist: 3018347.4, orbit: -2, size: 2.361, startype: 'F', lum: 3.382, mass: 1.32, label: loc('star_psicapricorni'), zlabel: loc('star_psicapricorni') },
     // HD 196761 -- single.
     // G7.5IV-V, 0.927 solar radii, 47.85 ly.
-    hd196761: { hex: '73b', x: 2344261.08, y: 912279.656, z: -1682599.266, dist: 3026376.5, orbit: -2, size: 1.926, startype: 'G', label: loc('star_hd196761'), zlabel: loc('star_hd196761') },
+    hd196761: { hex: '73b', x: 2344261.08, y: 912279.656, z: -1682599.266, dist: 3026376.5, orbit: -2, size: 1.814, startype: 'G', lum: 0.5413, mass: 0.711, label: loc('star_hd196761'), zlabel: loc('star_hd196761') },
     // Gliese 14 -- single.
     // K7V, 0.630 solar radii, 47.90 ly.
-    gliese14: { hex: '4cd', x: -1234905.278, y: 2534703.252, z: -1108323.972, dist: 3029536.9, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese14'), zlabel: loc('star_gliese14') },
+    gliese14: { hex: '4cd', x: -1234905.278, y: 2534703.252, z: -1108323.972, dist: 3029536.9, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 0.638, label: loc('star_gliese14'), zlabel: loc('star_gliese14') },
     // HD 10307 -- single.
     // G1V, 1.060 solar radii, 47.95 ly.
-    hd10307: { hex: '3fd', x: -1941330.32, y: 2102666.16, z: -1002186.231, dist: 3032217.9, orbit: -2, size: 2.059, startype: 'G', label: loc('star_hd10307'), zlabel: loc('star_hd10307') },
+    hd10307: { hex: '3fd', x: -1941330.32, y: 2102666.16, z: -1002186.231, dist: 3032217.9, orbit: -2, size: 2.256, startype: 'G', lum: 1.742, mass: 1.2, label: loc('star_hd10307'), zlabel: loc('star_hd10307') },
     // Nu2 Lupi -- single.
     // G2-V, 1.012 solar radii, 48.07 ly.
-    nu2lupi: { hex: 'ca2', x: 2530792.638, y: -1638669.628, z: 390412.265, dist: 3040159.7, orbit: -2, size: 2.012, startype: 'G', label: loc('star_nu2lupi'), zlabel: loc('star_nu2lupi') },
+    nu2lupi: { hex: 'ca2', x: 2530792.638, y: -1638669.628, z: 390412.265, dist: 3040159.7, orbit: -2, size: 2.031, startype: 'G', lum: 0.9858, mass: 0.93, label: loc('star_nu2lupi'), zlabel: loc('star_nu2lupi') },
     // HD 142709 -- single.
     // K4V, 0.713 solar radii, 48.07 ly.
-    hd142709: { hex: 'e41', x: 2740802.714, y: -1243561.515, z: 430177.773, dist: 3040312.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd142709'), zlabel: loc('star_hd142709') },
+    hd142709: { hex: 'e41', x: 2740802.714, y: -1243561.515, z: 430177.773, dist: 3040312.1, orbit: -2, size: 1.668, startype: 'K', lum: 0.189, mass: 0.486, label: loc('star_hd142709'), zlabel: loc('star_hd142709') },
     // HD 52698 -- single.
     // K1V, 0.797 solar radii, 48.11 ly.
-    hd52698: { hex: '45e', x: -1620846.111, y: -2524865.792, z: -503018.431, dist: 3042222.4, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd52698'), zlabel: loc('star_hd52698') },
+    hd52698: { hex: '45e', x: -1620846.111, y: -2524865.792, z: -503018.431, dist: 3042222.4, orbit: -2, size: 1.847, startype: 'K', lum: 0.463, mass: 0.802, label: loc('star_hd52698'), zlabel: loc('star_hd52698') },
     // HD 176051 -- 2 components.
     // F9V, 1.167 solar radii, 48.58 ly.
-    hd176051: { hex: 'f17', x: 1341267.616, y: 2672430.717, z: 704942.154, dist: 3072104.8, orbit: -2, size: 2.161, startype: 'F', label: loc('star_hd176051'), zlabel: loc('star_hd176051') + ' A' },
+    hd176051: { hex: 'f17', x: 1341267.616, y: 2672430.717, z: 704942.154, dist: 3072104.8, orbit: -2, size: 2.097, startype: 'F', lum: 1.34, mass: 1.16, label: loc('star_hd176051'), zlabel: loc('star_hd176051') + ' A' },
     // K1V, 0.797 solar radii, 48.58 ly.
-    hd176051b: { hex: 'c60', x: 1341269.251, y: 2672425.046, z: 704960.543, dist: 3072104.8, orbit: -2, size: 1.785, startype: 'K', zlabel: loc('star_hd176051') + ' B' },
+    hd176051b: { hex: 'c60', x: 1341269.251, y: 2672425.046, z: 704960.543, dist: 3072104.8, orbit: -2, size: 1.409, startype: 'K', lum: 0.1585, mass: 0.86, zlabel: loc('star_hd176051') + ' B' },
     // Gliese 116 -- single.
     // K5V, 0.701 solar radii, 48.20 ly.
-    gliese116: { hex: 'd41', x: -2432902.412, y: 1430933.861, z: -1150276.577, dist: 3047904.5, orbit: -2, size: 1.675, startype: 'K', label: loc('star_gliese116'), zlabel: loc('star_gliese116') },
+    gliese116: { hex: 'd41', x: -2432902.412, y: 1430933.861, z: -1150276.577, dist: 3047904.5, orbit: -2, size: 1.675, startype: 'K', lum: 0.1738, mass: 0.567, label: loc('star_gliese116'), zlabel: loc('star_gliese116') },
     // Psi Serpentis -- single.
     // G2.5V, 1.012 solar radii, 48.25 ly.
-    psiserpentis: { hex: '7b1', x: 2236232.193, y: 382185.019, z: 2040382.701, dist: 3051222.9, orbit: -2, size: 2.012, startype: 'G', label: loc('star_psiserpentis'), zlabel: loc('star_psiserpentis') },
+    psiserpentis: { hex: '7b1', x: 2236232.193, y: 382185.019, z: 2040382.701, dist: 3051222.9, orbit: -2, size: 2.012, startype: 'G', lum: 1.023, mass: 1.1, label: loc('star_psiserpentis'), zlabel: loc('star_psiserpentis') },
     // HD 205390 -- single.
     // K1V, 0.797 solar radii, 48.32 ly.
-    hd205390: { hex: 'b02', x: 2047116.712, y: -494669.326, z: -2214118.414, dist: 3055765.8, orbit: -2, size: 1.785, startype: 'K', label: loc('star_hd205390'), zlabel: loc('star_hd205390') },
+    hd205390: { hex: 'b02', x: 2047116.712, y: -494669.326, z: -2214118.414, dist: 3055765.8, orbit: -2, size: 1.731, startype: 'K', lum: 0.326, mass: 0.834, label: loc('star_hd205390'), zlabel: loc('star_hd205390') },
     // HD 144628 -- single.
     // K2V, 0.783 solar radii, 48.36 ly.
-    hd144628: { hex: 'c6b', x: 2584767.434, y: -1623787.289, z: -186443.496, dist: 3058180.7, orbit: -2, size: 1.77, startype: 'K', label: loc('star_hd144628'), zlabel: loc('star_hd144628') },
+    hd144628: { hex: 'c6b', x: 2584767.434, y: -1623787.289, z: -186443.496, dist: 3058180.7, orbit: -2, size: 1.724, startype: 'K', lum: 0.3287, mass: 0.714, label: loc('star_hd144628'), zlabel: loc('star_hd144628') },
     // HD 218511 -- single.
     // K6V, 0.669 solar radii, 48.39 ly.
-    hd218511: { hex: 'd23', x: 1528848.704, y: -1444039.114, z: -2223523.577, dist: 3060503.9, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd218511'), zlabel: loc('star_hd218511') },
+    hd218511: { hex: 'd23', x: 1528848.704, y: -1444039.114, z: -2223523.577, dist: 3060503.9, orbit: -2, size: 1.6, startype: 'K', lum: 0.1502, mass: 0.495, label: loc('star_hd218511'), zlabel: loc('star_hd218511') },
     // HD 36705 -- 2 components.
     // K0V, 0.813 solar radii, 48.44 ly.
-    hd36705: { hex: '4b8', x: 237226.298, y: -2556831.109, z: -1670463.232, dist: 3063349.3, orbit: -2, size: 1.803, startype: 'K', label: loc('star_hd36705'), zlabel: loc('star_hd36705') + ' A' },
+    hd36705: { hex: '4b8', x: 237226.298, y: -2556831.109, z: -1670463.232, dist: 3063349.3, orbit: -2, size: 1.484, startype: 'K', lum: 0.191, mass: 0.197, label: loc('star_hd36705'), zlabel: loc('star_hd36705') + ' A' },
     // M5+M5-6, 0.196 solar radii, 48.44 ly.
-    hd36705b: { hex: '65f', x: 237093.208, y: -2556815.387, z: -1670506.19, dist: 3063349.3, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_hd36705') + ' B' },
+    hd36705b: { hex: '65f', x: 237093.208, y: -2556815.387, z: -1670506.19, dist: 3063349.3, orbit: -2, size: 0.885, startype: 'M', lum: 0.00302, mass: 0.162, zlabel: loc('star_hd36705') + ' B' },
     // Rasalhague -- single.
     // A5IVnn, 4.284 solar radii, 48.59 ly.
-    rasalhague: { hex: '307', x: 2298536.731, y: 1663480.832, z: 1179210.795, dist: 3072617.4, orbit: -2, size: 4.14, startype: 'A', label: loc('star_rasalhague'), zlabel: loc('star_rasalhague') },
+    rasalhague: { hex: '307', x: 2298536.731, y: 1663480.832, z: 1179210.795, dist: 3072617.4, orbit: -2, size: 3.446, startype: 'A', lum: 31.14, mass: 2.49, label: loc('star_rasalhague'), zlabel: loc('star_rasalhague') },
     // 31 Aquilae -- single.
     // G7IVHdel1, 2.225 solar radii, 48.67 ly.
-    aquilae31: { hex: 'b5f', x: 2083346.983, y: 2263390.934, z: -100247.541, dist: 3077876.3, orbit: -2, size: 2.983, startype: 'G', label: loc('star_aquilae31'), zlabel: loc('star_aquilae31') },
+    aquilae31: { hex: 'b5f', x: 2083346.983, y: 2263390.934, z: -100247.541, dist: 3077876.3, orbit: -2, size: 1.926, startype: 'G', lum: 0.7413, mass: 0.485, label: loc('star_aquilae31'), zlabel: loc('star_aquilae31') },
     // 20 Leonis Minoris -- 2 components.
     // G3VaHdel1, 1.002 solar radii, 48.68 ly.
-    leonisminoris20: { hex: 'b1c', x: -1795660.652, y: -481666.961, z: 2454065.6, dist: 3078772.2, orbit: -2, size: 2.002, startype: 'G', label: loc('star_leonisminoris20'), zlabel: loc('star_leonisminoris20') + ' A' },
+    leonisminoris20: { hex: 'b1c', x: -1795660.652, y: -481666.961, z: 2454065.6, dist: 3078772.2, orbit: -2, size: 2.134, startype: 'G', lum: 1.27, mass: 0.944, label: loc('star_leonisminoris20'), zlabel: loc('star_leonisminoris20') + ' A' },
     // M6.0V, 0.137 solar radii, 48.68 ly.
-    leonisminoris20b: { hex: 'c3d', x: -1797279.183, y: -481654.428, z: 2452882.948, dist: 3078772.2, orbit: -2, size: 0.74, startype: 'M', zlabel: loc('star_leonisminoris20') + ' B' },
+    leonisminoris20b: { hex: 'c3d', x: -1797279.183, y: -481654.428, z: 2452882.948, dist: 3078772.2, orbit: -2, size: 0.74, startype: 'M', lum: 0.001047, mass: 0.0862, zlabel: loc('star_leonisminoris20') + ' B' },
     // HD 84117 -- single.
     // F9V, 1.167 solar radii, 48.77 ly.
-    hd84117: { hex: 'a45', x: -660101.268, y: -2791941.97, z: 1131481.1, dist: 3083978.5, orbit: -2, size: 2.161, startype: 'F', label: loc('star_hd84117'), zlabel: loc('star_hd84117') },
+    hd84117: { hex: 'a45', x: -660101.268, y: -2791941.97, z: 1131481.1, dist: 3083978.5, orbit: -2, size: 2.156, startype: 'F', lum: 1.748, mass: 1.03, label: loc('star_hd84117'), zlabel: loc('star_hd84117') },
     // Eta Leporis -- single.
     // F2V, 1.622 solar radii, 48.78 ly.
-    etaleporis: { hex: 'c90', x: -2249619.652, y: -1871339.586, z: -977471.603, dist: 3085150.1, orbit: -2, size: 2.547, startype: 'F', label: loc('star_etaleporis'), zlabel: loc('star_etaleporis') },
+    etaleporis: { hex: 'c90', x: -2249619.652, y: -1871339.586, z: -977471.603, dist: 3085150.1, orbit: -2, size: 2.463, startype: 'F', lum: 4.952, mass: 1.27, label: loc('star_etaleporis'), zlabel: loc('star_etaleporis') },
     // Alchiba -- single.
     // F1V, 1.679 solar radii, 48.85 ly.
-    alchiba: { hex: '020', x: 869079.25, y: -2305001.47, z: 1864092.463, dist: 3089202.4, orbit: -2, size: 2.592, startype: 'F', label: loc('star_alchiba'), zlabel: loc('star_alchiba') },
+    alchiba: { hex: '020', x: 869079.25, y: -2305001.47, z: 1864092.463, dist: 3089202.4, orbit: -2, size: 2.306, startype: 'F', lum: 3.87, mass: 1.02, label: loc('star_alchiba'), zlabel: loc('star_alchiba') },
     // Alderamin -- single.
     // A8Vn, 1.747 solar radii, 49.05 ly.
-    alderamin: { hex: '9c6', x: -584216.381, y: 3005820.883, z: 494407.46, dist: 3101726.4, orbit: -2, size: 2.643, startype: 'A', label: loc('star_alderamin'), zlabel: loc('star_alderamin') },
+    alderamin: { hex: '9c6', x: -584216.381, y: 3005820.883, z: 494407.46, dist: 3101726.4, orbit: -2, size: 3.058, startype: 'A', lum: 15.25, mass: 0.562, label: loc('star_alderamin'), zlabel: loc('star_alderamin') },
     // HD 200779 -- single.
     // K6V, 0.669 solar radii, 49.07 ly.
-    hd200779: { hex: '90d', x: 1550381.586, y: 2332072.254, z: -1337644.669, dist: 3103471.8, orbit: -2, size: 1.636, startype: 'K', label: loc('star_hd200779'), zlabel: loc('star_hd200779') },
+    hd200779: { hex: '90d', x: 1550381.586, y: 2332072.254, z: -1337644.669, dist: 3103471.8, orbit: -2, size: 1.693, startype: 'K', lum: 0.1802, mass: 0.679, label: loc('star_hd200779'), zlabel: loc('star_hd200779') },
     // HD 4391 -- single.
     // G3V, 1.002 solar radii, 49.08 ly.
-    hd4391: { hex: 'a0e', x: 632579.802, y: -881162.994, z: -2908319.762, dist: 3104018.2, orbit: -2, size: 2.002, startype: 'G', label: loc('star_hd4391'), zlabel: loc('star_hd4391') },
+    hd4391: { hex: 'a0e', x: 632579.802, y: -881162.994, z: -2908319.762, dist: 3104018.2, orbit: -2, size: 1.902, startype: 'G', lum: 0.8755, mass: 1.19, label: loc('star_hd4391'), zlabel: loc('star_hd4391') },
     // Gliese 52 -- single.
     // K7V, 0.630 solar radii, 49.14 ly.
-    gliese52: { hex: 'cca', x: -1766962.954, y: 2556082.775, z: 60864.487, dist: 3107961, orbit: -2, size: 1.587, startype: 'K', label: loc('star_gliese52'), zlabel: loc('star_gliese52') },
+    gliese52: { hex: 'cca', x: -1766962.954, y: 2556082.775, z: 60864.487, dist: 3107961, orbit: -2, size: 1.587, startype: 'K', lum: 0.1, mass: 1.15, label: loc('star_gliese52'), zlabel: loc('star_gliese52') },
     // HD 118926 -- single.
     // K5V, 0.701 solar radii, 49.27 ly.
-    hd118926: { hex: '5ca', x: 1412869.979, y: -976282.553, z: 2599707.391, dist: 3115735.5, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd118926'), zlabel: loc('star_hd118926') },
+    hd118926: { hex: '5ca', x: 1412869.979, y: -976282.553, z: 2599707.391, dist: 3115735.5, orbit: -2, size: 1.765, startype: 'K', lum: 0.1146, mass: 1.06, label: loc('star_hd118926'), zlabel: loc('star_hd118926') },
     // HD 122742 -- single.
     // G6V, 0.949 solar radii, 49.31 ly.
-    hd122742: { hex: 'd80', x: 1235260.761, y: -163552.828, z: 2858509.247, dist: 3118283.8, orbit: -2, size: 1.948, startype: 'G', label: loc('star_hd122742'), zlabel: loc('star_hd122742') },
+    hd122742: { hex: 'd80', x: 1235260.761, y: -163552.828, z: 2858509.247, dist: 3118283.8, orbit: -2, size: 1.857, startype: 'G', lum: 0.6183, mass: 0.73, label: loc('star_hd122742'), zlabel: loc('star_hd122742') },
     // HD 224953 -- 2 components.
     // K5V, 0.701 solar radii, 49.56 ly.
-    hd224953: { hex: '2c9', x: 1335708.762, y: -1606820.479, z: -2336241.188, dist: 3134328.1, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd224953'), zlabel: loc('star_hd224953') + ' A' },
+    hd224953: { hex: '2c9', x: 1335708.762, y: -1606820.479, z: -2336241.188, dist: 3134328.1, orbit: -2, size: 1.529, startype: 'K', lum: 0.08432, mass: 0.843, label: loc('star_hd224953'), zlabel: loc('star_hd224953') + ' A' },
     // K5/M0V, 0.701 solar radii, 49.56 ly.
-    hd224953b: { hex: '68f', x: 1335672.07, y: -1606872.593, z: -2336226.322, dist: 3134328.1, orbit: -2, size: 1.675, startype: 'K', zlabel: loc('star_hd224953') + ' B' },
+    hd224953b: { hex: '68f', x: 1335672.07, y: -1606872.593, z: -2336226.322, dist: 3134328.1, orbit: -2, size: 1.3, startype: 'K', lum: 0.0424, mass: 0.59, zlabel: loc('star_hd224953') + ' B' },
     // HD 38858 -- single.
     // G2V, 1.012 solar radii, 49.61 ly.
-    hd38858: { hex: 'a10', x: -2630067.403, y: -1480642.855, z: -856446.871, dist: 3137365, orbit: -2, size: 2.012, startype: 'G', label: loc('star_hd38858'), zlabel: loc('star_hd38858') },
+    hd38858: { hex: 'a10', x: -2630067.403, y: -1480642.855, z: -856446.871, dist: 3137365, orbit: -2, size: 1.89, startype: 'G', lum: 0.7758, mass: 0.878, label: loc('star_hd38858'), zlabel: loc('star_hd38858') },
     // HD 140901 -- 2 components.
     // G7IV, 2.225 solar radii, 49.73 ly.
-    hd140901: { hex: 'd2d', x: 2824145.681, y: -1189310.812, z: 706815.333, dist: 3144812.7, orbit: -2, size: 2.983, startype: 'G', label: loc('star_hd140901'), zlabel: loc('star_hd140901') + ' A' },
+    hd140901: { hex: 'd2d', x: 2824145.681, y: -1189310.812, z: 706815.333, dist: 3144812.7, orbit: -2, size: 1.931, startype: 'G', lum: 0.7757, mass: 0.914, label: loc('star_hd140901'), zlabel: loc('star_hd140901') + ' A' },
     // DA4.8, 0.013 solar radii, 49.73 ly.
-    hd140901b: { hex: 'b61', x: 2824204.476, y: -1189298.615, z: 706600.896, dist: 3144812.7, orbit: -2, size: 0.224, startype: 'D', zlabel: loc('star_hd140901') + ' B' },
+    hd140901b: { hex: 'b61', x: 2824204.476, y: -1189298.615, z: 706600.896, dist: 3144812.7, orbit: -2, size: 0.228, startype: 'D', lum: 0.002, mass: 0.6, zlabel: loc('star_hd140901') + ' B' },
     // HD 238090 -- 2 components.
     // K5V, 0.701 solar radii, 49.73 ly.
-    hd238090: { hex: '292', x: -1052641.02, y: 1054683.732, z: 2769902.876, dist: 3145277.9, orbit: -2, size: 1.675, startype: 'K', label: loc('star_hd238090'), zlabel: loc('star_hd238090') + ' A' },
+    hd238090: { hex: '292', x: -1052641.02, y: 1054683.732, z: 2769902.876, dist: 3145277.9, orbit: -2, size: 1.675, startype: 'K', lum: 0.1738, mass: 0.858, label: loc('star_hd238090'), zlabel: loc('star_hd238090') + ' A' },
     // dM4.0, 0.274 solar radii, 49.73 ly.
-    hd238090b: { hex: 'ce2', x: -1052688.541, y: 1054881.486, z: 2769809.509, dist: 3145277.9, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_hd238090') + ' B' },
+    hd238090b: { hex: 'ce2', x: -1052688.541, y: 1054881.486, z: 2769809.509, dist: 3145277.9, orbit: -2, size: 1.047, startype: 'M', lum: 0.007095, mass: 0.23, zlabel: loc('star_hd238090') + ' B' },
     // Nu Phoenicis -- single.
     // F9VFe+0.4, 1.167 solar radii, 49.77 ly.
-    nuphoenicis: { hex: 'a4a', x: 351760.744, y: -962608.434, z: -2976271.16, dist: 3147783.4, orbit: -2, size: 2.161, startype: 'F', label: loc('star_nuphoenicis'), zlabel: loc('star_nuphoenicis') },
+    nuphoenicis: { hex: 'a4a', x: 351760.744, y: -962608.434, z: -2976271.16, dist: 3147783.4, orbit: -2, size: 2.187, startype: 'F', lum: 1.797, mass: 1.04, label: loc('star_nuphoenicis'), zlabel: loc('star_nuphoenicis') },
     // 171 Puppis -- single.
     // F9V, 1.167 solar radii, 49.83 ly.
-    puppis171: { hex: 'fb5', x: -1119814.437, y: -2933743.483, z: -264004.017, dist: 3151274.9, orbit: -2, size: 2.161, startype: 'F', label: loc('star_puppis171'), zlabel: loc('star_puppis171') },
+    puppis171: { hex: 'fb5', x: -1119814.437, y: -2933743.483, z: -264004.017, dist: 3151274.9, orbit: -2, size: 2.161, startype: 'F', lum: 1.322, mass: 0.671, label: loc('star_puppis171'), zlabel: loc('star_puppis171') },
     // HD 24916 -- 2 components.
     // K4V, 0.713 solar radii, 49.85 ly.
-    hd24916: { hex: '3c1', x: -2426193.311, y: -460611.567, z: -1959724.135, dist: 3152633.1, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd24916'), zlabel: loc('star_hd24916') + ' A' },
+    hd24916: { hex: '3c1', x: -2426193.311, y: -460611.567, z: -1959724.135, dist: 3152633.1, orbit: -2, size: 1.648, startype: 'K', lum: 0.1968, mass: 0.57, label: loc('star_hd24916'), zlabel: loc('star_hd24916') + ' A' },
     // M2.5V, 0.421 solar radii, 49.85 ly.
-    hd24916b: { hex: '099', x: -2426292.706, y: -460521.619, z: -1959622.215, dist: 3152633.1, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd24916') + ' B' },
+    hd24916b: { hex: '099', x: -2426292.706, y: -460521.619, z: -1959622.215, dist: 3152633.1, orbit: -2, size: 1.442, startype: 'M', lum: 0.03597, mass: 0.801, zlabel: loc('star_hd24916') + ' B' },
     // 19 Draconis -- single.
     // F8V, 1.221 solar radii, 49.95 ly.
-    draconis19: { hex: '763', x: -251388.715, y: 2528293.698, z: 1877503.337, dist: 3159190.4, orbit: -2, size: 2.21, startype: 'F', label: loc('star_draconis19'), zlabel: loc('star_draconis19') },
+    draconis19: { hex: '763', x: -251388.715, y: 2528293.698, z: 1877503.337, dist: 3159190.4, orbit: -2, size: 2.161, startype: 'F', lum: 1.915, mass: 1.14, label: loc('star_draconis19'), zlabel: loc('star_draconis19') },
     // HD 21197 -- single.
     // K4V, 0.713 solar radii, 49.98 ly.
-    hd21197: { hex: 'd2c', x: -2108634.715, y: -339103.979, z: -2329858.039, dist: 3160628.2, orbit: -2, size: 1.689, startype: 'K', label: loc('star_hd21197'), zlabel: loc('star_hd21197') },
+    hd21197: { hex: 'd2c', x: -2108634.715, y: -339103.979, z: -2329858.039, dist: 3160628.2, orbit: -2, size: 1.775, startype: 'K', lum: 0.2473, mass: 0.84, label: loc('star_hd21197'), zlabel: loc('star_hd21197') },
     // --- M dwarfs, 20 to 30 light years ------------------------------------------------------
     // M0V, 0.588 solar radii, 20.11 ly.
-    hd191849: { hex: '269', x: 1062325.788, y: -96553.943, z: -692057.697, dist: 1271535.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd191849'), zlabel: loc('star_hd191849') },
+    hd191849: { hex: '269', x: 1062325.788, y: -96553.943, z: -692057.697, dist: 1271535.5, orbit: -2, size: 1.927, startype: 'M', lum: 0.1261, mass: 1.94, label: loc('star_hd191849'), zlabel: loc('star_hd191849') },
     // G 202-48.
     // M1.5V, 0.482 solar radii, 21.13 ly.
-    g20248: { hex: '5df', x: 115928.513, y: 973870.836, z: 907714.943, dist: 1336342.1, orbit: -2, size: 1.389, startype: 'M', label: loc('star_g20248'), zlabel: loc('star_g20248') },
+    g20248: { hex: '5df', x: 115928.513, y: 973870.836, z: 907714.943, dist: 1336342.1, orbit: -2, size: 1.268, startype: 'M', lum: 0.02228, mass: 0.447, label: loc('star_g20248'), zlabel: loc('star_g20248') },
     // HD 216899.
     // M1.5V, 0.482 solar radii, 22.40 ly.
-    hd216899: { hex: '5eb', x: 57063.345, y: 1111790.528, z: -875744.775, dist: 1416426.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_hd216899'), zlabel: loc('star_hd216899') },
+    hd216899: { hex: '5eb', x: 57063.345, y: 1111790.528, z: -875744.775, dist: 1416426.2, orbit: -2, size: 1.636, startype: 'M', lum: 0.08204, mass: 0.837, label: loc('star_hd216899'), zlabel: loc('star_hd216899') },
     // HD 199305.
     // M1.0V, 0.501 solar radii, 22.96 ly.
-    hd199305: { hex: '93e', x: -215837.269, y: 1408452.44, z: 279320.811, dist: 1452013.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd199305'), zlabel: loc('star_hd199305') },
+    hd199305: { hex: '93e', x: -215837.269, y: 1408452.44, z: 279320.811, dist: 1452013.8, orbit: -2, size: 1.679, startype: 'M', lum: 0.09605, mass: 0.909, label: loc('star_hd199305'), zlabel: loc('star_hd199305') },
     // BD+11 2576.
     // M1.0V, 0.501 solar radii, 24.88 ly.
-    bd112576: { hex: '045', x: 458605.055, y: -231347.387, z: 1487113.923, dist: 1573323.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd112576'), zlabel: loc('star_bd112576') },
+    bd112576: { hex: '045', x: 458605.055, y: -231347.387, z: 1487113.923, dist: 1573323.9, orbit: -2, size: 1.564, startype: 'M', lum: 0.06654, mass: 0.668, label: loc('star_bd112576'), zlabel: loc('star_bd112576') },
     // HD 165222.
     // M0V, 0.588 solar radii, 25.24 ly.
-    hd165222: { hex: '911', x: 1430809.775, y: 663449.258, z: 246233.478, dist: 1596249.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd165222'), zlabel: loc('star_hd165222') },
+    hd165222: { hex: '911', x: 1430809.775, y: 663449.258, z: 246233.478, dist: 1596249.5, orbit: -2, size: 1.474, startype: 'M', lum: 0.05035, mass: 0.664, label: loc('star_hd165222'), zlabel: loc('star_hd165222') },
     // BD+18 3421.
     // M1.5V, 0.482 solar radii, 26.61 ly.
-    bd183421: { hex: '24d', x: 1135649.899, y: 1031196.906, z: 692509.894, dist: 1683044.2, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd183421'), zlabel: loc('star_bd183421') },
+    bd183421: { hex: '24d', x: 1135649.899, y: 1031196.906, z: 692509.894, dist: 1683044.2, orbit: -2, size: 1.426, startype: 'M', lum: 0.04155, mass: 0.567, label: loc('star_bd183421'), zlabel: loc('star_bd183421') },
     // BD+36 2219.
     // M1.5V, 0.482 solar radii, 28.59 ly.
-    bd362219: { hex: 'bd7', x: -474130.991, y: 25653.847, z: 1744521.441, dist: 1807986, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd362219'), zlabel: loc('star_bd362219') },
+    bd362219: { hex: 'bd7', x: -474130.991, y: 25653.847, z: 1744521.441, dist: 1807986, orbit: -2, size: 1.425, startype: 'M', lum: 0.04103, mass: 0.54, label: loc('star_bd362219'), zlabel: loc('star_bd362219') },
     // FL Aquarii -- 2 components.
     // M3.5V, 0.3 solar radii, 28.87 ly.
-    flaquarii: { hex: 'c03', x: 741097.016, y: 575498.648, z: -1565973.141, dist: 1825567.1, orbit: -2, size: 1.095, startype: 'M', label: loc('star_flaquarii'), zlabel: loc('star_flaquarii') + ' A' },
+    flaquarii: { hex: 'c03', x: 741097.016, y: 575498.648, z: -1565973.141, dist: 1825567.1, orbit: -2, size: 1.206, startype: 'M', lum: 0.01502, mass: 0.27, label: loc('star_flaquarii'), zlabel: loc('star_flaquarii') + ' A' },
     // M0Vep, 0.588 solar radii, 28.87 ly.
-    flaquariib: { hex: 'bc2', x: 741144.721, y: 575292.728, z: -1566026.225, dist: 1825567.1, orbit: -2, size: 1.534, startype: 'M', zlabel: loc('star_flaquarii') + ' B' },
+    flaquariib: { hex: 'bc2', x: 741144.721, y: 575292.728, z: -1566026.225, dist: 1825567.1, orbit: -2, size: 1.534, startype: 'M', lum: 0.03269, mass: 0.57, zlabel: loc('star_flaquarii') + ' B' },
     // --- M dwarfs, 30 to 50 light years ------------------------------------------------------
     // CD-45 5378.
     // M1V, 0.501 solar radii, 30.72 ly.
-    cd455378: { hex: 'bb6', x: 75666.288, y: -1931769.381, z: 191672.815, dist: 1942729.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cd455378'), zlabel: loc('star_cd455378') },
+    cd455378: { hex: 'bb6', x: 75666.288, y: -1931769.381, z: 191672.815, dist: 1942729.2, orbit: -2, size: 1.522, startype: 'M', lum: 0.04789, mass: 0.754, label: loc('star_cd455378'), zlabel: loc('star_cd455378') },
     // CD-48 11837 -- 2 components.
     // M1.5V, 0.482 solar radii, 31.57 ly.
-    cd4811837: { hex: '419', x: 1878027.133, y: -607416.805, z: -300773.687, dist: 1996598.6, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd4811837'), zlabel: loc('star_cd4811837') + ' A' },
+    cd4811837: { hex: '419', x: 1878027.133, y: -607416.805, z: -300773.687, dist: 1996598.6, orbit: -2, size: 1.466, startype: 'M', lum: 0.04238, mass: 0.665, label: loc('star_cd4811837'), zlabel: loc('star_cd4811837') + ' A' },
     // M3V, 0.361 solar radii, 31.57 ly.
-    cd4811837b: { hex: '5b5', x: 1878036.251, y: -607403.108, z: -300744.417, dist: 1996598.6, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_cd4811837') + ' B' },
+    cd4811837b: { hex: '5b5', x: 1878036.251, y: -607403.108, z: -300744.417, dist: 1996598.6, orbit: -2, size: 1.202, startype: 'M', lum: 0.01622, mass: 0.37, zlabel: loc('star_cd4811837') + ' B' },
     // AU Microscopii.
     // M1VeBa1, 0.501 solar radii, 31.68 ly.
-    aumicroscopii: { hex: 'd39', x: 1565381.606, y: 351471.045, z: -1200318.93, dist: 2003675.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_aumicroscopii'), zlabel: loc('star_aumicroscopii') },
+    aumicroscopii: { hex: 'd39', x: 1565381.606, y: 351471.045, z: -1200318.93, dist: 2003675.9, orbit: -2, size: 1.846, startype: 'M', lum: 0.1281, mass: 0.62, label: loc('star_aumicroscopii'), zlabel: loc('star_aumicroscopii') },
     // BD+61 195 -- 2 components.
     // M1.5V, 0.482 solar radii, 32.16 ly.
-    bd61195: { hex: '329', x: -1144009.926, y: 1681318.803, z: -17690.086, dist: 2033692.3, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd61195'), zlabel: loc('star_bd61195') + ' A' },
+    bd61195: { hex: '329', x: -1144009.926, y: 1681318.803, z: -17690.086, dist: 2033692.3, orbit: -2, size: 1.622, startype: 'M', lum: 0.0787, mass: 0.773, label: loc('star_bd61195'), zlabel: loc('star_bd61195') + ' A' },
     // M5V, 0.196 solar radii, 32.16 ly.
-    bd61195b: { hex: '3c8', x: -1146307.862, y: 1679761.684, z: -16838.516, dist: 2033692.3, orbit: -2, size: 0.885, startype: 'M', zlabel: loc('star_bd61195') + ' B' },
+    bd61195b: { hex: '3c8', x: -1146307.862, y: 1679761.684, z: -16838.516, dist: 2033692.3, orbit: -2, size: 1.158, startype: 'M', lum: 0.008634, mass: 0.326, zlabel: loc('star_bd61195') + ' B' },
     // HD 232979.
     // M0.5V, 0.544 solar radii, 32.32 ly.
-    hd232979: { hex: 'b90', x: -1820765.944, y: 918281.883, z: 138541.515, dist: 2043923.7, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd232979'), zlabel: loc('star_hd232979') },
+    hd232979: { hex: 'b90', x: -1820765.944, y: 918281.883, z: 138541.515, dist: 2043923.7, orbit: -2, size: 1.572, startype: 'M', lum: 0.08863, mass: 0.636, label: loc('star_hd232979'), zlabel: loc('star_hd232979') },
     // HD 260655.
     // M0.0V, 0.588 solar radii, 32.61 ly.
-    hd260655: { hex: '33c', x: -1978330.492, y: -555095.644, z: 174988.287, dist: 2062169.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd260655'), zlabel: loc('star_hd260655') },
+    hd260655: { hex: '33c', x: -1978330.492, y: -555095.644, z: 174988.287, dist: 2062169.6, orbit: -2, size: 1.505, startype: 'M', lum: 0.05623, mass: 0.706, label: loc('star_hd260655'), zlabel: loc('star_hd260655') },
     // BD+05 3409.
     // M1.0V, 0.501 solar radii, 33.00 ly.
-    bd053409: { hex: '7a2', x: 1716062.26, y: 934647.502, z: 732247.87, dist: 2086773.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd053409'), zlabel: loc('star_bd053409') },
+    bd053409: { hex: '7a2', x: 1716062.26, y: 934647.502, z: 732247.87, dist: 2086773.2, orbit: -2, size: 1.504, startype: 'M', lum: 0.05995, mass: 0.587, label: loc('star_bd053409'), zlabel: loc('star_bd053409') },
     // HD 122303.
     // M0V, 0.588 solar radii, 33.99 ly.
-    hd122303: { hex: '5e5', x: 1095137.617, y: -509380.141, z: 1778128.816, dist: 2149543.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd122303'), zlabel: loc('star_hd122303') },
+    hd122303: { hex: '5e5', x: 1095137.617, y: -509380.141, z: 1778128.816, dist: 2149543.3, orbit: -2, size: 1.562, startype: 'M', lum: 0.06348, mass: 0.764, label: loc('star_hd122303'), zlabel: loc('star_hd122303') },
     // HD 304636.
     // M0V, 0.588 solar radii, 34.08 ly.
-    hd304636: { hex: '487', x: 356070.2, y: -2108015.667, z: -274032.366, dist: 2155367.7, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd304636'), zlabel: loc('star_hd304636') },
+    hd304636: { hex: '487', x: 356070.2, y: -2108015.667, z: -274032.366, dist: 2155367.7, orbit: -2, size: 1.544, startype: 'M', lum: 0.0648, mass: 0.681, label: loc('star_hd304636'), zlabel: loc('star_hd304636') },
     // BD+02 348.
     // M1V, 0.501 solar radii, 34.27 ly.
-    bd02348: { hex: 'faf', x: -1196396.203, y: 471215.778, z: -1744946.89, dist: 2167544.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd02348'), zlabel: loc('star_bd02348') },
+    bd02348: { hex: 'faf', x: -1196396.203, y: 471215.778, z: -1744946.89, dist: 2167544.2, orbit: -2, size: 1.566, startype: 'M', lum: 0.0604, mass: 0.885, label: loc('star_bd02348'), zlabel: loc('star_bd02348') },
     // BD+63 869.
     // M0.5V, 0.544 solar radii, 34.32 ly.
-    bd63869: { hex: '7a5', x: -1333018.501, y: 794066.977, z: 1517212.959, dist: 2170118.9, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd63869'), zlabel: loc('star_bd63869') },
+    bd63869: { hex: '7a5', x: -1333018.501, y: 794066.977, z: 1517212.959, dist: 2170118.9, orbit: -2, size: 1.49, startype: 'M', lum: 0.06685, mass: 0.525, label: loc('star_bd63869'), zlabel: loc('star_bd63869') },
     // HD 209290.
     // M0.5V, 0.544 solar radii, 34.49 ly.
-    hd209290: { hex: 'd69', x: 806648.619, y: 1454981.382, z: -1410707.011, dist: 2181226.1, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd209290'), zlabel: loc('star_hd209290') },
+    hd209290: { hex: 'd69', x: 806648.619, y: 1454981.382, z: -1410707.011, dist: 2181226.1, orbit: -2, size: 1.568, startype: 'M', lum: 0.07657, mass: 0.675, label: loc('star_hd209290'), zlabel: loc('star_hd209290') },
     // HD 111631.
     // M0V, 0.588 solar radii, 34.75 ly.
-    hd111631: { hex: '323', x: 553268.04, y: -866732.752, z: 1942310.388, dist: 2197703.5, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd111631'), zlabel: loc('star_hd111631') },
+    hd111631: { hex: '323', x: 553268.04, y: -866732.752, z: 1942310.388, dist: 2197703.5, orbit: -2, size: 1.776, startype: 'M', lum: 0.1329, mass: 0.823, label: loc('star_hd111631'), zlabel: loc('star_hd111631') },
     // HD 147379 -- 2 components.
     // M1-Ve, 0.501 solar radii, 35.12 ly.
-    hd147379: { hex: '30a', x: -294763.042, y: 1688867.809, z: 1411738.593, dist: 2220847.9, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd147379'), zlabel: loc('star_hd147379') + ' A' },
+    hd147379: { hex: '30a', x: -294763.042, y: 1688867.809, z: 1411738.593, dist: 2220847.9, orbit: -2, size: 1.416, startype: 'M', lum: 0.04074, mass: 0.391, label: loc('star_hd147379'), zlabel: loc('star_hd147379') + ' A' },
     // M3.0V, 0.361 solar radii, 35.12 ly.
-    hd147379b: { hex: '6dd', x: -295340.137, y: 1689049.869, z: 1411400.129, dist: 2220847.9, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_hd147379') + ' B' },
+    hd147379b: { hex: '6dd', x: -295340.137, y: 1689049.869, z: 1411400.129, dist: 2220847.9, orbit: -2, size: 1.202, startype: 'M', lum: 0.01622, mass: 0.3, zlabel: loc('star_hd147379') + ' B' },
     // CD-51 5974.
     // M0V, 0.588 solar radii, 35.95 ly.
-    cd515974: { hex: '8bf', x: 852567.861, y: -2072798.55, z: 380189.641, dist: 2273303.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_cd515974'), zlabel: loc('star_cd515974') },
+    cd515974: { hex: '8bf', x: 852567.861, y: -2072798.55, z: 380189.641, dist: 2273303.8, orbit: -2, size: 1.4, startype: 'M', lum: 0.03854, mass: 0.565, label: loc('star_cd515974'), zlabel: loc('star_cd515974') },
     // HD 11507.
     // M0V, 0.588 solar radii, 36.07 ly.
-    hd11507: { hex: 'e17', x: -551192.042, y: -175463.377, z: -2206703.808, dist: 2281258.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd11507'), zlabel: loc('star_hd11507') },
+    hd11507: { hex: 'e17', x: -551192.042, y: -175463.377, z: -2206703.808, dist: 2281258.8, orbit: -2, size: 1.656, startype: 'M', lum: 0.1002, mass: 0.9, label: loc('star_hd11507'), zlabel: loc('star_hd11507') },
     // HD 176029.
     // M1.0V, 0.501 solar radii, 36.23 ly.
-    hd176029: { hex: '4c5', x: 1781827.494, y: 1439674.124, z: 49454.134, dist: 2291291.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd176029'), zlabel: loc('star_hd176029') },
+    hd176029: { hex: '4c5', x: 1781827.494, y: 1439674.124, z: 49454.134, dist: 2291291.5, orbit: -2, size: 1.619, startype: 'M', lum: 0.08355, mass: 0.733, label: loc('star_hd176029'), zlabel: loc('star_hd176029') },
     // BD-11 916.
     // M1V, 0.501 solar radii, 36.57 ly.
-    bd11916: { hex: '61e', x: -1685638.609, y: -881904.237, z: -1315001.974, dist: 2312652.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd11916'), zlabel: loc('star_bd11916') },
+    bd11916: { hex: '61e', x: -1685638.609, y: -881904.237, z: -1315001.974, dist: 2312652.8, orbit: -2, size: 1.439, startype: 'M', lum: 0.04358, mass: 0.602, label: loc('star_bd11916'), zlabel: loc('star_bd11916') },
     // HD 28343.
     // M0.5V, 0.544 solar radii, 36.62 ly.
-    hd28343: { hex: '290', x: -2194724.629, y: 175070.491, z: -719122.149, dist: 2316161.2, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd28343'), zlabel: loc('star_hd28343') },
+    hd28343: { hex: '290', x: -2194724.629, y: 175070.491, z: -719122.149, dist: 2316161.2, orbit: -2, size: 1.675, startype: 'M', lum: 0.1317, mass: 0.765, label: loc('star_hd28343'), zlabel: loc('star_hd28343') },
     // OT Serpentis.
     // M1.0V, 0.501 solar radii, 37.35 ly.
-    otserpentis: { hex: 'd50', x: 1153674.843, y: 694757.665, z: 1940502.022, dist: 2362033.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_otserpentis'), zlabel: loc('star_otserpentis') },
+    otserpentis: { hex: 'd50', x: 1153674.843, y: 694757.665, z: 1940502.022, dist: 2362033.4, orbit: -2, size: 1.734, startype: 'M', lum: 0.07643, mass: 1.49, label: loc('star_otserpentis'), zlabel: loc('star_otserpentis') },
     // DT Virginis -- 2 components.
     // M0V, 0.588 solar radii, 37.53 ly.
-    dtvirginis: { hex: 'b5b', x: 407370.238, y: -455218.392, z: 2293603.391, dist: 2373560.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_dtvirginis'), zlabel: loc('star_dtvirginis') + ' A' },
+    dtvirginis: { hex: 'b5b', x: 407370.238, y: -455218.392, z: 2293603.391, dist: 2373560.8, orbit: -2, size: 1.375, startype: 'M', lum: 0.03879, mass: 0.39, label: loc('star_dtvirginis'), zlabel: loc('star_dtvirginis') + ' A' },
     // T8.5p, 0.097 solar radii, 37.53 ly.
-    dtvirginisb: { hex: 'e4f', x: 407222.424, y: -456363.161, z: 2293402.14, dist: 2373560.8, orbit: -2, size: 0.623, startype: 'T', zlabel: loc('star_dtvirginis') + ' B' },
+    dtvirginisb: { hex: 'e4f', x: 407222.424, y: -456363.161, z: 2293402.14, dist: 2373560.8, orbit: -2, size: 0.623, startype: 'T', lum: 0.00001759, zlabel: loc('star_dtvirginis') + ' B' },
     // HD 75632 -- 2 components.
     // M1V, 0.501 solar radii, 37.77 ly.
-    hd75632: { hex: 'c13', x: -1556394.567, y: 1163899.072, z: 1388646.321, dist: 2388590.3, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd75632'), zlabel: loc('star_hd75632') + ' A' },
+    hd75632: { hex: 'c13', x: -1556394.567, y: 1163899.072, z: 1388646.321, dist: 2388590.3, orbit: -2, size: 2.016, startype: 'M', lum: 0.167, mass: 0.5, label: loc('star_hd75632'), zlabel: loc('star_hd75632') + ' A' },
     // M1V, 0.501 solar radii, 37.77 ly.
-    hd75632b: { hex: '3e2', x: -1556396.18, y: 1163884.936, z: 1388656.362, dist: 2388590.3, orbit: -2, size: 1.416, startype: 'M', zlabel: loc('star_hd75632') + ' B' },
+    hd75632b: { hex: '3e2', x: -1556396.18, y: 1163884.936, z: 1388656.362, dist: 2388590.3, orbit: -2, size: 1.962, startype: 'M', lum: 0.1497, mass: 0.5, zlabel: loc('star_hd75632') + ' B' },
     // BD+45 2247.
     // M0V, 0.588 solar radii, 38.19 ly.
-    bd452247: { hex: '622', x: 284164.214, y: 1230506.092, z: 2058409.952, dist: 2414942.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd452247'), zlabel: loc('star_bd452247') },
+    bd452247: { hex: '622', x: 284164.214, y: 1230506.092, z: 2058409.952, dist: 2414942.3, orbit: -2, size: 1.534, startype: 'M', lum: 0.06918, mass: 0.55, label: loc('star_bd452247'), zlabel: loc('star_bd452247') },
     // G 234-5.
     // M0V, 0.588 solar radii, 38.51 ly.
-    g2345: { hex: '609', x: -1911494.545, y: 949188.953, z: 1172862.96, dist: 2435236.9, orbit: -2, size: 1.534, startype: 'M', label: loc('star_g2345'), zlabel: loc('star_g2345') },
+    g2345: { hex: '609', x: -1911494.545, y: 949188.953, z: 1172862.96, dist: 2435236.9, orbit: -2, size: 1.534, startype: 'M', lum: 0.06918, mass: 0.618, label: loc('star_g2345'), zlabel: loc('star_g2345') },
     // Wolf 918.
     // M1V, 0.501 solar radii, 38.63 ly.
-    wolf918: { hex: '24a', x: 1583515.726, y: 1160504.995, z: -1453494.861, dist: 2442732.3, orbit: -2, size: 1.416, startype: 'M', label: loc('star_wolf918'), zlabel: loc('star_wolf918') },
+    wolf918: { hex: '24a', x: 1583515.726, y: 1160504.995, z: -1453494.861, dist: 2442732.3, orbit: -2, size: 1.307, startype: 'M', lum: 0.02733, mass: 0.566, label: loc('star_wolf918'), zlabel: loc('star_wolf918') },
     // DS Leonis.
     // M1.0Ve, 0.501 solar radii, 38.94 ly.
-    dsleonis: { hex: '2fd', x: -818298.017, y: -656753.414, z: 2227712.466, dist: 2462445.8, orbit: -2, size: 1.416, startype: 'M', label: loc('star_dsleonis'), zlabel: loc('star_dsleonis') },
+    dsleonis: { hex: '2fd', x: -818298.017, y: -656753.414, z: 2227712.466, dist: 2462445.8, orbit: -2, size: 1.555, startype: 'M', lum: 0.07042, mass: 0.637, label: loc('star_dsleonis'), zlabel: loc('star_dsleonis') },
     // BD+47 612.
     // M0V, 0.588 solar radii, 38.99 ly.
-    bd47612: { hex: '6c9', x: -1798591.468, y: 1602938.049, z: -523760.272, dist: 2465495.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd47612'), zlabel: loc('star_bd47612') },
+    bd47612: { hex: '6c9', x: -1798591.468, y: 1602938.049, z: -523760.272, dist: 2465495.2, orbit: -2, size: 1.534, startype: 'M', lum: 0.06918, mass: 0.59, label: loc('star_bd47612'), zlabel: loc('star_bd47612') },
     // G 85-52.
     // M0V, 0.588 solar radii, 39.63 ly.
-    g8552: { hex: '9ad', x: -2451944.339, y: -158555.997, z: -492500.831, dist: 2505938.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_g8552'), zlabel: loc('star_g8552') },
+    g8552: { hex: '9ad', x: -2451944.339, y: -158555.997, z: -492500.831, dist: 2505938.6, orbit: -2, size: 1.406, startype: 'M', lum: 0.03657, mass: 0.575, label: loc('star_g8552'), zlabel: loc('star_g8552') },
     // L 89-27.
     // M1.5V, 0.482 solar radii, 40.13 ly.
-    l8927: { hex: '799', x: 614515.884, y: -1552660.063, z: -1910975.18, dist: 2537756.7, orbit: -2, size: 1.389, startype: 'M', label: loc('star_l8927'), zlabel: loc('star_l8927') },
+    l8927: { hex: '799', x: 614515.884, y: -1552660.063, z: -1910975.18, dist: 2537756.7, orbit: -2, size: 1.181, startype: 'M', lum: 0.01815, mass: 0.355, label: loc('star_l8927'), zlabel: loc('star_l8927') },
     // CD-52 7989.
     // M1V, 0.501 solar radii, 41.67 ly.
-    cd527989: { hex: '472', x: 2399516.319, y: -1033217.477, z: -347825.933, dist: 2635564.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cd527989'), zlabel: loc('star_cd527989') },
+    cd527989: { hex: '472', x: 2399516.319, y: -1033217.477, z: -347825.933, dist: 2635564.4, orbit: -2, size: 1.764, startype: 'M', lum: 0.08477, mass: 0.5, label: loc('star_cd527989'), zlabel: loc('star_cd527989') },
     // BD-09 3070.
     // M1V, 0.501 solar radii, 41.72 ly.
-    bd093070: { hex: '76b', x: -554609.438, y: -1989091.843, z: 1642461.606, dist: 2638514.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd093070'), zlabel: loc('star_bd093070') },
+    bd093070: { hex: '76b', x: -554609.438, y: -1989091.843, z: 1642461.606, dist: 2638514.4, orbit: -2, size: 1.564, startype: 'M', lum: 0.06797, mass: 0.7, label: loc('star_bd093070'), zlabel: loc('star_bd093070') },
     // BD+18 2776.
     // M1V, 0.501 solar radii, 42.12 ly.
-    bd182776: { hex: 'c47', x: 711662.871, y: -16641.73, z: 2566613.127, dist: 2663502.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd182776'), zlabel: loc('star_bd182776') },
+    bd182776: { hex: 'c47', x: 711662.871, y: -16641.73, z: 2566613.127, dist: 2663502.2, orbit: -2, size: 1.572, startype: 'M', lum: 0.07232, mass: 0.766, label: loc('star_bd182776'), zlabel: loc('star_bd182776') },
     // BD+08 4887.
     // M0V, 0.588 solar radii, 42.34 ly.
-    bd084887: { hex: 'a46', x: 508931.807, y: 1973665.499, z: -1736365.001, dist: 2677560.6, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd084887'), zlabel: loc('star_bd084887') },
+    bd084887: { hex: 'a46', x: 508931.807, y: 1973665.499, z: -1736365.001, dist: 2677560.6, orbit: -2, size: 1.497, startype: 'M', lum: 0.05176, mass: 0.63, label: loc('star_bd084887'), zlabel: loc('star_bd084887') },
     // BD-11 2741.
     // dM0.5, 0.544 solar radii, 42.82 ly.
-    bd112741: { hex: 'ba0', x: -829087.566, y: -2165354.459, z: 1399265.355, dist: 2708152.4, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd112741'), zlabel: loc('star_bd112741') },
+    bd112741: { hex: 'ba0', x: -829087.566, y: -2165354.459, z: 1399265.355, dist: 2708152.4, orbit: -2, size: 1.549, startype: 'M', lum: 0.06394, mass: 0.721, label: loc('star_bd112741'), zlabel: loc('star_bd112741') },
     // CD-55 1514.
     // M0Vk:, 0.588 solar radii, 42.94 ly.
-    cd551514: { hex: '61f', x: -221036.021, y: -2476684.328, z: -1092247.584, dist: 2715847.4, orbit: -2, size: 1.534, startype: 'M', label: loc('star_cd551514'), zlabel: loc('star_cd551514') },
+    cd551514: { hex: '61f', x: -221036.021, y: -2476684.328, z: -1092247.584, dist: 2715847.4, orbit: -2, size: 1.444, startype: 'M', lum: 0.05781, mass: 0.753, label: loc('star_cd551514'), zlabel: loc('star_cd551514') },
     // CD-53 570.
     // M1.5V, 0.482 solar radii, 43.07 ly.
-    cd53570: { hex: '8cf', x: 23445.477, y: -1524578.841, z: -2257295.41, dist: 2724017.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd53570'), zlabel: loc('star_cd53570') },
+    cd53570: { hex: '8cf', x: 23445.477, y: -1524578.841, z: -2257295.41, dist: 2724017.8, orbit: -2, size: 1.428, startype: 'M', lum: 0.03895, mass: 0.56, label: loc('star_cd53570'), zlabel: loc('star_cd53570') },
     // HD 166348.
     // M0V, 0.588 solar radii, 43.08 ly.
-    hd166348: { hex: '8d8', x: 2625681.677, y: -468151.493, z: -555507.531, dist: 2724327.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd166348'), zlabel: loc('star_hd166348') },
+    hd166348: { hex: '8d8', x: 2625681.677, y: -468151.493, z: -555507.531, dist: 2724327.2, orbit: -2, size: 1.646, startype: 'M', lum: 0.1452, mass: 1.16, label: loc('star_hd166348'), zlabel: loc('star_hd166348') },
     // BD+57 2735.
     // M1.5V, 0.482 solar radii, 43.16 ly.
-    bd572735: { hex: 'c85', x: -1001212.32, y: 2534851.856, z: -146844.359, dist: 2729370.5, orbit: -2, size: 1.389, startype: 'M', label: loc('star_bd572735'), zlabel: loc('star_bd572735') },
+    bd572735: { hex: 'c85', x: -1001212.32, y: 2534851.856, z: -146844.359, dist: 2729370.5, orbit: -2, size: 1.647, startype: 'M', lum: 0.0874, mass: 0.804, label: loc('star_bd572735'), zlabel: loc('star_bd572735') },
     // BD-07 4156.
     // M1V, 0.501 solar radii, 43.32 ly.
-    bd074156: { hex: 'a3c', x: 2314857.208, y: 80020.577, z: 1462753.24, dist: 2739455.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd074156'), zlabel: loc('star_bd074156') },
+    bd074156: { hex: 'a3c', x: 2314857.208, y: 80020.577, z: 1462753.24, dist: 2739455.1, orbit: -2, size: 1.451, startype: 'M', lum: 0.04632, mass: 0.542, label: loc('star_bd074156'), zlabel: loc('star_bd074156') },
     // BD+27 4120.
     // M1V, 0.501 solar radii, 43.44 ly.
-    bd274120: { hex: '334', x: 506340.175, y: 2560780.579, z: -855270.882, dist: 2746901.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd274120'), zlabel: loc('star_bd274120') },
+    bd274120: { hex: '334', x: 506340.175, y: 2560780.579, z: -855270.882, dist: 2746901.1, orbit: -2, size: 1.571, startype: 'M', lum: 0.06757, mass: 0.621, label: loc('star_bd274120'), zlabel: loc('star_bd274120') },
     // BD+46 1889.
     // M1.0V, 0.501 solar radii, 43.60 ly.
-    bd461889: { hex: 'cfb', x: -166940.211, y: 987323.461, z: 2569380.315, dist: 2757606.2, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd461889'), zlabel: loc('star_bd461889') },
+    bd461889: { hex: 'cfb', x: -166940.211, y: 987323.461, z: 2569380.315, dist: 2757606.2, orbit: -2, size: 1.574, startype: 'M', lum: 0.06167, mass: 0.863, label: loc('star_bd461889'), zlabel: loc('star_bd461889') },
     // EG Camelopardalis -- 2 components.
     // M0.0V, 0.588 solar radii, 43.99 ly.
-    egcamelopardalis: { hex: '6c3', x: -2415296.502, y: 1129953.691, z: 793526.248, dist: 2782110.1, orbit: -2, size: 1.534, startype: 'M', label: loc('star_egcamelopardalis'), zlabel: loc('star_egcamelopardalis') + ' A' },
+    egcamelopardalis: { hex: '6c3', x: -2415296.502, y: 1129953.691, z: 793526.248, dist: 2782110.1, orbit: -2, size: 1.582, startype: 'M', lum: 0.06783, mass: 0.582, label: loc('star_egcamelopardalis'), zlabel: loc('star_egcamelopardalis') + ' A' },
     // M4.2V, 0.274 solar radii, 43.99 ly.
-    egcamelopardalisb: { hex: '210', x: -2415724.075, y: 1128192.852, z: 794729.216, dist: 2782110.1, orbit: -2, size: 1.047, startype: 'M', zlabel: loc('star_egcamelopardalis') + ' B' },
+    egcamelopardalisb: { hex: '210', x: -2415724.075, y: 1128192.852, z: 794729.216, dist: 2782110.1, orbit: -2, size: 1.047, startype: 'M', lum: 0.007095, mass: 0.23, zlabel: loc('star_egcamelopardalis') + ' B' },
     // BD+35 2436 -- 2 components.
     // M1V, 0.501 solar radii, 44.70 ly.
-    bd352436: { hex: '6b1', x: 19851.028, y: 489946.162, z: 2783722.006, dist: 2826579.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd352436'), zlabel: loc('star_bd352436') + ' A' },
+    bd352436: { hex: '6b1', x: 19851.028, y: 489946.162, z: 2783722.006, dist: 2826579.1, orbit: -2, size: 1.416, startype: 'M', lum: 0.04074, mass: 0.382, label: loc('star_bd352436'), zlabel: loc('star_bd352436') + ' A' },
     // M3V, 0.361 solar radii, 44.70 ly.
-    bd352436b: { hex: 'b0b', x: 20093.887, y: 489930.837, z: 2783722.961, dist: 2826579.1, orbit: -2, size: 1.202, startype: 'M', zlabel: loc('star_bd352436') + ' B' },
+    bd352436b: { hex: 'b0b', x: 20093.887, y: 489930.837, z: 2783722.961, dist: 2826579.1, orbit: -2, size: 1.262, startype: 'M', lum: 0.02034, mass: 0.459, zlabel: loc('star_bd352436') + ' B' },
     // BD+36 1970.
     // M1V, 0.501 solar radii, 44.26 ly.
-    bd361970: { hex: '9e4', x: -1889085.762, y: -255311.469, z: 2049359.62, dist: 2798875.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd361970'), zlabel: loc('star_bd361970') },
+    bd361970: { hex: '9e4', x: -1889085.762, y: -255311.469, z: 2049359.62, dist: 2798875.5, orbit: -2, size: 1.416, startype: 'M', lum: 0.04074, mass: 0.527, label: loc('star_bd361970'), zlabel: loc('star_bd361970') },
     // BD+09 2636.
     // M0V, 0.588 solar radii, 44.74 ly.
-    bd092636: { hex: '496', x: 274459.033, y: -875929.709, z: 2676665.363, dist: 2829685.2, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd092636'), zlabel: loc('star_bd092636') },
+    bd092636: { hex: '496', x: 274459.033, y: -875929.709, z: 2676665.363, dist: 2829685.2, orbit: -2, size: 1.561, startype: 'M', lum: 0.07713, mass: 0.633, label: loc('star_bd092636'), zlabel: loc('star_bd092636') },
     // G 125-30.
     // M1.5V, 0.482 solar radii, 44.86 ly.
-    g12530: { hex: '829', x: 1079608.779, y: 2616762.772, z: 191650.425, dist: 2837205, orbit: -2, size: 1.389, startype: 'M', label: loc('star_g12530'), zlabel: loc('star_g12530') },
+    g12530: { hex: '829', x: 1079608.779, y: 2616762.772, z: 191650.425, dist: 2837205, orbit: -2, size: 1.344, startype: 'M', lum: 0.03457, mass: 0.399, label: loc('star_g12530'), zlabel: loc('star_g12530') },
     // BD+52 911.
     // M0.5V, 0.544 solar radii, 45.19 ly.
-    bd52911: { hex: '1d7', x: -2581516.242, y: 1175293.819, z: 349408.176, dist: 2857906.2, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd52911'), zlabel: loc('star_bd52911') },
+    bd52911: { hex: '1d7', x: -2581516.242, y: 1175293.819, z: 349408.176, dist: 2857906.2, orbit: -2, size: 1.523, startype: 'M', lum: 0.06316, mass: 0.644, label: loc('star_bd52911'), zlabel: loc('star_bd52911') },
     // HD 331161 -- 2 components.
     // M0.5V, 0.544 solar radii, 45.48 ly.
-    hd331161: { hex: '5c0', x: 1106871.762, y: 2648540.586, z: 179800.449, dist: 2876153.8, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd331161'), zlabel: loc('star_hd331161') + ' A' },
+    hd331161: { hex: '5c0', x: 1106871.762, y: 2648540.586, z: 179800.449, dist: 2876153.8, orbit: -2, size: 1.786, startype: 'M', lum: 0.1158, mass: 0.54, label: loc('star_hd331161'), zlabel: loc('star_hd331161') + ' A' },
     // M2.5V, 0.421 solar radii, 45.48 ly.
-    hd331161b: { hex: 'bb2', x: 1106890.017, y: 2648537.731, z: 179730.109, dist: 2876153.8, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd331161') + ' B' },
+    hd331161b: { hex: 'bb2', x: 1106890.017, y: 2648537.731, z: 179730.109, dist: 2876153.8, orbit: -2, size: 1.529, startype: 'M', lum: 0.04459, mass: 0.4, zlabel: loc('star_hd331161') + ' B' },
     // Ross 987.
     // M0V, 0.588 solar radii, 45.73 ly.
-    ross987: { hex: '36c', x: -2687559.091, y: 59122.999, z: 1066376.447, dist: 2891993.8, orbit: -2, size: 1.534, startype: 'M', label: loc('star_ross987'), zlabel: loc('star_ross987') },
+    ross987: { hex: '36c', x: -2687559.091, y: 59122.999, z: 1066376.447, dist: 2891993.8, orbit: -2, size: 1.604, startype: 'M', lum: 0.06443, mass: 0.477, label: loc('star_ross987'), zlabel: loc('star_ross987') },
     // HD 318327 -- 2 components.
     // M1.5, 0.482 solar radii, 46.15 ly.
-    hd318327: { hex: '2c5', x: 2913861.55, y: -134259.178, z: -89444.612, dist: 2918324, orbit: -2, size: 1.389, startype: 'M', label: loc('star_hd318327'), zlabel: loc('star_hd318327') + ' A' },
+    hd318327: { hex: '2c5', x: 2913861.55, y: -134259.178, z: -89444.612, dist: 2918324, orbit: -2, size: 1.489, startype: 'M', lum: 0.05192, mass: 0.627, label: loc('star_hd318327'), zlabel: loc('star_hd318327') + ' A' },
     // M2.5, 0.421 solar radii, 46.15 ly.
-    hd318327b: { hex: 'a0b', x: 2913861.44, y: -134093.963, z: -89695.687, dist: 2918324, orbit: -2, size: 1.298, startype: 'M', zlabel: loc('star_hd318327') + ' B' },
+    hd318327b: { hex: 'a0b', x: 2913861.44, y: -134093.963, z: -89695.687, dist: 2918324, orbit: -2, size: 1.298, startype: 'M', lum: 0.01676, mass: 0.4, zlabel: loc('star_hd318327') + ' B' },
     // BD+67 552.
     // M0.5V, 0.544 solar radii, 46.19 ly.
-    bd67552: { hex: '713', x: -2028751.795, y: 1272183.251, z: 1672344.609, dist: 2920791.1, orbit: -2, size: 1.475, startype: 'M', label: loc('star_bd67552'), zlabel: loc('star_bd67552') },
+    bd67552: { hex: '713', x: -2028751.795, y: 1272183.251, z: 1672344.609, dist: 2920791.1, orbit: -2, size: 1.475, startype: 'M', lum: 0.0537, mass: 0.41, label: loc('star_bd67552'), zlabel: loc('star_bd67552') },
     // BD-02 2198.
     // M1.0V, 0.501 solar radii, 46.41 ly.
-    bd022198: { hex: 'd61', x: -2195457.342, y: -1899383.62, z: 432666.199, dist: 2935113.5, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd022198'), zlabel: loc('star_bd022198') },
+    bd022198: { hex: 'd61', x: -2195457.342, y: -1899383.62, z: 432666.199, dist: 2935113.5, orbit: -2, size: 1.602, startype: 'M', lum: 0.07799, mass: 0.752, label: loc('star_bd022198'), zlabel: loc('star_bd022198') },
     // G 226-66.
     // M1V, 0.501 solar radii, 46.67 ly.
-    g22666: { hex: 'db8', x: -32994.481, y: 2486291.347, z: 1589586.11, dist: 2951189.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_g22666'), zlabel: loc('star_g22666') },
+    g22666: { hex: 'db8', x: -32994.481, y: 2486291.347, z: 1589586.11, dist: 2951189.1, orbit: -2, size: 1.545, startype: 'M', lum: 0.06906, mass: 0.622, label: loc('star_g22666'), zlabel: loc('star_g22666') },
     // CPD-58 7400.
     // M1V, 0.501 solar radii, 46.89 ly.
-    cpd587400: { hex: 'eef', x: 2559186.407, y: -1095173.114, z: -1021646.776, dist: 2965232.1, orbit: -2, size: 1.416, startype: 'M', label: loc('star_cpd587400'), zlabel: loc('star_cpd587400') },
+    cpd587400: { hex: 'eef', x: 2559186.407, y: -1095173.114, z: -1021646.776, dist: 2965232.1, orbit: -2, size: 1.992, startype: 'M', lum: 0.1342, mass: 0.5, label: loc('star_cpd587400'), zlabel: loc('star_cpd587400') },
     // HD 23453.
     // M1V, 0.501 solar radii, 46.92 ly.
-    hd23453: { hex: '2b2', x: -2655392.537, y: 715095.063, z: -1114438.861, dist: 2967228.4, orbit: -2, size: 1.416, startype: 'M', label: loc('star_hd23453'), zlabel: loc('star_hd23453') },
+    hd23453: { hex: '2b2', x: -2655392.537, y: 715095.063, z: -1114438.861, dist: 2967228.4, orbit: -2, size: 1.416, startype: 'M', lum: 0.04074, mass: 0.418, label: loc('star_hd23453'), zlabel: loc('star_hd23453') },
     // CD-38 1058.
     // M1.5V, 0.482 solar radii, 47.01 ly.
-    cd381058: { hex: 'a04', x: -720047.571, y: -1373050.184, z: -2536319.646, dist: 2972650.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd381058'), zlabel: loc('star_cd381058') },
+    cd381058: { hex: 'a04', x: -720047.571, y: -1373050.184, z: -2536319.646, dist: 2972650.8, orbit: -2, size: 1.238, startype: 'M', lum: 0.02126, mass: 0.47, label: loc('star_cd381058'), zlabel: loc('star_cd381058') },
     // HD 184489.
     // M0V, 0.588 solar radii, 47.09 ly.
-    hd184489: { hex: 'e91', x: 2194424.082, y: 1976084.839, z: -386884.625, dist: 2978269.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd184489'), zlabel: loc('star_hd184489') },
+    hd184489: { hex: 'e91', x: 2194424.082, y: 1976084.839, z: -386884.625, dist: 2978269.3, orbit: -2, size: 2.648, startype: 'M', lum: 0.7483, mass: 5.49, label: loc('star_hd184489'), zlabel: loc('star_hd184489') },
     // CD-36 2458.
     // M1.5V, 0.482 solar radii, 47.29 ly.
-    cd362458: { hex: '353', x: -1251262.844, y: -2329622.595, z: -1396755.427, dist: 2990606.3, orbit: -2, size: 1.389, startype: 'M', label: loc('star_cd362458'), zlabel: loc('star_cd362458') },
+    cd362458: { hex: '353', x: -1251262.844, y: -2329622.595, z: -1396755.427, dist: 2990606.3, orbit: -2, size: 1.517, startype: 'M', lum: 0.05121, mass: 0.695, label: loc('star_cd362458'), zlabel: loc('star_cd362458') },
     // HD 216133.
     // M0.5V, 0.544 solar radii, 47.32 ly.
-    hd216133: { hex: '70a', x: 799657.675, y: 1519494.357, z: -2450703.815, dist: 2992367.7, orbit: -2, size: 1.475, startype: 'M', label: loc('star_hd216133'), zlabel: loc('star_hd216133') },
+    hd216133: { hex: '70a', x: 799657.675, y: 1519494.357, z: -2450703.815, dist: 2992367.7, orbit: -2, size: 1.54, startype: 'M', lum: 0.07312, mass: 0.643, label: loc('star_hd216133'), zlabel: loc('star_hd216133') },
     // Wolf 1421.
     // M1.5V, 0.482 solar radii, 47.94 ly.
-    wolf1421: { hex: 'b8d', x: -2650186.995, y: -976665.126, z: 1102065.022, dist: 3031816.8, orbit: -2, size: 1.389, startype: 'M', label: loc('star_wolf1421'), zlabel: loc('star_wolf1421') },
+    wolf1421: { hex: 'b8d', x: -2650186.995, y: -976665.126, z: 1102065.022, dist: 3031816.8, orbit: -2, size: 1.242, startype: 'M', lum: 0.02194, mass: 0.0351, label: loc('star_wolf1421'), zlabel: loc('star_wolf1421') },
     // HD 19305.
     // M0V, 0.588 solar radii, 48.01 ly.
-    hd19305: { hex: 'e80', x: -2090868.078, y: 126819.842, z: -2197988.835, dist: 3036275.3, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd19305'), zlabel: loc('star_hd19305') },
+    hd19305: { hex: 'e80', x: -2090868.078, y: 126819.842, z: -2197988.835, dist: 3036275.3, orbit: -2, size: 1.667, startype: 'M', lum: 0.1215, mass: 0.734, label: loc('star_hd19305'), zlabel: loc('star_hd19305') },
     // HD 150848.
     // M0V, 0.588 solar radii, 48.51 ly.
-    hd150848: { hex: 'a52', x: 2950401.455, y: -807179.335, z: 236173.074, dist: 3067928.4, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd150848'), zlabel: loc('star_hd150848') },
+    hd150848: { hex: 'a52', x: 2950401.455, y: -807179.335, z: 236173.074, dist: 3067928.4, orbit: -2, size: 1.567, startype: 'M', lum: 0.07461, mass: 0.57, label: loc('star_hd150848'), zlabel: loc('star_hd150848') },
     // BD+48 1829.
     // M1V, 0.501 solar radii, 48.79 ly.
-    bd481829: { hex: '8ba', x: -1896559.588, y: 377881.143, z: 2404574.569, dist: 3085727, orbit: -2, size: 1.416, startype: 'M', label: loc('star_bd481829'), zlabel: loc('star_bd481829') },
+    bd481829: { hex: '8ba', x: -1896559.588, y: 377881.143, z: 2404574.569, dist: 3085727, orbit: -2, size: 1.729, startype: 'M', lum: 0.1004, mass: 0.975, label: loc('star_bd481829'), zlabel: loc('star_bd481829') },
     // BD+02 1729.
     // M0.0V, 0.588 solar radii, 49.17 ly.
-    bd021729: { hex: 'c33', x: -2448320.563, y: -1810766.125, z: 628314.974, dist: 3109329.1, orbit: -2, size: 1.534, startype: 'M', label: loc('star_bd021729'), zlabel: loc('star_bd021729') },
+    bd021729: { hex: 'c33', x: -2448320.563, y: -1810766.125, z: 628314.974, dist: 3109329.1, orbit: -2, size: 1.581, startype: 'M', lum: 0.08863, mass: 0.622, label: loc('star_bd021729'), zlabel: loc('star_bd021729') },
     // YY Geminorum.
     // M0.5VeFe-2, 0.544 solar radii, 49.19 ly.
-    yygeminorum: { hex: '4d1', x: -2849894.148, y: -373282.104, z: 1189281.572, dist: 3110567, orbit: -2, size: 1.475, startype: 'M', label: loc('star_yygeminorum'), zlabel: loc('star_yygeminorum') },
+    yygeminorum: { hex: '4d1', x: -2849894.148, y: -373282.104, z: 1189281.572, dist: 3110567, orbit: -2, size: 1.265, startype: 'M', lum: 0.02787, mass: 0.185, label: loc('star_yygeminorum'), zlabel: loc('star_yygeminorum') },
     // HD 229793.
     // M0V, 0.588 solar radii, 49.60 ly.
-    hd229793: { hex: 'acc', x: 2088663.87, y: 2305108.972, z: 403366.455, dist: 3136678, orbit: -2, size: 1.534, startype: 'M', label: loc('star_hd229793'), zlabel: loc('star_hd229793') },
+    hd229793: { hex: 'acc', x: 2088663.87, y: 2305108.972, z: 403366.455, dist: 3136678, orbit: -2, size: 1.541, startype: 'M', lum: 0.06892, mass: 0.659, label: loc('star_hd229793'), zlabel: loc('star_hd229793') },
     // LP 905-56.
     // M1.5V, 0.482 solar radii, 49.97 ly.
-    lp90556: { hex: '94e', x: 164877.747, y: -2866383.723, z: 1320882.318, dist: 3160390.9, orbit: -2, size: 1.389, startype: 'M', label: loc('star_lp90556'), zlabel: loc('star_lp90556') },
+    lp90556: { hex: '94e', x: 164877.747, y: -2866383.723, z: 1320882.318, dist: 3160390.9, orbit: -2, size: 1.299, startype: 'M', lum: 0.03006, mass: 0.47, label: loc('star_lp90556'), zlabel: loc('star_lp90556') },
     // --- the stars of the twelve zodiac constellations ----------------------------------------
     // Deneb Algedi — Capricornus.
     // A5mF2 (IV), V 2.85, 1.44 solar radii, 38.7 ly.
-    denebalgedi: { hex: '82e', x: 1346798.67, y: 1037219.997, z: -1761072.518, dist: 2447665.9, orbit: -2, size: 2.399, startype: 'A', label: loc('star_denebalgedi'), zlabel: loc('star_denebalgedi') },
+    denebalgedi: { hex: '82e', x: 1346798.67, y: 1037219.997, z: -1761072.518, dist: 2447665.9, orbit: -2, size: 2.581, startype: 'A', lum: 7.105, mass: 1.01, label: loc('star_denebalgedi'), zlabel: loc('star_denebalgedi') },
     // Castor — Gemini.
     // A2Vm, V 1.58, 2.97 solar radii, 50.9 ly.
-    castor: { hex: 'cf5', x: -2947390.694, y: -384933.192, z: 1229990.644, dist: 3216856, orbit: -2, size: 3.446, startype: 'A', label: loc('star_castor'), zlabel: loc('star_castor') },
+    castor: { hex: 'cf5', x: -2947390.694, y: -384933.192, z: 1229990.644, dist: 3216856, orbit: -2, size: 3.263, startype: 'A', lum: 51.27, mass: 2.41, label: loc('star_castor'), zlabel: loc('star_castor') },
     // Zosma — Leo.
     // A4V, V 2.56, 2.42 solar radii, 58.4 ly.
-    zosma: { hex: '3f7', x: -1041949.993, y: -1014223.215, z: 3397061.667, dist: 3695177.5, orbit: -2, size: 3.108, startype: 'A', label: loc('star_zosma'), zlabel: loc('star_zosma') },
+    zosma: { hex: '3f7', x: -1041949.993, y: -1014223.215, z: 3397061.667, dist: 3695177.5, orbit: -2, size: 3.015, startype: 'A', lum: 19.83, mass: 0.989, label: loc('star_zosma'), zlabel: loc('star_zosma') },
     // Sheratan — Aries.
     // A5V..., V 2.64, 2.40 solar radii, 58.7 ly.
-    sheratan: { hex: 'b67', x: -2257315.881, y: 1748146.232, z: -2368779.418, dist: 3709798.7, orbit: -2, size: 3.1, startype: 'A', label: loc('star_sheratan'), zlabel: loc('star_sheratan') },
+    sheratan: { hex: 'b67', x: -2257315.881, y: 1748146.232, z: -2368779.418, dist: 3709798.7, orbit: -2, size: 2.964, startype: 'A', lum: 20.72, mass: 1.11, label: loc('star_sheratan'), zlabel: loc('star_sheratan') },
     // Alzirr — Gemini.
     // F5IV, V 3.35, 2.68 solar radii, 58.7 ly.
-    alzirr: { hex: 'e0f', x: -3461197.74, y: -1310575.384, z: 291431.357, dist: 3712469.5, orbit: -2, size: 3.271, startype: 'F', label: loc('star_alzirr'), zlabel: loc('star_alzirr') },
+    alzirr: { hex: 'e0f', x: -3461197.74, y: -1310575.384, z: 291431.357, dist: 3712469.5, orbit: -2, size: 3.199, startype: 'F', lum: 10.4, mass: 1.47, label: loc('star_alzirr'), zlabel: loc('star_alzirr') },
     // Chi Cancri — Cancer.
     // F6V, V 5.13, 1.28 solar radii, 59.6 ly.
-    chicancri: { hex: '604', x: -3125910.251, y: -883545.266, z: 1910932.618, dist: 3768770.4, orbit: -2, size: 2.262, startype: 'F', label: loc('star_chicancri'), zlabel: loc('star_chicancri') },
+    chicancri: { hex: '604', x: -3125910.251, y: -883545.266, z: 1910932.618, dist: 3768770.4, orbit: -2, size: 2.332, startype: 'F', lum: 2.692, mass: 1.2, label: loc('star_chicancri'), zlabel: loc('star_chicancri') },
     // Mu Virginis — Virgo.
     // F2III, V 3.87, 1.96 solar radii, 59.6 ly.
-    muvirginis: { hex: 'cf0', x: 2474554.834, y: -591742.084, z: 2780296.798, dist: 3768770.4, orbit: -2, size: 2.799, startype: 'F', label: loc('star_muvirginis'), zlabel: loc('star_muvirginis') },
+    muvirginis: { hex: 'cf0', x: 2474554.834, y: -591742.084, z: 2780296.798, dist: 3768770.4, orbit: -2, size: 2.438, startype: 'F', lum: 5.058, mass: 1.01, label: loc('star_muvirginis'), zlabel: loc('star_muvirginis') },
     // Wasat — Gemini.
     // F0IV..., V 3.5, 2.09 solar radii, 60.5 ly.
-    wasat: { hex: '4e5', x: -3535728.862, y: -1012845.775, z: 1046657.613, dist: 3823967.5, orbit: -2, size: 2.89, startype: 'F', label: loc('star_wasat'), zlabel: loc('star_wasat') },
+    wasat: { hex: '4e5', x: -3535728.862, y: -1012845.775, z: 1046657.613, dist: 3823967.5, orbit: -2, size: 2.917, startype: 'F', lum: 9.275, mass: 0.79, label: loc('star_wasat'), zlabel: loc('star_wasat') },
     // Larawag — Scorpius.
     // K2IIIb, V 2.29, 8.72 solar radii, 63.7 ly.
-    larawag: { hex: 'd36', x: 3926946.854, y: -776665.14, z: 460343.008, dist: 4029396.5, orbit: -2, size: 5.905, startype: 'KIII', label: loc('star_larawag'), zlabel: loc('star_larawag') },
+    larawag: { hex: 'd36', x: 3926946.854, y: -776665.14, z: 460343.008, dist: 4029396.5, orbit: -2, size: 6.941, startype: 'KIII', lum: 55.45, mass: 1.64, label: loc('star_larawag'), zlabel: loc('star_larawag') },
     // Hamal — Aries.
     // K2III, V 2.01, 10.24 solar radii, 65.8 ly.
-    hamal: { hex: '61d', x: -2736666.313, y: 1946449.882, z: -2458368.761, dist: 4161921, orbit: -2, size: 6.401, startype: 'KIII', label: loc('star_hamal'), zlabel: loc('star_hamal') },
+    hamal: { hex: '61d', x: -2736666.313, y: 1946449.882, z: -2458368.761, dist: 4161921, orbit: -2, size: 7.617, startype: 'KIII', lum: 78, mass: 1.93, label: loc('star_hamal'), zlabel: loc('star_hamal') },
     // Aldebaran — Taurus.
     // K5III, V 0.87, 27.43 solar radii, 66.6 ly.
-    aldebaran: { hex: '44b', x: -3953624.047, y: -67037.968, z: -1458632.581, dist: 4214646.6, orbit: -2, size: 10.475, startype: 'KIII', label: loc('star_aldebaran'), zlabel: loc('star_aldebaran') },
+    aldebaran: { hex: '44b', x: -3953624.047, y: -67037.968, z: -1458632.581, dist: 4214646.6, orbit: -2, size: 13.431, startype: 'KIII', lum: 439, mass: 1.16, label: loc('star_aldebaran'), zlabel: loc('star_aldebaran') },
     // Syrma — Virgo.
     // F7V, V 4.07, 2.60 solar radii, 72.5 ly.
-    syrma: { hex: '8c1', x: 2667656.084, y: -1091831.83, z: 3567844.753, dist: 4586720.2, orbit: -2, size: 3.224, startype: 'F', label: loc('star_syrma'), zlabel: loc('star_syrma') },
+    syrma: { hex: '8c1', x: 2667656.084, y: -1091831.83, z: 3567844.753, dist: 4586720.2, orbit: -2, size: 3.141, startype: 'F', lum: 7.913, mass: 1.4, label: loc('star_syrma'), zlabel: loc('star_syrma') },
     // Eta Scorpii — Scorpius.
     // F3p, V 3.32, 3.18 solar radii, 73.5 ly.
-    etascorpii: { hex: 'e37', x: 4471100.421, y: -1251297.394, z: -186747.688, dist: 4646650.3, orbit: -2, size: 3.568, startype: 'F', label: loc('star_etascorpii'), zlabel: loc('star_etascorpii') },
+    etascorpii: { hex: 'e37', x: 4471100.421, y: -1251297.394, z: -186747.688, dist: 4646650.3, orbit: -2, size: 3.49, startype: 'F', lum: 15.08, mass: 0.811, label: loc('star_etascorpii'), zlabel: loc('star_etascorpii') },
     // Heze — Virgo.
     // A3V, V 3.38, 1.95 solar radii, 74.1 ly.
-    heze: { hex: 'a6a', x: 1901875.662, y: -1319517.94, z: 4072789.711, dist: 4684642.4, orbit: -2, size: 2.792, startype: 'A', label: loc('star_heze'), zlabel: loc('star_heze') },
+    heze: { hex: 'a6a', x: 1901875.662, y: -1319517.94, z: 4072789.711, dist: 4684642.4, orbit: -2, size: 2.832, startype: 'A', lum: 17.86, mass: 1.93, label: loc('star_heze'), zlabel: loc('star_heze') },
     // Zubenelgenubi — Libra.
     // A3IV, V 2.75, 2.67 solar radii, 75.8 ly.
-    zubenelgenubi: { hex: 'c3e', x: 3556432.491, y: -1271555.798, z: 2951726.217, dist: 4793511.6, orbit: -2, size: 3.266, startype: 'A', label: loc('star_zubenelgenubi'), zlabel: loc('star_zubenelgenubi') },
+    zubenelgenubi: { hex: 'c3e', x: 3556432.491, y: -1271555.798, z: 2951726.217, dist: 4793511.6, orbit: -2, size: 3.353, startype: 'A', lum: 31.06, mass: 2.14, label: loc('star_zubenelgenubi'), zlabel: loc('star_zubenelgenubi') },
     // Kaus Borealis — Sagittarius.
     // K1IIIb, V 2.82, 8.04 solar radii, 78.2 ly.
-    kausborealis: { hex: '176', x: 4868193.15, y: 654809.254, z: -561536.432, dist: 4944027, orbit: -2, size: 5.671, startype: 'KIII', label: loc('star_kausborealis'), zlabel: loc('star_kausborealis') },
+    kausborealis: { hex: '176', x: 4868193.15, y: 654809.254, z: -561536.432, dist: 4944027, orbit: -2, size: 6.22, startype: 'KIII', lum: 43.08, mass: 2.2, label: loc('star_kausborealis'), zlabel: loc('star_kausborealis') },
     // Regulus — Leo.
     // B7V, V 1.36, 3.18 solar radii, 79.3 ly.
-    regulus: { hex: '606', x: -2270732.666, y: -2386821.34, z: 3781079.107, dist: 5014947.9, orbit: -2, size: 3.566, startype: 'B', label: loc('star_regulus'), zlabel: loc('star_regulus') },
+    regulus: { hex: '606', x: -2270732.666, y: -2386821.34, z: 3781079.107, dist: 5014947.9, orbit: -2, size: 3.516, startype: 'B', lum: 316, mass: 3.8, label: loc('star_regulus'), zlabel: loc('star_regulus') },
     // Ascella — Sagittarius.
     // A3IV, V 2.6, 3.32 solar radii, 88.2 ly.
-    ascella: { hex: '9b1', x: 5340386.27, y: 640612.689, z: -1476843.79, dist: 5577739.5, orbit: -2, size: 3.646, startype: 'A', label: loc('star_ascella'), zlabel: loc('star_ascella') },
+    ascella: { hex: '9b1', x: 5340386.27, y: 640612.689, z: -1476843.79, dist: 5577739.5, orbit: -2, size: 3.57, startype: 'A', lum: 53.22, mass: 2.94, label: loc('star_ascella'), zlabel: loc('star_ascella') },
     // Zeta1 Aquarii — Aquarius.
     // F3III-IV, V 3.65, 3.42 solar radii, 91.9 ly.
-    zeta1aquarii: { hex: '15e', x: 1673033.688, y: 3646468.087, z: -4202801.278, dist: 5810276.2, orbit: -2, size: 3.698, startype: 'F', label: loc('star_zeta1aquarii'), zlabel: loc('star_zeta1aquarii') },
+    zeta1aquarii: { hex: '15e', x: 1673033.688, y: 3646468.087, z: -4202801.278, dist: 5810276.2, orbit: -2, size: 2.979, startype: 'F', lum: 9.592, mass: 1.46, label: loc('star_zeta1aquarii'), zlabel: loc('star_zeta1aquarii') },
     // Alnasl — Sagittarius.
     // K0III, V 2.98, 8.77 solar radii, 96.9 ly.
-    alnasl: { hex: '38b', x: 6106080.938, y: 97950.9, z: -484691.066, dist: 6126070.9, orbit: -2, size: 5.921, startype: 'KIII', label: loc('star_alnasl'), zlabel: loc('star_alnasl') },
+    alnasl: { hex: '38b', x: 6106080.938, y: 97950.9, z: -484691.066, dist: 6126070.9, orbit: -2, size: 6.751, startype: 'KIII', lum: 62.07, mass: 2.48, label: loc('star_alnasl'), zlabel: loc('star_alnasl') },
     // Lambda Geminorum — Gemini.
     // A3V..., V 3.58, 2.42 solar radii, 100.9 ly.
-    lambdageminorum: { hex: '73f', x: -5801429.318, y: -2217289.956, z: 1459865.978, dist: 6379981.6, orbit: -2, size: 3.112, startype: 'A', label: loc('star_lambdageminorum'), zlabel: loc('star_lambdageminorum') },
+    lambdageminorum: { hex: '73f', x: -5801429.318, y: -2217289.956, z: 1459865.978, dist: 6379981.6, orbit: -2, size: 3.185, startype: 'A', lum: 25.19, mass: 1.18, label: loc('star_lambdageminorum'), zlabel: loc('star_lambdageminorum') },
     // Omega Piscium — Pisces.
     // F4IV, V 4.03, 3.35 solar radii, 104.3 ly.
-    omegapiscium: { hex: 'b8b', x: -723791.429, y: 3834734.551, z: -5320650.537, dist: 6598362.3, orbit: -2, size: 3.658, startype: 'F', label: loc('star_omegapiscium'), zlabel: loc('star_omegapiscium') },
+    omegapiscium: { hex: 'b8b', x: -723791.429, y: 3834734.551, z: -5320650.537, dist: 6598362.3, orbit: -2, size: 2.476, startype: 'F', lum: 4.169, mass: 0.43, label: loc('star_omegapiscium'), zlabel: loc('star_omegapiscium') },
     // Algedi — Capricornus.
     // G6/G8III, V 3.58, 6.20 solar radii, 105.8 ly.
-    algedi: { hex: 'fc5', x: 5201896.594, y: 3137586.905, z: -2808242.506, dist: 6692563.5, orbit: -2, size: 4.98, startype: 'G', label: loc('star_algedi'), zlabel: loc('star_algedi') },
+    algedi: { hex: 'fc5', x: 5201896.594, y: 3137586.905, z: -2808242.506, dist: 6692563.5, orbit: -2, size: 5.735, startype: 'G', lum: 37.78, mass: 1.56, label: loc('star_algedi'), zlabel: loc('star_algedi') },
     // Lambda Piscium — Pisces.
     // A7V, V 4.49, 2.02 solar radii, 106.6 ly.
-    lambdapiscium: { hex: '89e', x: -9437.473, y: 3710985.368, z: -5629829.155, dist: 6742883.5, orbit: -2, size: 2.843, startype: 'A', label: loc('star_lambdapiscium'), zlabel: loc('star_lambdapiscium') },
+    lambdapiscium: { hex: '89e', x: -9437.473, y: 3710985.368, z: -5629829.155, dist: 6742883.5, orbit: -2, size: 2.714, startype: 'A', lum: 10.98, mass: 0.578, label: loc('star_lambdapiscium'), zlabel: loc('star_lambdapiscium') },
     // Alhena — Gemini.
     // A0IV, V 1.93, 4.77 solar radii, 109.3 ly.
-    alhena: { hex: '6f8', x: -6598286.392, y: -1988805.849, z: 536638.763, dist: 6912359.5, orbit: -2, size: 4.367, startype: 'A', label: loc('star_alhena'), zlabel: loc('star_alhena') },
+    alhena: { hex: '6f8', x: -6598286.392, y: -1988805.849, z: 536638.763, dist: 6912359.5, orbit: -2, size: 4.435, startype: 'A', lum: 160.2, mass: 3.51, label: loc('star_alhena'), zlabel: loc('star_alhena') },
     // Vindemiatrix — Virgo.
     // G8IIIvar, V 2.85, 9.49 solar radii, 109.6 ly.
-    vindemiatrix: { hex: 'd35', x: 1314998.937, y: -1443781.722, z: 6650129.032, dist: 6930941.1, orbit: -2, size: 6.163, startype: 'G', label: loc('star_vindemiatrix'), zlabel: loc('star_vindemiatrix') },
+    vindemiatrix: { hex: 'd35', x: 1314998.937, y: -1443781.722, z: 6650129.032, dist: 6930941.1, orbit: -2, size: 6.929, startype: 'G', lum: 80.47, mass: 3.39, label: loc('star_vindemiatrix'), zlabel: loc('star_vindemiatrix') },
     // Iota Geminorum — Gemini.
     // G9III+..., V 3.78, 7.11 solar radii, 120.4 ly.
-    iotageminorum: { hex: '3d1', x: -7056507.09, y: -1352000.114, z: 2511750.622, dist: 7611247.5, orbit: -2, size: 5.334, startype: 'G', label: loc('star_iotageminorum'), zlabel: loc('star_iotageminorum') },
+    iotageminorum: { hex: '3d1', x: -7056507.09, y: -1352000.114, z: 2511750.622, dist: 7611247.5, orbit: -2, size: 6.16, startype: 'G', lum: 42.29, mass: 1.22, label: loc('star_iotageminorum'), zlabel: loc('star_iotageminorum') },
     // Tau Sagittarii — Sagittarius.
     // K1/K2III, V 3.32, 9.94 solar radii, 121.6 ly.
-    tausagittarii: { hex: 'd77', x: 7317503.924, y: 1202820.018, z: -2038224.684, dist: 7690708.7, orbit: -2, size: 6.304, startype: 'KIII', label: loc('star_tausagittarii'), zlabel: loc('star_tausagittarii') },
+    tausagittarii: { hex: 'd77', x: 7317503.924, y: 1202820.018, z: -2038224.684, dist: 7690708.7, orbit: -2, size: 7.632, startype: 'KIII', lum: 76.28, mass: 3.46, label: loc('star_tausagittarii'), zlabel: loc('star_tausagittarii') },
     // Rasalas — Leo.
     // K0III, V 3.88, 7.42 solar radii, 124.1 ly.
-    rasalas: { hex: '253', x: -4583636.848, y: -2045095.342, z: 6034113.802, dist: 7848736.9, orbit: -2, size: 5.448, startype: 'KIII', label: loc('star_rasalas'), zlabel: loc('star_rasalas') },
+    rasalas: { hex: '253', x: -4583636.848, y: -2045095.342, z: 6034113.802, dist: 7848736.9, orbit: -2, size: 6.866, startype: 'KIII', lum: 51.01, mass: 1.33, label: loc('star_rasalas'), zlabel: loc('star_rasalas') },
     // Rho1 Sagittarii — Sagittarius.
     // F0III/IV, V 3.92, 3.61 solar radii, 127.0 ly.
-    rho1sagittarii: { hex: 'a58', x: 7300209.655, y: 2665376.8, z: -2016784.319, dist: 8028992.1, orbit: -2, size: 3.801, startype: 'F', label: loc('star_rho1sagittarii'), zlabel: loc('star_rho1sagittarii') },
+    rho1sagittarii: { hex: 'a58', x: 7300209.655, y: 2665376.8, z: -2016784.319, dist: 8028992.1, orbit: -2, size: 3.525, startype: 'F', lum: 28.42, mass: 1.31, label: loc('star_rho1sagittarii'), zlabel: loc('star_rho1sagittarii') },
     // Algieba — Leo.
     // K0III, V 2.01, 18.40 solar radii, 130.1 ly.
-    algieba: { hex: '128', x: -3823863.162, y: -2834739.446, z: 6710811.089, dist: 8227555.1, orbit: -2, size: 8.58, startype: 'KIII', label: loc('star_algieba'), zlabel: loc('star_algieba') },
+    algieba: { hex: '128', x: -3823863.162, y: -2834739.446, z: 6710811.089, dist: 8227555.1, orbit: -2, size: 1.785, startype: 'KIII', lum: 0.4074, mass: 0.86, label: loc('star_algieba'), zlabel: loc('star_algieba') },
     // Asellus Australis — Cancer.
     // K0III, V 3.94, 7.59 solar radii, 130.6 ly.
-    asellusaustralis: { hex: '205', x: -6120022.803, y: -3257544.815, z: 4484979.538, dist: 8257198, orbit: -2, size: 5.511, startype: 'KIII', label: loc('star_asellusaustralis'), zlabel: loc('star_asellusaustralis') },
+    asellusaustralis: { hex: '205', x: -6120022.803, y: -3257544.815, z: 4484979.538, dist: 8257198, orbit: -2, size: 6.618, startype: 'KIII', lum: 51.5, mass: 2.05, label: loc('star_asellusaustralis'), zlabel: loc('star_asellusaustralis') },
     // Elnath — Taurus.
     // B7III, V 1.65, 4.70 solar radii, 133.9 ly.
-    elnath: { hex: '2e6', x: -8444095.577, y: 295757.441, z: -553086.502, dist: 8467356.6, orbit: -2, size: 4.334, startype: 'B', label: loc('star_elnath'), zlabel: loc('star_elnath') },
+    elnath: { hex: '2e6', x: -8444095.577, y: 295757.441, z: -553086.502, dist: 8467356.6, orbit: -2, size: 4.47, startype: 'B', lum: 774.3, mass: 5.74, label: loc('star_elnath'), zlabel: loc('star_elnath') },
     // Arkab Posterior — Sagittarius.
     // F2III, V 4.27, 3.67 solar radii, 134.2 ly.
-    arkabposterior: { hex: '25d', x: 7691052.775, y: -905814.88, z: -3466779.714, dist: 8484771.9, orbit: -2, size: 3.83, startype: 'F', label: loc('star_arkabposterior'), zlabel: loc('star_arkabposterior') },
+    arkabposterior: { hex: '25d', x: 7691052.775, y: -905814.88, z: -3466779.714, dist: 8484771.9, orbit: -2, size: 3.735, startype: 'F', lum: 23.23, mass: 1.57, label: loc('star_arkabposterior'), zlabel: loc('star_arkabposterior') },
     // 109 Virginis — Virgo.
     // A0V, V 3.73, 2.56 solar radii, 134.5 ly.
-    virginis109: { hex: '7e9', x: 5139258.294, y: -424248.988, z: 6764323.954, dist: 8505765.2, orbit: -2, size: 3.201, startype: 'A', label: loc('star_virginis109'), zlabel: loc('star_virginis109') },
+    virginis109: { hex: '7e9', x: 5139258.294, y: -424248.988, z: 6764323.954, dist: 8505765.2, orbit: -2, size: 3.157, startype: 'A', lum: 53.63, mass: 2.16, label: loc('star_virginis109'), zlabel: loc('star_virginis109') },
     // Gamma Piscium — Pisces.
     // G7III, V 3.7, 7.82 solar radii, 138.0 ly.
-    gammapiscium: { hex: '596', x: 702603.301, y: 5322464.261, z: -6878054.491, dist: 8725245.6, orbit: -2, size: 5.594, startype: 'G', label: loc('star_gammapiscium'), zlabel: loc('star_gammapiscium') },
+    gammapiscium: { hex: '596', x: 702603.301, y: 5322464.261, z: -6878054.491, dist: 8725245.6, orbit: -2, size: 6.718, startype: 'G', lum: 63.68, mass: 1.47, label: loc('star_gammapiscium'), zlabel: loc('star_gammapiscium') },
     // Kappa Geminorum — Gemini.
     // G8III, V 3.57, 8.79 solar radii, 141.4 ly.
-    kappageminorum: { hex: '979', x: -7976249.482, y: -2264252.738, z: 3345285.441, dist: 8940823.8, orbit: -2, size: 5.93, startype: 'G', label: loc('star_kappageminorum'), zlabel: loc('star_kappageminorum') },
+    kappageminorum: { hex: '979', x: -7976249.482, y: -2264252.738, z: 3345285.441, dist: 8940823.8, orbit: -2, size: 6.632, startype: 'G', lum: 68.09, mass: 2.37, label: loc('star_kappageminorum'), zlabel: loc('star_kappageminorum') },
     // Omicron Sagittarii — Sagittarius.
     // K0III, V 3.76, 8.98 solar radii, 142.1 ly.
-    omicronsagittarii: { hex: '575', x: 8482667.694, y: 2227627.471, z: -1946317.047, dist: 8983658.8, orbit: -2, size: 5.992, startype: 'KIII', label: loc('star_omicronsagittarii'), zlabel: loc('star_omicronsagittarii') },
+    omicronsagittarii: { hex: '575', x: 8482667.694, y: 2227627.471, z: -1946317.047, dist: 8983658.8, orbit: -2, size: 6.467, startype: 'KIII', lum: 53.99, mass: 1.91, label: loc('star_omicronsagittarii'), zlabel: loc('star_omicronsagittarii') },
     // Kaus Australis — Sagittarius.
     // B9.5III, V 1.79, 6.21 solar radii, 143.3 ly.
-    kausaustralis: { hex: '676', x: 8929272.536, y: -125597.538, z: -1543716.259, dist: 9062601.3, orbit: -2, size: 4.986, startype: 'B', label: loc('star_kausaustralis'), zlabel: loc('star_kausaustralis') },
+    kausaustralis: { hex: '676', x: 8929272.536, y: -125597.538, z: -1543716.259, dist: 9062601.3, orbit: -2, size: 5.162, startype: 'B', lum: 289.6, mass: 2.75, label: loc('star_kausaustralis'), zlabel: loc('star_kausaustralis') },
     // Eta Sagittarii — Sagittarius.
     // M2III, V 3.1, 52.78 solar radii, 145.9 ly.
-    etasagittarii: { hex: '5a9', x: 9079908.211, y: -565928.243, z: -1551345.047, dist: 9228850.4, orbit: -2, size: 14.53, startype: 'M', label: loc('star_etasagittarii'), zlabel: loc('star_etasagittarii') },
+    etasagittarii: { hex: '5a9', x: 9079908.211, y: -565928.243, z: -1551345.047, dist: 9228850.4, orbit: -2, size: 14.891, startype: 'M', lum: 465.1, mass: 0.44, label: loc('star_etasagittarii'), zlabel: loc('star_etasagittarii') },
     // Ain — Taurus.
     // K0III, V 3.53, 10.30 solar radii, 146.7 ly.
-    ain: { hex: 'a27', x: -8711713.976, y: 365719.545, z: -3160471.065, dist: 9274496.7, orbit: -2, size: 6.419, startype: 'KIII', label: loc('star_ain'), zlabel: loc('star_ain') },
+    ain: { hex: 'a27', x: -8711713.976, y: 365719.545, z: -3160471.065, dist: 9274496.7, orbit: -2, size: 7.052, startype: 'KIII', lum: 81.01, mass: 2.83, label: loc('star_ain'), zlabel: loc('star_ain') },
     // Delta3 Tauri — Taurus.
     // A2IV, V 4.3, 2.48 solar radii, 148.5 ly.
-    delta3tauri: { hex: 'e50', x: -8746724.009, y: 287486.421, z: -3411148.915, dist: 9392750.7, orbit: -2, size: 3.148, startype: 'A', label: loc('star_delta3tauri'), zlabel: loc('star_delta3tauri') },
+    delta3tauri: { hex: 'e50', x: -8746724.009, y: 287486.421, z: -3411148.915, dist: 9392750.7, orbit: -2, size: 3.195, startype: 'A', lum: 34.4, mass: 2.38, label: loc('star_delta3tauri'), zlabel: loc('star_delta3tauri') },
     // Theta Piscium — Pisces.
     // K1III, V 4.27, 7.84 solar radii, 148.5 ly.
-    thetapiscium: { hex: '88e', x: 123605.253, y: 5925323.025, z: -7286908.469, dist: 9392750.7, orbit: -2, size: 5.598, startype: 'KIII', label: loc('star_thetapiscium'), zlabel: loc('star_thetapiscium') },
+    thetapiscium: { hex: '88e', x: 123605.253, y: 5925323.025, z: -7286908.469, dist: 9392750.7, orbit: -2, size: 6.207, startype: 'KIII', lum: 40.86, mass: 1.7, label: loc('star_thetapiscium'), zlabel: loc('star_thetapiscium') },
     // Psi1 Aquarii — Aquarius.
     // K0III, V 4.24, 7.59 solar radii, 149.8 ly.
-    psi1aquarii: { hex: '4ab', x: 1783288.541, y: 4215660.949, z: -8295693.809, dist: 9474727, orbit: -2, size: 5.51, startype: 'KIII', label: loc('star_psi1aquarii'), zlabel: loc('star_psi1aquarii') },
+    psi1aquarii: { hex: '4ab', x: 1783288.541, y: 4215660.949, z: -8295693.809, dist: 9474727, orbit: -2, size: 6.61, startype: 'KIII', lum: 50.53, mass: 1.58, label: loc('star_psi1aquarii'), zlabel: loc('star_psi1aquarii') },
     // Chamukuy — Taurus.
     // A7III, V 3.4, 4.71 solar radii, 150.4 ly.
-    chamukuy: { hex: '1db', x: -8816394.396, y: -53444.442, z: -3564016.402, dist: 9509672.9, orbit: -2, size: 4.339, startype: 'A', label: loc('star_chamukuy'), zlabel: loc('star_chamukuy') },
+    chamukuy: { hex: '1db', x: -8816394.396, y: -53444.442, z: -3564016.402, dist: 9509672.9, orbit: -2, size: 4.246, startype: 'A', lum: 62.52, mass: 5.25, label: loc('star_chamukuy'), zlabel: loc('star_chamukuy') },
     // Alrescha — Pisces.
     // A2, V 3.82, 3.13 solar radii, 150.6 ly.
-    alrescha: { hex: '522', x: -4889900.221, y: 2243843.037, z: -7857391.836, dist: 9522844.2, orbit: -2, size: 3.54, startype: 'A', label: loc('star_alrescha'), zlabel: loc('star_alrescha') },
+    alrescha: { hex: '522', x: -4889900.221, y: 2243843.037, z: -7857391.836, dist: 9522844.2, orbit: -2, size: 3.54, startype: 'A', lum: 46.16, mass: 2.18, label: loc('star_alrescha'), zlabel: loc('star_alrescha') },
     // Kappa Piscium — Pisces.
     // A0p, V 4.95, 1.67 solar radii, 153.5 ly.
-    kappapiscium: { hex: '15d', x: 588826.609, y: 5524736.394, z: -7959161.322, dist: 9706579.1, orbit: -2, size: 2.582, startype: 'A', label: loc('star_kappapiscium'), zlabel: loc('star_kappapiscium') },
+    kappapiscium: { hex: '15d', x: 588826.609, y: 5524736.394, z: -7959161.322, dist: 9706579.1, orbit: -2, size: 2.77, startype: 'A', lum: 36.3, mass: 0.689, label: loc('star_kappapiscium'), zlabel: loc('star_kappapiscium') },
     // 1 Geminorum — Gemini.
     // G7III, V 4.16, 7.12 solar radii, 155.1 ly.
-    geminorum1: { hex: '991', x: -9734413.546, y: -1193925.722, z: 122440.912, dist: 9808122, orbit: -2, size: 5.335, startype: 'G', label: loc('star_geminorum1'), zlabel: loc('star_geminorum1') },
+    geminorum1: { hex: '991', x: -9734413.546, y: -1193925.722, z: 122440.912, dist: 9808122, orbit: -2, size: 5.799, startype: 'G', lum: 43.94, mass: 3.9, label: loc('star_geminorum1'), zlabel: loc('star_geminorum1') },
     // Secunda Hyadum — Taurus.
     // G8III, V 3.77, 8.82 solar radii, 155.6 ly.
-    secundahyadum: { hex: 'c87', x: -9118266.319, y: 316001.613, z: -3687851.007, dist: 9840878.1, orbit: -2, size: 5.941, startype: 'G', label: loc('star_secundahyadum'), zlabel: loc('star_secundahyadum') },
+    secundahyadum: { hex: 'c87', x: -9118266.319, y: 316001.613, z: -3687851.007, dist: 9840878.1, orbit: -2, size: 6.682, startype: 'G', lum: 69.11, mass: 2.33, label: loc('star_secundahyadum'), zlabel: loc('star_secundahyadum') },
     // Nashira — Capricornus.
     // A7III:mp..., V 3.69, 4.30 solar radii, 157.0 ly.
-    nashira: { hex: 'e9e', x: 5713596.483, y: 4150864.604, z: -6981971.463, dist: 9930900.6, orbit: -2, size: 4.147, startype: 'A', label: loc('star_nashira'), zlabel: loc('star_nashira') },
+    nashira: { hex: 'e9e', x: 5713596.483, y: 4150864.604, z: -6981971.463, dist: 9930900.6, orbit: -2, size: 4.288, startype: 'A', lum: 60.87, mass: 2.17, label: loc('star_nashira'), zlabel: loc('star_nashira') },
     // Skat — Aquarius.
     // A3V, V 3.27, 4.45 solar radii, 160.6 ly.
-    skat: { hex: 'bf6', x: 3225757.957, y: 3787464.056, z: -8853834.385, dist: 10155825, orbit: -2, size: 4.217, startype: 'A', label: loc('star_skat'), zlabel: loc('star_skat') },
+    skat: { hex: 'bf6', x: 3225757.957, y: 3787464.056, z: -8853834.385, dist: 10155825, orbit: -2, size: 3.892, startype: 'A', lum: 67.8, mass: 2.39, label: loc('star_skat'), zlabel: loc('star_skat') },
     // Prima Hyadum — Taurus.
     // G8III, V 3.65, 9.68 solar radii, 161.5 ly.
-    primahyadum: { hex: 'bfa', x: -9345075.139, y: 149487.647, z: -4125250.448, dist: 10216186.5, orbit: -2, size: 6.223, startype: 'G', label: loc('star_primahyadum'), zlabel: loc('star_primahyadum') },
+    primahyadum: { hex: 'bfa', x: -9345075.139, y: 149487.647, z: -4125250.448, dist: 10216186.5, orbit: -2, size: 6.659, startype: 'G', lum: 67.55, mass: 2.25, label: loc('star_primahyadum'), zlabel: loc('star_primahyadum') },
     // Theta Capricorni — Capricornus.
     // A1V, V 4.08, 2.77 solar radii, 162.2 ly.
-    thetacapricorni: { hex: '853', x: 6971710.602, y: 4240992.292, z: -6213835.458, dist: 10256827.7, orbit: -2, size: 3.328, startype: 'A', label: loc('star_thetacapricorni'), zlabel: loc('star_thetacapricorni') },
+    thetacapricorni: { hex: '853', x: 6971710.602, y: 4240992.292, z: -6213835.458, dist: 10256827.7, orbit: -2, size: 3.121, startype: 'A', lum: 45.7, mass: 2.11, label: loc('star_thetacapricorni'), zlabel: loc('star_thetacapricorni') },
     // Zubenelhakrabi — Libra.
     // K0III, V 3.91, 9.62 solar radii, 163.2 ly.
-    zubenelhakrabi: { hex: 'b53', x: 8636186.63, y: -1288368.657, z: 5497795.462, dist: 10318399.5, orbit: -2, size: 6.204, startype: 'KIII', label: loc('star_zubenelhakrabi'), zlabel: loc('star_zubenelhakrabi') },
+    zubenelhakrabi: { hex: 'b53', x: 8636186.63, y: -1288368.657, z: 5497795.462, dist: 10318399.5, orbit: -2, size: 6.982, startype: 'KIII', lum: 68.49, mass: 2.11, label: loc('star_zubenelhakrabi'), zlabel: loc('star_zubenelhakrabi') },
     // 98 Aquarii — Aquarius.
     // K0III, V 3.96, 9.42 solar radii, 163.4 ly.
-    aquarii98: { hex: '2b8', x: 2556220.435, y: 2774222.232, z: -9620763.226, dist: 10333908.1, orbit: -2, size: 6.137, startype: 'KIII', label: loc('star_aquarii98'), zlabel: loc('star_aquarii98') },
+    aquarii98: { hex: '2b8', x: 2556220.435, y: 2774222.232, z: -9620763.226, dist: 10333908.1, orbit: -2, size: 7.583, startype: 'KIII', lum: 79.4, mass: 4.05, label: loc('star_aquarii98'), zlabel: loc('star_aquarii98') },
     // Sadachbia — Aquarius.
     // A0V, V 3.86, 2.94 solar radii, 163.7 ly.
-    sadachbia: { hex: '308', x: 3366575.536, y: 6379680.459, z: -7428647.796, dist: 10354658.9, orbit: -2, size: 3.427, startype: 'A', label: loc('star_sadachbia'), zlabel: loc('star_sadachbia') },
+    sadachbia: { hex: '308', x: 3366575.536, y: 6379680.459, z: -7428647.796, dist: 10354658.9, orbit: -2, size: 2.904, startype: 'A', lum: 48.57, mass: 1.62, label: loc('star_sadachbia'), zlabel: loc('star_sadachbia') },
     // Mesarthim — Aries.
     // A1p Si, V 3.88, 3.07 solar radii, 164.1 ly.
-    mesarthim: { hex: 'b1f', x: -6197354.593, y: 4747201.822, z: -6834305.473, dist: 10375493.3, orbit: -2, size: 3.505, startype: 'A', label: loc('star_mesarthim'), zlabel: loc('star_mesarthim') },
+    mesarthim: { hex: 'b1f', x: -6197354.593, y: 4747201.822, z: -6834305.473, dist: 10375493.3, orbit: -2, size: 3.505, startype: 'A', lum: 44.36, mass: 2.18, label: loc('star_mesarthim'), zlabel: loc('star_mesarthim') },
     // Chertan — Leo.
     // A2V, V 3.33, 4.30 solar radii, 165.1 ly.
-    chertan: { hex: '87e', x: -2545672.417, y: -3686307.341, z: 9428309.551, dist: 10438502.3, orbit: -2, size: 4.149, startype: 'A', label: loc('star_chertan'), zlabel: loc('star_chertan') },
+    chertan: { hex: '87e', x: -2545672.417, y: -3686307.341, z: 9428309.551, dist: 10438502.3, orbit: -2, size: 3.844, startype: 'A', lum: 93.32, mass: 1.77, label: loc('star_chertan'), zlabel: loc('star_chertan') },
     // Bharani — Aries.
     // B8Vn, V 3.61, 2.63 solar radii, 165.6 ly.
-    bharani: { hex: '07d', x: -8192838.874, y: 4178532.07, z: -5015547.208, dist: 10475612.3, orbit: -2, size: 3.246, startype: 'B', label: loc('star_bharani'), zlabel: loc('star_bharani') },
+    bharani: { hex: '07d', x: -8192838.874, y: 4178532.07, z: -5015547.208, dist: 10475612.3, orbit: -2, size: 3.328, startype: 'B', lum: 165, mass: 3.38, label: loc('star_bharani'), zlabel: loc('star_bharani') },
     // Eta Aquarii — Aquarius.
     // B9IV-Vn, V 4.04, 2.51 solar radii, 167.9 ly.
-    etaaquarii: { hex: '5d9', x: 2814448.214, y: 6580087.744, z: -7840684.329, dist: 10615790.3, orbit: -2, size: 3.168, startype: 'B', label: loc('star_etaaquarii'), zlabel: loc('star_etaaquarii') },
+    etaaquarii: { hex: '5d9', x: 2814448.214, y: 6580087.744, z: -7840684.329, dist: 10615790.3, orbit: -2, size: 3.197, startype: 'B', lum: 88.76, mass: 1.47, label: loc('star_etaaquarii'), zlabel: loc('star_etaaquarii') },
     // Theta Librae — Libra.
     // K0III, V 4.13, 8.98 solar radii, 168.5 ly.
-    thetalibrae: { hex: 'e96', x: 9371828.344, y: -1060304.541, z: 4955401.951, dist: 10654173.9, orbit: -2, size: 5.992, startype: 'KIII', label: loc('star_thetalibrae'), zlabel: loc('star_thetalibrae') },
+    thetalibrae: { hex: 'e96', x: 9371828.344, y: -1060304.541, z: 4955401.951, dist: 10654173.9, orbit: -2, size: 6.81, startype: 'KIII', lum: 61.39, mass: 3.99, label: loc('star_thetalibrae'), zlabel: loc('star_thetalibrae') },
     // Iota Aquarii — Aquarius.
     // B8V, V 4.29, 2.04 solar radii, 175.2 ly.
-    iotaaquarii: { hex: '478', x: 5232049.242, y: 4965958.025, z: -8407021.902, dist: 11077594.3, orbit: -2, size: 2.854, startype: 'B', label: loc('star_iotaaquarii'), zlabel: loc('star_iotaaquarii') },
+    iotaaquarii: { hex: '478', x: 5232049.242, y: 4965958.025, z: -8407021.902, dist: 11077594.3, orbit: -2, size: 3.222, startype: 'B', lum: 139.3, mass: 3.38, label: loc('star_iotaaquarii'), zlabel: loc('star_iotaaquarii') },
     // Xi Piscium — Pisces.
     // K0III SB, V 4.61, 7.65 solar radii, 179.1 ly.
-    xipiscium: { hex: '0eb', x: -5547299.293, y: 2994652.413, z: -9410665.528, dist: 11327007.5, orbit: -2, size: 5.532, startype: 'KIII', label: loc('star_xipiscium'), zlabel: loc('star_xipiscium') },
+    xipiscium: { hex: '0eb', x: -5547299.293, y: 2994652.413, z: -9410665.528, dist: 11327007.5, orbit: -2, size: 6.12, startype: 'KIII', lum: 48.47, mass: 2.79, label: loc('star_xipiscium'), zlabel: loc('star_xipiscium') },
     // Asellus Borealis — Cancer.
     // A1IV, V 4.66, 2.37 solar radii, 181.2 ly.
-    asellusborealis: { hex: '866', x: -8695293.932, y: -3901518.563, z: 6362567.88, dist: 11459155.9, orbit: -2, size: 3.078, startype: 'A', label: loc('star_asellusborealis'), zlabel: loc('star_asellusborealis') },
+    asellusborealis: { hex: '866', x: -8695293.932, y: -3901518.563, z: 6362567.88, dist: 11459155.9, orbit: -2, size: 3.05, startype: 'A', lum: 36.62, mass: 2.05, label: loc('star_asellusborealis'), zlabel: loc('star_asellusborealis') },
     // Epsilon Piscium — Pisces.
     // K0III, V 4.27, 9.08 solar radii, 181.8 ly.
-    epsilonpiscium: { hex: '370', x: -4062928.384, y: 5221355.458, z: -9403303.965, dist: 11497480.8, orbit: -2, size: 6.027, startype: 'KIII', label: loc('star_epsilonpiscium'), zlabel: loc('star_epsilonpiscium') },
+    epsilonpiscium: { hex: '370', x: -4062928.384, y: 5221355.458, z: -9403303.965, dist: 11497480.8, orbit: -2, size: 6.585, startype: 'KIII', lum: 59.31, mass: 2.01, label: loc('star_epsilonpiscium'), zlabel: loc('star_epsilonpiscium') },
     // Polis — Sagittarius.
     // B2III:, V 3.84, 4.06 solar radii, 181.8 ly.
-    polis: { hex: '79a', x: 11318276.841, y: 1996383.542, z: -321134.594, dist: 11497480.8, orbit: -2, size: 4.03, startype: 'B', label: loc('star_polis'), zlabel: loc('star_polis') },
+    polis: { hex: '79a', x: 11318276.841, y: 1996383.542, z: -321134.594, dist: 11497480.8, orbit: -2, size: 3.382, startype: 'B', lum: 154.9, mass: 3.38, label: loc('star_polis'), zlabel: loc('star_polis') },
     // Rukbat — Sagittarius.
     // B8V, V 3.96, 2.46 solar radii, 181.8 ly.
-    rukbat: { hex: '449', x: 10568026.412, y: -422317.178, z: -4508939.042, dist: 11497480.8, orbit: -2, size: 3.137, startype: 'B', label: loc('star_rukbat'), zlabel: loc('star_rukbat') },
+    rukbat: { hex: '449', x: 10568026.412, y: -422317.178, z: -4508939.042, dist: 11497480.8, orbit: -2, size: 3.252, startype: 'B', lum: 126.3, mass: 3.38, label: loc('star_rukbat'), zlabel: loc('star_rukbat') },
     // Iota Sagittarii — Sagittarius.
     // K0III, V 4.12, 9.73 solar radii, 181.8 ly.
-    iotasagittarii: { hex: 'c0b', x: 10038667.503, y: -356015.539, z: -5593788.79, dist: 11497480.8, orbit: -2, size: 6.239, startype: 'KIII', label: loc('star_iotasagittarii'), zlabel: loc('star_iotasagittarii') },
+    iotasagittarii: { hex: 'c0b', x: 10038667.503, y: -356015.539, z: -5593788.79, dist: 11497480.8, orbit: -2, size: 7.597, startype: 'KIII', lum: 90.2, mass: 1.95, label: loc('star_iotasagittarii'), zlabel: loc('star_iotasagittarii') },
     // Zubeneschamali — Libra.
     // B8V, V 2.61, 4.66 solar radii, 185.1 ly.
-    zubeneschamali: { hex: 'ed0', x: 8979565.339, y: -1258419.893, z: 7404119.1, dist: 11706288.6, orbit: -2, size: 4.32, startype: 'B', label: loc('star_zubeneschamali'), zlabel: loc('star_zubeneschamali') },
+    zubeneschamali: { hex: 'ed0', x: 8979565.339, y: -1258419.893, z: 7404119.1, dist: 11706288.6, orbit: -2, size: 4.419, startype: 'B', lum: 491.4, mass: 3.38, label: loc('star_zubeneschamali'), zlabel: loc('star_zubeneschamali') },
     // Ancha — Aquarius.
     // G8III-IV, V 4.17, 8.84 solar radii, 187.4 ly.
-    ancha: { hex: '458', x: 4659965.663, y: 6299267.881, z: -8895411.941, dist: 11854299.2, orbit: -2, size: 5.947, startype: 'G', label: loc('star_ancha'), zlabel: loc('star_ancha') },
+    ancha: { hex: '458', x: 4659965.663, y: 6299267.881, z: -8895411.941, dist: 11854299.2, orbit: -2, size: 6.731, startype: 'G', lum: 69.38, mass: 2.95, label: loc('star_ancha'), zlabel: loc('star_ancha') },
     // Acubens — Cancer.
     // A5m, V 4.26, 3.66 solar radii, 188.3 ly.
-    acubens: { hex: 'b99', x: -7980358.345, y: -5907258.444, z: 6575996.714, dist: 11909053.5, orbit: -2, size: 3.825, startype: 'A', label: loc('star_acubens'), zlabel: loc('star_acubens') },
+    acubens: { hex: 'b99', x: -7980358.345, y: -5907258.444, z: 6575996.714, dist: 11909053.5, orbit: -2, size: 3.825, startype: 'A', lum: 62.92, mass: 2.18, label: loc('star_acubens'), zlabel: loc('star_acubens') },
     // Theta Geminorum — Gemini.
     // A3III, V 3.6, 4.50 solar radii, 189.1 ly.
-    thetageminorum: { hex: 'efa', x: -11541312.786, y: -424230.266, z: 3097913.122, dist: 11957380.1, orbit: -2, size: 4.241, startype: 'A', label: loc('star_thetageminorum'), zlabel: loc('star_thetageminorum') },
+    thetageminorum: { hex: 'efa', x: -11541312.786, y: -424230.266, z: 3097913.122, dist: 11957380.1, orbit: -2, size: 4.418, startype: 'A', lum: 99.84, mass: 1.98, label: loc('star_thetageminorum'), zlabel: loc('star_thetageminorum') },
     // Iota Capricorni — Capricornus.
     // G8III, V 4.28, 8.82 solar radii, 196.7 ly.
-    iotacapricorni: { hex: 'd89', x: 7845403.486, y: 5217399.295, z: -8123817.075, dist: 12440579.4, orbit: -2, size: 5.94, startype: 'G', label: loc('star_iotacapricorni'), zlabel: loc('star_iotacapricorni') },
+    iotacapricorni: { hex: 'd89', x: 7845403.486, y: 5217399.295, z: -8123817.075, dist: 12440579.4, orbit: -2, size: 6.365, startype: 'G', lum: 63.66, mass: 2.36, label: loc('star_iotacapricorni'), zlabel: loc('star_iotacapricorni') },
     // Minelauva — Virgo.
     // M3III, V 3.39, 78.01 solar radii, 198.4 ly.
-    minelauva: { hex: 'b55', x: 2935701.294, y: -4113195.187, z: 11483835.319, dist: 12546521, orbit: -2, size: 17.665, startype: 'M', label: loc('star_minelauva'), zlabel: loc('star_minelauva') },
+    minelauva: { hex: 'b55', x: 2935701.294, y: -4113195.187, z: 11483835.319, dist: 12546521, orbit: -2, size: 14.471, startype: 'M', lum: 441.7, mass: 1.99, label: loc('star_minelauva'), zlabel: loc('star_minelauva') },
     // Albali — Aquarius.
     // A1V, V 3.78, 4.07 solar radii, 207.7 ly.
-    albali: { hex: '488', x: 8995154.976, y: 6947404.663, z: -6589749.383, dist: 13137885.7, orbit: -2, size: 4.036, startype: 'A', label: loc('star_albali'), zlabel: loc('star_albali') },
+    albali: { hex: '488', x: 8995154.976, y: 6947404.663, z: -6589749.383, dist: 13137885.7, orbit: -2, size: 4.305, startype: 'A', lum: 150.3, mass: 3.83, label: loc('star_albali'), zlabel: loc('star_albali') },
     // Tau Virginis — Virgo.
     // A3V, V 4.23, 4.00 solar radii, 224.9 ly.
-    tauvirginis: { hex: '5c8', x: 6774687.931, y: -2571073.56, z: 12241255.399, dist: 14225159, orbit: -2, size: 4.001, startype: 'A', label: loc('star_tauvirginis'), zlabel: loc('star_tauvirginis') },
+    tauvirginis: { hex: '5c8', x: 6774687.931, y: -2571073.56, z: 12241255.399, dist: 14225159, orbit: -2, size: 4.053, startype: 'A', lum: 69.46, mass: 2.45, label: loc('star_tauvirginis'), zlabel: loc('star_tauvirginis') },
     // Nunki — Sagittarius.
     // B2.5V, V 2.05, 5.30 solar radii, 227.8 ly.
-    nunki: { hex: 'f18', x: 13870875.508, y: 2335132.069, z: -3101650.095, dist: 14403966.9, orbit: -2, size: 4.605, startype: 'B', label: loc('star_nunki'), zlabel: loc('star_nunki') },
+    nunki: { hex: 'f18', x: 13870875.508, y: 2335132.069, z: -3101650.095, dist: 14403966.9, orbit: -2, size: 4.821, startype: 'B', lum: 5151, mass: 6.1, label: loc('star_nunki'), zlabel: loc('star_nunki') },
     // Tejat — Gemini.
     // M3IIIvar, V 2.87, 115.73 solar radii, 231.6 ly.
-    tejat: { hex: '52d', x: -14400709.83, y: -2468356.598, z: 1065036.093, dist: 14649489.1, orbit: -2, size: 21.516, startype: 'M', label: loc('star_tejat'), zlabel: loc('star_tejat') },
+    tejat: { hex: '52d', x: -14400709.83, y: -2468356.598, z: 1065036.093, dist: 14649489.1, orbit: -2, size: 18.683, startype: 'M', lum: 1152, mass: 2.78, label: loc('star_tejat'), zlabel: loc('star_tejat') },
     // Phi Sagittarii — Sagittarius.
     // B8.5III, V 3.17, 4.66 solar radii, 239.3 ly.
-    phisagittarii: { hex: '5e8', x: 14721824.71, y: 2068029.698, z: -2829009.723, dist: 15133147.9, orbit: -2, size: 4.317, startype: 'B', label: loc('star_phisagittarii'), zlabel: loc('star_phisagittarii') },
+    phisagittarii: { hex: '5e8', x: 14721824.71, y: 2068029.698, z: -2829009.723, dist: 15133147.9, orbit: -2, size: 4.554, startype: 'B', lum: 870.6, mass: 3.38, label: loc('star_phisagittarii'), zlabel: loc('star_phisagittarii') },
     // Epsilon Leonis — Leo.
     // G0II, V 2.97, 16.68 solar radii, 246.7 ly.
-    epsilonleonis: { hex: '46c', x: -9280293.922, y: -4691251.048, z: 11632099.494, dist: 15602481.5, orbit: -2, size: 8.169, startype: 'G', label: loc('star_epsilonleonis'), zlabel: loc('star_epsilonleonis') },
+    epsilonleonis: { hex: '46c', x: -9280293.922, y: -4691251.048, z: 11632099.494, dist: 15602481.5, orbit: -2, size: 9.178, startype: 'G', lum: 324.1, mass: 1.77, label: loc('star_epsilonleonis'), zlabel: loc('star_epsilonleonis') },
     // Spica — Virgo.
     // B1V, V 0.98, 6.99 solar radii, 249.7 ly.
-    spica: { hex: '5cc', x: 7187210.625, y: -6913382.166, z: 12246954.507, dist: 15793629.9, orbit: -2, size: 5.289, startype: 'B', label: loc('star_spica'), zlabel: loc('star_spica') },
+    spica: { hex: '5cc', x: 7187210.625, y: -6913382.166, z: 12246954.507, dist: 15793629.9, orbit: -2, size: 5.466, startype: 'B', lum: 12100, mass: 11.4, label: loc('star_spica'), zlabel: loc('star_spica') },
     // Kang — Virgo.
     // K3III, V 4.18, 17.16 solar radii, 254.8 ly.
-    kang: { hex: '453', x: 9706663.321, y: -4836296.8, z: 11919145.585, dist: 16114438, orbit: -2, size: 8.285, startype: 'KIII', label: loc('star_kang'), zlabel: loc('star_kang') },
+    kang: { hex: '453', x: 9706663.321, y: -4836296.8, z: 11919145.585, dist: 16114438, orbit: -2, size: 10.088, startype: 'KIII', lum: 169.7, mass: 1.6, label: loc('star_kang'), zlabel: loc('star_kang') },
     // Zaniah — Virgo.
     // A2IV, V 3.89, 5.35 solar radii, 265.4 ly.
-    zaniah: { hex: 'e6e', x: 2283518.337, y: -7759176.361, z: 14705596.095, dist: 16783141.3, orbit: -2, size: 4.625, startype: 'A', label: loc('star_zaniah'), zlabel: loc('star_zaniah') },
+    zaniah: { hex: 'e6e', x: 2283518.337, y: -7759176.361, z: 14705596.095, dist: 16783141.3, orbit: -2, size: 4.226, startype: 'A', lum: 119.7, mass: 0.727, label: loc('star_zaniah'), zlabel: loc('star_zaniah') },
     // 88 Aquarii — Aquarius.
     // K1III, V 3.68, 18.74 solar radii, 270.7 ly.
-    aquarii88: { hex: 'a3f', x: 5187009.081, y: 4631239.521, z: -15641365.875, dist: 17117411.3, orbit: -2, size: 8.657, startype: 'KIII', label: loc('star_aquarii88'), zlabel: loc('star_aquarii88') },
+    aquarii88: { hex: 'a3f', x: 5187009.081, y: 4631239.521, z: -15641365.875, dist: 17117411.3, orbit: -2, size: 10.675, startype: 'KIII', lum: 281.6, mass: 6.48, label: loc('star_aquarii88'), zlabel: loc('star_aquarii88') },
     // Upsilon Geminorum — Gemini.
     // K5III, V 4.06, 25.66 solar radii, 270.9 ly.
-    upsilongeminorum: { hex: '505', x: -15601808.548, y: -3488891.342, z: 6156614.253, dist: 17131628.4, orbit: -2, size: 10.131, startype: 'KIII', label: loc('star_upsilongeminorum'), zlabel: loc('star_upsilongeminorum') },
+    upsilongeminorum: { hex: '505', x: -15601808.548, y: -3488891.342, z: 6156614.253, dist: 17131628.4, orbit: -2, size: 12.729, startype: 'KIII', lum: 323.4, mass: 1.31, label: loc('star_upsilongeminorum'), zlabel: loc('star_upsilongeminorum') },
     // Adhafera — Leo.
     // F0III, V 3.43, 9.77 solar radii, 274.1 ly.
-    adhafera: { hex: '3fa', x: -8599764.347, y: -5010751.41, z: 14190681.715, dist: 17333177, orbit: -2, size: 6.252, startype: 'F', label: loc('star_adhafera'), zlabel: loc('star_adhafera') },
+    adhafera: { hex: '3fa', x: -8599764.347, y: -5010751.41, z: 14190681.715, dist: 17333177, orbit: -2, size: 5.568, startype: 'F', lum: 135.5, mass: 2.89, label: loc('star_adhafera'), zlabel: loc('star_adhafera') },
     // Torcular — Pisces.
     // K0III, V 4.26, 14.03 solar radii, 279.5 ly.
-    torcular: { hex: '93b', x: -8983468.861, y: 6382483.209, z: -13818806.647, dist: 17674790.6, orbit: -2, size: 7.49, startype: 'KIII', label: loc('star_torcular'), zlabel: loc('star_torcular') },
+    torcular: { hex: '93b', x: -8983468.861, y: 6382483.209, z: -13818806.647, dist: 17674790.6, orbit: -2, size: 7.585, startype: 'KIII', lum: 115.1, mass: 4.46, label: loc('star_torcular'), zlabel: loc('star_torcular') },
     // Brachium — Libra.
     // M3/M4III, V 3.25, 120.95 solar radii, 288.4 ly.
-    brachium: { hex: 'a37', x: 14760936.914, y: -6198065.302, z: 8735037.516, dist: 18237383.4, orbit: -2, size: 21.995, startype: 'M', label: loc('star_brachium'), zlabel: loc('star_brachium') },
+    brachium: { hex: 'a37', x: 14760936.914, y: -6198065.302, z: 8735037.516, dist: 18237383.4, orbit: -2, size: 18.808, startype: 'M', lum: 1183, mass: 28.5, label: loc('star_brachium'), zlabel: loc('star_brachium') },
     // Sigma Aquarii — Aquarius.
     // A0IVs, V 4.82, 3.34 solar radii, 289.7 ly.
-    sigmaaquarii: { hex: '21b', x: 6704383.552, y: 8735114.554, z: -14639383.989, dist: 18318366.4, orbit: -2, size: 3.654, startype: 'A', label: loc('star_sigmaaquarii'), zlabel: loc('star_sigmaaquarii') },
+    sigmaaquarii: { hex: '21b', x: 6704383.552, y: 8735114.554, z: -14639383.989, dist: 18318366.4, orbit: -2, size: 3.002, startype: 'A', lum: 47.23, mass: 1.04, label: loc('star_sigmaaquarii'), zlabel: loc('star_sigmaaquarii') },
     // Omicron Tauri — Taurus.
     // G8III, V 3.61, 17.76 solar radii, 291.0 ly.
-    omicrontauri: { hex: 'f47', x: -14392322.701, y: 1482779.966, z: -11367719.946, dist: 18400071.9, orbit: -2, size: 8.429, startype: 'G', label: loc('star_omicrontauri'), zlabel: loc('star_omicrontauri') },
+    omicrontauri: { hex: 'f47', x: -14392322.701, y: 1482779.966, z: -11367719.946, dist: 18400071.9, orbit: -2, size: 7.745, startype: 'G', lum: 137.1, mass: 4.61, label: loc('star_omicrontauri'), zlabel: loc('star_omicrontauri') },
     // Nu Virginis — Virgo.
     // M0III, V 4.04, 47.47 solar radii, 293.8 ly.
-    nuvirginis: { hex: 'f2e', x: -1005551.716, y: -8032683.929, z: 16726356.453, dist: 18582415, orbit: -2, size: 13.78, startype: 'M', label: loc('star_nuvirginis'), zlabel: loc('star_nuvirginis') },
+    nuvirginis: { hex: 'f2e', x: -1005551.716, y: -8032683.929, z: 16726356.453, dist: 18582415, orbit: -2, size: 14.801, startype: 'M', lum: 527.5, mass: 2.08, label: loc('star_nuvirginis'), zlabel: loc('star_nuvirginis') },
     // 51 Sagittarii — Sagittarius.
     // A1m..., V 5.64, 2.45 solar radii, 294.4 ly.
-    sagittarii51: { hex: 'b54', x: 16881246.558, y: 4455880.574, z: -6459296.106, dist: 18615957.2, orbit: -2, size: 3.13, startype: 'A', label: loc('star_sagittarii51'), zlabel: loc('star_sagittarii51') },
+    sagittarii51: { hex: 'b54', x: 16881246.558, y: 4455880.574, z: -6459296.106, dist: 18615957.2, orbit: -2, size: 2.99, startype: 'A', lum: 33.69, mass: 2.05, label: loc('star_sagittarii51'), zlabel: loc('star_sagittarii51') },
     // Sargas — Scorpius.
     // F1II, V 1.86, 23.40 solar radii, 300.3 ly.
-    sargas: { hex: '5b8', x: 18415972.216, y: -4204657.929, z: -1977310.605, dist: 18993076.1, orbit: -2, size: 9.674, startype: 'F', label: loc('star_sargas'), zlabel: loc('star_sargas') },
+    sargas: { hex: '5b8', x: 18415972.216, y: -4204657.929, z: -1977310.605, dist: 18993076.1, orbit: -2, size: 10.161, startype: 'F', lum: 911.9, mass: 5.34, label: loc('star_sargas'), zlabel: loc('star_sargas') },
     // Tarf — Cancer.
     // K4III, V 3.53, 32.49 solar radii, 303.4 ly.
-    tarf: { hex: '3bc', x: -14593617.89, y: -9937599.009, z: 7511835.689, dist: 19187423.8, orbit: -2, size: 11.4, startype: 'KIII', label: loc('star_tarf'), zlabel: loc('star_tarf') },
+    tarf: { hex: '3bc', x: -14593617.89, y: -9937599.009, z: 7511835.689, dist: 19187423.8, orbit: -2, size: 14.377, startype: 'KIII', lum: 640.2, mass: 3.88, label: loc('star_tarf'), zlabel: loc('star_tarf') },
     // Mu Piscium — Pisces.
     // K4III, V 4.84, 17.80 solar radii, 304.0 ly.
-    mupiscium: { hex: 'e2c', x: -8364819.035, y: 6999093.214, z: -15829511.967, dist: 19223187.9, orbit: -2, size: 8.439, startype: 'KIII', label: loc('star_mupiscium'), zlabel: loc('star_mupiscium') },
+    mupiscium: { hex: 'e2c', x: -8364819.035, y: 6999093.214, z: -15829511.967, dist: 19223187.9, orbit: -2, size: 11.095, startype: 'KIII', lum: 235.6, mass: 2.45, label: loc('star_mupiscium'), zlabel: loc('star_mupiscium') },
     // Upsilon Piscium — Pisces.
     // A3V, V 4.74, 4.33 solar radii, 308.0 ly.
-    upsilonpiscium: { hex: '143', x: -10349522.466, y: 12093289.403, z: -11225225.318, dist: 19477318.8, orbit: -2, size: 4.163, startype: 'A', label: loc('star_upsilonpiscium'), zlabel: loc('star_upsilonpiscium') },
+    upsilonpiscium: { hex: '143', x: -10349522.466, y: 12093289.403, z: -11225225.318, dist: 19477318.8, orbit: -2, size: 4.158, startype: 'A', lum: 105.2, mass: 1.86, label: loc('star_upsilonpiscium'), zlabel: loc('star_upsilonpiscium') },
     // Tau2 Aquarii — Aquarius.
     // K5III, V 4.05, 30.22 solar radii, 317.6 ly.
-    tau2aquarii: { hex: '39b', x: 6418919.606, y: 8294417.207, z: -17128207.306, dist: 20084207, orbit: -2, size: 10.995, startype: 'KIII', label: loc('star_tau2aquarii'), zlabel: loc('star_tau2aquarii') },
+    tau2aquarii: { hex: '39b', x: 6418919.606, y: 8294417.207, z: -17128207.306, dist: 20084207, orbit: -2, size: 15.941, startype: 'KIII', lum: 798.8, mass: 0.57, label: loc('star_tau2aquarii'), zlabel: loc('star_tau2aquarii') },
     // Tau Geminorum — Gemini.
     // K2III, V 4.41, 16.54 solar radii, 321.0 ly.
-    taugeminorum: { hex: '357', x: -19240111.436, y: -2436919.735, z: 6003057.115, dist: 20301654.1, orbit: -2, size: 8.135, startype: 'KIII', label: loc('star_taugeminorum'), zlabel: loc('star_taugeminorum') },
+    taugeminorum: { hex: '357', x: -19240111.436, y: -2436919.735, z: 6003057.115, dist: 20301654.1, orbit: -2, size: 11.065, startype: 'KIII', lum: 318.5, mass: 5.05, label: loc('star_taugeminorum'), zlabel: loc('star_taugeminorum') },
     // Dabih — Capricornus.
     // A5:n, V 3.05, 11.08 solar radii, 326.8 ly.
-    dabih: { hex: '703', x: 16172018.549, y: 9019592.672, z: -9179945.092, dist: 20667816.2, orbit: -2, size: 6.657, startype: 'A', label: loc('star_dabih'), zlabel: loc('star_dabih') },
+    dabih: { hex: '703', x: 16172018.549, y: 9019592.672, z: -9179945.092, dist: 20667816.2, orbit: -2, size: 11.053, startype: 'A', lum: 716.6, mass: 0.9, label: loc('star_dabih'), zlabel: loc('star_dabih') },
     // Iota Cancri — Cancer.
     // G8Iab:, V 4.03, 16.66 solar radii, 331.1 ly.
-    iotacancri: { hex: '4b9', x: -16181444.177, y: -4604266.938, z: 12468756.012, dist: 20940589.4, orbit: -2, size: 8.163, startype: 'G', label: loc('star_iotacancri'), zlabel: loc('star_iotacancri') },
+    iotacancri: { hex: '4b9', x: -16181444.177, y: -4604266.938, z: 12468756.012, dist: 20940589.4, orbit: -2, size: 9.373, startype: 'G', lum: 251.6, mass: 2.99, label: loc('star_iotacancri'), zlabel: loc('star_iotacancri') },
     // Kaus Media — Sagittarius.
     // K3III, V 2.72, 45.87 solar radii, 347.7 ly.
-    kausmedia: { hex: '03c', x: 21788717.919, y: 1142246.449, z: -2738723.878, dist: 21989851.4, orbit: -2, size: 13.546, startype: 'KIII', label: loc('star_kausmedia'), zlabel: loc('star_kausmedia') },
+    kausmedia: { hex: '03c', x: 21788717.919, y: 1142246.449, z: -2738723.878, dist: 21989851.4, orbit: -2, size: 18.534, startype: 'KIII', lum: 1971, mass: 1.07, label: loc('star_kausmedia'), zlabel: loc('star_kausmedia') },
     // Alpherg — Pisces.
     // G8III, V 3.62, 21.24 solar radii, 349.6 ly.
-    alpherg: { hex: 'fdf', x: -11145927.278, y: 10390529.931, z: -16017347.667, dist: 22107696.2, orbit: -2, size: 9.218, startype: 'G', label: loc('star_alpherg'), zlabel: loc('star_alpherg') },
+    alpherg: { hex: 'fdf', x: -11145927.278, y: 10390529.931, z: -16017347.667, dist: 22107696.2, orbit: -2, size: 10.286, startype: 'G', lum: 367.8, mass: 6.56, label: loc('star_alpherg'), zlabel: loc('star_alpherg') },
     // Nu Piscium — Pisces.
     // K3III, V 4.45, 21.60 solar radii, 363.2 ly.
-    nupiscium: { hex: 'e0e', x: -10749305.24, y: 7493862.323, z: -18864933.706, dist: 22969354.8, orbit: -2, size: 9.295, startype: 'KIII', label: loc('star_nupiscium'), zlabel: loc('star_nupiscium') },
+    nupiscium: { hex: 'e0e', x: -10749305.24, y: 7493862.323, z: -18864933.706, dist: 22969354.8, orbit: -2, size: 12.09, startype: 'KIII', lum: 343.3, mass: 1.54, label: loc('star_nupiscium'), zlabel: loc('star_nupiscium') },
     // Xi2 Sagittarii — Sagittarius.
     // G8/K0II/III, V 3.52, 23.24 solar radii, 365.2 ly.
-    xi2sagittarii: { hex: 'eb3', x: 21956857.356, y: 5723394.453, z: -4319148.894, dist: 23097962.6, orbit: -2, size: 9.642, startype: 'G', label: loc('star_xi2sagittarii'), zlabel: loc('star_xi2sagittarii') },
+    xi2sagittarii: { hex: 'eb3', x: 21956857.356, y: 5723394.453, z: -4319148.894, dist: 23097962.6, orbit: -2, size: 12.712, startype: 'G', lum: 637.1, mass: 10.1, label: loc('star_xi2sagittarii'), zlabel: loc('star_xi2sagittarii') },
     // Atlas — Taurus.
     // B8III, V 3.62, 6.05 solar radii, 382.4 ly.
-    atlas: { hex: '69d', x: -21651669.452, y: 4993287.79, z: -9539287.95, dist: 24181102.7, orbit: -2, size: 4.92, startype: 'B', label: loc('star_atlas'), zlabel: loc('star_atlas') },
+    atlas: { hex: '69d', x: -21651669.452, y: 4993287.79, z: -9539287.95, dist: 24181102.7, orbit: -2, size: 5.108, startype: 'B', lum: 669.1, mass: 2.19, label: loc('star_atlas'), zlabel: loc('star_atlas') },
     // Propus — Gemini.
     // M3III, V 3.31, 156.92 solar radii, 384.6 ly.
-    propus: { hex: 'b36', x: -24010662.689, y: -3739914.473, z: 1068888.876, dist: 24323680, orbit: -2, size: 25.053, startype: 'M', label: loc('star_propus'), zlabel: loc('star_propus') },
+    propus: { hex: 'b36', x: -24010662.689, y: -3739914.473, z: 1068888.876, dist: 24323680, orbit: -2, size: 29.725, startype: 'M', lum: 7384, mass: 56.3, label: loc('star_propus'), zlabel: loc('star_propus') },
     // Lambda Aquarii — Aquarius.
     // M2IIIvar, V 3.73, 104.20 solar radii, 385.1 ly.
-    lambdaaquarii: { hex: '9c0', x: 6396763.271, y: 12128235.877, z: -20125272.008, dist: 24352397.4, orbit: -2, size: 20.416, startype: 'M', label: loc('star_lambdaaquarii'), zlabel: loc('star_lambdaaquarii') },
+    lambdaaquarii: { hex: '9c0', x: 6396763.271, y: 12128235.877, z: -20125272.008, dist: 24352397.4, orbit: -2, size: 22.809, startype: 'M', lum: 2228, mass: 0.4, label: loc('star_lambdaaquarii'), zlabel: loc('star_lambdaaquarii') },
     // Zeta Capricorni — Capricornus.
     // G4Ibp..., V 3.77, 19.98 solar radii, 385.5 ly.
-    zetacapricorni: { hex: '217', x: 15737763.846, y: 8011251.315, z: -16810256.197, dist: 24381182.7, orbit: -2, size: 8.94, startype: 'G', label: loc('star_zetacapricorni'), zlabel: loc('star_zetacapricorni') },
+    zetacapricorni: { hex: '217', x: 15737763.846, y: 8011251.315, z: -16810256.197, dist: 24381182.7, orbit: -2, size: 10.005, startype: 'G', lum: 418.9, mass: 0.81, label: loc('star_zetacapricorni'), zlabel: loc('star_zetacapricorni') },
     // Tau Tauri — Taurus.
     // B3V, V 4.27, 3.55 solar radii, 398.2 ly.
-    tautauri: { hex: '014', x: -24276930.737, y: 1423394.074, z: -6548793.218, dist: 25184958, orbit: -2, size: 3.769, startype: 'B', label: loc('star_tautauri'), zlabel: loc('star_tautauri') },
+    tautauri: { hex: '014', x: -24276930.737, y: 1423394.074, z: -6548793.218, dist: 25184958, orbit: -2, size: 4.169, startype: 'B', lum: 647.6, mass: 2.97, label: loc('star_tautauri'), zlabel: loc('star_tautauri') },
     // Acrab — Scorpius.
     // B0.5V, V 2.56, 4.93 solar radii, 404.2 ly.
-    acrab: { hex: '268', x: 23256690.079, y: -2776106.691, z: 10232563.921, dist: 25559455.5, orbit: -2, size: 4.441, startype: 'B', label: loc('star_acrab'), zlabel: loc('star_acrab') },
+    acrab: { hex: '268', x: 23256690.079, y: -2776106.691, z: 10232563.921, dist: 25559455.5, orbit: -2, size: 4.779, startype: 'B', lum: 13490, mass: 11.8, label: loc('star_acrab'), zlabel: loc('star_acrab') },
     // 41 Piscium — Pisces.
     // K3III, V 5.38, 15.80 solar radii, 407.7 ly.
-    piscium41: { hex: 'c91', x: -5172568.98, y: 14283668.83, z: -20832417.507, dist: 25783100.8, orbit: -2, size: 7.95, startype: 'KIII', label: loc('star_piscium41'), zlabel: loc('star_piscium41') },
+    piscium41: { hex: 'c91', x: -5172568.98, y: 14283668.83, z: -20832417.507, dist: 25783100.8, orbit: -2, size: 10.716, startype: 'KIII', lum: 228.2, mass: 3.79, label: loc('star_piscium41'), zlabel: loc('star_piscium41') },
     // 7 Piscium — Pisces.
     // K2III, V 5.05, 16.60 solar radii, 432.6 ly.
-    piscium7: { hex: '3ee', x: 1382257.045, y: 17258769.723, z: -21179685.459, dist: 27356075.1, orbit: -2, size: 8.149, startype: 'KIII', label: loc('star_piscium7'), zlabel: loc('star_piscium7') },
+    piscium7: { hex: '3ee', x: 1382257.045, y: 17258769.723, z: -21179685.459, dist: 27356075.1, orbit: -2, size: 9.212, startype: 'KIII', lum: 147.9, mass: 1.33, label: loc('star_piscium7'), zlabel: loc('star_piscium7') },
     // Sigma Piscium — Pisces.
     // B9.5V, V 5.5, 3.41 solar radii, 433.7 ly.
-    sigmapiscium: { hex: '887', x: -13736558.582, y: 19079302.931, z: -14128973.964, dist: 27428830.6, orbit: -2, size: 3.692, startype: 'B', label: loc('star_sigmapiscium'), zlabel: loc('star_sigmapiscium') },
+    sigmapiscium: { hex: '887', x: -13736558.582, y: 19079302.931, z: -14128973.964, dist: 27428830.6, orbit: -2, size: 3.417, startype: 'B', lum: 100.7, mass: 2.26, label: loc('star_sigmapiscium'), zlabel: loc('star_sigmapiscium') },
     // Tianguan — Taurus.
     // B4IIIp, V 2.97, 7.58 solar radii, 445.0 ly.
-    tianguan: { hex: '189', x: -27865977.817, y: -2774680.409, z: -2763571.199, dist: 28139809.8, orbit: -2, size: 5.508, startype: 'B', label: loc('star_tianguan'), zlabel: loc('star_tianguan') },
+    tianguan: { hex: '189', x: -27865977.817, y: -2774680.409, z: -2763571.199, dist: 28139809.8, orbit: -2, size: 5.158, startype: 'B', lum: 7950, mass: 2.8, label: loc('star_tianguan'), zlabel: loc('star_tianguan') },
     // Phi Piscium — Pisces.
     // K0III..., V 4.67, 18.54 solar radii, 446.2 ly.
-    phipiscium: { hex: '0b7', x: -14103452.31, y: 17186490.9, z: -17375412.233, dist: 28216799.7, orbit: -2, size: 8.612, startype: 'KIII', label: loc('star_phipiscium'), zlabel: loc('star_phipiscium') },
+    phipiscium: { hex: '0b7', x: -14103452.31, y: 17186490.9, z: -17375412.233, dist: 28216799.7, orbit: -2, size: 9.101, startype: 'KIII', lum: 206.8, mass: 8.79, label: loc('star_phipiscium'), zlabel: loc('star_phipiscium') },
     // 62 Sagittarii — Sagittarius.
     // M4III, V 4.43, 162.97 solar radii, 448.6 ly.
-    sagittarii62: { hex: 'dca', x: 24551546.781, y: 6085881.492, z: -12851336.033, dist: 28372050.3, orbit: -2, size: 25.532, startype: 'M', label: loc('star_sagittarii62'), zlabel: loc('star_sagittarii62') },
+    sagittarii62: { hex: 'dca', x: 24551546.781, y: 6085881.492, z: -12851336.033, dist: 28372050.3, orbit: -2, size: 16.358, startype: 'M', lum: 732.9, mass: 0.31, label: loc('star_sagittarii62'), zlabel: loc('star_sagittarii62') },
     // Paikauhale — Scorpius.
     // B0V, V 2.82, 4.71 solar radii, 474.1 ly.
-    paikauhale: { hex: '3e9', x: 28915879.503, y: -4303542.714, z: 6646262.211, dist: 29980349.7, orbit: -2, size: 4.341, startype: 'B', label: loc('star_paikauhale'), zlabel: loc('star_paikauhale') },
+    paikauhale: { hex: '3e9', x: 28915879.503, y: -4303542.714, z: 6646262.211, dist: 29980349.7, orbit: -2, size: 4.7, startype: 'B', lum: 27620, mass: 17.6, label: loc('star_paikauhale'), zlabel: loc('star_paikauhale') },
     // 43 Sagittarii — Sagittarius.
     // K0III, V 4.88, 18.17 solar radii, 481.8 ly.
-    sagittarii43: { hex: '6e8', x: 28000776.363, y: 9429247.413, z: -7437261.015, dist: 30467475, orbit: -2, size: 8.526, startype: 'KIII', label: loc('star_sagittarii43'), zlabel: loc('star_sagittarii43') },
+    sagittarii43: { hex: '6e8', x: 28000776.363, y: 9429247.413, z: -7437261.015, dist: 30467475, orbit: -2, size: 8.973, startype: 'KIII', lum: 215.9, mass: 2.4, label: loc('star_sagittarii43'), zlabel: loc('star_sagittarii43') },
     // Kappa Scorpii — Scorpius.
     // B1.5III, V 2.39, 7.46 solar radii, 483.2 ly.
-    kappascorpii: { hex: '30c', x: 30082845.929, y: -4741081.748, z: -2514070.578, dist: 30557749, orbit: -2, size: 5.464, startype: 'B', label: loc('star_kappascorpii'), zlabel: loc('star_kappascorpii') },
+    kappascorpii: { hex: '30c', x: 30082845.929, y: -4741081.748, z: -2514070.578, dist: 30557749, orbit: -2, size: 6.145, startype: 'B', lum: 26400, mass: 9.9, label: loc('star_kappascorpii'), zlabel: loc('star_kappascorpii') },
     // Lambda Tauri — Taurus.
     // B3V + A, V 3.41, 6.41 solar radii, 483.9 ly.
-    lambdatauri: { hex: '7ee', x: -26657455.256, y: 757767.013, z: -15011821.972, dist: 30603086.9, orbit: -2, size: 5.065, startype: 'B', label: loc('star_lambdatauri'), zlabel: loc('star_lambdatauri') },
+    lambdatauri: { hex: '7ee', x: -26657455.256, y: 757767.013, z: -15011821.972, dist: 30603086.9, orbit: -2, size: 4.918, startype: 'B', lum: 2298, mass: 5.53, label: loc('star_lambdatauri'), zlabel: loc('star_lambdatauri') },
     // Dschubba — Scorpius.
     // B0.2IV, V 2.29, 6.23 solar radii, 491.2 ly.
-    dschubba: { hex: 'd2b', x: 28273708.643, y: -4936073.937, z: 11882896.479, dist: 31063976.8, orbit: -2, size: 4.993, startype: 'B', label: loc('star_dschubba'), zlabel: loc('star_dschubba') },
+    dschubba: { hex: 'd2b', x: 28273708.643, y: -4936073.937, z: 11882896.479, dist: 31063976.8, orbit: -2, size: 5.346, startype: 'B', lum: 41930, mass: 5.89, label: loc('star_dschubba'), zlabel: loc('star_dschubba') },
     // Xamidimura — Scorpius.
     // B1.5IV + B, V 3, 5.84 solar radii, 501.0 ly.
-    xamidimura: { hex: '355', x: 30686760.02, y: -7585536.253, z: 2162727.969, dist: 31684302, orbit: -2, size: 4.835, startype: 'B', label: loc('star_xamidimura'), zlabel: loc('star_xamidimura') },
+    xamidimura: { hex: '355', x: 30686760.02, y: -7585536.253, z: 2162727.969, dist: 31684302, orbit: -2, size: 9.803, startype: 'B', lum: 237600, mass: 11.8, label: loc('star_xamidimura'), zlabel: loc('star_xamidimura') },
     // Theta1 Sagittarii — Sagittarius.
     // B2.5IV, V 4.37, 4.15 solar radii, 518.5 ly.
-    theta1sagittarii: { hex: '55f', x: 28693497.972, y: 2774108.749, z: -15631230.052, dist: 32792497, orbit: -2, size: 4.072, startype: 'B', label: loc('star_theta1sagittarii'), zlabel: loc('star_theta1sagittarii') },
+    theta1sagittarii: { hex: '55f', x: 28693497.972, y: 2774108.749, z: -15631230.052, dist: 32792497, orbit: -2, size: 5.121, startype: 'B', lum: 3234, mass: 5.4, label: loc('star_theta1sagittarii'), zlabel: loc('star_theta1sagittarii') },
     // Sadalmelik — Aquarius.
     // G2Ib, V 2.95, 38.09 solar radii, 523.5 ly.
-    sadalmelik: { hex: 'c4c', x: 12315842.833, y: 21270521.992, z: -22182097.948, dist: 33108315.6, orbit: -2, size: 12.343, startype: 'G', label: loc('star_sadalmelik'), zlabel: loc('star_sadalmelik') },
+    sadalmelik: { hex: 'c4c', x: 12315842.833, y: 21270521.992, z: -22182097.948, dist: 33108315.6, orbit: -2, size: 14.546, startype: 'G', lum: 1915, mass: 2.56, label: loc('star_sadalmelik'), zlabel: loc('star_sadalmelik') },
     // Sadalsuud — Aquarius.
     // G0Ib, V 2.9, 37.53 solar radii, 537.3 ly.
-    sadalsuud: { hex: '6ce', x: 17939158.052, y: 19939427.31, z: -20864221.304, dist: 33981022.4, orbit: -2, size: 12.252, startype: 'G', label: loc('star_sadalsuud'), zlabel: loc('star_sadalsuud') },
+    sadalsuud: { hex: '6ce', x: 17939158.052, y: 19939427.31, z: -20864221.304, dist: 33981022.4, orbit: -2, size: 13.837, startype: 'G', lum: 1853, mass: 2.36, label: loc('star_sadalsuud'), zlabel: loc('star_sadalsuud') },
     // Nu Geminorum — Gemini.
     // B6III, V 4.13, 5.90 solar radii, 544.5 ly.
-    nugeminorum: { hex: '949', x: -33532225.819, y: -7385233.893, z: 2609151.794, dist: 34434859.1, orbit: -2, size: 4.856, startype: 'B', label: loc('star_nugeminorum'), zlabel: loc('star_nugeminorum') },
+    nugeminorum: { hex: '949', x: -33532225.819, y: -7385233.893, z: 2609151.794, dist: 34434859.1, orbit: -2, size: 5.077, startype: 'B', lum: 1654, mass: 4.3, label: loc('star_nugeminorum'), zlabel: loc('star_nugeminorum') },
     // Antares — Scorpius.
     // M1Ib + B2.5V, V 1.06, 442.16 solar radii, 553.7 ly.
-    antares: { hex: '3a1', x: 33482585.13, y: -4737142.167, z: 9101690.761, dist: 35019491.7, orbit: -2, size: 42.055, startype: 'M', label: loc('star_antares'), zlabel: loc('star_antares') },
+    antares: { hex: '3a1', x: 33482585.13, y: -4737142.167, z: 9101690.761, dist: 35019491.7, orbit: -2, size: 52.154, startype: 'M', lum: 75900, mass: 11, label: loc('star_antares'), zlabel: loc('star_antares') },
     // Shaula — Scorpius.
     // B1.5IV+..., V 1.62, 12.58 solar radii, 571.2 ly.
-    shaula: { hex: 'f3c', x: 35722407.488, y: -5183047.957, z: -1395734.217, dist: 36123433.6, orbit: -2, size: 7.094, startype: 'B', label: loc('star_shaula'), zlabel: loc('star_shaula') },
+    shaula: { hex: 'f3c', x: 35722407.488, y: -5183047.957, z: -1395734.217, dist: 36123433.6, orbit: -2, size: 8.402, startype: 'B', lum: 50530, mass: 7.3, label: loc('star_shaula'), zlabel: loc('star_shaula') },
     // 62 Piscium — Pisces.
     // G8III, V 5.92, 12.21 solar radii, 579.3 ly.
-    piscium62: { hex: '812', x: -10840781.668, y: 17655228.405, z: -30216230.033, dist: 36636732.9, orbit: -2, size: 6.987, startype: 'G', label: loc('star_piscium62'), zlabel: loc('star_piscium62') },
+    piscium62: { hex: '812', x: -10840781.668, y: 17655228.405, z: -30216230.033, dist: 36636732.9, orbit: -2, size: 8.842, startype: 'G', lum: 157, mass: 2.72, label: loc('star_piscium62'), zlabel: loc('star_piscium62') },
     // Fang — Scorpius.
     // B1V + B2V, V 2.89, 6.81 solar radii, 585.6 ly.
-    fang: { hex: '8cc', x: 33885395.245, y: -7689344.176, z: 12805363.638, dist: 37031383.5, orbit: -2, size: 5.217, startype: 'B', label: loc('star_fang'), zlabel: loc('star_fang') },
+    fang: { hex: '8cc', x: 33885395.245, y: -7689344.176, z: 12805363.638, dist: 37031383.5, orbit: -2, size: 5.777, startype: 'B', lum: 28670, mass: 11.8, label: loc('star_fang'), zlabel: loc('star_fang') },
     // Omega Capricorni — Capricornus.
     // K4III, V 4.12, 68.77 solar radii, 842.8 ly.
-    omegacapricorni: { hex: '830', x: 40277341.051, y: 13448387.213, z: -32211738.027, dist: 53298399.5, orbit: -2, size: 16.586, startype: 'KIII', label: loc('star_omegacapricorni'), zlabel: loc('star_omegacapricorni') },
+    omegacapricorni: { hex: '830', x: 40277341.051, y: 13448387.213, z: -32211738.027, dist: 53298399.5, orbit: -2, size: 18.328, startype: 'KIII', lum: 1425, mass: 7.09, label: loc('star_omegacapricorni'), zlabel: loc('star_omegacapricorni') },
     // Mebsuta — Gemini.
     // A3mA6-A9, V 3.06, 25.77 solar radii, 845.0 ly.
-    mebsuta: { hex: '442', x: -51955626.419, y: -8727957.408, z: 8938280.004, dist: 53436478.2, orbit: -2, size: 10.152, startype: 'A', label: loc('star_mebsuta'), zlabel: loc('star_mebsuta') },
+    mebsuta: { hex: '442', x: -51955626.419, y: -8727957.408, z: 8938280.004, dist: 53436478.2, orbit: -2, size: 22.811, startype: 'A', lum: 6471, mass: 3.89, label: loc('star_mebsuta'), zlabel: loc('star_mebsuta') },
     // 19 Piscium — Pisces.
     // C5II, V 4.95, 372.65 solar radii, 898.5 ly.
-    piscium19: { hex: 'fea', x: -1839360.24, y: 32053680.142, z: -46882274.301, dist: 56822260.6, orbit: -2, size: 38.608, startype: 'M', label: loc('star_piscium19'), zlabel: loc('star_piscium19') },
+    piscium19: { hex: 'fea', x: -1839360.24, y: 32053680.142, z: -46882274.301, dist: 56822260.6, orbit: -2, size: 37.648, startype: 'M', lum: 9610, mass: 0.57, label: loc('star_piscium19'), zlabel: loc('star_piscium19') },
     // 3 Sagittarii — Sagittarius.
     // F7II, V 4.53, 28.57 solar radii, 985.4 ly.
-    sagittarii3: { hex: '6c1', x: 62302325.391, y: 1268400.941, z: 227627.415, dist: 62315651.4, orbit: -2, size: 10.69, startype: 'F', label: loc('star_sagittarii3'), zlabel: loc('star_sagittarii3') },
+    sagittarii3: { hex: '6c1', x: 62302325.391, y: 1268400.941, z: 227627.415, dist: 62315651.4, orbit: -2, size: 11.62, startype: 'F', lum: 1169, mass: 2.62, label: loc('star_sagittarii3'), zlabel: loc('star_sagittarii3') },
     // Eta Leonis — Leo.
     // A0Ib, V 3.48, 27.11 solar radii, 1269.1 ly.
-    etaleonis: { hex: '5d0', x: -39166159.355, y: -32320617.862, z: 62151791.911, dist: 80258679.4, orbit: -2, size: 10.414, startype: 'A', label: loc('star_etaleonis'), zlabel: loc('star_etaleonis') },
+    etaleonis: { hex: '5d0', x: -39166159.355, y: -32320617.862, z: 62151791.911, dist: 80258679.4, orbit: -2, size: 11.92, startype: 'A', lum: 10380, mass: 4.6, label: loc('star_etaleonis'), zlabel: loc('star_etaleonis') },
     // Mekbuda — Gemini.
     // G3Ibv SB, V 4.01, 62.82 solar radii, 1376.2 ly.
-    mekbuda: { hex: 'd17', x: -81964289.677, y: -23110887.542, z: 17950910.201, dist: 87031563.7, orbit: -2, size: 15.852, startype: 'G', label: loc('star_mekbuda'), zlabel: loc('star_mekbuda') },
+    mekbuda: { hex: 'd17', x: -81964289.677, y: -23110887.542, z: 17950910.201, dist: 87031563.7, orbit: -2, size: 13.869, startype: 'G', lum: 1948, mass: 1.06, label: loc('star_mekbuda'), zlabel: loc('star_mekbuda') },
     // Iota1 Scorpii — Scorpius.
     // F3Ia, V 2.99, 97.31 solar radii, 1929.9 ly.
-    iota1scorpii: { hex: '418', x: 119726554.996, y: -19802471.211, z: -13025392.918, dist: 122050181.1, orbit: -2, size: 19.729, startype: 'F', label: loc('star_iota1scorpii'), zlabel: loc('star_iota1scorpii') },
+    iota1scorpii: { hex: '418', x: 119726554.996, y: -19802471.211, z: -13025392.918, dist: 122050181.1, orbit: -2, size: 18.482, startype: 'F', lum: 15770, mass: 3.76, label: loc('star_iota1scorpii'), zlabel: loc('star_iota1scorpii') },
     // Zeta1 Scorpii — Scorpius.
     // B1Iae, V 4.7, 12.97 solar radii, 2568.2 ly.
-    zeta1scorpii: { hex: '576', x: 155321448.814, y: -47404899.636, z: 2466030.299, dist: 162413233.1, orbit: -2, size: 7.202, startype: 'B', label: loc('star_zeta1scorpii'), zlabel: loc('star_zeta1scorpii') },
+    zeta1scorpii: { hex: '576', x: 155321448.814, y: -47404899.636, z: 2466030.299, dist: 162413233.1, orbit: -2, size: 12.352, startype: 'B', lum: 137600, mass: 5.31, label: loc('star_zeta1scorpii'), zlabel: loc('star_zeta1scorpii') },
     // --- the stars of ten more constellations ---------------------------------------------------
     // Orion, Ursa Major, Ursa Minor, Cygnus, Pegasus, Cassiopeia, Canis Major, Centaurus, Crux and Carina
     // Xi Pegasi — Pegasus.
     // F7V, V 4.2, 1.79 solar radii, 53.2 ly.
-    xipegasi: { hex: 'b74', x: 388322.108, y: 2530416.09, z: -2178584.286, dist: 3361551.6, orbit: -2, size: 2.679, startype: 'F', label: loc('star_xipegasi'), zlabel: loc('star_xipegasi') },
+    xipegasi: { hex: 'b74', x: 388322.108, y: 2530416.09, z: -2178584.286, dist: 3361551.6, orbit: -2, size: 2.657, startype: 'F', lum: 4.096, mass: 1.19, label: loc('star_xipegasi'), zlabel: loc('star_xipegasi') },
     // Caph — Cassiopeia.
     // F2III-IV, V 2.28, 3.74 solar radii, 54.7 ly.
-    caph: { hex: '965', x: -1597388.839, y: 3065043.217, z: -197911.252, dist: 3461980.6, orbit: -2, size: 3.868, startype: 'F', label: loc('star_caph'), zlabel: loc('star_caph') },
+    caph: { hex: '965', x: -1597388.839, y: 3065043.217, z: -197911.252, dist: 3461980.6, orbit: -2, size: 3.782, startype: 'F', lum: 25.54, mass: 1.62, label: loc('star_caph'), zlabel: loc('star_caph') },
     // Iota Centauri — Centaurus.
     // A2V, V 2.75, 2.00 solar radii, 58.8 ly.
-    iotacentauri: { hex: '663', x: 2125231.027, y: -2585494.567, z: 1617354.469, dist: 3717152.7, orbit: -2, size: 2.83, startype: 'A', label: loc('star_iotacentauri'), zlabel: loc('star_iotacentauri') },
+    iotacentauri: { hex: '663', x: 2125231.027, y: -2585494.567, z: 1617354.469, dist: 3717152.7, orbit: -2, size: 2.728, startype: 'A', lum: 22.41, mass: 1.45, label: loc('star_iotacentauri'), zlabel: loc('star_iotacentauri') },
     // Menkent — Centaurus.
     // K0IIIb, V 2.06, 8.13 solar radii, 58.8 ly.
-    menkent: { hex: 'abb', x: 2580773.92, y: -2207672.781, z: 1517548.446, dist: 3719834.2, orbit: -2, size: 5.703, startype: 'KIII', label: loc('star_menkent'), zlabel: loc('star_menkent') },
+    menkent: { hex: 'abb', x: 2580773.92, y: -2207672.781, z: 1517548.446, dist: 3719834.2, orbit: -2, size: 6.068, startype: 'KIII', lum: 45.91, mass: 1.91, label: loc('star_menkent'), zlabel: loc('star_menkent') },
     // Nu2 Canis Majoris — Canis Major.
     // K1III+..., V 3.95, 3.94 solar radii, 64.4 ly.
-    nu2canismajoris: { hex: 'da6', x: -2632658.744, y: -2995440.905, z: -832841.999, dist: 4073964.2, orbit: -2, size: 3.969, startype: 'KIII', label: loc('star_nu2canismajoris'), zlabel: loc('star_nu2canismajoris') },
+    nu2canismajoris: { hex: 'da6', x: -2632658.744, y: -2995440.905, z: -832841.999, dist: 4073964.2, orbit: -2, size: 4.428, startype: 'KIII', lum: 11.29, mass: 1.08, label: loc('star_nu2canismajoris'), zlabel: loc('star_nu2canismajoris') },
     // Mu1 Cygni — Cygnus.
     // F6V, V 4.49, 2.09 solar radii, 72.5 ly.
-    mu1cygni: { hex: '855', x: 712210.407, y: 4295098.784, z: -1443220.247, dist: 4586720.2, orbit: -2, size: 2.891, startype: 'F', label: loc('star_mu1cygni'), zlabel: loc('star_mu1cygni') },
+    mu1cygni: { hex: '855', x: 712210.407, y: 4295098.784, z: -1443220.247, dist: 4586720.2, orbit: -2, size: 2.69, startype: 'F', lum: 4.681, mass: 2.38, label: loc('star_mu1cygni'), zlabel: loc('star_mu1cygni') },
     // Aljanah — Cygnus.
     // K0III, V 2.48, 8.28 solar radii, 72.7 ly.
-    aljanah: { hex: '67c', x: 1110678.943, y: 4438246.858, z: -457885.312, dist: 4597967.1, orbit: -2, size: 5.756, startype: 'KIII', label: loc('star_aljanah'), zlabel: loc('star_aljanah') },
+    aljanah: { hex: '67c', x: 1110678.943, y: 4438246.858, z: -457885.312, dist: 4597967.1, orbit: -2, size: 6.671, startype: 'KIII', lum: 57.01, mass: 2.26, label: loc('star_aljanah'), zlabel: loc('star_aljanah') },
     // 23 Ursae Majoris — Ursa Major.
     // F0IV, V 3.65, 2.50 solar radii, 77.7 ly.
-    ursaemajoris23: { hex: 'bbd', x: -3194427.807, y: 1797034.523, z: 3270529.66, dist: 4912236.4, orbit: -2, size: 3.164, startype: 'F', label: loc('star_ursaemajoris23'), zlabel: loc('star_ursaemajoris23') },
+    ursaemajoris23: { hex: 'bbd', x: -3194427.807, y: 1797034.523, z: 3270529.66, dist: 4912236.4, orbit: -2, size: 3.155, startype: 'F', lum: 12.85, mass: 1.67, label: loc('star_ursaemajoris23'), zlabel: loc('star_ursaemajoris23') },
     // Merak — Ursa Major.
     // A1V, V 2.34, 3.03 solar radii, 79.7 ly.
-    merak: { hex: 'e67', x: -2495906.749, y: 1489840.932, z: 4121186.512, dist: 5043149.3, orbit: -2, size: 3.483, startype: 'A', label: loc('star_merak'), zlabel: loc('star_merak') },
+    merak: { hex: 'e67', x: -2495906.749, y: 1489840.932, z: 4121186.512, dist: 5043149.3, orbit: -2, size: 3.37, startype: 'A', lum: 56.14, mass: 1.81, label: loc('star_merak'), zlabel: loc('star_merak') },
     // Megrez — Ursa Major.
     // A3Vvar, V 3.32, 2.18 solar radii, 80.5 ly.
-    megrez: { hex: 'e07', x: -1752417.081, y: 1907936.896, z: 4383403.913, dist: 5091701, orbit: -2, size: 2.952, startype: 'A', label: loc('star_megrez'), zlabel: loc('star_megrez') },
+    megrez: { hex: 'e07', x: -1752417.081, y: 1907936.896, z: 4383403.913, dist: 5091701, orbit: -2, size: 2.938, startype: 'A', lum: 21.45, mass: 0.851, label: loc('star_megrez'), zlabel: loc('star_megrez') },
     // Alioth — Ursa Major.
     // A0p, V 1.76, 3.89 solar radii, 82.6 ly.
-    alioth: { hex: 'a2e', x: -1340982.908, y: 2131044.621, z: 4573268.78, dist: 5220572.2, orbit: -2, size: 3.947, startype: 'A', label: loc('star_alioth'), zlabel: loc('star_alioth') },
+    alioth: { hex: 'a2e', x: -1340982.908, y: 2131044.621, z: 4573268.78, dist: 5220572.2, orbit: -2, size: 4.069, startype: 'A', lum: 117.1, mass: 1.06, label: loc('star_alioth'), zlabel: loc('star_alioth') },
     // Phecda — Ursa Major.
     // A0V SB, V 2.41, 2.91 solar radii, 83.2 ly.
-    phecda: { hex: '47b', x: -1953512.136, y: 1590952.163, z: 4617973.913, dist: 5260515.3, orbit: -2, size: 3.411, startype: 'A', label: loc('star_phecda'), zlabel: loc('star_phecda') },
+    phecda: { hex: '47b', x: -1953512.136, y: 1590952.163, z: 4617973.913, dist: 5260515.3, orbit: -2, size: 3.425, startype: 'A', lum: 58.26, mass: 1.37, label: loc('star_phecda'), zlabel: loc('star_phecda') },
     // Mizar — Ursa Major.
     // A2V, V 2.23, 3.71 solar radii, 85.8 ly.
-    mizar: { hex: '84b', x: -1013774.247, y: 2375482.625, z: 4772552.503, dist: 5426593.2, orbit: -2, size: 3.854, startype: 'A', label: loc('star_mizar'), zlabel: loc('star_mizar') },
+    mizar: { hex: '84b', x: -1013774.247, y: 2375482.625, z: 4772552.503, dist: 5426593.2, orbit: -2, size: 3.854, startype: 'A', lum: 94.13, mass: 3.82, label: loc('star_mizar'), zlabel: loc('star_mizar') },
     // Gacrux — Crux.
     // M4III, V 1.59, 118.97 solar radii, 88.6 ly.
-    gacrux: { hex: '47c', x: 2800853.844, y: -4818326.995, z: 551410.577, dist: 5600456.3, orbit: -2, size: 21.815, startype: 'M', label: loc('star_gacrux'), zlabel: loc('star_gacrux') },
+    gacrux: { hex: '47c', x: 2800853.844, y: -4818326.995, z: 551410.577, dist: 5600456.3, orbit: -2, size: 21.862, startype: 'M', lum: 1471, mass: 0.27, label: loc('star_gacrux'), zlabel: loc('star_gacrux') },
     // Biham — Pegasus.
     // A2V, V 3.52, 2.21 solar radii, 92.3 ly.
-    biham: { hex: '3d4', x: 1748880.563, y: 4204791.28, z: -3650593.91, dist: 5836581.9, orbit: -2, size: 2.97, startype: 'A', label: loc('star_biham'), zlabel: loc('star_biham') },
+    biham: { hex: '3d4', x: 1748880.563, y: 4204791.28, z: -3650593.91, dist: 5836581.9, orbit: -2, size: 2.909, startype: 'A', lum: 21.76, mass: 1.39, label: loc('star_biham'), zlabel: loc('star_biham') },
     // HD 94510 — Carina.
     // K0III-IV..., V 3.78, 5.95 solar radii, 95.0 ly.
-    hd94510: { hex: 'd6a', x: 1874689.725, y: -5707995.799, z: 62807.089, dist: 6008296.1, orbit: -2, size: 4.878, startype: 'KIII', label: loc('star_hd94510'), zlabel: loc('star_hd94510') },
+    hd94510: { hex: 'd6a', x: 1874689.725, y: -5707995.799, z: 62807.089, dist: 6008296.1, orbit: -2, size: 5.115, startype: 'KIII', lum: 24.88, mass: 1.88, label: loc('star_hd94510'), zlabel: loc('star_hd94510') },
     // Eta Ursae Minoris — Ursa Minor.
     // F5V, V 4.95, 2.12 solar radii, 97.0 ly.
-    etaursaeminoris: { hex: '2fa', x: -1651863.284, y: 4723481.425, z: 3546567.733, dist: 6133357.3, orbit: -2, size: 2.909, startype: 'F', label: loc('star_etaursaeminoris'), zlabel: loc('star_etaursaeminoris') },
+    etaursaeminoris: { hex: '2fa', x: -1651863.284, y: 4723481.425, z: 3546567.733, dist: 6133357.3, orbit: -2, size: 2.427, startype: 'F', lum: 3.631, mass: 0.791, label: loc('star_etaursaeminoris'), zlabel: loc('star_etaursaeminoris') },
     // Alpheratz — Pegasus.
     // B9p, V 2.07, 3.59 solar radii, 97.0 ly.
-    alpheratz: { hex: 'aa9', x: -1908542.073, y: 4788187.153, z: -3327338.941, dist: 6135181.6, orbit: -2, size: 3.79, startype: 'B', label: loc('star_alpheratz'), zlabel: loc('star_alpheratz') },
+    alpheratz: { hex: 'aa9', x: -1908542.073, y: 4788187.153, z: -3327338.941, dist: 6135181.6, orbit: -2, size: 3.149, startype: 'B', lum: 190.7, mass: 1.82, label: loc('star_alpheratz'), zlabel: loc('star_alpheratz') },
     // Ruchbah — Cassiopeia.
     // A5Vv SB, V 2.66, 4.03 solar radii, 99.4 ly.
-    ruchbah: { hex: '836', x: -3796767.919, y: 5003988.015, z: -257985.201, dist: 6286644.5, orbit: -2, size: 4.017, startype: 'A', label: loc('star_ruchbah'), zlabel: loc('star_ruchbah') },
+    ruchbah: { hex: '836', x: -3796767.919, y: 5003988.015, z: -257985.201, dist: 6286644.5, orbit: -2, size: 3.951, startype: 'A', lum: 55.64, mass: 0.699, label: loc('star_ruchbah'), zlabel: loc('star_ruchbah') },
     // Alkaid — Ursa Major.
     // B3V SB, V 1.85, 2.83 solar radii, 103.9 ly.
-    alkaid: { hex: '102', x: -509303.732, y: 2696700.258, z: 5972809.206, dist: 6573129.6, orbit: -2, size: 3.362, startype: 'B', label: loc('star_alkaid'), zlabel: loc('star_alkaid') },
+    alkaid: { hex: '102', x: -509303.732, y: 2696700.258, z: 5972809.206, dist: 6573129.6, orbit: -2, size: 3.688, startype: 'B', lum: 911.3, mass: 6.23, label: loc('star_alkaid'), zlabel: loc('star_alkaid') },
     // Sadalbari — Pegasus.
     // M2III, V 3.51, 31.77 solar radii, 106.1 ly.
-    sadalbari: { hex: '39e', x: -68503.843, y: 5777669.272, z: -3411405.236, dist: 6709980.7, orbit: -2, size: 11.273, startype: 'M', label: loc('star_sadalbari'), zlabel: loc('star_sadalbari') },
+    sadalbari: { hex: '39e', x: -68503.843, y: 5777669.272, z: -3411405.236, dist: 6709980.7, orbit: -2, size: 5.956, startype: 'M', lum: 44.27, mass: 2.03, label: loc('star_sadalbari'), zlabel: loc('star_sadalbari') },
     // Kappa Pegasi — Pegasus.
     // F5IV, V 4.14, 3.54 solar radii, 111.6 ly.
-    kappapegasi: { hex: 'f08', x: 1326934.205, y: 6470150.308, z: -2491240.796, dist: 7059028.3, orbit: -2, size: 3.761, startype: 'F', label: loc('star_kappapegasi'), zlabel: loc('star_kappapegasi') },
+    kappapegasi: { hex: 'f08', x: 1326934.205, y: 6470150.308, z: -2491240.796, dist: 7059028.3, orbit: -2, size: 3.603, startype: 'F', lum: 17.79, mass: 3.76, label: loc('star_kappapegasi'), zlabel: loc('star_kappapegasi') },
     // Miaplacidus — Carina.
     // A2IV, V 1.67, 6.34 solar radii, 113.2 ly.
-    miaplacidus: { hex: '2a0', x: 1908240.302, y: -6664101.035, z: -1780746.508, dist: 7157002.3, orbit: -2, size: 5.035, startype: 'A', label: loc('star_miaplacidus'), zlabel: loc('star_miaplacidus') },
+    miaplacidus: { hex: '2a0', x: 1908240.302, y: -6664101.035, z: -1780746.508, dist: 7157002.3, orbit: -2, size: 4.814, startype: 'A', lum: 190.7, mass: 1.77, label: loc('star_miaplacidus'), zlabel: loc('star_miaplacidus') },
     // Upsilon Ursae Majoris — Ursa Major.
     // F0IV, V 3.78, 3.53 solar radii, 116.2 ly.
-    upsilonursaemajoris: { hex: 'a6b', x: -4636961.479, y: 2230650.082, z: 5249548.609, dist: 7350848.4, orbit: -2, size: 3.756, startype: 'F', label: loc('star_upsilonursaemajoris'), zlabel: loc('star_upsilonursaemajoris') },
+    upsilonursaemajoris: { hex: 'a6b', x: -4636961.479, y: 2230650.082, z: 5249548.609, dist: 7350848.4, orbit: -2, size: 3.729, startype: 'F', lum: 26.42, mass: 1.61, label: loc('star_upsilonursaemajoris'), zlabel: loc('star_upsilonursaemajoris') },
     // Pi1 Orionis — Orion.
     // A0V, V 4.64, 1.46 solar radii, 116.3 ly.
-    pi1orionis: { hex: '5f9', x: -6809676.887, y: -1120697.771, z: -2546452.342, dist: 7356091.5, orbit: -2, size: 2.414, startype: 'A', label: loc('star_pi1orionis'), zlabel: loc('star_pi1orionis') },
+    pi1orionis: { hex: '5f9', x: -6809676.887, y: -1120697.771, z: -2546452.342, dist: 7356091.5, orbit: -2, size: 2.583, startype: 'A', lum: 15.17, mass: 1.28, label: loc('star_pi1orionis'), zlabel: loc('star_pi1orionis') },
     // Iota2 Cygni — Cygnus.
     // A5Vn, V 3.76, 2.97 solar radii, 121.3 ly.
-    iota2cygni: { hex: '7a8', x: 822970.652, y: 7350364.539, z: 2044041.484, dist: 7673541.9, orbit: -2, size: 3.445, startype: 'A', label: loc('star_iota2cygni'), zlabel: loc('star_iota2cygni') },
+    iota2cygni: { hex: '7a8', x: 822970.652, y: 7350364.539, z: 2044041.484, dist: 7673541.9, orbit: -2, size: 3.374, startype: 'A', lum: 28.14, mass: 0.235, label: loc('star_iota2cygni'), zlabel: loc('star_iota2cygni') },
     // Dubhe — Ursa Major.
     // F7V comp, V 1.81, 12.47 solar radii, 122.9 ly.
-    dubhe: { hex: '8d7', x: -3897568.04, y: 2953245.404, z: 6040604.515, dist: 7771846.5, orbit: -2, size: 7.062, startype: 'F', label: loc('star_dubhe'), zlabel: loc('star_dubhe') },
+    dubhe: { hex: '8d7', x: -3897568.04, y: 2953245.404, z: 6040604.515, dist: 7771846.5, orbit: -2, size: 8.254, startype: 'F', lum: 123.3, mass: 1.97, label: loc('star_dubhe'), zlabel: loc('star_dubhe') },
     // Kappa Cygni — Cygnus.
     // K0III, V 3.8, 7.70 solar radii, 124.2 ly.
-    kappacygni: { hex: 'b21', x: 729113.762, y: 7437973.183, z: 2407182.524, dist: 7851724.6, orbit: -2, size: 5.55, startype: 'KIII', label: loc('star_kappacygni'), zlabel: loc('star_kappacygni') },
+    kappacygni: { hex: 'b21', x: 729113.762, y: 7437973.183, z: 2407182.524, dist: 7851724.6, orbit: -2, size: 5.922, startype: 'KIII', lum: 43.29, mass: 2.5, label: loc('star_kappacygni'), zlabel: loc('star_kappacygni') },
     // Gamma Centauri — Centaurus.
     // A1IV, V 2.2, 5.28 solar radii, 130.2 ly.
-    gammacentauri: { hex: 'c23', x: 4145892.393, y: -6830805.337, z: 1974429.703, dist: 8230838.2, orbit: -2, size: 4.596, startype: 'A', label: loc('star_gammacentauri'), zlabel: loc('star_gammacentauri') },
+    gammacentauri: { hex: 'c23', x: 4145892.393, y: -6830805.337, z: 1974429.703, dist: 8230838.2, orbit: -2, size: 4.575, startype: 'A', lum: 177.2, mass: 3.31, label: loc('star_gammacentauri'), zlabel: loc('star_gammacentauri') },
     // Kochab — Ursa Minor.
     // K4IIIvar, V 2.07, 27.46 solar radii, 130.9 ly.
-    kochab: { hex: 'ff1', x: -2424386.399, y: 5810745.275, z: 5377977.502, dist: 8280401.7, orbit: -2, size: 10.481, startype: 'KIII', label: loc('star_kochab'), zlabel: loc('star_kochab') },
+    kochab: { hex: 'ff1', x: -2424386.399, y: 5810745.275, z: 5377977.502, dist: 8280401.7, orbit: -2, size: 12.876, startype: 'KIII', lum: 420.5, mass: 3.21, label: loc('star_kochab'), zlabel: loc('star_kochab') },
     // Markab — Pegasus.
     // B9.5III, V 2.49, 4.19 solar radii, 133.3 ly.
-    markab: { hex: '61c', x: 192842.759, y: 6420780.345, z: -5463285.221, dist: 8432739.4, orbit: -2, size: 4.093, startype: 'B', label: loc('star_markab'), zlabel: loc('star_markab') },
+    markab: { hex: '61c', x: 192842.759, y: 6420780.345, z: -5463285.221, dist: 8432739.4, orbit: -2, size: 4.129, startype: 'B', lum: 178.6, mass: 6.63, label: loc('star_markab'), zlabel: loc('star_markab') },
     // Eta Cygni — Cygnus.
     // K0IIIvar, V 3.89, 8.03 solar radii, 134.9 ly.
-    etacygni: { hex: 'ed8', x: 2771397.842, y: 8055821.853, z: 500849.582, dist: 8533918.3, orbit: -2, size: 5.668, startype: 'KIII', label: loc('star_etacygni'), zlabel: loc('star_etacygni') },
+    etacygni: { hex: 'ed8', x: 2771397.842, y: 8055821.853, z: 500849.582, dist: 8533918.3, orbit: -2, size: 6.433, startype: 'KIII', lum: 51.19, mass: 1.91, label: loc('star_etacygni'), zlabel: loc('star_etacygni') },
     // Tania Borealis — Ursa Major.
     // A2IV, V 3.45, 3.39 solar radii, 137.5 ly.
-    taniaborealis: { hex: 'b80', x: -4964422.816, y: 358377.918, z: 7130450.497, dist: 8695818.1, orbit: -2, size: 3.684, startype: 'A', label: loc('star_taniaborealis'), zlabel: loc('star_taniaborealis') },
+    taniaborealis: { hex: 'b80', x: -4964422.816, y: 358377.918, z: 7130450.497, dist: 8695818.1, orbit: -2, size: 4.537, startype: 'A', lum: 170.1, mass: 7.67, label: loc('star_taniaborealis'), zlabel: loc('star_taniaborealis') },
     // Zeta Cygni — Cygnus.
     // G8II SB, V 3.21, 10.50 solar radii, 143.1 ly.
-    zetacygni: { hex: '479', x: 2025030.913, y: 8602638.267, z: -1951543.3, dist: 9050671.6, orbit: -2, size: 6.482, startype: 'G', label: loc('star_zetacygni'), zlabel: loc('star_zetacygni') },
+    zetacygni: { hex: '479', x: 2025030.913, y: 8602638.267, z: -1951543.3, dist: 9050671.6, orbit: -2, size: 7.376, startype: 'G', lum: 99.77, mass: 2.45, label: loc('star_zetacygni'), zlabel: loc('star_zetacygni') },
     // Psi Ursae Majoris — Ursa Major.
     // K1III, V 3, 13.68 solar radii, 144.5 ly.
-    psiursaemajoris: { hex: 'f22', x: -3990465.091, y: 1009489.1, z: 8159441.04, dist: 9138892.6, orbit: -2, size: 7.398, startype: 'KIII', label: loc('star_psiursaemajoris'), zlabel: loc('star_psiursaemajoris') },
+    psiursaemajoris: { hex: 'f22', x: -3990465.091, y: 1009489.1, z: 8159441.04, dist: 9138892.6, orbit: -2, size: 8.875, startype: 'KIII', lum: 153.7, mass: 3.02, label: loc('star_psiursaemajoris'), zlabel: loc('star_psiursaemajoris') },
     // Mu Orionis — Orion.
     // Am..., V 4.12, 3.21 solar radii, 154.9 ly.
-    muorionis: { hex: '024', x: -9226147.55, y: -3119921.144, z: -1077421.149, dist: 9798803.1, orbit: -2, size: 3.583, startype: 'A', label: loc('star_muorionis'), zlabel: loc('star_muorionis') },
+    muorionis: { hex: '024', x: -9226147.55, y: -3119921.144, z: -1077421.149, dist: 9798803.1, orbit: -2, size: 2.923, startype: 'A', lum: 30.9, mass: 3.32, label: loc('star_muorionis'), zlabel: loc('star_muorionis') },
     // Fawaris — Cygnus.
     // B9.5III, V 2.86, 4.37 solar radii, 165.0 ly.
-    fawaris: { hex: '09a', x: 2010116.764, y: 10068241.748, z: 1855280.961, dist: 10433222.4, orbit: -2, size: 4.181, startype: 'B', label: loc('star_fawaris'), zlabel: loc('star_fawaris') },
+    fawaris: { hex: '09a', x: 2010116.764, y: 10068241.748, z: 1855280.961, dist: 10433222.4, orbit: -2, size: 4.155, startype: 'B', lum: 166.9, mass: 2.68, label: loc('star_fawaris'), zlabel: loc('star_fawaris') },
     // Yildun — Ursa Minor.
     // A1Vn, V 4.35, 2.59 solar radii, 172.1 ly.
-    yildun: { hex: '382', x: -4690806.432, y: 8363699.479, z: 5149879.863, dist: 10884686.3, orbit: -2, size: 3.222, startype: 'A', label: loc('star_yildun'), zlabel: loc('star_yildun') },
+    yildun: { hex: '382', x: -4690806.432, y: 8363699.479, z: 5149879.863, dist: 10884686.3, orbit: -2, size: 3.402, startype: 'A', lum: 51.05, mass: 2.05, label: loc('star_yildun'), zlabel: loc('star_yildun') },
     // Muscida — Ursa Major.
     // G4II-III, V 3.35, 11.26 solar radii, 179.1 ly.
-    muscida: { hex: '225', x: -8430317.042, y: 3757645.525, z: 6565893.151, dist: 11327007.5, orbit: -2, size: 6.712, startype: 'G', label: loc('star_muscida'), zlabel: loc('star_muscida') },
+    muscida: { hex: '225', x: -8430317.042, y: 3757645.525, z: 6565893.151, dist: 11327007.5, orbit: -2, size: 7.116, startype: 'G', lum: 107.2, mass: 2.73, label: loc('star_muscida'), zlabel: loc('star_muscida') },
     // Taiyangshou — Ursa Major.
     // K0III, V 3.69, 11.98 solar radii, 183.6 ly.
-    taiyangshou: { hex: '946', x: -4148533.198, y: 2364443.91, z: 10586986.843, dist: 11614009.3, orbit: -2, size: 6.923, startype: 'KIII', label: loc('star_taiyangshou'), zlabel: loc('star_taiyangshou') },
+    taiyangshou: { hex: '946', x: -4148533.198, y: 2364443.91, z: 10586986.843, dist: 11614009.3, orbit: -2, size: 9.311, startype: 'KIII', lum: 153.8, mass: 0.859, label: loc('star_taiyangshou'), zlabel: loc('star_taiyangshou') },
     // Scheat — Pegasus.
     // M2II-IIIvar, V 2.44, 96.07 solar radii, 196.0 ly.
-    scheat: { hex: '3a5', x: -1085327.233, y: 10782332.385, z: -6018079.843, dist: 12395721.5, orbit: -2, size: 19.603, startype: 'M', label: loc('star_scheat'), zlabel: loc('star_scheat') },
+    scheat: { hex: '3a5', x: -1085327.233, y: 10782332.385, z: -6018079.843, dist: 12395721.5, orbit: -2, size: 19.165, startype: 'M', lum: 1276, mass: 4.87, label: loc('star_scheat'), zlabel: loc('star_scheat') },
     // Homam — Pegasus.
     // B8.5V, V 3.41, 3.56 solar radii, 204.4 ly.
-    homam: { hex: '654', x: 1894368.951, y: 9618842.436, z: -8421127.859, dist: 12923860, orbit: -2, size: 3.775, startype: 'B', label: loc('star_homam'), zlabel: loc('star_homam') },
+    homam: { hex: '654', x: 1894368.951, y: 9618842.436, z: -8421127.859, dist: 12923860, orbit: -2, size: 3.938, startype: 'B', lum: 198.3, mass: 1.73, label: loc('star_homam'), zlabel: loc('star_homam') },
     // Matar — Pegasus.
     // G2II-III.., V 2.93, 15.74 solar radii, 214.3 ly.
-    matar: { hex: 'df2', x: -535054.542, y: 12275482.759, z: -5717424.065, dist: 13552221.2, orbit: -2, size: 7.934, startype: 'G', label: loc('star_matar'), zlabel: loc('star_matar') },
+    matar: { hex: 'df2', x: -535054.542, y: 12275482.759, z: -5717424.065, dist: 13552221.2, orbit: -2, size: 9.673, startype: 'G', lum: 328.4, mass: 5.01, label: loc('star_matar'), zlabel: loc('star_matar') },
     // Pi2 Orionis — Orion.
     // A1Vn, V 4.35, 3.38 solar radii, 224.5 ly.
-    pi2orionis: { hex: '3b0', x: -12984782.93, y: -2248142.968, z: -5278415.938, dist: 14195788.4, orbit: -2, size: 3.679, startype: 'A', label: loc('star_pi2orionis'), zlabel: loc('star_pi2orionis') },
+    pi2orionis: { hex: '3b0', x: -12984782.93, y: -2248142.968, z: -5278415.938, dist: 14195788.4, orbit: -2, size: 3.47, startype: 'A', lum: 62.53, mass: 0.132, label: loc('star_pi2orionis'), zlabel: loc('star_pi2orionis') },
     // Schedar — Cassiopeia.
     // K0II-IIIvar, V 2.24, 29.04 solar radii, 228.2 ly.
-    schedar: { hex: 'd8f', x: -7478391.462, y: 12243750.322, z: -1584470.448, dist: 14434206.2, orbit: -2, size: 10.778, startype: 'KIII', label: loc('star_schedar'), zlabel: loc('star_schedar') },
+    schedar: { hex: 'd8f', x: -7478391.462, y: 12243750.322, z: -1584470.448, dist: 14434206.2, orbit: -2, size: 12.832, startype: 'KIII', lum: 694, mass: 7.1, label: loc('star_schedar'), zlabel: loc('star_schedar') },
     // Tania Australis — Ursa Major.
     // M0III SB, V 3.06, 58.43 solar radii, 230.3 ly.
-    taniaaustralis: { hex: '57f', x: -8064057.407, y: 295234.775, z: 12127376.082, dist: 14566723.6, orbit: -2, size: 15.288, startype: 'M', label: loc('star_taniaaustralis'), zlabel: loc('star_taniaaustralis') },
+    taniaaustralis: { hex: '57f', x: -8064057.407, y: 295234.775, z: 12127376.082, dist: 14566723.6, orbit: -2, size: 13.927, startype: 'M', lum: 445, mass: 1.21, label: loc('star_taniaaustralis'), zlabel: loc('star_taniaaustralis') },
     // Bellatrix — Orion.
     // B2III, V 1.64, 6.45 solar radii, 252.4 ly.
-    bellatrix: { hex: '86b', x: -14684835.494, y: -4469384.491, z: -4387941.952, dist: 15964768.3, orbit: -2, size: 5.08, startype: 'B', label: loc('star_bellatrix'), zlabel: loc('star_bellatrix') },
+    bellatrix: { hex: '86b', x: -14684835.494, y: -4469384.491, z: -4387941.952, dist: 15964768.3, orbit: -2, size: 4.796, startype: 'B', lum: 9211, mass: 8.6, label: loc('star_bellatrix'), zlabel: loc('star_bellatrix') },
     // Theta Canis Majoris — Canis Major.
     // K4III, V 4.08, 21.67 solar radii, 260.7 ly.
-    thetacanismajoris: { hex: 'c45', x: -11821442.162, y: -11408749.001, z: -1395672.022, dist: 16487994.1, orbit: -2, size: 9.31, startype: 'KIII', label: loc('star_thetacanismajoris'), zlabel: loc('star_thetacanismajoris') },
+    thetacanismajoris: { hex: 'c45', x: -11821442.162, y: -11408749.001, z: -1395672.022, dist: 16487994.1, orbit: -2, size: 12.098, startype: 'KIII', lum: 308.8, mass: 3.08, label: loc('star_thetacanismajoris'), zlabel: loc('star_thetacanismajoris') },
     // Mimosa — Crux.
     // B0.5III, V 1.25, 6.21 solar radii, 278.5 ly.
-    mimosa: { hex: '664', x: 9439901.452, y: -14839182.798, z: 977010.415, dist: 17614415.5, orbit: -2, size: 4.985, startype: 'B', label: loc('star_mimosa'), zlabel: loc('star_mimosa') },
+    mimosa: { hex: '664', x: 9439901.452, y: -14839182.798, z: 977010.415, dist: 17614415.5, orbit: -2, size: 5.797, startype: 'B', lum: 34000, mass: 16, label: loc('star_mimosa'), zlabel: loc('star_mimosa') },
     // Pi1 Pegasi — Pegasus.
     // G6III:, V 5.58, 6.73 solar radii, 288.6 ly.
-    pi1pegasi: { hex: '4db', x: 627118.443, y: 17303674.989, z: -5777598.432, dist: 18253522.7, orbit: -2, size: 5.19, startype: 'G', label: loc('star_pi1pegasi'), zlabel: loc('star_pi1pegasi') },
+    pi1pegasi: { hex: '4db', x: 627118.443, y: 17303674.989, z: -5777598.432, dist: 18253522.7, orbit: -2, size: 6.311, startype: 'G', lum: 47.06, mass: 2.03, label: loc('star_pi1pegasi'), zlabel: loc('star_pi1pegasi') },
     // Epsilon Ursae Minoris — Ursa Minor.
     // G5IIIvar, V 4.21, 12.98 solar radii, 304.0 ly.
-    epsilonursaeminoris: { hex: 'e13', x: -6959143.505, y: 14926560.532, z: 9914588.484, dist: 19223187.9, orbit: -2, size: 7.207, startype: 'G', label: loc('star_epsilonursaeminoris'), zlabel: loc('star_epsilonursaeminoris') },
+    epsilonursaeminoris: { hex: 'e13', x: -6959143.505, y: 14926560.532, z: 9914588.484, dist: 19223187.9, orbit: -2, size: 8.044, startype: 'G', lum: 167.4, mass: 1.62, label: loc('star_epsilonursaeminoris'), zlabel: loc('star_epsilonursaeminoris') },
     // Eta Centauri — Centaurus.
     // B1Vn + A, V 2.33, 4.60 solar radii, 305.7 ly.
-    etacentauri: { hex: 'f4a', x: 14745817.442, y: -11203189.348, z: 5545085.95, dist: 19331284.5, orbit: -2, size: 4.288, startype: 'B', label: loc('star_etacentauri'), zlabel: loc('star_etacentauri') },
+    etacentauri: { hex: 'f4a', x: 14745817.442, y: -11203189.348, z: 5545085.95, dist: 19331284.5, orbit: -2, size: 5.154, startype: 'B', lum: 7730, mass: 14.3, label: loc('star_etacentauri'), zlabel: loc('star_etacentauri') },
     // Canopus — Carina.
     // F0Ib, V -0.62, 71.17 solar radii, 309.2 ly.
-    canopus: { hex: '0b3', x: -2700626.482, y: -17469482.404, z: -8352958.19, dist: 19551166.4, orbit: -2, size: 16.873, startype: 'F', label: loc('star_canopus'), zlabel: loc('star_canopus') },
+    canopus: { hex: '0b3', x: -2700626.482, y: -17469482.404, z: -8352958.19, dist: 19551166.4, orbit: -2, size: 16.852, startype: 'F', lum: 10700, mass: 8, label: loc('star_canopus'), zlabel: loc('star_canopus') },
     // Acrux — Crux.
     // B0.5IV, V 0.77, 8.96 solar radii, 322.0 ly.
-    acrux: { hex: 'bb7', x: 10219639.256, y: -17610915.484, z: -128887.404, dist: 20361777.5, orbit: -2, size: 5.986, startype: 'B', label: loc('star_acrux'), zlabel: loc('star_acrux') },
+    acrux: { hex: 'bb7', x: 10219639.256, y: -17610915.484, z: -128887.404, dist: 20361777.5, orbit: -2, size: 5.586, startype: 'B', lum: 25000, mass: 17.8, label: loc('star_acrux'), zlabel: loc('star_acrux') },
     // Omega Carinae — Carina.
     // B8III, V 3.29, 6.30 solar radii, 341.9 ly.
-    omegacarinae: { hex: '4f0', x: 7311492.488, y: -19910779.12, z: -4191981.117, dist: 21621048.8, orbit: -2, size: 5.02, startype: 'B', label: loc('star_omegacarinae'), zlabel: loc('star_omegacarinae') },
+    omegacarinae: { hex: '4f0', x: 7311492.488, y: -19910779.12, z: -4191981.117, dist: 21621048.8, orbit: -2, size: 5.318, startype: 'B', lum: 1046, mass: 5.14, label: loc('star_omegacarinae'), zlabel: loc('star_omegacarinae') },
     // Imai — Crux.
     // B2IV, V 2.79, 5.19 solar radii, 345.1 ly.
-    imai: { hex: '8b0', x: 10301503.549, y: -19188867.817, z: 1443161.961, dist: 21826963.6, orbit: -2, size: 4.558, startype: 'B', label: loc('star_imai'), zlabel: loc('star_imai') },
+    imai: { hex: '8b0', x: 10301503.549, y: -19188867.817, z: 1443161.961, dist: 21826963.6, orbit: -2, size: 5.611, startype: 'B', lum: 14480, mass: 7.3, label: loc('star_imai'), zlabel: loc('star_imai') },
     // Alkaphrah — Ursa Major.
     // A1Vn, V 3.57, 7.74 solar radii, 358.4 ly.
-    alkaphrah: { hex: 'a94', x: -16801136.362, y: 2173958.278, z: 15058692.869, dist: 22666462.2, orbit: -2, size: 5.564, startype: 'A', label: loc('star_alkaphrah'), zlabel: loc('star_alkaphrah') },
+    alkaphrah: { hex: 'a94', x: -16801136.362, y: 2173958.278, z: 15058692.869, dist: 22666462.2, orbit: -2, size: 5.668, startype: 'A', lum: 415.4, mass: 2.05, label: loc('star_alkaphrah'), zlabel: loc('star_alkaphrah') },
     // Furud — Canis Major.
     // B2.5V, V 3.02, 5.40 solar radii, 362.4 ly.
-    furud: { hex: '6a7', x: -11605446.042, y: -18232338.68, z: -7625251.68, dist: 22918311.8, orbit: -2, size: 4.646, startype: 'B', label: loc('star_furud'), zlabel: loc('star_furud') },
+    furud: { hex: '6a7', x: -11605446.042, y: -18232338.68, z: -7625251.68, dist: 22918311.8, orbit: -2, size: 4.866, startype: 'B', lum: 6083, mass: 6.1, label: loc('star_furud'), zlabel: loc('star_furud') },
     // Lambda Pegasi — Pegasus.
     // G8II-III, V 3.97, 18.89 solar radii, 365.2 ly.
-    lambdapegasi: { hex: '344', x: 256380.597, y: 19793850.784, z: -11901832.477, dist: 23097962.6, orbit: -2, size: 8.693, startype: 'G', label: loc('star_lambdapegasi'), zlabel: loc('star_lambdapegasi') },
+    lambdapegasi: { hex: '344', x: 256380.597, y: 19793850.784, z: -11901832.477, dist: 23097962.6, orbit: -2, size: 10.4, startype: 'G', lum: 349.6, mass: 4.74, label: loc('star_lambdapegasi'), zlabel: loc('star_lambdapegasi') },
     // Zeta Ursae Minoris — Ursa Minor.
     // A3Vn, V 4.29, 6.39 solar radii, 369.0 ly.
-    zetaursaeminoris: { hex: 'd6f', x: -7310179.346, y: 17492464.049, z: 13601823.458, dist: 23333122.9, orbit: -2, size: 5.054, startype: 'A', label: loc('star_zetaursaeminoris'), zlabel: loc('star_zetaursaeminoris') },
+    zetaursaeminoris: { hex: 'd6f', x: -7310179.346, y: 17492464.049, z: 13601823.458, dist: 23333122.9, orbit: -2, size: 5.011, startype: 'A', lum: 194.2, mass: 1.86, label: loc('star_zetaursaeminoris'), zlabel: loc('star_zetaursaeminoris') },
     // Nu Puppis — Carina.
     // B8III SB, V 3.17, 7.23 solar radii, 371.5 ly.
-    nupuppis: { hex: 'cd8', x: -6821841.122, y: -20915081.402, z: -8241536.29, dist: 23492574.7, orbit: -2, size: 5.379, startype: 'B', label: loc('star_nupuppis'), zlabel: loc('star_nupuppis') },
+    nupuppis: { hex: 'cd8', x: -6821841.122, y: -20915081.402, z: -8241536.29, dist: 23492574.7, orbit: -2, size: 5.513, startype: 'B', lum: 1166, mass: 3.38, label: loc('star_nupuppis'), zlabel: loc('star_nupuppis') },
     // Zeta Centauri — Centaurus.
     // B2.5IV, V 2.55, 7.06 solar radii, 381.9 ly.
-    zetacentauri: { hex: 'ba9', x: 16286069.774, y: -16824182.11, z: 5921822.007, dist: 24152787.6, orbit: -2, size: 5.314, startype: 'B', label: loc('star_zetacentauri'), zlabel: loc('star_zetacentauri') },
+    zetacentauri: { hex: 'ba9', x: 16286069.774, y: -16824182.11, z: 5921822.007, dist: 24152787.6, orbit: -2, size: 5.521, startype: 'B', lum: 10240, mass: 6.1, label: loc('star_zetacentauri'), zlabel: loc('star_zetacentauri') },
     // Kappa Centauri — Centaurus.
     // B2IV, V 3.13, 4.93 solar radii, 383.3 ly.
-    kappacentauri: { hex: '293', x: 19628867.278, y: -12809548.888, z: 6172552.224, dist: 24237932.5, orbit: -2, size: 4.441, startype: 'B', label: loc('star_kappacentauri'), zlabel: loc('star_kappacentauri') },
+    kappacentauri: { hex: '293', x: 19628867.278, y: -12809548.888, z: 6172552.224, dist: 24237932.5, orbit: -2, size: 4.949, startype: 'B', lum: 5287, mass: 7.3, label: loc('star_kappacentauri'), zlabel: loc('star_kappacentauri') },
     // Algenib — Pegasus.
     // B2IV, V 2.83, 5.78 solar radii, 391.5 ly.
-    algenib: { hex: '661', x: -5651839.014, y: 16019098.21, z: -18016272.469, dist: 24761681.4, orbit: -2, size: 4.81, startype: 'B', label: loc('star_algenib'), zlabel: loc('star_algenib') },
+    algenib: { hex: '661', x: -5651839.014, y: 16019098.21, z: -18016272.469, dist: 24761681.4, orbit: -2, size: 5.624, startype: 'B', lum: 11380, mass: 16.9, label: loc('star_algenib'), zlabel: loc('star_algenib') },
     // Hadar — Centaurus.
     // B1III, V 0.61, 13.02 solar radii, 392.0 ly.
-    hadar: { hex: '2f4', x: 16509733.379, y: -18486517.49, z: 541315.333, dist: 24791443, orbit: -2, size: 7.216, startype: 'B', label: loc('star_hadar'), zlabel: loc('star_hadar') },
+    hadar: { hex: '2f4', x: 16509733.379, y: -18486517.49, z: 541315.333, dist: 24791443, orbit: -2, size: 7.283, startype: 'B', lum: 128100, mass: 22.8, label: loc('star_hadar'), zlabel: loc('star_hadar') },
     // Adhara — Canis Major.
     // B2II, V 1.5, 11.04 solar radii, 405.2 ly.
-    adhara: { hex: '30e', x: -12625918.932, y: -21720572.411, z: -5033770.394, dist: 25622957.3, orbit: -2, size: 6.646, startype: 'B', label: loc('star_adhara'), zlabel: loc('star_adhara') },
+    adhara: { hex: '30e', x: -12625918.932, y: -21720572.411, z: -5033770.394, dist: 25622957.3, orbit: -2, size: 6.914, startype: 'B', lum: 31290, mass: 13.7, label: loc('star_adhara'), zlabel: loc('star_adhara') },
     // Segin — Cassiopeia.
     // B2pvar, V 3.35, 4.79 solar radii, 411.8 ly.
-    segin: { hex: 'b56', x: -16679539.336, y: 19987463.898, z: 748349.943, dist: 26043536.1, orbit: -2, size: 4.376, startype: 'B', label: loc('star_segin'), zlabel: loc('star_segin') },
+    segin: { hex: 'b56', x: -16679539.336, y: 19987463.898, z: 748349.943, dist: 26043536.1, orbit: -2, size: 5.455, startype: 'B', lum: 2221, mass: 5.56, label: loc('star_segin'), zlabel: loc('star_segin') },
     // Sigma Centauri — Centaurus.
     // B3V, V 3.91, 4.34 solar radii, 411.8 ly.
-    sigmacentauri: { hex: 'f85', x: 12368582.251, y: -22218776.751, z: 5622268.755, dist: 26043536.1, orbit: -2, size: 4.164, startype: 'B', label: loc('star_sigmacentauri'), zlabel: loc('star_sigmacentauri') },
+    sigmacentauri: { hex: 'f85', x: 12368582.251, y: -22218776.751, z: 5622268.755, dist: 26043536.1, orbit: -2, size: 4.102, startype: 'B', lum: 3979, mass: 7.3, label: loc('star_sigmacentauri'), zlabel: loc('star_sigmacentauri') },
     // Delta Centauri — Centaurus.
     // B2IVne, V 2.58, 6.88 solar radii, 415.0 ly.
-    deltacentauri: { hex: 'cde', x: 11268771.449, y: -23108027.63, z: 5262542.023, dist: 26242341.7, orbit: -2, size: 5.245, startype: 'B', label: loc('star_deltacentauri'), zlabel: loc('star_deltacentauri') },
+    deltacentauri: { hex: 'cde', x: 11268771.449, y: -23108027.63, z: 5262542.023, dist: 26242341.7, orbit: -2, size: 6.586, startype: 'B', lum: 25880, mass: 42.9, label: loc('star_deltacentauri'), zlabel: loc('star_deltacentauri') },
     // Lambda Centauri — Centaurus.
     // B9II:, V 3.11, 9.63 solar radii, 419.8 ly.
-    lambdacentauri: { hex: '569', x: 10993833.896, y: -24154150.413, z: -647343.485, dist: 26546307.1, orbit: -2, size: 6.205, startype: 'B', label: loc('star_lambdacentauri'), zlabel: loc('star_lambdacentauri') },
+    lambdacentauri: { hex: '569', x: 10993833.896, y: -24154150.413, z: -647343.485, dist: 26546307.1, orbit: -2, size: 6.047, startype: 'B', lum: 712.9, mass: 3.27, label: loc('star_lambdacentauri'), zlabel: loc('star_lambdacentauri') },
     // HD 100673 — Centaurus.
     // B9V, V 4.62, 4.88 solar radii, 426.3 ly.
-    hd100673: { hex: 'e35', x: 9936580.273, y: -24852280.299, z: 3258341.928, dist: 26962719.7, orbit: -2, size: 4.417, startype: 'B', label: loc('star_hd100673'), zlabel: loc('star_hd100673') },
+    hd100673: { hex: 'e35', x: 9936580.273, y: -24852280.299, z: 3258341.928, dist: 26962719.7, orbit: -2, size: 4.368, startype: 'B', lum: 260.5, mass: 2.75, label: loc('star_hd100673'), zlabel: loc('star_hd100673') },
     // Epsilon Centauri — Centaurus.
     // B1III, V 2.29, 6.55 solar radii, 427.5 ly.
-    epsiloncentauri: { hex: '372', x: 17244308.245, y: -20411693.441, z: 4098910.158, dist: 27033395.3, orbit: -2, size: 5.118, startype: 'B', label: loc('star_epsiloncentauri'), zlabel: loc('star_epsiloncentauri') },
+    epsiloncentauri: { hex: '372', x: 17244308.245, y: -20411693.441, z: 4098910.158, dist: 27033395.3, orbit: -2, size: 5.632, startype: 'B', lum: 27730, mass: 11.8, label: loc('star_epsiloncentauri'), zlabel: loc('star_epsiloncentauri') },
     // Upsilon1 Centauri — Centaurus.
     // B2IV-V, V 3.87, 3.91 solar radii, 427.5 ly.
-    upsilon1centauri: { hex: 'b24', x: 18424478.184, y: -18241315.756, z: 7654898.015, dist: 27033395.3, orbit: -2, size: 3.956, startype: 'B', label: loc('star_upsilon1centauri'), zlabel: loc('star_upsilon1centauri') },
+    upsilon1centauri: { hex: 'b24', x: 18424478.184, y: -18241315.756, z: 7654898.015, dist: 27033395.3, orbit: -2, size: 4.256, startype: 'B', lum: 4189, mass: 7.3, label: loc('star_upsilon1centauri'), zlabel: loc('star_upsilon1centauri') },
     // Polaris — Ursa Minor.
     // F7:Ib-IIv SB, V 1.97, 40.77 solar radii, 432.6 ly.
-    polaris: { hex: 'aba', x: -13438636.487, y: 20473611.57, z: 12189713.765, dist: 27356075.1, orbit: -2, size: 12.771, startype: 'F', label: loc('star_polaris'), zlabel: loc('star_polaris') },
+    polaris: { hex: 'aba', x: -13438636.487, y: 20473611.57, z: 12189713.765, dist: 27356075.1, orbit: -2, size: 12.005, startype: 'F', lum: 1590, mass: 4.22, label: loc('star_polaris'), zlabel: loc('star_polaris') },
     // Albireo — Cygnus.
     // K3II+..., V 3.05, 49.22 solar radii, 434.3 ly.
-    albireo: { hex: 'c5e', x: 12806894.185, y: 24197873.193, z: 2189074.24, dist: 27465353.7, orbit: -2, size: 14.031, startype: 'KIII', label: loc('star_albireo'), zlabel: loc('star_albireo') },
+    albireo: { hex: 'c5e', x: 12806894.185, y: 24197873.193, z: 2189074.24, dist: 27465353.7, orbit: -2, size: 15.037, startype: 'KIII', lum: 988.4, mass: 6.26, label: loc('star_albireo'), zlabel: loc('star_albireo') },
     // Nu Centauri — Centaurus.
     // B2IV, V 3.41, 4.94 solar radii, 436.6 ly.
-    nucentauri: { hex: '67d', x: 18171935.985, y: -18547552.056, z: 9392284.333, dist: 27612423.8, orbit: -2, size: 4.445, startype: 'B', label: loc('star_nucentauri'), zlabel: loc('star_nucentauri') },
+    nucentauri: { hex: '67d', x: 18171935.985, y: -18547552.056, z: 9392284.333, dist: 27612423.8, orbit: -2, size: 4.576, startype: 'B', lum: 6409, mass: 7.3, label: loc('star_nucentauri'), zlabel: loc('star_nucentauri') },
     // Xi2 Canis Majoris — Canis Major.
     // A0III, V 4.54, 5.79 solar radii, 441.3 ly.
-    xi2canismajoris: { hex: '20d', x: -16700693.702, y: -21367756.717, z: -6599146.086, dist: 27911340.5, orbit: -2, size: 4.811, startype: 'A', label: loc('star_xi2canismajoris'), zlabel: loc('star_xi2canismajoris') },
+    xi2canismajoris: { hex: '20d', x: -16700693.702, y: -21367756.717, z: -6599146.086, dist: 27911340.5, orbit: -2, size: 4.584, startype: 'A', lum: 268.8, mass: 2.18, label: loc('star_xi2canismajoris'), zlabel: loc('star_xi2canismajoris') },
     // HD 50896 — Canis Major.
     // WN5 (SB1), V 6.65, 13.43 solar radii, 441.9 ly.
-    hd50896: { hex: 'c71', x: -15878917.76, y: -22473789.608, z: -4893294.953, dist: 27949160.7, orbit: -2, size: 7.329, startype: 'O', label: loc('star_hd50896'), zlabel: loc('star_hd50896') },
+    hd50896: { hex: 'c71', x: -15878917.76, y: -22473789.608, z: -4893294.953, dist: 27949160.7, orbit: -2, size: 7.329, startype: 'O', lum: 243800, mass: 59, label: loc('star_hd50896'), zlabel: loc('star_hd50896') },
     // Omicron2 Canis Majoris — Canis Major.
     // B3Ia, V 3.02, 3.61 solar radii, 441.9 ly.
-    omicron2canismajoris: { hex: '1ed', x: -15645880.846, y: -22811466.286, z: -3999875.314, dist: 27949160.7, orbit: -2, size: 3.8, startype: 'B', label: loc('star_omicron2canismajoris'), zlabel: loc('star_omicron2canismajoris') },
+    omicron2canismajoris: { hex: '1ed', x: -15645880.846, y: -22811466.286, z: -3999875.314, dist: 27949160.7, orbit: -2, size: 15.779, startype: 'B', lum: 228800, mass: 20.9, label: loc('star_omicron2canismajoris'), zlabel: loc('star_omicron2canismajoris') },
     // Muliphein — Canis Major.
     // B8II, V 4.11, 5.58 solar radii, 441.9 ly.
-    muliphein: { hex: '608', x: -18555164.952, y: -20790642.19, z: -2147238.926, dist: 27949160.7, orbit: -2, size: 4.725, startype: 'B', label: loc('star_muliphein'), zlabel: loc('star_muliphein') },
+    muliphein: { hex: '608', x: -18555164.952, y: -20790642.19, z: -2147238.926, dist: 27949160.7, orbit: -2, size: 4.6, startype: 'B', lum: 658.2, mass: 3.3, label: loc('star_muliphein'), zlabel: loc('star_muliphein') },
     // Aludra — Canis Major.
     // B5Ia, V 2.45, 3.36 solar radii, 441.9 ly.
-    aludra: { hex: '41c', x: -12772761.56, y: -24658577.128, z: -3157011.283, dist: 27949160.7, orbit: -2, size: 3.666, startype: 'B', label: loc('star_aludra'), zlabel: loc('star_aludra') },
+    aludra: { hex: '41c', x: -12772761.56, y: -24658577.128, z: -3157011.283, dist: 27949160.7, orbit: -2, size: 13.441, startype: 'B', lum: 85810, mass: 12.6, label: loc('star_aludra'), zlabel: loc('star_aludra') },
     // HD 79351 — Carina.
     // B2IV, V 3.43, 5.01 solar radii, 446.8 ly.
-    hd79351: { hex: 'b4a', x: 3750036.345, y: -27769793.505, z: -3625798.309, dist: 28255452.9, orbit: -2, size: 4.475, startype: 'B', label: loc('star_hd79351'), zlabel: loc('star_hd79351') },
+    hd79351: { hex: 'b4a', x: 3750036.345, y: -27769793.505, z: -3625798.309, dist: 28255452.9, orbit: -2, size: 4.717, startype: 'B', lum: 5299, mass: 7.3, label: loc('star_hd79351'), zlabel: loc('star_hd79351') },
     // Theta Carinae — Carina.
     // B0Vp, V 2.74, 4.70 solar radii, 455.5 ly.
-    thetacarinae: { hex: '407', x: 9627306.882, y: -27039837.187, z: -2461547.653, dist: 28807933.8, orbit: -2, size: 4.335, startype: 'B', label: loc('star_thetacarinae'), zlabel: loc('star_thetacarinae') },
+    thetacarinae: { hex: '407', x: 9627306.882, y: -27039837.187, z: -2461547.653, dist: 28807933.8, orbit: -2, size: 4.684, startype: 'B', lum: 26170, mass: 14.5, label: loc('star_thetacarinae'), zlabel: loc('star_thetacarinae') },
     // Pherkad — Ursa Minor.
     // A3II-III, V 3, 15.26 solar radii, 486.8 ly.
-    pherkad: { hex: '72b', x: -7376405.112, y: 22092733.559, z: 20131188.661, dist: 30785791.9, orbit: -2, size: 7.813, startype: 'A', label: loc('star_pherkad'), zlabel: loc('star_pherkad') },
+    pherkad: { hex: '72b', x: -7376405.112, y: 22092733.559, z: 20131188.661, dist: 30785791.9, orbit: -2, size: 8.094, startype: 'A', lum: 1136, mass: 1.98, label: loc('star_pherkad'), zlabel: loc('star_pherkad') },
     // Mirzam — Canis Major.
     // B1II/III, V 1.98, 8.71 solar radii, 492.7 ly.
-    mirzam: { hex: 'db7', x: -20953698.445, y: -21743594.587, z: -7679109.129, dist: 31157825.7, orbit: -2, size: 5.901, startype: 'B', label: loc('star_mirzam'), zlabel: loc('star_mirzam') },
+    mirzam: { hex: 'db7', x: -20953698.445, y: -21743594.587, z: -7679109.129, dist: 31157825.7, orbit: -2, size: 6.534, startype: 'B', lum: 42180, mass: 21.3, label: loc('star_mirzam'), zlabel: loc('star_mirzam') },
     // Betelgeuse — Orion.
     // M2Ib, V 0.45, 610.26 solar radii, 497.9 ly.
-    betelgeuse: { hex: 'dc7', x: -29269998.704, y: -10530474.629, z: -4903814.762, dist: 31490810.1, orbit: -2, size: 49.407, startype: 'M', label: loc('star_betelgeuse'), zlabel: loc('star_betelgeuse') },
+    betelgeuse: { hex: 'dc7', x: -29269998.704, y: -10530474.629, z: -4903814.762, dist: 31490810.1, orbit: -2, size: 55.281, startype: 'M', lum: 126000, mass: 16.5, label: loc('star_betelgeuse'), zlabel: loc('star_betelgeuse') },
     // Mu Centauri — Centaurus.
     // B2IV-Ve, V 3.47, 5.56 solar radii, 505.7 ly.
-    mucentauri: { hex: 'a9a', x: 21079402.839, y: -21647850.535, z: 10473219.309, dist: 31979039.7, orbit: -2, size: 4.717, startype: 'B', label: loc('star_mucentauri'), zlabel: loc('star_mucentauri') },
+    mucentauri: { hex: 'a9a', x: 21079402.839, y: -21647850.535, z: 10473219.309, dist: 31979039.7, orbit: -2, size: 4.7, startype: 'B', lum: 7003, mass: 11.1, label: loc('star_mucentauri'), zlabel: loc('star_mucentauri') },
     // Phi Ursae Majoris — Ursa Major.
     // A3IV, V 4.55, 7.81 solar radii, 508.8 ly.
-    phiursaemajoris: { hex: 'b68', x: -20461269.325, y: 7098139.643, z: 23799474.12, dist: 32178596.9, orbit: -2, size: 5.59, startype: 'A', label: loc('star_phiursaemajoris'), zlabel: loc('star_phiursaemajoris') },
+    phiursaemajoris: { hex: 'b68', x: -20461269.325, y: 7098139.643, z: 23799474.12, dist: 32178596.9, orbit: -2, size: 4.97, startype: 'A', lum: 356.5, mass: 4.94, label: loc('star_phiursaemajoris'), zlabel: loc('star_phiursaemajoris') },
     // Nu Orionis — Orion.
     // B3IV, V 4.42, 4.30 solar radii, 516.1 ly.
-    nuorionis: { hex: '966', x: -31517546.067, y: -8331056.601, z: -1549475.883, dist: 32636836.4, orbit: -2, size: 4.145, startype: 'B', label: loc('star_nuorionis'), zlabel: loc('star_nuorionis') },
+    nuorionis: { hex: '966', x: -31517546.067, y: -8331056.601, z: -1549475.883, dist: 32636836.4, orbit: -2, size: 4.714, startype: 'B', lum: 2842, mass: 12.9, label: loc('star_nuorionis'), zlabel: loc('star_nuorionis') },
     // 69 Orionis — Orion.
     // B5Vn, V 4.95, 3.69 solar radii, 528.6 ly.
-    orionis69: { hex: '5f4', x: -32412025.156, y: -8162020.609, z: -652251.22, dist: 33430276.5, orbit: -2, size: 3.84, startype: 'B', label: loc('star_orionis69'), zlabel: loc('star_orionis69') },
+    orionis69: { hex: '5f4', x: -32412025.156, y: -8162020.609, z: -652251.22, dist: 33430276.5, orbit: -2, size: 4.532, startype: 'B', lum: 1444, mass: 4.7, label: loc('star_orionis69'), zlabel: loc('star_orionis69') },
     // Gamma Cassiopeiae — Cassiopeia.
     // B0IV:evar, V 2.15, 7.43 solar radii, 549.1 ly.
-    gammacassiopeiae: { hex: '640', x: -19191155.748, y: 28910392.445, z: -1301755.998, dist: 34724714.8, orbit: -2, size: 5.452, startype: 'B', label: loc('star_gammacassiopeiae'), zlabel: loc('star_gammacassiopeiae') },
+    gammacassiopeiae: { hex: '640', x: -19191155.748, y: 28910392.445, z: -1301755.998, dist: 34724714.8, orbit: -2, size: 5.582, startype: 'B', lum: 47400, mass: 4.62, label: loc('star_gammacassiopeiae'), zlabel: loc('star_gammacassiopeiae') },
     // 5 Orionis — Orion.
     // M1III, V 5.33, 66.03 solar radii, 590.9 ly.
-    orionis5: { hex: '6e1', x: -32616714.753, y: -9401010.37, z: -15622087.334, dist: 37366812.7, orbit: -2, size: 16.252, startype: 'M', label: loc('star_orionis5'), zlabel: loc('star_orionis5') },
+    orionis5: { hex: '6e1', x: -32616714.753, y: -9401010.37, z: -15622087.334, dist: 37366812.7, orbit: -2, size: 18.154, startype: 'M', lum: 1097, mass: 0.5, label: loc('star_orionis5'), zlabel: loc('star_orionis5') },
     // Avior — Carina.
     // K3III+B2V, V 1.86, 118.62 solar radii, 605.1 ly.
-    avior: { hex: '2b3', x: 2790803.408, y: -37241875.997, z: -8348531.229, dist: 38268053.1, orbit: -2, size: 21.783, startype: 'KIII', label: loc('star_avior'), zlabel: loc('star_avior') },
+    avior: { hex: '2b3', x: 2790803.408, y: -37241875.997, z: -8348531.229, dist: 38268053.1, orbit: -2, size: 22.195, startype: 'KIII', lum: 7437, mass: 0.78, label: loc('star_avior'), zlabel: loc('star_avior') },
     // HD 96918 — Carina.
     // G0Ia0, V 3.93, 1.10 solar radii, 605.1 ly.
-    hd96918: { hex: 'c39', x: 13089775.61, y: -35949376.768, z: 862536.72, dist: 38268053.1, orbit: -2, size: 2.098, startype: 'G', label: loc('star_hd96918'), zlabel: loc('star_hd96918') },
+    hd96918: { hex: 'c39', x: 13089775.61, y: -35949376.768, z: 862536.72, dist: 38268053.1, orbit: -2, size: 47.813, startype: 'G', lum: 316800, mass: 39.5, label: loc('star_hd96918'), zlabel: loc('star_hd96918') },
     // Alnilam — Orion.
     // B0Ia, V 1.69, 7.16 solar radii, 607.4 ly.
-    alnilam: { hex: '752', x: -33189849.287, y: -15626493.212, z: -11385040.497, dist: 38410578.4, orbit: -2, size: 5.352, startype: 'B', label: loc('star_alnilam'), zlabel: loc('star_alnilam') },
+    alnilam: { hex: '752', x: -33189849.287, y: -15626493.212, z: -11385040.497, dist: 38410578.4, orbit: -2, size: 5.352, startype: 'B', lum: 44670, mass: 54, label: loc('star_alnilam'), zlabel: loc('star_alnilam') },
     // Xi Orionis — Orion.
     // B3IV, V 4.45, 4.99 solar radii, 607.4 ly.
-    xiorionis: { hex: '397', x: -36933999.567, y: -10456424.383, z: -1383979.036, dist: 38410578.4, orbit: -2, size: 4.466, startype: 'B', label: loc('star_xiorionis'), zlabel: loc('star_xiorionis') },
+    xiorionis: { hex: '397', x: -36933999.567, y: -10456424.383, z: -1383979.036, dist: 38410578.4, orbit: -2, size: 5.276, startype: 'B', lum: 1939, mass: 6.56, label: loc('star_xiorionis'), zlabel: loc('star_xiorionis') },
     // Saiph — Orion.
     // B0.5Iavar, V 2.07, 9.90 solar radii, 647.1 ly.
-    saiph: { hex: '37e', x: -31980052.256, y: -21991060.137, z: -12983478.992, dist: 40925556.7, orbit: -2, size: 6.291, startype: 'B', label: loc('star_saiph'), zlabel: loc('star_saiph') },
+    saiph: { hex: '37e', x: -31980052.256, y: -21991060.137, z: -12983478.992, dist: 40925556.7, orbit: -2, size: 7.035, startype: 'B', lum: 68010, mass: 5.33, label: loc('star_saiph'), zlabel: loc('star_saiph') },
     // HD 89388 — Carina.
     // K3II, V 3.39, 63.72 solar radii, 657.6 ly.
-    hd89388: { hex: '0c4', x: 11075907.605, y: -39988424.831, z: -2759734.474, dist: 41585646.4, orbit: -2, size: 15.965, startype: 'KIII', label: loc('star_hd89388'), zlabel: loc('star_hd89388') },
+    hd89388: { hex: '0c4', x: 11075907.605, y: -39988424.831, z: -2759734.474, dist: 41585646.4, orbit: -2, size: 18.611, startype: 'KIII', lum: 2770, mass: 10.9, label: loc('star_hd89388'), zlabel: loc('star_hd89388') },
     // Kappa Canis Majoris — Canis Major.
     // B1.5IVne, V 3.5, 6.11 solar radii, 658.9 ly.
-    kappacanismajoris: { hex: 'd95', x: -18718869.7, y: -35737839.507, z: -10429339.57, dist: 41669657.8, orbit: -2, size: 4.942, startype: 'B', label: loc('star_kappacanismajoris'), zlabel: loc('star_kappacanismajoris') },
+    kappacanismajoris: { hex: 'd95', x: -18718869.7, y: -35737839.507, z: -10429339.57, dist: 41669657.8, orbit: -2, size: 4.907, startype: 'B', lum: 13240, mass: 5.02, label: loc('star_kappacanismajoris'), zlabel: loc('star_kappacanismajoris') },
     // Enif — Pegasus.
     // K2Ibvar, V 2.38, 90.50 solar radii, 689.5 ly.
-    enif: { hex: 'cb0', x: 15384111.931, y: 33868393.483, z: -22757408.052, dist: 43607781.4, orbit: -2, size: 19.026, startype: 'KIII', label: loc('star_enif'), zlabel: loc('star_enif') },
+    enif: { hex: 'cb0', x: 15384111.931, y: 33868393.483, z: -22757408.052, dist: 43607781.4, orbit: -2, size: 24.576, startype: 'KIII', lum: 6639, mass: 8.32, label: loc('star_enif'), zlabel: loc('star_enif') },
     // Mintaka — Orion.
     // O9.5II, V 2.25, 8.75 solar radii, 692.5 ly.
-    mintaka: { hex: '262', x: -38147085.827, y: -16869357.775, z: -13343436.39, dist: 43792952.4, orbit: -2, size: 5.916, startype: 'O', label: loc('star_mintaka'), zlabel: loc('star_mintaka') },
+    mintaka: { hex: '262', x: -38147085.827, y: -16869357.775, z: -13343436.39, dist: 43792952.4, orbit: -2, size: 6.296, startype: 'O', lum: 72640, mass: 7.49, label: loc('star_mintaka'), zlabel: loc('star_mintaka') },
     // Alnitak — Orion.
     // O9.5Ib SB, V 1.74, 11.77 solar radii, 736.2 ly.
-    alnitak: { hex: '389', x: -39951981.423, y: -19877706.7, z: -13290363.613, dist: 46560904.3, orbit: -2, size: 6.861, startype: 'O', label: loc('star_alnitak'), zlabel: loc('star_alnitak') },
+    alnitak: { hex: '389', x: -39951981.423, y: -19877706.7, z: -13290363.613, dist: 46560904.3, orbit: -2, size: 7.45, startype: 'O', lum: 179600, mass: 18.7, label: loc('star_alnitak'), zlabel: loc('star_alnitak') },
     // Aspidiske — Carina.
     // A8Ib, V 2.21, 43.13 solar radii, 765.6 ly.
-    aspidiske: { hex: '960', x: 7069428.086, y: -47534094.22, z: -5910125.902, dist: 48418968.5, orbit: -2, size: 13.134, startype: 'A', label: loc('star_aspidiske'), zlabel: loc('star_aspidiske') },
+    aspidiske: { hex: '960', x: 7069428.086, y: -47534094.22, z: -5910125.902, dist: 48418968.5, orbit: -2, size: 12.201, startype: 'A', lum: 3551, mass: 1.27, label: loc('star_aspidiske'), zlabel: loc('star_aspidiske') },
     // Rigel — Orion.
     // B8Ia, V 0.18, 66.58 solar radii, 862.8 ly.
-    rigel: { hex: 'a4d', x: -43066329.648, y: -24109594.482, z: -23272748.633, dist: 54567409, orbit: -2, size: 16.319, startype: 'B', label: loc('star_rigel'), zlabel: loc('star_rigel') },
+    rigel: { hex: 'a4d', x: -43066329.648, y: -24109594.482, z: -23272748.633, dist: 54567409, orbit: -2, size: 17.765, startype: 'B', lum: 120000, mass: 21, label: loc('star_rigel'), zlabel: loc('star_rigel') },
     // HD 117440 — Centaurus.
     // G8II/III, V 3.9, 48.39 solar radii, 906.0 ly.
-    hd117440: { hex: '20e', x: 34798490.429, y: -39721835.853, z: 22227171.715, dist: 57295779.4, orbit: -2, size: 13.913, startype: 'G', label: loc('star_hd117440'), zlabel: loc('star_hd117440') },
+    hd117440: { hex: '20e', x: 34798490.429, y: -39721835.853, z: 22227171.715, dist: 57295779.4, orbit: -2, size: 19.916, startype: 'G', lum: 3015, mass: 26, label: loc('star_hd117440'), zlabel: loc('star_hd117440') },
     // Omega Canis Majoris — Canis Major.
     // B2IV/Ve, V 4.01, 7.82 solar radii, 911.1 ly.
-    omegacanismajoris: { hex: 'a68', x: -29094459.523, y: -49210188.929, z: -7173418.273, dist: 57615867.6, orbit: -2, size: 5.592, startype: 'B', label: loc('star_omegacanismajoris'), zlabel: loc('star_omegacanismajoris') },
+    omegacanismajoris: { hex: 'a68', x: -29094459.523, y: -49210188.929, z: -7173418.273, dist: 57615867.6, orbit: -2, size: 6.369, startype: 'B', lum: 13500, mass: 11.9, label: loc('star_omegacanismajoris'), zlabel: loc('star_omegacanismajoris') },
     // Pi6 Orionis — Orion.
     // K2IIvar, V 4.47, 47.39 solar radii, 945.4 ly.
-    pi6orionis: { hex: 'ec0', x: -52065640.302, y: -16474450.783, z: -24335879.223, dist: 59786900.3, orbit: -2, size: 13.768, startype: 'KIII', label: loc('star_pi6orionis'), zlabel: loc('star_pi6orionis') },
+    pi6orionis: { hex: 'ec0', x: -52065640.302, y: -16474450.783, z: -24335879.223, dist: 59786900.3, orbit: -2, size: 16.338, startype: 'KIII', lum: 1306, mass: 5.26, label: loc('star_pi6orionis'), zlabel: loc('star_pi6orionis') },
     // Pi4 Orionis — Orion.
     // B2III SB, V 3.68, 10.51 solar radii, 1052.1 ly.
-    pi4orionis: { hex: '259', x: -59470672.616, y: -13610013.875, z: -26555292.132, dist: 66537034.2, orbit: -2, size: 6.483, startype: 'B', label: loc('star_pi4orionis'), zlabel: loc('star_pi4orionis') },
+    pi4orionis: { hex: '259', x: -59470672.616, y: -13610013.875, z: -26555292.132, dist: 66537034.2, orbit: -2, size: 6.072, startype: 'B', lum: 18320, mass: 12.1, label: loc('star_pi4orionis'), zlabel: loc('star_pi4orionis') },
     // Naos — Carina.
     // O5IAf, V 2.21, 11.70 solar radii, 1083.6 ly.
-    naos: { hex: 'cbe', x: -16549998.877, y: -66259921.65, z: -5621689.171, dist: 68526513.6, orbit: -2, size: 6.84, startype: 'O', label: loc('star_naos'), zlabel: loc('star_naos') },
+    naos: { hex: 'cbe', x: -16549998.877, y: -66259921.65, z: -5621689.171, dist: 68526513.6, orbit: -2, size: 6.578, startype: 'O', lum: 243900, mass: 8.32, label: loc('star_naos'), zlabel: loc('star_naos') },
     // Meissa — Orion.
     // O..., V 3.39, 6.88 solar radii, 1098.2 ly.
-    meissa: { hex: 'bd3', x: -65602326.456, y: -17641780.231, z: -14433489.868, dist: 69449429.6, orbit: -2, size: 5.248, startype: 'O', label: loc('star_meissa'), zlabel: loc('star_meissa') },
+    meissa: { hex: 'bd3', x: -65602326.456, y: -17641780.231, z: -14433489.868, dist: 69449429.6, orbit: -2, size: 5.458, startype: 'O', lum: 75830, mass: 23.6, label: loc('star_meissa'), zlabel: loc('star_meissa') },
     // Nganurganity — Canis Major.
     // K4III, V 3.49, 122.25 solar radii, 1120.8 ly.
-    nganurganity: { hex: '317', x: -35744934.347, y: -59888673.893, z: -12641833.773, dist: 70881376.6, orbit: -2, size: 22.113, startype: 'KIII', label: loc('star_nganurganity'), zlabel: loc('star_nganurganity') },
+    nganurganity: { hex: '317', x: -35744934.347, y: -59888673.893, z: -12641833.773, dist: 70881376.6, orbit: -2, size: 53.36, startype: 'KIII', lum: 47870, mass: 0.7, label: loc('star_nganurganity'), zlabel: loc('star_nganurganity') },
     // HD 93070 — Carina.
     // K3Ib, V 4.58, 63.88 solar radii, 1140.4 ly.
-    hd93070: { hex: 'e6b', x: 22091148.29, y: -68628013.666, z: -1884755.697, dist: 72120561.5, orbit: -2, size: 15.985, startype: 'KIII', label: loc('star_hd93070'), zlabel: loc('star_hd93070') },
+    hd93070: { hex: 'e6b', x: 22091148.29, y: -68628013.666, z: -1884755.697, dist: 72120561.5, orbit: -2, size: 20.46, startype: 'KIII', lum: 4418, mass: 0.73, label: loc('star_hd93070'), zlabel: loc('star_hd93070') },
     // Pi5 Orionis — Orion.
     // B2III SB, V 3.71, 13.22 solar radii, 1342.2 ly.
-    pi5orionis: { hex: '49b', x: -74110884.114, y: -21625127.567, z: -35284453.293, dist: 84882636.2, orbit: -2, size: 7.273, startype: 'B', label: loc('star_pi5orionis'), zlabel: loc('star_pi5orionis') },
+    pi5orionis: { hex: '49b', x: -74110884.114, y: -21625127.567, z: -35284453.293, dist: 84882636.2, orbit: -2, size: 6.52, startype: 'B', lum: 23240, mass: 13.3, label: loc('star_pi5orionis'), zlabel: loc('star_pi5orionis') },
     // HD 90853 — Carina.
     // F2II, V 3.81, 45.34 solar radii, 1342.2 ly.
-    hd90853: { hex: '59b', x: 22279691.145, y: -81895781.139, z: -1326018.382, dist: 84882636.2, orbit: -2, size: 13.467, startype: 'F', label: loc('star_hd90853'), zlabel: loc('star_hd90853') },
+    hd90853: { hex: '59b', x: 22279691.145, y: -81895781.139, z: -1326018.382, dist: 84882636.2, orbit: -2, size: 12.664, startype: 'F', lum: 3478, mass: 1.85, label: loc('star_hd90853'), zlabel: loc('star_hd90853') },
     // Deneb — Cygnus.
     // A2Ia, V 1.25, 95.96 solar radii, 1411.9 ly.
-    deneb: { hex: 'a4b', x: 8886756.74, y: 88794266.231, z: 3112428.886, dist: 89292123.8, orbit: -2, size: 19.591, startype: 'A', label: loc('star_deneb'), zlabel: loc('star_deneb') },
+    deneb: { hex: 'a4b', x: 8886756.74, y: 88794266.231, z: 3112428.886, dist: 89292123.8, orbit: -2, size: 28.496, startype: 'A', lum: 196000, mass: 19, label: loc('star_deneb'), zlabel: loc('star_deneb') },
     // HD 74375 — Carina.
     // B1.5III, V 4.31, 9.21 solar radii, 1443.2 ly.
-    hd74375: { hex: 'b12', x: 9092489.336, y: -89170753.264, z: -17195366.609, dist: 91267613.3, orbit: -2, size: 6.069, startype: 'B', label: loc('star_hd74375'), zlabel: loc('star_hd74375') },
+    hd74375: { hex: 'b12', x: 9092489.336, y: -89170753.264, z: -17195366.609, dist: 91267613.3, orbit: -2, size: 7.128, startype: 'B', lum: 84370, mass: 7.3, label: loc('star_hd74375'), zlabel: loc('star_hd74375') },
     // Wezen — Canis Major.
     // F8Ia, V 1.83, 167.18 solar radii, 1606.7 ly.
-    wezen: { hex: '9a7', x: -52662003.246, y: -85659385.305, z: -14609087.84, dist: 101608278.8, orbit: -2, size: 25.859, startype: 'F', label: loc('star_wezen'), zlabel: loc('star_wezen') },
+    wezen: { hex: '9a7', x: -52662003.246, y: -85659385.305, z: -14609087.84, dist: 101608278.8, orbit: -2, size: 22.683, startype: 'F', lum: 22340, mass: 3.72, label: loc('star_wezen'), zlabel: loc('star_wezen') },
     // Chi2 Orionis — Orion.
     // B2Iavar, V 4.64, 11.57 solar radii, 1802.0 ly.
-    chi2orionis: { hex: 'd92', x: -112319343.731, y: -19182444.928, z: -1711316.712, dist: 113958456.4, orbit: -2, size: 6.802, startype: 'B', label: loc('star_chi2orionis'), zlabel: loc('star_chi2orionis') },
+    chi2orionis: { hex: 'd92', x: -112319343.731, y: -19182444.928, z: -1711316.712, dist: 113958456.4, orbit: -2, size: 11.027, startype: 'B', lum: 127900, mass: 7.9, label: loc('star_chi2orionis'), zlabel: loc('star_chi2orionis') },
     // Sadr — Cygnus.
     // F8Ib, V 2.23, 158.58 solar radii, 1832.3 ly.
-    sadr: { hex: '213', x: 23785965.7, y: 113348755.913, z: 3775477.084, dist: 115879104.5, orbit: -2, size: 25.186, startype: 'F', label: loc('star_sadr'), zlabel: loc('star_sadr') },
+    sadr: { hex: '213', x: 23785965.7, y: 113348755.913, z: 3775477.084, dist: 115879104.5, orbit: -2, size: 23.661, startype: 'F', lum: 21810, mass: 7.31, label: loc('star_sadr'), zlabel: loc('star_sadr') },
     // Iota Canis Majoris — Canis Major.
     // B3Ib/II, V 4.36, 21.47 solar radii, 2508.9 ly.
-    iotacanismajoris: { hex: '6f1', x: -104002677.583, y: -118396301.586, z: -18450358.971, dist: 158665235.4, orbit: -2, size: 9.267, startype: 'B', label: loc('star_iotacanismajoris'), zlabel: loc('star_iotacanismajoris') },
+    iotacanismajoris: { hex: '6f1', x: -104002677.583, y: -118396301.586, z: -18450358.971, dist: 158665235.4, orbit: -2, size: 11.011, startype: 'B', lum: 72350, mass: 16.8, label: loc('star_iotacanismajoris'), zlabel: loc('star_iotacanismajoris') },
 };
 
 // --- The cow -------------------------------------------------------------------------------------
@@ -3449,6 +3456,9 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 // Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
 // Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
 var starLockOn = false;
+// Open details-panel star and zoom scale.
+var starInfoOn = false;
+var starInfoScale = 0;
 // Whether the map's settings panel is showing.
 var mapSettingsOpen = false;
 // Whether the map's star search is showing, and what was last typed into it.
@@ -3581,6 +3591,69 @@ function drawnAsStarIndex(){
     if (!mapDrawnAsStar.length){ indexBodies(); }
     return mapDrawnAsStar;
 }
+// Toggle details for the locked star; clear them for other targets.
+function starInfoClick(hit){
+    if (starInfoOn === hit){
+        starInfoOn = false;
+    }
+    else if (starLockOn === hit && starData[hit] && starData[hit].startype){
+        starInfoOn = hit;
+        starInfoScale = mapScale;
+    }
+    else {
+        starInfoOn = false;
+    }
+}
+
+// Format luminosity with magnitude-appropriate precision.
+function starLumText(L){
+    if (L >= 1000){ return Math.round(L).toLocaleString(); }
+    if (L >= 10){ return L.toFixed(1); }
+    if (L >= 1){ return L.toFixed(2); }
+    if (L >= 0.001){ return L.toFixed(4); }
+    return L.toExponential(2);
+}
+
+function starInfoTitle(id){
+    const star = starData[id];
+    return star.zlabel || star.label || id;
+}
+
+// Classify spectral colour with luminosity.
+function starKindText(star){
+    if (star.startype === 'D'){ return loc('star_class_D'); }
+    if (star.startype === 'T'){ return loc('star_class_T'); }
+    const colour = loc(`star_colour_${star.startype === 'KIII' ? 'K' : star.startype}`);
+    const L = star.lum || 0;
+    if (L >= 30000){ return loc('star_kind_supergiant', [colour]); }
+    if (star.startype === 'KIII' || L >= 100){ return loc('star_kind_giant', [colour]); }
+    // Restrict dwarf labels to cool main-sequence stars.
+    return loc(['G','K','M'].includes(star.startype) ? 'star_kind_dwarf' : 'star_kind_main', [colour]);
+}
+
+// Build details-panel lines from star data.
+function starInfoLines(id){
+    const star = starData[id];
+    const out = [];
+    if (star.startype){
+        out.push(loc('solar_map_star_class', [star.startype, starKindText(star)]));
+    }
+    // Star size is stored as 2*sqrt(radius).
+    if (star.size){
+        const R = Math.pow(star.size / 2, 2);
+        out.push(loc('solar_map_star_radius', [R >= 10 ? R.toFixed(0) : R.toFixed(2)]));
+    }
+    if (star.mass){ out.push(loc('solar_map_star_mass', [star.mass])); }
+    if (star.lum){ out.push(loc('solar_map_star_lum', [starLumText(star.lum)])); }
+    if (star.dist){ out.push(loc('solar_map_star_dist', [(star.dist / starConstants.AU_PER_LY).toFixed(2)])); }
+    return out;
+}
+
+// Close details after zooming out past the opening scale.
+function starInfoStale(){
+    return !!starInfoOn && starInfoScale > 0 && mapScale < starInfoScale * starConstants.INFO_ZOOM_CLOSE;
+}
+
 // A true distance through space, which needs mapFocus to be at the right depth — see refocus().
 function starCulled(pos, range = starRange()){
     if (range !== starConstants.STAR_RANGE_INF && dist3(pos, mapAnchor) > range * starConstants.AU_PER_LY){ return true; }
@@ -3626,9 +3699,13 @@ function starTint(type){
 // How bright a star of this size and class looks from `ly` light years away, relative to the Sun seen from one light
 // year.
 function skyFlux(star, ly){
-    const R = Math.pow((star.size || 1) / 2, 2);
-    const T = starConstants.STAR_TEMP[star.startype] || starConstants.SUN_TEMP;
-    const L = R * R * Math.pow(T / starConstants.SUN_TEMP, 4);
+    // Use measured luminosity, with a fallback for legacy entries.
+    let L = star.lum;
+    if (!(L > 0)){
+        const R = Math.pow((star.size || 1) / 2, 2);
+        const T = starConstants.STAR_TEMP[star.startype] || starConstants.SUN_TEMP;
+        L = R * R * Math.pow(T / starConstants.SUN_TEMP, 4);
+    }
     return L / Math.max(ly * ly, 1e-6);
 }
 
@@ -6049,6 +6126,60 @@ function drawMapFrame() {
         ctx.restore();
     }
 
+    // Draw the selected star details beside its disc.
+    function drawStarInfo(){
+        if (!starInfoOn || !starData[starInfoOn]){ return; }
+        if (starInfoStale()){ starInfoOn = false; return; }
+        const star = starData[starInfoOn];
+        const pos = genXYZcoord(starInfoOn);
+        if (starCulled(pos)){ starInfoOn = false; return; }
+        const lines = starInfoLines(starInfoOn);
+        if (!lines.length){ return; }
+        const title = starInfoTitle(starInfoOn);
+        const pad = starConstants.INFO_PAD;
+        const lh = starConstants.INFO_LINE_PX + starConstants.INFO_LINE_GAP;
+
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.font = `${starConstants.INFO_LINE_PX}px serif`;
+        let w = 0;
+        for (const l of lines){ w = Math.max(w, ctx.measureText(l).width); }
+        ctx.font = `bold ${starConstants.INFO_TITLE_PX}px serif`;
+        w = Math.max(w, ctx.measureText(title).width);
+        const boxW = w + pad * 2;
+        const boxH = pad * 2 + starConstants.INFO_TITLE_PX + starConstants.INFO_LINE_GAP + lines.length * lh;
+
+        const sx = mapShift.x + pX(pos) * mapScale, sy = mapShift.y + pY(pos) * mapScale;
+        const r = (starDrawnAt[starInfoOn] === undefined ? star.size / 10 : starDrawnAt[starInfoOn]) * mapScale;
+        let bx = sx + r + starConstants.INFO_GAP_PX;
+        if (bx + boxW > canvas.width - 4){ bx = sx - r - starConstants.INFO_GAP_PX - boxW; }
+        if (bx < 4){ bx = 4; }
+        let by = sy - boxH / 2;
+        if (by < 4){ by = 4; }
+        if (by + boxH > canvas.height - 4){ by = canvas.height - 4 - boxH; }
+
+        // Use filled edges because the WebGL context lacks strokeRect.
+        const tint = starTint(star.startype);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+        ctx.fillRect(bx, by, boxW, boxH);
+        ctx.fillStyle = `#${tint}`;
+        ctx.fillRect(bx, by, boxW, 1);
+        ctx.fillRect(bx, by + boxH - 1, boxW, 1);
+        ctx.fillRect(bx, by, 1, boxH);
+        ctx.fillRect(bx + boxW - 1, by, 1, boxH);
+
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = `#${tint}`;
+        ctx.font = `bold ${starConstants.INFO_TITLE_PX}px serif`;
+        ctx.fillText(title, bx + pad, by + pad);
+        ctx.font = `${starConstants.INFO_LINE_PX}px serif`;
+        ctx.fillStyle = '#dddddd';
+        let ty = by + pad + starConstants.INFO_TITLE_PX + starConstants.INFO_LINE_GAP;
+        for (const l of lines){ ctx.fillText(l, bx + pad, ty); ty += lh; }
+        ctx.restore();
+    }
+
     let setColor = function(id){
         let color = '558888';
         if (actions.space[id] && actions.space[id].info.syndicate() && global.settings.space[id.substring(4)]){
@@ -6518,6 +6649,8 @@ function drawMapFrame() {
         ctx.restore();
     }
 
+    drawStarInfo();
+
     // Whatever the pointer is resting on, named beside the cursor.
     if (mapHover && starData[mapHover]){
         let name = hoverName(mapHover);
@@ -6748,6 +6881,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
                 if (hit){
                     // Lock on so zooming pulls in on it rather than following the cursor away.
                     // Draw after to immediately recenter on clicked body
+                    starInfoClick(hit);
                     starLockOn = hit;
                     recenterOn(genXYZcoord(hit));
                     drawMap();
@@ -6916,6 +7050,7 @@ export function buildSolarMap(parentNode, keep, openAt) {
             if (touching === 'pan' && tap && !tap.moved && lifted && lifted.length){
                 let hit = starAt(lifted[0]) || bodyAt(lifted[0]);
                 if (hit){
+                    starInfoClick(hit);
                     recenterOn(genXYZcoord(hit));
                     drawMap();
                     starLockOn = hit;
