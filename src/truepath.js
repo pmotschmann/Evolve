@@ -33,7 +33,7 @@ import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipAr
          advancePatrol, sensorRangeAU, sendShipTo, advanceShip, getRandomShipName, repairSupplyFreighters,
          shipyardPayer, buildTPShip, shipPower, shipPowerStats, explorerRetired, shipSpecialAllowed, shipDefaultSpecial, shipParts,
          shipPartAvailable, shipSlotOpen, shipSpecial, shipBombardPower, shipFuelUse, tankerFuelRange, shipCosts,
-         shipPartKey, shipyardZone, fleetMembers, shipFuelTank, shipFuelAmount, jumpGates, shipLegLeft,
+         shipPartKey, shipyardZone, primaryYards, yardChoiceUnlocked, setShipyardPrimary, fleetMembers, shipFuelTank, shipFuelAmount, jumpGates, shipLegLeft,
          activeRepairYards, locSystem, shipLeg, shipTripDays, legDays, freightCapacity, canManuallyRefuel,
          manuallyRefuelShip, stopPatrol, refitAllowed, fleetCommandRating, fleetEscortCount, fleetCommandUsed,
          shipFlagship, fleetsFor, fleetWorthForming, shipyardLocations, shipSpaceworthy, sensorUpgrade,
@@ -214,6 +214,7 @@ const outerTruth = {
                 return 2;
             },
             powered(){ return powerModifier(-22); },
+            power_limit(){ return global.space.electrolysis?.on || 0; },
             action(){
                 if (payCosts(this)){
                     incrementStruct('hydrogen_plant');
@@ -970,6 +971,8 @@ const outerTruth = {
             },
             s_type: 'enceladus',
             support(){ return -1; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(fuel_adjust(5,true)) }; },
+            support_fuel_adjust: false,
             powered(){ return 0; },
             action(){
                 if (payCosts(this)){
@@ -1615,7 +1618,7 @@ const outerTruth = {
                 let desc = `<div>+${loc(`galaxy_alien2_support`,[this.support(),planetName().eris])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[this.powered(),+(fuel).toFixed(1),global.resource[this.p_fuel().r].name])}</div>`;
             },
-            support(){ return 5; },
+            support(){ return p_on["ai_core2"] ? 5 : 0; },
             powered(){ return powerCostMod(25); },
             p_fuel(){ return { r: 'Uranium', a: hugeAdjust(5) }; },
             action(){
@@ -3292,6 +3295,7 @@ export const tauCetiModules = {
                 return desc;
             },
             support(){ return 1; },
+            s_type: 'tau_home',
             powered(){ return powerCostMod(global.tech['isolation'] ? 1 : 4); },
             storage: {
                 res(res){
@@ -5089,6 +5093,147 @@ export const tauCetiModules = {
                 };
             },
         },
+        gas_shipyard: {
+            id: 'tauceti-gas_shipyard',
+            title(){ return loc('tau_shipyard_title'); },
+            desc(){
+                return `<div>${loc('tau_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'outpost',
+            reqs: { syard_fleet: 3 },
+            condition(){ return global.tech['resettle'] ? false : true; },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 1000000000 : 0; },
+                Aluminium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 135000000 : 0; },
+                Titanium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 85000000 : 0; },
+                Iridium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 125000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 2500000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0)) < 1 ? 2000000 : 0; },
+            },
+            queue_complete(){ return 1 - (global.tauceti.hasOwnProperty('gas_shipyard') ? global.tauceti.gas_shipyard.count : 0); },
+            effect(){
+                return `<div>${loc('outer_shipyard_effect')}</div><div>${loc('tau_gas_shipyard_effect')}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(50, true); },
+            special: true,
+            sAction(){
+                if (p_on['gas_shipyard']){
+                    global.settings.civTabs = 2;
+                    global.settings.govTabs = 5;
+                    if (!global.settings.tabLoad){
+                        loadTab('mTabCivic');
+                        clearPopper(`tauceti-gas_shipyard`);
+                    }
+                }
+            },
+            action(args){
+                if (global.tauceti.gas_shipyard.count < 1 && payCosts(this)){
+                    incrementStruct('gas_shipyard','tauceti');
+                    if (powerOnNewStruct(this)){
+                        global.settings.showShipYard = true;
+                    }
+                    drawShipYard();
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['gas_shipyard','tauceti']
+                };
+            }
+        },
+        gas_mass_relay: {
+            id: 'tauceti-gas_mass_relay',
+            title(){ return loc('space_dwarf_mass_relay_title'); },
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('gas_mass_relay') || global.tauceti.gas_mass_relay.count < 100 || wiki){
+                    return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
+                }
+            },
+            type: 'megaproject',
+            reqs: { syard_fleet: 3 },
+            path: ['truepath'],
+            condition(){
+                return !global.tech['resettle'] && (!global.tauceti.hasOwnProperty('gas_mass_relay') || global.tauceti.gas_mass_relay.count < 100) ? true : false;
+            },
+            queue_size: 5,
+            queue_complete(){ return 100 - (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0); },
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 85000000 : 0; },
+                Neutronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 75000 : 0; },
+                Adamantite(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 180000 : 0; },
+                Positronium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 250 : 0; },
+                Stanene(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 1000000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0)) < 100 ? 250000 : 0; },
+            },
+            effect(wiki){
+                let count = ((wiki?.count ?? 0) + (global.tauceti.hasOwnProperty('gas_mass_relay') ? global.tauceti.gas_mass_relay.count : 0));
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('space_dwarf_mass_relay_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return tauCetiModules.tau_gas.gas_relay.effect();
+                }
+            },
+            action(args){
+                if (!global.tauceti.hasOwnProperty('gas_mass_relay')){ initStruct(this); }
+                if (global.tauceti.gas_mass_relay.count < 100 && payCosts(this)){
+                    global.tauceti.gas_mass_relay.count++;
+                    if (global.tauceti.gas_mass_relay.count >= 100){
+                        initStruct(tauCetiModules.tau_gas.gas_relay);
+                        incrementStruct('gas_relay','tauceti');
+                        powerOnNewStruct(tauCetiModules.tau_gas.gas_relay);
+                        drawTech();
+                        renderTauCeti();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0 },
+                    p: ['gas_mass_relay','tauceti']
+                };
+            }
+        },
+        gas_relay: {
+            id: 'tauceti-gas_relay',
+            title(){ return loc('space_dwarf_mass_relay_title'); },
+            desc(){
+                return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            reqs: { syard_fleet: 3 },
+            path: ['truepath'],
+            condition(){
+                return !global.tech['resettle'] && global.tauceti.hasOwnProperty('gas_mass_relay') && global.tauceti.gas_mass_relay.count >= 100 ? true : false;
+            },
+            wiki: false,
+            queue_complete(){ return 0; },
+            cost: {},
+            powered(){
+                return powerCostMod(50, true);
+            },
+            effect(){
+                let charge = Math.floor(global.tauceti.gas_relay.charged / 10) / 10;
+                return `<div>${loc('space_dwarf_mass_relay_effect2',[tauCetiModules.tau_gas.info.name()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div><div>${loc('space_dwarf_mass_relay_charged',[charge])}</div>`;
+            },
+            action(args){
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0, charged: 0 },
+                    p: ['gas_relay','tauceti']
+                };
+            }
+        },
     },
     tau_roid: {
         info: {
@@ -5100,6 +5245,7 @@ export const tauCetiModules = {
             },
             nav(){ return global.tech['resettle'] ? true : false; },
             support: 'patrol_ship',
+            support_unlimited: true,
         },
         roid_mission: {
             id: 'tauceti-roid_mission',
@@ -5266,6 +5412,7 @@ export const tauCetiModules = {
                 Unobtainium(r={}){ return spaceCostMultiplier('synthesizer', r.offset, 72000, 1.26, 'tauceti'); },
             },
             support(){ return -1; },
+            s_type: 'tau_roid',
             powered(){ return powerCostMod(10); },
             effect(){
                 let pos = +(production('synthesizer')).toFixed(4);
@@ -8466,6 +8613,18 @@ export function renderTauCeti(){
     });
 }
 
+// Return a shipyard's localized home name.
+export function yardLabel(zone){
+    switch (zone){
+        case 'tau_gas':
+            return tauCetiModules.tau_gas.info.name();
+        case 'tau_gas2':
+            return tauCetiModules.tau_gas2.info.name();
+        default:
+            return planetName().dwarf;
+    }
+}
+
 export function drawShipYard(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
@@ -8518,6 +8677,21 @@ export function drawShipYard(){
 
         let plans = $(`<div id="shipPlans"></div>`);
         yard.append(plans);
+
+        // Show the selector when both shipyards are operating.
+        if (yardChoiceUnlocked()){
+            let yards = ``;
+            primaryYards.forEach(function(zone){
+                yards += `<b-dropdown-item aria-role="listitem" class="yard_${zone}" @click="setYard('${zone}')">${yardLabel(zone)}</b-dropdown-item>`;
+            });
+            plans.append(`<div class="yardPrimary"><b-dropdown :triggers="['hover', 'click']" aria-role="list">
+                <template #trigger>
+                    <button class="button is-info">
+                        <span>${loc('outer_shipyard_primary')}: {{ yardName() }}</span>
+                    </button>
+                </template>${yards}
+            </b-dropdown></div>`);
+        }
 
         let shipStats = $(`<div class="stats"></div>`);
         plans.append(shipStats);
@@ -8580,7 +8754,7 @@ export function drawShipYard(){
 
         plans.append(assemble);
 
-        assemble.append(`<div><span>${loc(`outer_shipyard_park`,[global.tech['resettle'] ? tauCetiModules.tau_gas2.info.name() : planetName().dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
+        assemble.append(`<div><span>{{ parkText() }}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
         updateCosts();
 
@@ -8592,6 +8766,19 @@ export function drawShipYard(){
                 v: shipyardView()
             },
             methods: {
+                yardName(){
+                    return yardLabel(shipyardZone());
+                },
+                parkText(){
+                    return loc('outer_shipyard_park',[yardLabel(shipyardZone())]);
+                },
+                setYard(zone){
+                    if (setShipyardPrimary(zone)){
+                        vBind({el: `#shipPlans`},'update');
+                        updateCosts();
+                        drawShips();
+                    }
+                },
                 fleetDesignerAvailable(){
                     return global.tech['syard_fleet'] ? true : false;
                 },
@@ -9022,6 +9209,8 @@ function queueSpace(){
 function queueTPShip(design, fleetBuild){
     if (queueSpace() <= 0){ return false; }
     let blueprint = deepClone(design);
+    // Remove automated routing from queued designs.
+    delete blueprint.autoRoute;
     global.queue.queue.push({
         id: `tp-ship-${Math.rand(0,100000)}`,
         action: 'tp-ship',
@@ -10141,6 +10330,7 @@ export function detectorTemplate(site){
 
 export function tritonWar(){
     if (global.space['fob']){
+        global.civic.garrison.wounded = Math.max(0, Number(global.civic.garrison.wounded) || 0);
         if (global.space.fob.enemy <= 1000){
             let upper = global.tech['outer'] && global.tech.outer >= 4 ? 125 : 100;
             global.space.fob.enemy += Math.rand(25,upper);
@@ -10148,13 +10338,13 @@ export function tritonWar(){
 
         let wound_cap = Math.ceil(jobScale(global.space.fob.enemy) / 5);
 
-        let wounded = global.civic.garrison.wounded - garrisonSize();
-        if (wounded < 0){ wounded = 0; }
+        // Count wounded units deployed outside the home garrison.
+        let wounded = Math.max(0, global.civic.garrison.wounded - Math.max(0,garrisonSize()));
         let defense = armyRating(global.space.fob.troops,'army',wounded);
 
-        let died = Math.rand(0,wounded + 1);
+        let died = Math.min(global.civic.garrison.wounded, Math.rand(0,wounded + 1));
         soldierDeath(died);
-        global.civic.garrison.wounded -= died;
+        global.civic.garrison.wounded = Math.max(0, global.civic.garrison.wounded - died);
 
         let kills = Math.min(Math.rand(0,defense),global.space.fob.enemy);
         global.space.fob.enemy -= kills;
@@ -10179,13 +10369,13 @@ export function tritonWar(){
         }
 
         global.civic.garrison.wounded += hurt;
-        if (global.civic.garrison.wounded > garrisonSize(false,{nofob: true})){
-            global.civic.garrison.wounded = garrisonSize(false,{nofob: true});
+        let woundMax = Math.max(0,garrisonSize(false,{nofob: true}));
+        if (global.civic.garrison.wounded > woundMax){
+            global.civic.garrison.wounded = woundMax;
         }
 
         {
-            let wounded = global.civic.garrison.wounded - garrisonSize();
-            if (wounded < 0){ wounded = 0; }
+            let wounded = Math.max(0, global.civic.garrison.wounded - Math.max(0,garrisonSize()));
             let danger = global.space.fob.enemy - armyRating(global.space.fob.troops,'army',wounded);
             if (danger <= 0 && global.space.crashed_ship.count < 100){
                 global.space.crashed_ship.count++;

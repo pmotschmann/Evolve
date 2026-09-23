@@ -2454,6 +2454,11 @@ export function armyRating(val,type,wound,analysis){
             army *= 1 + tac;
             data.push({ k: 'gov_trait_tactician', v: tac });
         }
+        if (global.city['boot_camp']){
+            let drill = hugeAdjust((decayPerks() && global.space['space_barracks'] ? global.space.space_barracks.on : global.city.boot_camp.count) * 0.02);
+            army *= 1 + drill;
+            data.push({ k: global.race['artifical'] ? 'city_boot_camp_art' : 'city_boot_camp', v: drill });
+        }
         if (global.city.ptrait.includes('rage')){
             let rage = planetTraits.rage.vars()[0];
             army *= rage;

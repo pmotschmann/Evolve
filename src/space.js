@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, srSpeak, decayPerks, writeBackup } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, genomeScale, complexityTax, genomeRankCost, randomKey, getTraitDesc, deepClone, get_qlevel, timeFormat, modalCloseButton } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_def, genusVars, planetTraits, biomes, traitCostMod, geneBonus, legacyTraitRank,
          genes, geneBaseOf, genusFeeders, genusStrandTraits, geneCrossingUnlocked, traitSkin,
@@ -227,6 +227,12 @@ const spaceProjects = {
                     : [{ s: global.space.moon_base.s_max - global.space.moon_base.support }];
             },
             support(){ return 1; },
+            s_type: ['moon','red'],
+            support_provider: true,
+            support_for: {
+                moon(){ return this.support(); },
+                red(){ return global.tech['luna'] && global.tech.luna >= 3 ? this.support() : 0; }
+            },
             effect(){
                 let orbitEffect = '';
                 if (decayPerks() && global.tech['broadcast'] && !global.race['joyless']){
@@ -664,6 +670,7 @@ const spaceProjects = {
                 return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
             },
             support(){ return global.race['cataclysm'] || global.race['fasting'] ? 2 : 1; },
+            s_type: 'red',
             action(args){
                 if (payCosts(this)){
                     incrementStruct('red_tower');
@@ -2758,6 +2765,8 @@ const spaceProjects = {
                 return `<div>${loc('plus_max_resource',[jobScale(3),loc('job_space_miner')])}</div>${elerium}<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div><div class="has-text-caution">${loc('space_belt_station_effect4',[food,this.powered(),global.resource.Food.name])}</div>`;
             },
             support(){ return jobScale(3); },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(fuel_adjust(2.5,true)) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(3); },
             refresh: true,
             storage: {
@@ -3598,6 +3607,8 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[hugeEffect(helium, 2),this.powered()])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[hugeEffect(food, 0),global.resource.Food.name])}</div>`;
             },
             support(){ return 5; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(int_fuel_adjust(5)) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(10); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -3651,6 +3662,7 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div><span>${loc('plus_max_citizens',[citizens])}</span>, <span class="has-text-caution">${loc('minus_power',[this.powered()])}</span></div>`;
             },
             support(){ return 1; },
+            s_type: 'alpha',
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -4314,6 +4326,9 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_alpha_starport_effect1',[this.support()])}</div><div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div><div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[uranium,global.resource.Uranium.name])}</div>${det}<div class="has-text-caution">${loc('city_fission_power_effect',[hugeEffect(fuel)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             support(){ return 1; },
+            s_type: 'alpha',
+            support_fuel(){ return { r: 'Uranium', a: hugeAdjust(0.28) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
@@ -4733,6 +4748,8 @@ const interstellarProjects = {
                 return `<div>${loc('interstellar_nexus_effect1',[this.support()])}</div><div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div><div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[deuterium,global.resource.Deuterium.name])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('interstellar_nexus_effect2',[this.powered(),hugeEffect(350, 0)])}</div>`;
             },
             support(){ return 2; },
+            support_fuel(){ return { r: 'Money', a: hugeAdjust(350) }; },
+            support_fuel_adjust: false,
             powered(){ return powerCostMod(8); },
             powerBalancer(){
                 return [{ s: global.interstellar.nexus.s_max - global.interstellar.nexus.support }];
@@ -5838,7 +5855,8 @@ const galaxyProjects = {
                     color: 'success',
                 };
             },
-            support: 'starbase'
+            support: 'starbase',
+            support_condition(){ return !!p_on['s_gate']; }
         },
         gateway_mission: {
             id: 'galaxy-gateway_mission',
@@ -5924,6 +5942,8 @@ const galaxyProjects = {
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[hugeEffect(25)])}</div><div>${loc('galaxy_gateway_support',[this.support()])}</div><div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[hugeEffect(helium, 2),this.powered(wiki)])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[hugeEffect(food, 0),global.resource.Food.name])}</div>`;
             },
             support(){ return 2; },
+            support_fuel(){ return { r: 'Helium_3', a: +hugeAdjust(int_fuel_adjust(25)) }; },
+            support_fuel_adjust: false,
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 12 : 0); },
             powerBalancer(){
                 return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
@@ -5984,6 +6004,8 @@ const galaxyProjects = {
                     return num_starbases_on ? 0.25 * num_starbases_on * mult : 0;
                 }
             },
+            s_type: 'gateway',
+            support_provider: true,
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 if(global.race['fasting']){
@@ -6361,6 +6383,7 @@ const galaxyProjects = {
                 return `${gateway}<div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div><div>${loc('plus_max_resource',[deuterium,global.resource.Deuterium.name])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div><div class="has-text-caution">${loc('minus_power',[this.powered(wiki)])}</div>`;
             },
             support(){ return 0.5; },
+            s_type: 'gateway',
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
@@ -6440,6 +6463,7 @@ const galaxyProjects = {
                 return know;
             },
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
+            s_type: 'gateway',
             powered(wiki){ return powerCostMod(isStargateOn(wiki) ? 4 : 0); },
             powerBalancer(){
                 return global.galaxy.hasOwnProperty('starbase') ? [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }] : false;
@@ -7102,7 +7126,8 @@ const galaxyProjects = {
                     color: 'danger',
                 };
             },
-            support: 'foothold'
+            support: 'foothold',
+            support_condition(){ return !!p_on['s_gate']; }
         },
         alien2_mission: {
             id: 'galaxy-alien2_mission',
@@ -8856,8 +8881,13 @@ function labVersatile(genome){
     return found.length > 0 ? found[0].rank : 0;
 }
 
-// Pairs on one of the design's strands.
+// Return design pairs, capped by the current slot span.
 function labPairs(genome,kind){
+    return Math.min(labSpan(genome) / genes.strand_slots, labPairWant(genome,kind));
+}
+
+// Return design pairs requested before capacity limits.
+function labPairWant(genome,kind){
     let major = kind === 'major';
     let pairs = major ? genes.strand_major_pairs : genes.strand_minor_pairs;
     let evolve = global.genes['evolve'] || 0;
@@ -8866,25 +8896,39 @@ function labPairs(genome,kind){
     });
     if (!major && labVersatile(genome) >= genes.versatility_pair_rank){ pairs++; }
     if (major){ pairs += labGenusPairs(genome) + (genome.recessive || 0); }
-    return Math.min(genes.strand_cap,pairs);
+    return pairs;
 }
 
-// The first pair the design bought, or false when it has bought none.
+// Return the slot-index span for one design strand.
+function labSpan(genome){
+    let floor = genes.strand_cap * genes.strand_slots;
+    return typeof genome.span === 'number' && genome.span > floor ? genome.span : floor;
+}
+
+// Expand design strands and remap minor-slot indexes as needed.
+function labFitSpan(genome){
+    let from = labSpan(genome);
+    let need = Math.max(labPairWant(genome,'major'),labPairWant(genome,'minor')) * genes.strand_slots;
+    if (need <= from){ return false; }
+    let to = Math.max(need, from + (genes.strand_slots * 4));
+    Object.keys(genome.slots).forEach(function(t){
+        if (genome.slots[t] >= from){ genome.slots[t] += to - from; }
+    });
+    genome.span = to;
+    return true;
+}
+
+// Return the first purchased recessive pair, or false.
 function labRecessiveFrom(genome){
     let bonus = genome.recessive || 0;
     return bonus > 0 ? labPairs(genome,'major') - bonus : false;
 }
 
-// How many more pairs the design could still buy, which the index space caps.
-function labRecessiveRoom(genome){
-    return Math.max(0,genes.strand_cap - labPairs(genome,'major'));
-}
-
 // Whether a slot is on one of the design's recessive pairs.
 function labIsRecessive(genome,slot){
     let from = labRecessiveFrom(genome);
-    if (from === false || slot >= labBase('minor')){ return false; }
-    return Math.floor((slot - labBase('major')) / genes.strand_slots) >= from;
+    if (from === false || slot >= labBase('minor',genome)){ return false; }
+    return Math.floor((slot - labBase('major',genome)) / genes.strand_slots) >= from;
 }
 
 // Every slot on a bought pair, so the lab can insist they are all filled before the race is made.
@@ -8893,20 +8937,20 @@ function labRecessiveSlots(genome){
     if (from === false){ return []; }
     let out = [];
     for (let p=from; p<labPairs(genome,'major'); p++){
-        let at = labBase('major') + p * genes.strand_slots;
+        let at = labBase('major',genome) + p * genes.strand_slots;
         out.push(at,at + 1);
     }
     return out;
 }
 
-function labBase(kind){
-    return kind === 'major' ? 0 : genes.strand_cap * genes.strand_slots;
+function labBase(kind,genome){
+    return kind === 'major' ? 0 : labSpan(genome);
 }
 
 // Every slot the design can actually use, in display order.
 function labSlots(genome,kind){
     let out = [];
-    let base = labBase(kind);
+    let base = labBase(kind,genome);
     for (let n=0; n<labPairs(genome,kind) * genes.strand_slots; n++){ out.push(base + n); }
     return out;
 }
@@ -8967,7 +9011,7 @@ function labSlotBase(genome,slot){
 function labFits(genome,slot,trait){
     if (labAt(genome,slot)){ return false; }
     // The lab only ever places major traits, so every slot on the minor strand is a crossing.
-    if (slot >= labBase('minor') && !geneCrossingUnlocked()){ return false; }
+    if (slot >= labBase('minor',genome) && !geneCrossingUnlocked()){ return false; }
     let want = labSlotBase(genome,slot);
     if (!want){ return true; }
     let mine = geneBaseOf(trait);
@@ -8976,8 +9020,8 @@ function labFits(genome,slot,trait){
 
 // How a slot is named on screen.
 function labSlotLabel(genome,slot){
-    let kind = slot < labBase('minor') ? 'major' : 'minor';
-    let pair = Math.floor((slot - labBase(kind)) / genes.strand_slots);
+    let kind = slot < labBase('minor',genome) ? 'major' : 'minor';
+    let pair = Math.floor((slot - labBase(kind,genome)) / genes.strand_slots);
     let half = slot % genes.strand_slots === 0 ? 'A' : 'B';
     if (kind === 'major'){
         let held = labGenusPairs(genome);
@@ -8992,7 +9036,7 @@ function labSlotLabel(genome,slot){
 // A slot the player may edit: everything but the opening pair(s) the genus owns.
 function labLocked(genome,slot){
     let held = labGenusPairs(genome) * genes.strand_slots;
-    return slot >= labBase('major') && slot < labBase('major') + held;
+    return slot >= labBase('major',genome) && slot < labBase('major',genome) + held;
 }
 
 // Return traits excluded by genus and species constraints.
@@ -9005,43 +9049,74 @@ function labBlocked(genome,trait){
     return false;
 }
 
-// Give a home to anything the design carries that is not in a slot yet.
-function labAutoPlace(genome){
+// Find a compatible slot, preferring an already oriented pair.
+function labOpenSlot(genome,kind,trait){
+    let open = false, fresh = false;
+    labSlots(genome,kind).forEach(function(i){
+        if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
+        if (!labFits(genome,i,trait)){ return; }
+        if (labPairBase(genome,i)){ open = i; }
+        else if (fresh === false){ fresh = i; }
+    });
+    return open !== false ? open : fresh;
+}
+
+// Order unplaced traits to keep complementary traits in the same pair.
+function labPlaceOrder(genome){
+    let byBase = { A: [], T: [], C: [], G: [] }, loose = [];
     genome.traitlist.forEach(function(t){
         if (!traits[t] || genome.slots[t] !== undefined){ return; }
-        let open = false, fresh = false;
-        ['major','minor'].forEach(function(kind){
-            if (open !== false){ return; }
-            labSlots(genome,kind).forEach(function(i){
-                if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
-                if (!labFits(genome,i,t)){ return; }
-                if (labPairBase(genome,i)){ open = i; }
-                else if (fresh === false){ fresh = i; }
-            });
-        });
-        let pick = open !== false ? open : fresh;
+        let b = geneBaseOf(t);
+        if (byBase[b]){ byBase[b].push(t); } else { loose.push(t); }
+    });
+    let order = [];
+    [['A','T'],['C','G']].forEach(function(rung){
+        let a = byBase[rung[0]], b = byBase[rung[1]];
+        while (a.length > 0 || b.length > 0){
+            if (a.length > 0){ order.push(a.shift()); }
+            if (b.length > 0){ order.push(b.shift()); }
+        }
+    });
+    return order.concat(loose);
+}
+
+// Place unassigned traits, adding recessive major pairs before using minor slots.
+function labAutoPlace(genome){
+    labPlaceOrder(genome).forEach(function(t){
+        if (genome.slots[t] !== undefined){ return; }
+        let pick = labOpenSlot(genome,'major',t);
+        if (pick === false){
+            genome.recessive = (genome.recessive || 0) + 1;
+            labFitSpan(genome);
+            pick = labOpenSlot(genome,'major',t);
+            // The new pair took nothing, so it is handed back.
+            if (pick === false){ genome.recessive--; }
+        }
+        if (pick === false){ pick = labOpenSlot(genome,'minor',t); }
         if (pick !== false){ genome.slots[t] = pick; }
     });
 }
 
 // Whether a slot still exists on this design's strands.
 function labInRange(genome,slot){
-    let kind = slot < labBase('minor') ? 'major' : 'minor';
-    let from = labBase(kind);
+    let kind = slot < labBase('minor',genome) ? 'major' : 'minor';
+    let from = labBase(kind,genome);
     return slot >= from && slot < from + (labPairs(genome,kind) * genes.strand_slots);
 }
 
 // Put the genus where it belongs, and drop anything the design no longer carries or that no longer fits.
 function labNormalize(genome){
+    // Expand the slot span before validating design indexes.
+    labFitSpan(genome);
     let locked = labGenusTraits(genome);
     // The genus owns the opening slots outright; anything else sitting there is evicted.
     Object.keys(genome.slots).forEach(function(t){
         let slot = genome.slots[t];
         let stale = !genome.traitlist.includes(t) && !locked.includes(t);
-        let squatting = labLocked(genome,slot) && locked.indexOf(t) !== slot - labBase('major');
+        let squatting = labLocked(genome,slot) && locked.indexOf(t) !== slot - labBase('major',genome);
         if (stale || squatting){ delete genome.slots[t]; }
     });
-    locked.forEach(function(t,i){ genome.slots[t] = labBase('major') + i; });
+    locked.forEach(function(t,i){ genome.slots[t] = labBase('major',genome) + i; });
     // Then anything standing past the end of a strand that has shortened.
     Object.keys(genome.slots).forEach(function(t){
         if (locked.includes(t)){ return; }
@@ -9242,7 +9317,9 @@ export function ascendLab(hybrid,wiki){
         ranks: global.custom[slot]?.ranks || {},
         // A design written before the lab knew about slots has no arrangement of its own.
         slots: (global.custom[slot]?.v || 1) >= 2 && global.custom[slot]?.slots ? deepClone(global.custom[slot].slots) : {},
-        bonus: global.custom[slot]?.recessive || 0,
+        recessive: global.custom[slot]?.recessive || 0,
+        // Use the saved slot span, defaulting legacy designs to the base span.
+        span: global.custom[slot]?.span || genes.strand_cap * genes.strand_slots,
         fanaticism: global.custom[slot].hasOwnProperty('fanaticism') && global.custom[slot].fanaticism ? global.custom[slot].fanaticism : false,
     } : {
         name: 'Zombie',
@@ -9265,6 +9342,7 @@ export function ascendLab(hybrid,wiki){
         ranks: {},
         slots: {},
         recessive: 0,
+        span: genes.strand_cap * genes.strand_slots,
         fanaticism: false,
     };
 
@@ -9448,7 +9526,8 @@ export function ascendLab(hybrid,wiki){
                         // Version 2 knows which major trait sits in which slot.
                         v: 2,
                         slots: deepClone(genome.slots),
-                        recessive: genome.recessive || 0
+                        recessive: genome.recessive || 0,
+                        span: labSpan(genome)
                     };
                     // Carried whether or not the player ever opened Advanced: they hold the genus
                     // defaults until edited, and storing them keeps the race's whole system in one
@@ -9497,6 +9576,7 @@ export function ascendLab(hybrid,wiki){
                 genome.ranks = {};
                 genome.slots = {};
                 genome.recessive = 0;
+                genome.span = genes.strand_cap * genes.strand_slots;
                 genome.fanaticism = false;
 
                 let named = genomeNamer(genome);
@@ -9706,6 +9786,15 @@ export function ascendLab(hybrid,wiki){
                         genome.ranks = {};
                         genome.fanaticism = importCustom.hasOwnProperty('fanaticism') ? importCustom.fanaticism : false,
                         genome.traitlist = fixTraitlist;
+                        // Re-layout imports whose slot span predates the current layout.
+                        let floor = genes.strand_cap * genes.strand_slots;
+                        if (typeof importCustom['slotSpan'] === 'number' && importCustom.slotSpan >= floor){
+                            genome.span = importCustom.slotSpan;
+                        }
+                        else {
+                            genome.slots = {};
+                            genome.span = floor;
+                        }
                         genome.genes = labScore(genome);
 
                         error.msg = "";
@@ -9719,6 +9808,8 @@ export function ascendLab(hybrid,wiki){
                 let exportGenome = deepClone(genome);
                 exportGenome['ranks'] = tRanks;
                 exportGenome['rankVersion'] = 2;
+                // Store the slot span used by this exported layout.
+                exportGenome['slotSpan'] = labSpan(genome);
                 const downloadToFile = (content, filename, contentType) => {
                     const a = document.createElement('a');
                     const file = new Blob([content], {type: contentType});
@@ -9845,7 +9936,7 @@ export function ascendLab(hybrid,wiki){
     function labEffectiveRank(t){
         let rank = tRanks[t] || 1;
         let slot = genome.slots[t];
-        if (slot !== undefined && slot >= labBase('minor')){
+        if (slot !== undefined && slot >= labBase('minor',genome)){
             rank = +(rank * genes.minor_slot_penalty).toFixed(6);
         }
         return rank;
@@ -9880,7 +9971,7 @@ export function ascendLab(hybrid,wiki){
 
         let strandRows = function(kind,from,to){
             let out = `<div class="geneStrand">`;
-            let base = labBase(kind);
+            let base = labBase(kind,genome);
             for (let p=from; p<to; p++){
                 let at = base + p * genes.strand_slots;
                 out += `<div class="geneRung">
@@ -10000,8 +10091,8 @@ export function ascendLab(hybrid,wiki){
                                [cost,global.resource.Genes.name]);
                 },
                 buyPair(){
-                    if (labRecessiveRoom(genome) <= 0){ return; }
                     genome.recessive = (genome.recessive || 0) + 1;
+                    labFitSpan(genome);
                     repriceGenome();
                 },
                 sellPair(){
@@ -10176,7 +10267,7 @@ export function ascendLab(hybrid,wiki){
         info.append(`<div class="has-text-warning">${traitSkin('name',trait)}</div>`);
         getTraitDesc(info,trait,{ trank: labPreviewRank(trait,rank), wiki: isWiki });
         info.append(`<div class="has-text-caution">${loc('arpa_genepool_rank',[rank])}</div>`);
-        if (slot !== false && slot >= labBase('minor')){
+        if (slot !== false && slot >= labBase('minor',genome)){
             info.append(`<div class="has-text-danger">${loc('arpa_gene_cramped',[genes.minor_slot_penalty * 100])}</div>`);
         }
         let boost = labEmpowerBonus(trait);
@@ -10215,7 +10306,7 @@ function geneCost(genome,trait,tRanks){
             complexity[taxonomy]--;
         }
         if (complexity[taxonomy] > max_complexity){
-            gene_cost += (complexity[taxonomy] - max_complexity) * genomeScale;
+            gene_cost += (complexity[taxonomy] - max_complexity) * complexityTax;
         }
     }
     else {
@@ -10223,7 +10314,7 @@ function geneCost(genome,trait,tRanks){
             neg_complexity[taxonomy]--;
         }
         if (neg_complexity[taxonomy] >= max_complexity){
-            gene_cost += neg_complexity[taxonomy] * genomeScale;
+            gene_cost += neg_complexity[taxonomy] * complexityTax;
         }
     }
 

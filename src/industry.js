@@ -2128,6 +2128,142 @@ function colorRange(num,max,invert){
     }
 }
 
+let structureGrids = false;
+
+function supportGridTypes(c_action){
+    if (Array.isArray(c_action.s_type)){ return c_action.s_type.filter(type => typeof type === 'string'); }
+    return typeof c_action.s_type === 'string' ? [c_action.s_type] : [];
+}
+
+function gridEntries(){
+    const entries = [];
+    const regions = ['city','space','interstellar','galaxy','portal','tauceti','eden','underground','surface'];
+    regions.forEach(function(region){
+        let collection = actions[region];
+        if (!collection){ return; }
+        if (region === 'city'){
+            Object.keys(collection).forEach(function(struct){
+                let c_action = collection[struct];
+                if (c_action && typeof c_action.id === 'string'){
+                    entries.push({ key: `city:${struct}`, region: region, sector: 'city', struct, c_action, info: false });
+                }
+            });
+            return;
+        }
+        Object.keys(collection).forEach(function(sector){
+            let sectorActions = collection[sector];
+            if (!sectorActions || typeof sectorActions !== 'object'){ return; }
+            Object.keys(sectorActions).forEach(function(struct){
+                let c_action = sectorActions[struct];
+                if (c_action && typeof c_action.id === 'string'){
+                    entries.push({ key: `${sector}:${struct}`, region: region, sector, struct, c_action, info: sectorActions.info || false });
+                }
+            });
+        });
+    });
+    return entries;
+}
+
+function reorderGrid(list, entries){
+    const keys = entries.map(entry => entry.key);
+    const ordered = list.filter(key => keys.includes(key));
+    keys.forEach(function(key){
+        if (!ordered.includes(key)){ ordered.push(key); }
+    });
+    list.splice(0, list.length, ...ordered);
+}
+
+// Initialize power and support grids from action definitions.
+export function initStructureGrids(){
+    const entries = gridEntries();
+    const registry = { power: [], generators: [], support: {}, entries: new Map() };
+    entries.forEach(function(entry){
+        registry.entries.set(entry.key, entry);
+        const state = global[entry.region]?.[entry.struct];
+        if (state && state.on !== undefined){ p_on[entry.struct] = state.on; }
+    });
+
+    entries.forEach(function(entry){
+        const c_action = entry.c_action;
+        if (typeof c_action.powered === 'function'){
+            const watts = Number(c_action.powered());
+            if (watts > 0){ registry.power.push(entry); }
+            else if (watts < 0){ registry.generators.push(entry); }
+        }
+        if (typeof c_action.support === 'function'){
+            supportGridTypes(c_action).forEach(function(type){
+                if (!registry.support[type]){
+                    registry.support[type] = { type, consumers: [], providers: [], anchor: false, info: false, unlimited: false };
+                }
+                if (Number(c_action.support()) < 0){ registry.support[type].consumers.push(entry); }
+            });
+        }
+    });
+
+    Object.values(registry.support).forEach(function(group){
+        group.consumers.some(function(consumer){
+            const provider = consumer.info && consumer.info.support;
+            if (!provider){ return false; }
+            const anchor = entries.find(entry => entry.region === consumer.region && entry.struct === provider);
+            if (!anchor){ return false; }
+            group.anchor = anchor;
+            group.info = consumer.info;
+            group.unlimited = !!consumer.info.support_unlimited;
+            group.providers.push(anchor);
+            return true;
+        });
+    });
+
+    entries.forEach(function(entry){
+        const c_action = entry.c_action;
+        if (typeof c_action.support !== 'function'){ return; }
+        supportGridTypes(c_action).forEach(function(type){
+            const group = registry.support[type];
+            if (!group){ return; }
+            const output = Number(supportGridValue(entry,type));
+            if ((output > 0 || c_action.support_provider) && !group.providers.includes(entry)){
+                group.providers.push(entry);
+            }
+        });
+    });
+
+    if (!Array.isArray(global.power)){ global.power = []; }
+    reorderGrid(global.power, registry.power);
+    Object.values(registry.support).forEach(function(group){
+        if (!Array.isArray(global.support[group.type])){ global.support[group.type] = []; }
+        reorderGrid(global.support[group.type], group.consumers);
+    });
+
+    registry.power.concat(registry.generators).forEach(function(entry){
+        const state = global[entry.region]?.[entry.struct];
+        if (state){ p_on[entry.struct] = state.on || 0; }
+    });
+    Object.values(registry.support).forEach(function(group){
+        group.providers.concat(group.consumers).forEach(function(entry){
+            const state = global[entry.region]?.[entry.struct];
+            if (!state){ return; }
+            p_on[entry.struct] = state.on || 0;
+            if (group.consumers.includes(entry)){ support_on[entry.struct] = state.on || 0; }
+        });
+    });
+
+    structureGrids = registry;
+    return structureGrids;
+}
+
+export function getStructureGrids(){
+    return structureGrids;
+}
+
+// Return a provider's support contribution to a grid.
+export function supportGridValue(entry,type){
+    const values = entry.c_action.support_for;
+    if (values && values.hasOwnProperty(type)){
+        return typeof values[type] === 'function' ? values[type].call(entry.c_action) : values[type];
+    }
+    return entry.c_action.support();
+}
+
 export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
@@ -2327,28 +2463,24 @@ export function setPowerGrid(){
 }
 
 export function gridDefs(){
-    return {
-        power: { l: global.power, n: loc(`power`), s: true, r: false, rs: false },
-        moon: { l: global.support.moon, n: loc(`space_moon_info_name`), s: global.settings.space.moon, r: 'space', rs: 'moon_base' },
-        red: { l: global.support.red, n: planetName().red, s: global.settings.space.red, r: 'space', rs: 'spaceport'  },
-        belt: { l: global.support.belt, n: loc(`space_belt_info_name`), s: global.settings.space.belt, r: 'space', rs: 'space_station'  },
-        alpha: { l: global.support.alpha, n: loc(`interstellar_alpha_name`), s: global.settings.space.alpha, r: 'interstellar', rs: 'starport'  },
-        nebula: { l: global.support.nebula, n: loc(`interstellar_nebula_name`), s: global.settings.space.nebula, r: 'interstellar', rs: 'nexus'  },
-        gateway: { l: global.support.gateway, n: loc(`galaxy_gateway`), s: global.settings.space.gateway, r: 'galaxy', rs: 'starbase'  },
-        alien2: { l: global.support.alien2, n: loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]), s: global.settings.space.alien2, r: 'galaxy', rs: 'foothold'  },
-        lake: { l: global.support.lake, n: loc(`portal_lake_name`), s: global.settings.portal.lake, r: 'portal', rs: 'harbor'  },
-        spire: { l: global.support.spire, n: loc(`portal_spire_name`), s: global.settings.portal.spire, r: 'portal', rs: 'purifier'  },
-        titan: { l: global.support.titan, n: planetName().titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
-        enceladus: { l: global.support.enceladus, n: planetName().enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
-        eris: { l: global.support.eris, n: planetName().eris, s: global.settings.space.eris, r: 'space', rs: 'drone_control'  },
-        venus: { l: global.support.venus, n: planetName().venus, s: global.settings.space.venus, r: 'space', rs: 'cloud_city'  },
-        tau_home: { l: global.support.tau_home, n: loc(`tau_planet`,[races[global.race.species].home]), s: global.settings.tau.home, r: 'tauceti', rs: 'orbital_station'  },
-        tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[planetName().red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
-        tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
-        asphodel: { l: global.support.asphodel, n: loc(`eden_asphodel_name`), s: global.settings.eden.asphodel, r: 'eden', rs: 'encampment' },
-        wastes: { l: global.support.wastes, n: loc(`surface_wastes`), s: global.settings.surface.wastes, r: 'surface', rs: 'great_heater'},
-        crater: { l: global.support.crater, n: loc(`surface_crater`), s: global.settings.surface.crater, r: 'surface', rs: 'crater_headquarters'}
+    const grids = {
+        power: { l: global.power, n: loc(`power`), s: true, r: false, rs: false }
     };
+    const registry = getStructureGrids();
+    if (!registry){ return grids; }
+    Object.values(registry.support).forEach(function(group){
+        if (!group.anchor){ return; }
+        const info = group.info || {};
+        const name = typeof info.name === 'function' ? info.name() : info.name;
+        grids[group.type] = {
+            l: global.support[group.type],
+            n: name || group.type,
+            s: !!global[group.anchor.region]?.[group.anchor.struct],
+            r: group.anchor.region,
+            rs: group.anchor.struct
+        };
+    });
+    return grids;
 }
 
 export function clearGrids(grids){

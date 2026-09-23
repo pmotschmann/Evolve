@@ -2018,6 +2018,7 @@ export const actions = {
                     rate *= 1 + (milVal / 100);
                 }
                 let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[hugeEffect(rate, 2)])}</div><div>${loc('city_boot_camp_effect2',[hugeEffect(10)])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                effect += `<div>${loc('city_boot_camp_effect3',[hugeEffect(2)])}</div>`;
                 if (global.race['artifical'] && !global.race['orbit_decayed']){
                     let repair = (global.tech['medic'] ?? 1) * 5;
                     effect += `<div>${loc('city_boot_camp_art_effect',[hugeEffect(repair)])}</div>`;
@@ -7656,13 +7657,15 @@ export function getStructNumActive(c_action,wiki){
         // This means that the wiki can be wrong, but we can at least check "max" support
         if (!found_support) {
             let grids = gridDefs();
-            let s_r = grids[c_action.s_type].r;
+            // Keep the configured count until its support grid has an anchor.
+            let grid = grids[c_action.s_type];
+            let s_r = grid ? grid.r : false;
+            let anchor = s_r && grid.rs && global[s_r] ? global[s_r][grid.rs] : false;
             if (s_r === 'galaxy' && !isStargateOn(wiki)){
                 num_on = 0;
             }
-            else {
-                let s_rs = grids[c_action.s_type].rs;
-                let max_s = Math.floor(global[s_r][s_rs].s_max / -c_action.support());
+            else if (anchor && anchor.hasOwnProperty('s_max')){
+                let max_s = Math.floor(anchor.s_max / -c_action.support());
                 num_on = Math.min(num_on, max_s);
             }
         }

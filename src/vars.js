@@ -1716,7 +1716,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 53;
+global['beta'] = 54;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2211,6 +2211,53 @@ if (!Array.isArray(global.race['geneSlots'])){
 }
 if (!global.race['geneBreak']){
     global.race['geneBreak'] = {};
+}
+
+// Migrate absolute gene-slot indexes from the previous 24-slot strand span to 48.
+if ((global.race['strandSpan'] || 24) < 48){
+    let migrateSpan = function(race){
+        let from = race['strandSpan'] || 24;
+        if (from >= 48){ return false; }
+        let shift = 48 - from;
+        // Shift minor slots one span and granted rungs two spans.
+        let move = function(slot){
+            if (slot < from){ return slot; }
+            return slot < from * 2 ? slot + shift : slot + (shift * 2);
+        };
+        if (Array.isArray(race['geneSlots'])){
+            let old = race.geneSlots;
+            let next = [];
+            for (let i=0; i<96; i++){ next.push(false); }
+            for (let i=0; i<old.length && i<from * 2; i++){
+                if (old[i]){ next[move(i)] = old[i]; }
+            }
+            // Preserve the order of rungs above both strands.
+            for (let i=from * 2; i<old.length; i++){ next.push(old[i]); }
+            race.geneSlots = next;
+        }
+        if (race['geneBreak'] && typeof race['geneBreak'] === 'object'){
+            let rebuilt = {};
+            Object.keys(race.geneBreak).forEach(function(slot){
+                rebuilt[move(Number(slot))] = race.geneBreak[slot];
+            });
+            race.geneBreak = rebuilt;
+        }
+        race['strandSpan'] = 48;
+        return move;
+    };
+    let move = migrateSpan(global.race);
+    // Migrate the race saved for an active simulation.
+    if (global['sim'] && global.sim['race']){ migrateSpan(global.sim.race); }
+    // Migrate custom-design slot indexes.
+    if (move && global['custom']){
+        ['race0','race1'].forEach(function(key){
+            let design = global.custom[key];
+            if (!design || !design['slots'] || typeof design.slots !== 'object'){ return; }
+            Object.keys(design.slots).forEach(function(t){
+                if (typeof design.slots[t] === 'number'){ design.slots[t] = move(design.slots[t]); }
+            });
+        });
+    }
 }
 
 if (!global.hasOwnProperty('govern')){

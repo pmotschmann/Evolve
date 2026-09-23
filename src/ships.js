@@ -429,9 +429,37 @@ export function seedStarterSupplyRoutes(){
     return Number(earthReady) + Number(marsReady) + Number(titanReady) + Number(outerReady);
 }
 
+// Shadow-path shipyards in selector order.
+export const primaryYards = ['spc_dwarf','tau_gas'];
+
+export function ceresYardBuilt(){
+    return global.space && global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false;
+}
+
+export function gasYardBuilt(){
+    return global.tauceti && global.tauceti['gas_shipyard'] && global.tauceti.gas_shipyard.count > 0 ? true : false;
+}
+
+// Return whether both selectable shipyards are operating.
+export function yardChoiceUnlocked(){
+    return !global.tech['resettle'] && ceresYardBuilt() && gasYardBuilt();
+}
+
+// Return the selected operating yard, or Ceres as a fallback.
+export function shipyardPrimary(){
+    let pick = global.space && global.space['shipyard'] ? global.space.shipyard['primary'] : false;
+    return pick === 'tau_gas' && gasYardBuilt() ? 'tau_gas' : 'spc_dwarf';
+}
+
+export function setShipyardPrimary(zone){
+    if (!yardChoiceUnlocked() || !primaryYards.includes(zone)){ return false; }
+    global.space.shipyard['primary'] = zone;
+    return true;
+}
+
 // Return the supply zone of the active shipyard.
 export function shipyardZone(){
-    return global.tech['resettle'] ? 'tau_gas2' : 'spc_dwarf';
+    return global.tech['resettle'] ? 'tau_gas2' : shipyardPrimary();
 }
 
 // Provide a supply-aware payer for direct ship construction.
@@ -955,7 +983,8 @@ export function shipSpeed(ship){
 
     // A mass relay pushes only what launches from it.
     let boost = massRelaySpeedBoost(ship);
-// Apply a light-flagship speed bonus to the fleet.
+
+    // Apply a light-flagship speed bonus to the fleet.
     boost *= 1 + fleetSpeedBonus(ship);
     let speed;
     switch (ship.engine){
@@ -978,6 +1007,8 @@ export function massRelaySpeedBoost(ship){
             return p_on['m_relay'] && global.space['m_relay'] && !global.tech['resettle'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
         case 'tau_gas2':
             return p_on['tcm_relay'] && global.tauceti['tcm_relay'] && global.tauceti.tcm_relay.charged >= 10000 ? 3 : 1;
+        case 'tau_gas':
+            return p_on['gas_relay'] && global.tauceti['gas_relay'] && global.tauceti.gas_relay.charged >= 10000 ? 3 : 1;
         default:
             return 1;
     }
@@ -2733,7 +2764,10 @@ const repairStations = {
             ? (global.space['repair_yard'] && global.space.repair_yard.count > 0 && p_on['repair_yard'] ? true : false)
             : (global.space['shipyard'] && global.space.shipyard.count > 0 ? true : false);
     } },
-    tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } }
+    // Isolation-path repair station.
+    tau_gas2:  { avail(){ return global.tech['resettle'] && global.tauceti['adv_shipyard'] && global.tauceti.adv_shipyard.count > 0 ? true : false; } },
+    // Shadow-path repair station.
+    tau_gas:   { avail(){ return !global.tech['resettle'] && global.tauceti['gas_shipyard'] && global.tauceti.gas_shipyard.count > 0 ? true : false; } }
 };
 
 // Docking is about the place, not whether it is currently staffed, so this covers every station whether or.

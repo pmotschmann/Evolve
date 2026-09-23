@@ -763,6 +763,7 @@ const edenicModules = {
                 return desc;
             },
             support(){ return 1; },
+            s_type: 'asphodel',
             powered(){ return powerCostMod(50); },
             action(args){
                 if (payCosts(this)){
@@ -829,6 +830,7 @@ const edenicModules = {
                 return desc;
             },
             support(){ return 1; },
+            s_type: 'asphodel',
             powered(){ return powerCostMod(25); },
             storage: {
                 res(res){

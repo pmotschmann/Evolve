@@ -7,7 +7,7 @@ import { actions, actionDesc } from './actions.js';
 import { jobScale, jobStack, hugeScale } from './jobs.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
-import { gridDefs } from './industry.js';
+import { gridDefs, getStructureGrids } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
 import { highPopAdjust, hugeAdjust } from './prod.js';
@@ -472,108 +472,16 @@ export function actionReqs(c_action,opts){
 
 export function powerGrid(type,reset){
     let grids = gridDefs();
-
-    let power_structs = [];
-    switch (type){
-        case 'power':
-            power_structs = [
-                'city:transmitter','prtl_ruins:arcology','city:apartment','eden_asphodel:rectory','eden_asphodel:corruptor','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis',
-                'int_alpha:starport','eden_asphodel:encampment','tau_gas2:adv_shipyard','spc_dwarf:shipyard','spc_dwarf:repair_yard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
-                'prtl_wasteland:demon_forge','prtl_wasteland:twisted_lab','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_venus:descender','spc_titan:sam','city:detector','spc_red:detector_red','spc_hell:detector_hell','spc_dwarf:detector_dwarf','spc_dwarf:alien_containment','spc_gas:sector_command','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
-                'prtl_badlands:mortuary','tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
-                'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
-                'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
-                'prtl_wasteland:hell_factory','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
-                'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','prtl_pit:shadow_mine','prtl_pit:tavern',
-                'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
-                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_wasteland:hell_casino','spc_survey:survey_resort','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-                'prtl_lake:cooling_tower','prtl_lake:harbor','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor','prtl_gate:infernite_mine','spc_hell:seismic',
-                'int_sirius:ascension_trigger','spc_makemake:orichalcum_mine','spc_makemake:elerium_mine','spc_makemake:uranium_mine','spc_makemake:neutronium_mine','spc_survey:mineshaft','spc_hell:mercury_mine','spc_dwarf:m_relay','tau_gas2:tcm_relay',
-                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_home:data_decoder','tau_gas:womling_station','tau_roid:synthesizer','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
-                'eden_elysium:sacred_smelter','prtl_pit:soul_capacitor','prtl_lake:oven_complete','eden_elysium:elysanite_mine','eden_elysium:elerium_containment','eden_elysium:pillbox','eden_elysium:archive',
-                'eden_elysium:restaurant','eden_elysium:eden_cement','eden_isle:spirit_battery','eden_isle:spirit_vacuum','tau_star:server_farm','cave:hollow','cave:under_transmitter','cave:storage_space','cave:under_mine','cave:mineshaft_vator','cave:bonfire',
-                'depths:stone_house','depths:under_coal_mine','depths:under_foundry','depths:under_casino','industry:archaeological_dig','industry:under_biolab','industry:water_pump','industry:under_factory','industry:oil_pump',
-                'core:core_mine','core:core_blacksmith','core:core_forge','core:core_refinery','wastes:great_heater','wastes:surface_farm','wastes:surface_zoo','ecosystem:area_heater','ecosystem:water_pipe','crater:crater_headquarters',
-                'crater:refinery_funnel','thruster_site:nuclear_heater_complete',
-                'city:replicator'
-            ];
-            break;
-        case 'moon':
-            power_structs = ['spc_moon:helium_mine','spc_moon:iridium_mine','spc_moon:observatory'];
-            break;
-        case 'red':
-            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center','spc_red:botanical'];
-            break;
-        case 'belt':
-            power_structs = ['spc_belt:elerium_ship','spc_belt:iridium_ship','spc_belt:iron_ship'];
-            break;
-        case 'alpha':
-            power_structs = ['int_alpha:fusion','int_alpha:mining_droid','int_alpha:processing','int_alpha:laboratory','int_alpha:g_factory','int_alpha:exchange','int_alpha:zoo'];
-            break;
-        case 'nebula':
-            power_structs = ['int_nebula:harvester','int_nebula:elerium_prospector'];
-            break;
-        case 'gateway':
-            power_structs = ['gxy_gateway:bolognium_ship','gxy_gateway:dreadnought','gxy_gateway:cruiser_ship','gxy_gateway:frigate_ship','gxy_gateway:corvette_ship','gxy_gateway:scout_ship'];
-            break;
-        case 'alien2':
-            power_structs = ['gxy_alien2:armed_miner','gxy_alien2:ore_processor','gxy_alien2:scavenger'];
-            break;
-        case 'lake':
-            power_structs = ['prtl_lake:bireme','prtl_lake:transport'];
-            break;
-        case 'spire':
-            power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
-            break;
-        case 'titan':
-            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder','spc_titan:metalworks','spc_titan:comedy_club'];
-            break;
-        case 'enceladus':
-            power_structs = ['spc_enceladus:water_freighter','spc_enceladus:operating_base','spc_enceladus:zero_g_lab'];
-            break;
-        case 'eris':
-            power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
-            break;
-        case 'venus':
-            power_structs = ['spc_venus:descender','spc_venus:nitrogen_harvester','spc_venus:cloud_quarters','spc_venus:industrial_complex','spc_venus:workshop','spc_venus:university'];
-            break;
-        case 'tau_home':
-            power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab','tau_home:marine_barracks','tau_home:data_decoder'];
-            break;
-        case 'tau_red':
-            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab','tau_red:womling_craftworks','tau_red:womling_market','tau_red:womling_rangers'];
-            break;
-        case 'tau_roid':
-            power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship','tau_roid:synthesizer'];
-            break;
-        case 'asphodel':
-            power_structs = ['eden_asphodel:soul_engine','eden_asphodel:bunker','eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station','eden_asphodel:bliss_den'];
-            break;
-        case 'wastes':
-            power_structs = ['wastes:watch_tower', 'wastes:woodcutter', 'wastes:surface_apartment', 'wastes:genetics_lab'];
-            break;
-        case 'crater':
-            power_structs = ['crater:work_station', 'crater:crater_drill', 'crater:crater_fabrication', 'crater:crater_factory', 'crater:fuel_refinery'];
-            break;
-    }
-
-    if (reset){
-        grids[type].l.length = 0;
-    }
-
-    power_structs.forEach(function(struct){
-        if (!grids[type].l.includes(struct)){
-            grids[type].l.push(struct);
-        }
+    const registry = getStructureGrids();
+    const entries = type === 'power' ? registry?.power : registry?.support[type]?.consumers;
+    if (!grids[type] || !entries){ return; }
+    if (reset){ grids[type].l.length = 0; }
+    const keys = entries.map(entry => entry.key);
+    const ordered = grids[type].l.filter(key => keys.includes(key));
+    keys.forEach(function(key){
+        if (!ordered.includes(key)){ ordered.push(key); }
     });
-
-    if (grids[type].l.length > power_structs.length){
-        grids[type].l.forEach(function(struct){
-            if (!power_structs.includes(struct)){
-                grids[type].l.splice(grids[type].l.indexOf(struct),1);
-            }
-        });
-    }
+    grids[type].l.splice(0, grids[type].l.length, ...ordered);
 }
 
 export function initMessageQueue(filters){
@@ -3526,6 +3434,9 @@ export function getWeaselTechLevelRequirement(level){
 // Scale custom-race lab values to twentieths of a gene unit.
 export const genomeScale = 20;
 
+// Custom-race complexity tax per trait past the free allowance in a taxonomy (half a gene unit).
+export const complexityTax = genomeScale / 2;
+
 // Return a custom-race trait cost at a fractional rank.
 export function genomeRankCost(cost, rank, positive){
     if (rank < 1){
@@ -3583,13 +3494,13 @@ export function calcGenomeScore(genome,wiki,tRanks){
 
         if (traits[genome.traitlist[i]].val >= 0){
             if (complexity[taxonomy] > max_complexity){
-                gene_cost -= (max_complexity - complexity[taxonomy]) * genomeScale;
+                gene_cost -= (max_complexity - complexity[taxonomy]) * complexityTax;
             }
             complexity[taxonomy]++;
         }
         else {
             if (neg_complexity[taxonomy] >= max_complexity){
-                gene_cost += neg_complexity[taxonomy] * genomeScale;
+                gene_cost += neg_complexity[taxonomy] * complexityTax;
             }
             neg_complexity[taxonomy]++;
         }
