@@ -11525,6 +11525,7 @@
   "wiki_trait_effect_scrounger": "Scavengers are available, scavengers produce a wide variety of resources at %0% production.",
   "wiki_trait_effect_nostalgic": "Morale reduced by -%0% based on your Science factor value",
   "wiki_trait_effect_humongous": "Most buildings and citizens are %0x as effective. buildings are %1x as expensive and scale faster. Cost increase does not apply to the first building of each type.",
+  "wiki_trait_effect_humongous_ex1": "Adding or raising the rank of this trait can result in buildings being removed.",
   "wiki_trait_effect_limited": "Crafting reduced by -%0%.",
   "wiki_trait_effect_wooly": "Each citizen raises storage caps by %0% of the storage of a Warehouse. Gain +1 Trade Route for every %1 citizens.",
   "wiki_trait_effect_protective": "Each citizen stores resources equal to %0% that of a Warehouse. Trade routes +1 for every %1 citizens.",

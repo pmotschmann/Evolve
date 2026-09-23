@@ -4135,6 +4135,9 @@ const traitExtra = {
             global.tech.hasOwnProperty('science') ? global.tech.science : 0,
             global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
         ])
+    ],
+    humongous: [
+        `<span class="has-text-danger">${loc(`wiki_trait_effect_humongous_ex1`)}</span>`
     ]
 };
 

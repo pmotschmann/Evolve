@@ -7803,6 +7803,9 @@ function xeno_race(){
     if (!global.custom.hasOwnProperty('race1')){
         skip.push('hybrid');
     }
+    if (!global.achieve.living_extinction?.l){
+        skip.push('primordial');
+    }
     
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
     let key1 = randomKey(list);
