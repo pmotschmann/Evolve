@@ -4929,7 +4929,7 @@ export const genes = {
     strand_recessive_base: 10,
     strand_recessive_step: 5,
     strand_slots: 2,            // slots on a pair: [X] - [Y]
-    // Maximum pairs per strand; changing it requires a slot-index migration.
+    // Initial slot-index range per strand; migrate saved indexes when changing it.
     strand_cap: 24,
     // Minimum Versatile rank that unlocks the extra minor pair.
     versatility_pair_rank: 0.5,
@@ -5058,9 +5058,45 @@ export function geneSuited(gene){
 // Major/genus traits and minor genes use separate paired slot ranges.
 // Empty pairs are oriented by their first trait; cross-strand placement applies the configured penalty.
 
-// How far one strand's range reaches, whether or not that many pairs are unlocked.
-function strandSpan(){
-    return genes.strand_cap * genes.strand_slots;
+// Return the saved slot-index span for one strand.
+export function strandSpan(){
+    let floor = genes.strand_cap * genes.strand_slots;
+    let span = global.race['strandSpan'];
+    return typeof span === 'number' && span > floor ? span : floor;
+}
+
+// Expand both strands to `need` slots and renumber dependent slots.
+function widenStrands(need){
+    let from = strandSpan();
+    if (need <= from){ return false; }
+    // Reserve four extra pairs to reduce repeated re-layouts.
+    let to = Math.max(need, from + (genes.strand_slots * 4));
+    let shift = to - from;
+    let move = function(slot){
+        if (slot < from){ return slot; }
+        return slot < from * 2 ? slot + shift : slot + (shift * 2);
+    };
+    // Replace the live slot array in place.
+    let slots = global.race.geneSlots;
+    let next = new Array(slots.length + (shift * 2)).fill(false);
+    slots.forEach(function(s,i){ if (s){ next[move(i)] = s; } });
+    slots.splice(0,slots.length,...next);
+    let breaks = geneBreaks();
+    let moved = {};
+    Object.keys(breaks).forEach(function(k){
+        moved[move(Number(k))] = breaks[k];
+        delete breaks[k];
+    });
+    Object.assign(breaks,moved);
+    global.race['strandSpan'] = to;
+    bumpGeneCache();
+    return true;
+}
+
+// Ensure both strands fit their unlocked pairs.
+function fitStrands(){
+    let need = Math.max(strandPairWant('major'),strandPairWant('minor')) * genes.strand_slots;
+    return widenStrands(need);
 }
 
 // Where a strand's indices begin.
@@ -5091,8 +5127,13 @@ export function versatileActive(){
     return (global.race['versatility'] || 0) >= genes.versatility_pair_rank;
 }
 
-// Pairs unlocked on a strand.
+// Return unlocked pairs, capped by the current slot span.
 export function strandPairCount(kind){
+    return Math.min(strandSpan() / genes.strand_slots, strandPairWant(kind));
+}
+
+// Return pairs requested before capacity limits.
+function strandPairWant(kind){
     let major = kind === 'major';
     let pairs = major ? genes.strand_major_pairs : genes.strand_minor_pairs;
     // The CRISPR Evolve line lengthens both strands as it goes.
@@ -5103,7 +5144,7 @@ export function strandPairCount(kind){
     if (!major && versatileActive()){ pairs++; }
     pairs += global.race['geneSlotBonus'] || 0;
     if (major){ pairs += strandGenusPairs() + strandRecessivePairs(); }
-    return Math.min(genes.strand_cap, pairs);
+    return pairs;
 }
 
 // Return recessive pairs purchased by the custom design.
@@ -5157,6 +5198,9 @@ export function geneSlots(){
     if (!global.race['geneSlots'] || !Array.isArray(global.race['geneSlots'])){
         global.race['geneSlots'] = [];
     }
+    // Initialize the saved slot-index span for migration.
+    if (typeof global.race['strandSpan'] !== 'number'){ global.race['strandSpan'] = strandSpan(); }
+    fitStrands();
     let slots = global.race.geneSlots;
     // Both ranges always exist in full; what is unlocked is a question for slotActive, not for the shape of the array.
     while (slots.length < geneSlotCount()){ slots.push(false); }
@@ -5456,7 +5500,17 @@ export function customArrangement(){
     if (!key || !global['custom'] || !global.custom[key]){ return false; }
     let design = global.custom[key];
     if (!design['slots'] || typeof design.slots !== 'object'){ return false; }
-    return (design['v'] || 1) >= 2 ? design.slots : false;
+    if ((design['v'] || 1) < 2){ return false; }
+    // Remap custom-design minor slots to this run's span.
+    let floor = genes.strand_cap * genes.strand_slots;
+    let from = typeof design['span'] === 'number' && design.span > floor ? design.span : floor;
+    let to = strandSpan();
+    let out = {};
+    Object.keys(design.slots).forEach(function(t){
+        let slot = design.slots[t];
+        out[t] = typeof slot === 'number' && slot >= from ? slot - from + to : slot;
+    });
+    return out;
 }
 
 // Traits nothing can ever take off.
@@ -5854,9 +5908,8 @@ function finishPlacement(slot,trait,opts){
     return slot;
 }
 
-// Add a recessive major pair when space remains; otherwise return false.
+// Add a recessive major pair, expanding strands as needed.
 function growRecessivePair(){
-    if (strandPairCount('major') >= genes.strand_cap){ return false; }
     global.race['geneRecess'] = (global.race['geneRecess'] || 0) + 1;
     bumpGeneCache();
     return true;
