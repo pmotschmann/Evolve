@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, p_on, sizeApproximation, seededRandom } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, timeFormat, calcPrestige, clearPopper , resName } from './functions.js';
 import { spatialReasoning } from './resources.js';
-import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault } from './actions.js';
+import { actions, payCosts, initStruct, powerOnNewStruct, setAction, storageMultipler, drawTech, bank_vault, hugeEffect } from './actions.js';
 import { checkRequirements, incrementStruct, piracy, ascendLab} from './space.js';
 import { mechRating, checkWarlordAchieve } from './portal.js';
 import { jobScale, hugeScale, jobStack, workerScale } from './jobs.js';

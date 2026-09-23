@@ -1162,7 +1162,7 @@ export const actions = {
                         modRes('Mana',-1,true);
                     }
                 }
-                return gain;
+                return +(gain).toFixed(1);
             },
             touchlabel: loc(`harvest`)
         },
@@ -2975,7 +2975,7 @@ export const actions = {
             },
             power_reqs: { alumina: 2 },
             effect(){
-                let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
+                let label = global.race['sappy'] && !global.race['iceage'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                 if (global.tech['alumina'] >= 2){
                     return `<span>${loc(label,[hugeEffect(6)])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[hugeEffect(6),hugeEffect(12),this.powered()])}</span>`;
                 }
@@ -4679,7 +4679,7 @@ export function buildTemplate(key, region){
                         return loc('city_stone_iceage_desc',[gain]);
                     }
                     else {
-                        return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
+                        return loc(global.race['sappy'] && !global.race['iceage'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
                     }                
                 },
                 category: 'outskirts',
@@ -4710,7 +4710,7 @@ export function buildTemplate(key, region){
                             modRes('Mana',-1,true);
                         }
                     }
-                    return gain;
+                    return +(gain).toFixed(1);
                 },
                 touchlabel: loc(`harvest`)
             }
@@ -4764,7 +4764,7 @@ export function buildTemplate(key, region){
                             modRes('Mana',-1,true);
                         }
                     }
-                    return gain;
+                    return +(gain).toFixed(1);
                 },
                 touchlabel: loc(`harvest`)
             }
@@ -4831,7 +4831,7 @@ export function buildTemplate(key, region){
                             modRes('Mana',-1,true);
                         }
                     }
-                    return gain;
+                    return +(gain).toFixed(1);
                 },
                 touchlabel: loc(`harvest`)
             }
@@ -10262,7 +10262,6 @@ function iceAgeStart(){
         delete global.aberrants.carnivores.traits.empowered;
         delete global.aberrants.scavengers.traits.empowered;
 
-        delete global.race['sappy'];
         if(global.race['kindling_kindred']){
             global.race['iron_wood'] = global.race['kindling_kindred'];
             delete global.race['kindling_kindred'];

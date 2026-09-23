@@ -2535,9 +2535,7 @@ export const traits = {
     },
     nostalgic: { //morale reduction for science/high tech techs.
         name(){ return loc('trait_nostalgic_name'); },
-        desc(v){
-            return loc('trait_nostalgic',v);
-        },
+        desc(v){ return loc('trait_nostalgic',v); },
         type: 'major',
         origin: 'raptors',
         taxonomy: 'production',
@@ -2579,7 +2577,7 @@ export const traits = {
         desc(v){ return loc('trait_wooly',v); },
         type: 'major',
         origin: 'mammuth',
-        taxonomy: 'combat',
+        taxonomy: 'resource',
         val: 100,
         vars(r){
             // [percentage of warehouse storage per citizen, citizens needed per trade route]
@@ -6568,6 +6566,9 @@ export function cleanAddTrait(trait){
             setPurgatory('eden','eden_cement');
             break;
         case 'sappy':
+            if (global.race['iceage']){
+                break;
+            }
             if (global.civic.d_job === 'quarry_worker'){
                 global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
             }
@@ -6867,6 +6868,9 @@ export function cleanRemoveTrait(trait,rank){
             }
             break;
         case 'sappy':
+            if (global.race['iceage']){
+                break;
+            }
             setResourceName('Stone');
             defineGovernor(); // Rename resource in storage balance config
             checkPurgatory('tech','hammer');
@@ -7117,7 +7121,7 @@ export function shapeShift(genus,setup,forceClean){
     if (genus){
         if (genus !== 'none'){
             Object.keys(genus_def[genus].traits).forEach(function (trait) {
-                if (!global.race[trait] && trait !== 'high_pop' && (!global.race['iceage'] || trait !== 'sappy')){
+                if (!global.race[trait] && trait !== 'high_pop'){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
                     }

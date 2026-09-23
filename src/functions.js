@@ -2801,7 +2801,7 @@ function lMatAdjust(costs, c_action, args){
         let path = c_action.hasOwnProperty('struct') ? c_action.struct().p : false;
         Object.keys(costs).forEach(function (res){
             if (path && global[path[1]].hasOwnProperty(path[0]) && global[path[1]][path[0]].hasOwnProperty('l_m') 
-                && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy']))){
+                && (['Lumber','Furs','Plywood'].includes(res) || (res === 'Stone' && global.race['sappy'] && !global.race['iceage']))){
                 newCosts[res] = function(){ return Math.round(costs[res](args) * traits.living_materials.vars()[0] ** (global[path[1]][path[0]].l_m / 25)); }
             }
             else {
@@ -3872,11 +3872,11 @@ export function getShrineBonus(type) {
 }
 
 const valAdjust = {
-    promiscuous: false,
     tireless: true,
     revive: false,
     fast_growth: false,
     spores: false,
+    parasite: false,
     terrifying: false,
     fibroblast: true,
     hivemind: true,
@@ -3897,7 +3897,8 @@ const valAdjust = {
     environmentalist: true,
     catnip: true,
     anise: true,
-    musical: true
+    musical: true,
+    wooly: true
 };
 
 function getTraitVals(trait, rank, species){
@@ -3907,8 +3908,8 @@ function getTraitVals(trait, rank, species){
         if (trait === 'fibroblast'){
             vals = [vals[0] * 5];
         }
-        else if (trait === 'hivemind' && global.race['high_pop']){
-            vals = [vals[0] * traits.high_pop.vars()[0]];
+        else if (trait === 'hivemind' && (global.race['high_pop'] || global.race['humongous'])){
+            vals = [Math.floor(hugeAdjust(jobScale(vals[0])))];
         }
         else if (trait === 'imitation'){
             vals.push(races[global.race['srace'] || 'protoplasm'].name);
@@ -3964,6 +3965,9 @@ function getTraitVals(trait, rank, species){
         }
         else if (trait === 'musical' && global.race['iceage']){
             vals = [+(vals[0] / 3).toFixed(1)];
+        }
+        else if(trait === 'wooly' && (global.race['high_pop'] || global.race['humongous'])){
+            vals = [+(vals[0] / jobScale(1)).toFixed(2), Math.floor(hugeAdjust(jobScale(vals[1])))];
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -4121,7 +4125,10 @@ const traitExtra = {
         loc(`wiki_trait_effect_unfathomable_ex2`)
     ],
     nostalgic: [
-        loc(`wiki_trait_effect_logical_ex1`)
+        loc(`wiki_trait_effect_logical_ex1`,[
+            global.tech.hasOwnProperty('science') ? global.tech.science : 0,
+            global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
+        ])
     ]
 };
 
@@ -4147,7 +4154,8 @@ const altTraitDesc = {
     blurry: 'warlord',
     ghostly: 'warlord',
     playful: 'warlord',
-    musical: 'iceage'
+    musical: 'iceage',
+    sappy: 'iceage'
 };
 
 export function getTraitDesc(info, trait, opts){

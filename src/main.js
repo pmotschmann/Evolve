@@ -31,7 +31,7 @@ import { index, mainVue, initTabs, loadTab, registerOfflineHandler } from './ind
 import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect, ice_fuel_adjust } from './iceage.js';
+import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect } from './iceage.js';
 
 function pykreteWeatherMultiplier(){
     let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
@@ -2341,11 +2341,8 @@ function fastLoop(){
                     if (!Array.isArray(fuels)){ fuels = [fuels]; }
                     fuels.forEach(function(fuel){
                         let fuelCost = fuel.a;
-                        if (c_action.p_fuel_adjust !== false && ['Oil','Super_Fuel'].includes(fuel.r) && ['industry','core','wastes','crater'].includes(sector)){
-                            fuelCost = ice_fuel_adjust(fuelCost);
-                        }
-                        else if (c_action.p_fuel_adjust !== false && ['Oil','Helium_3'].includes(fuel.r) && sector !== 'city'){
-                            fuelCost = region === 'space' ? +fuel_adjust(fuelCost,true) : +int_fuel_adjust(fuelCost);
+                        if (c_action.p_fuel_adjust && ['Oil','Helium_3','Super_Fuel'].includes(fuel.r) && sector !== 'city'){
+                            fuelCost = ['space', 'underground', 'surface'].includes(region) ? +fuel_adjust(fuelCost,true) : +int_fuel_adjust(fuelCost);
                         }
                         let consumed = p_on[struct] * fuelCost;
                         breakdown.p.consume[fuel.r][title] = -consumed;
@@ -2543,7 +2540,7 @@ function fastLoop(){
                     const supplyKey = supplyRegionKey(sector);
                     for (let j=0; j<s_fuels.length; j++){
                         const fuel = s_fuels[j];
-                        const fuel_cost = (fuel.r === 'Oil' || fuel.r === 'Helium_3') && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                        const fuel_cost = (fuel.r === 'Oil' || fuel.r === 'Helium_3' || fuel.r === 'Super_Fuel') && ['space', 'underground', 'surface'].includes(region) ? fuel_adjust(fuel.a,true) : fuel.a;
                         let mb_consume = p_on[struct] * fuel_cost;
                         for (let k=0; k<p_on[struct]; k++){
                             // `sector` is the world the powered structure stands on — the grid
@@ -2716,8 +2713,8 @@ function fastLoop(){
                     let fuels = provider.c_action.support_fuel();
                     if (!Array.isArray(fuels)){ fuels = [fuels]; }
                     fuels.forEach(function(fuel){
-                        const fuelCost = provider.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3'].includes(fuel.r)
-                            ? (provider.region === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
+                        const fuelCost = provider.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3','Super_Fuel'].includes(fuel.r)
+                            ? (['space', 'underground', 'surface'].includes(provider.region) ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
                             : fuel.a);
                         const title = typeof provider.c_action.title === 'string' ? provider.c_action.title : provider.c_action.title();
                         let consumed = active * fuelCost;
@@ -2754,8 +2751,8 @@ function fastLoop(){
                     let fuels = consumer.c_action.support_fuel();
                     if (!Array.isArray(fuels)){ fuels = [fuels]; }
                     fuels.forEach(function(fuel){
-                        const fuelCost = consumer.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3'].includes(fuel.r)
-                            ? (consumer.region === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
+                        const fuelCost = consumer.c_action.support_fuel_adjust === false ? fuel.a : (['Oil','Helium_3','Super_Fuel'].includes(fuel.r)
+                            ? (['space', 'underground', 'surface'].includes(consumer.region) ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a))
                             : fuel.a);
                         const title = typeof consumer.c_action.title === 'string' ? consumer.c_action.title : consumer.c_action.title();
                         let consumed = active * fuelCost;
@@ -3409,8 +3406,13 @@ function fastLoop(){
             global.city.morale.warmonger = 0;
         }
 
-        morale += global.race['glamour'] * geneVars('glamour')[0];
-        global.city.morale.glamour = global.race['glamour'] * geneVars('glamour')[0];
+        if (global.race['glamour']){
+            morale += global.race['glamour'] * geneVars('glamour')[0];
+            global.city.morale.glamour = global.race['glamour'] * geneVars('glamour')[0];
+        }
+        else{
+            global.city.morale.glamour = 0;
+        }
         
         let mBaseCap = 100;
         mBaseCap += global.city['casino'] ? hugeAdjust(p_on['casino']) : 0;
@@ -3582,8 +3584,7 @@ function fastLoop(){
             global_multiplier *= mourn;
             breakdown.p['Global'][loc('trait_mourning_name')] = -((1-mourn) * 100) + '%';
         }
-        
-        if(global.race['iceage']){
+        if(global.race['iceage'] && global_multiplier > 0){
             breakdown.p['Global'][loc('underground_challenge_nerf')] = `-${(global_multiplier-global_multiplier**0.5)/global_multiplier * 100}%`;
             global_multiplier = global_multiplier ** 0.5;
         }
@@ -6808,7 +6809,10 @@ function fastLoop(){
                 let c_action = actions[building.r][building.r2][building.b];
                 let max_active = 0;
                 let type = false;
-                if(p_on[building.b]){
+                if(c_action.hasOwnProperty('powered')){
+                    max_active = global[building.r]?.[building.b]?.on || 0;
+                }
+                else if(p_on.hasOwnProperty(building.b)){
                     max_active = p_on[building.b];
                     type = 'p_on';
                 }
@@ -6817,25 +6821,23 @@ function fastLoop(){
                     type = 'support_on';
                 }
                 let active = max_active;
-                building.c.forEach(function(consume){
-                    let cost = c_action.consume(consume);
-                    if(building.b === 'mineshaft_vator'){
-                        breakdown.p.consume[consume][loc('underground_mineshaft_elevator')] = -(cost * max_active);
-                    }
-                    else{
-                        breakdown.p.consume[consume][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
-                    }
+                let fuels = c_action.support_fuel();
+                if (!Array.isArray(fuels)){ fuels = [fuels]; }
+                fuels.forEach(function(res){
+                    let cost = res.a;
+                    let consume = res.r;
+                    breakdown.p.consume[consume][actions[building.r][building.r2][building.b].title()] = -(cost * max_active);
                     active = Math.floor(Math.min(
                         global.resource[consume].amount / (cost * time_multiplier),
                         max_active,
                         active));
                     if(type === 'p_on'){
                         modRes(consume, -(p_on[building.b] * cost * time_multiplier));
-                        p_on[building.c] = active;
+                        p_on[building.b] = active;
                     }
                     else{
                         modRes(consume, -(support_on[building.b] * cost * time_multiplier));
-                        support_on[building.c] = active;
+                        support_on[building.b] = active;
                     }
                 });
                 let struct = $(`#${c_action.id} .on`);
@@ -7397,7 +7399,7 @@ function fastLoop(){
                 }
             }
 
-            if (global.race['sappy']){
+            if (global.race['sappy'] && !global.race['iceage']){
                 // Alt Aluminium
                 if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed']){
                     let base = 0;
@@ -8777,7 +8779,7 @@ function fastLoop(){
                 let mult = income_base / citizens;
                 let pop = ((p_on['apartment'] || 0) * actions.city.apartment.citizens()) +
                     ((support_on['surface_apartment'] || 0) * actions.surface.wastes.surface_apartment.citizens()) +
-                    ((global.underground['apartment_perk']?.count || 0) * actions.underground.cave_perk.citizens());
+                    ((global.underground['apartment_perk']?.count || 0) * actions.underground.cave_perk.apartment_perk.citizens());
                 pop = Math.min(citizens, hugeAdjust(pop));
                 extra_income = pop * mult * (govCivics('tax_cap') / 20); //citizens in mansions pay max taxes always.
                 income_base -= pop * mult;
@@ -10267,14 +10269,20 @@ function midLoop(){
                 }
             }
         });
-
         if (global.race['wooly']){
             var multiplier = actions.city.shed.storage.multiplier();
             let list = actions.city.shed.storage.res();
             for (const res of Object.keys(list)){
                 if (global.resource[res].display){
-                    let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(list[res] * multiplier);
-                    addCap(res, gain, false, races[global.race.species].name); //todo. Make this work with new supply system?
+                    let res_total = 0;
+                    for (const zone of citizenZones()){
+                        let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(list[res] * multiplier * citizenShare(zone));
+                        addCap(res, gain, `${zone}:Wooly`);
+                        res_total += gain;
+                    }
+                    if (breakdown.c[res]){
+                        breakdown.c[res][loc('trait_wooly_name')] = res_total + 'v';
+                    }
                 }
             };
         }
