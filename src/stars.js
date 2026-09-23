@@ -145,7 +145,7 @@ const starConstants = {
     // base-10 log.
     SKY_MIN_PX: 0.6,
     SKY_MAX_PX: 2.6,
-    // Details-panel layout and close-zoom threshold.
+    // Star-details panel dimensions and zoom threshold.
     INFO_TITLE_PX: 15,
     INFO_LINE_PX: 12,
     INFO_LINE_GAP: 4,
@@ -3456,7 +3456,7 @@ var mapFocus = { x: 0, y: 0, z: 0 };
 // Whether the map should be locked onto a star when zooming. Set when clicking a star, reset when panning away.
 // Zooming with scroll follows cursor when unlocked, and center of screen (where the locked star is) when locked.
 var starLockOn = false;
-// Open details-panel star and zoom scale.
+// ID and opening zoom of the visible star-details panel.
 var starInfoOn = false;
 var starInfoScale = 0;
 // Whether the map's settings panel is showing.
@@ -3591,7 +3591,7 @@ function drawnAsStarIndex(){
     if (!mapDrawnAsStar.length){ indexBodies(); }
     return mapDrawnAsStar;
 }
-// Toggle details for the locked star; clear them for other targets.
+// Toggle the locked star's details and close details for other targets.
 function starInfoClick(hit){
     if (starInfoOn === hit){
         starInfoOn = false;
@@ -3619,7 +3619,7 @@ function starInfoTitle(id){
     return star.zlabel || star.label || id;
 }
 
-// Classify spectral colour with luminosity.
+// Return the localized stellar classification.
 function starKindText(star){
     if (star.startype === 'D'){ return loc('star_class_D'); }
     if (star.startype === 'T'){ return loc('star_class_T'); }
@@ -3627,18 +3627,18 @@ function starKindText(star){
     const L = star.lum || 0;
     if (L >= 30000){ return loc('star_kind_supergiant', [colour]); }
     if (star.startype === 'KIII' || L >= 100){ return loc('star_kind_giant', [colour]); }
-    // Restrict dwarf labels to cool main-sequence stars.
+    // Use dwarf labels only for cool main-sequence stars.
     return loc(['G','K','M'].includes(star.startype) ? 'star_kind_dwarf' : 'star_kind_main', [colour]);
 }
 
-// Build details-panel lines from star data.
+// Build localized lines for the star-details panel.
 function starInfoLines(id){
     const star = starData[id];
     const out = [];
     if (star.startype){
         out.push(loc('solar_map_star_class', [star.startype, starKindText(star)]));
     }
-    // Star size is stored as 2*sqrt(radius).
+    // Convert the stored diameter scale to radius.
     if (star.size){
         const R = Math.pow(star.size / 2, 2);
         out.push(loc('solar_map_star_radius', [R >= 10 ? R.toFixed(0) : R.toFixed(2)]));
@@ -3649,7 +3649,7 @@ function starInfoLines(id){
     return out;
 }
 
-// Close details after zooming out past the opening scale.
+// Return whether zooming out should close the details panel.
 function starInfoStale(){
     return !!starInfoOn && starInfoScale > 0 && mapScale < starInfoScale * starConstants.INFO_ZOOM_CLOSE;
 }
@@ -3699,7 +3699,7 @@ function starTint(type){
 // How bright a star of this size and class looks from `ly` light years away, relative to the Sun seen from one light
 // year.
 function skyFlux(star, ly){
-    // Use measured luminosity, with a fallback for legacy entries.
+    // Use the recorded luminosity or calculate a legacy fallback.
     let L = star.lum;
     if (!(L > 0)){
         const R = Math.pow((star.size || 1) / 2, 2);
@@ -6126,7 +6126,7 @@ function drawMapFrame() {
         ctx.restore();
     }
 
-    // Draw the selected star details beside its disc.
+    // Draw the selected star's details beside its disc.
     function drawStarInfo(){
         if (!starInfoOn || !starData[starInfoOn]){ return; }
         if (starInfoStale()){ starInfoOn = false; return; }
@@ -6158,7 +6158,7 @@ function drawMapFrame() {
         if (by < 4){ by = 4; }
         if (by + boxH > canvas.height - 4){ by = canvas.height - 4 - boxH; }
 
-        // Use filled edges because the WebGL context lacks strokeRect.
+        // Draw borders with filled rectangles for WebGL.
         const tint = starTint(star.startype);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
         ctx.fillRect(bx, by, boxW, boxH);

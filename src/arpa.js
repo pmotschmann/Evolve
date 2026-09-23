@@ -2611,10 +2611,10 @@ function geneSlotPanel(parent,traitMethods,majors){
                 let s = geneSlots()[i];
                 return s && s.g ? loc('arpa_gene_remove_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_remove');
             },
-            // Minor genes can be removed from standard slots at no cost.
+            // Allow unslotted gene-like traits to be removed without a cost.
             canRemoveGene(i){
                 let s = geneSlots()[i];
-                return s && s.g && traits[s.g]?.type === "minor" && !geneSlotExtra(i) && !slotRecessive(i) ? true : false;
+                return s && s.g && geneLike(s.g) && !geneSlotExtra(i) && !slotRecessive(i) ? true : false;
             },
             // Major and genus traits require the CRISPR removal upgrade and plasmids.
             canCull(i){

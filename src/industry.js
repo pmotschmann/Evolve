@@ -2173,7 +2173,7 @@ function reorderGrid(list, entries){
     list.splice(0, list.length, ...ordered);
 }
 
-// Build the per-session power and support registries from action definitions.
+// Initialize power and support grids from action definitions.
 export function initStructureGrids(){
     const entries = gridEntries();
     const registry = { power: [], generators: [], support: {}, entries: new Map() };
@@ -2255,7 +2255,7 @@ export function getStructureGrids(){
     return structureGrids;
 }
 
-// Return one provider's support contribution to a named support grid.
+// Return a provider's support contribution to a grid.
 export function supportGridValue(entry,type){
     const values = entry.c_action.support_for;
     if (values && values.hasOwnProperty(type)){
