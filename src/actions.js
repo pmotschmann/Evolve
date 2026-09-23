@@ -5006,7 +5006,10 @@ export function buildTemplate(key, region){
                     Steel(r={}){ return costMultiplier('nanite_factory', r.offset, 1000, dirt_adjust(1.25)); }
                 },
                 effect(){
-                    let val = spatialReasoning(this.storage.res('Nanite') * this.storage.multiplier());
+                    let val = spatialReasoning(2500);
+                    if (this.hasOwnProperty('storage')){ //fix for wiki
+                        val = spatialReasoning(this.storage.res('Nanite') * this.storage.multiplier());
+                    }
                     return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
                 },
                 special: true,
