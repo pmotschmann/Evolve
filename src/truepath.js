@@ -6155,7 +6155,7 @@ export function trackInfestation(){
 export function infestationSoftCap(resettle){
     let resettleStage = resettle ?? global.tech.resettle ?? 0;
     if (global.tech.overmind) // Bleed Overmind
-        return Math.Infinity;
+        return Infinity;
     if (resettleStage < 11) // Initial resettlement
         return 25000;
     if (resettleStage >= 11 && resettleStage < 14) // Zombie Intelligence Tech
