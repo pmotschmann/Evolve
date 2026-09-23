@@ -6783,12 +6783,25 @@ function zBattle(locationName,foes,rounds){
     zBattleLog(locationName,guards,foes,tally.dealt,tally.taken,tally.lost.length,tally.downed.length);
 
     // Select combat messages from the defeated enemy type.
-    zMessage(loc(foes.some(f => f.syn) ? 'syndicate_orbit_engage' : 'zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
+    let synd = foes.some(f => f.syn);
+
+    zMessage(loc(synd ? 'syndicate_orbit_engage' : 'zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
     tally.lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
     if (tally.lost.length > 0){ drawShips(); }
-    tally.downed.forEach(function(foe){
-        zMessage(loc(foe.syn ? 'syndicate_orbit_destroyed' : 'zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
-    });
+
+    if (tally.downed.length > 1 && !synd){ 
+        //TBA: syndicate multiple message
+        zMessage(loc('zcombat_foe_destroyed_multiple', [tally.downed.length, regionName(locationName)]), 'success');
+    }
+    else if (tally.downed.length == 1){
+        zMessage(loc(synd ? 'syndicate_orbit_destroyed' : 'zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
+    }
+    else{ 
+        //TBA: syndicate multiple message
+        tally.downed.forEach(function(foe){
+            zMessage(loc('syndicate_orbit_destroyed', [foe.name,regionName(locationName)]),'success');
+        });
+    }
 
     // Award the horde task only for destroyed horde enemies.
     if (tally.downed.some(foe => !foe.syn)){
@@ -6871,6 +6884,7 @@ function zFleetMove(fleet){
         let arrivals = landings[locationName];
         zEngage(locationName,arrivals);
 
+        let message_log = {};
         zCullDowned(arrivals).forEach(function(ship){
             const at = shipPort(ship);
             if (!global.race.zhorde.hasOwnProperty(at)){ return; }
@@ -6882,14 +6896,33 @@ function zFleetMove(fleet){
             let crushed = infestationSoftCapCrushed(global.race.zhorde[at], load);
 
             global.race.zhorde[at] += load - crushed;
-            if (crushed == 0)
-                zMessage(loc('zfleet_landing',[ship.name,regionName(at),load.toLocaleString()]),'danger');
+            let regName = regionName(at);
+            if (message_log.hasOwnProperty(regName))
+                message_log[regName].push({shipName: ship.name, load: load, crushed: crushed});
             else
-                zMessage(loc('zfleet_landing_crushed',[ship.name,regionName(at),load.toLocaleString(), crushed.toLocaleString()]),'danger');
+                message_log[regName] = [{shipName: ship.name, load: load, crushed: crushed}];
 
             // A landing on a region whose horde was a secret gives the game away.
             if (!global.race['zfound']){ global.race['zfound'] = {}; }
             global.race.zfound[at] = true;
+        });
+        Object.keys(message_log).forEach(reg => {
+            let msg = message_log[reg];
+            if (msg.length > 1){
+                let totalInflux = msg.reduce((t, i) => t + i.load, 0);
+                let totalCrushed = msg.reduce((t, i) => t + i.crushed, 0);
+
+                if (msg[0].crushed == 0)
+                    zMessage(loc('zfleet_landing_multiple',[msg.length, reg, totalInflux.toLocaleString()]),'danger');
+                else
+                    zMessage(loc('zfleet_landing_crushed_multiple',[msg.length, reg, totalInflux.toLocaleString(), totalCrushed.crushed.toLocaleString()]),'danger');
+            }
+            else{
+                if (msg[0].crushed == 0)
+                    zMessage(loc('zfleet_landing',[msg[0].shipName, reg, msg[0].load.toLocaleString()]),'danger');
+                else
+                    zMessage(loc('zfleet_landing_crushed',[msg[0].shipName, reg, msg[0].load.toLocaleString(), msg[0].crushed.toLocaleString()]),'danger');
+            }
         });
         renderSpace();
     });
@@ -8340,6 +8373,7 @@ function razeStructures(region,razings){
 
     let ambush = Object.keys(losses).length > 0 && !infestationFound(region);
 
+    let messageLog = {};
     Object.keys(losses).forEach(function(s){
         let lost = losses[s];
         global[cat][s].count -= lost;
@@ -8352,7 +8386,22 @@ function razeStructures(region,razings){
             }
             global[cat][s].on -= turned_off;
         }
-        zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
+        
+        let regName = regionName(region);
+        if (messageLog.hasOwnProperty(regName))
+            messageLog[regName].push({name: structTitle(cat,region,s), count: lost});
+        else
+            messageLog[regName] = [{name: structTitle(cat,region,s), count: lost}];
+    });
+    Object.keys(messageLog).forEach(reg => {
+        let destroyed;
+        messageLog[reg].forEach(o => {
+            if (destroyed)
+                destroyed += ', ' + o.count.toLocaleString() + ' ' + o.name;
+            else
+                destroyed = o.count.toLocaleString() + ' ' + o.name;
+        });
+        zMessage(loc('infestation_razed',[destroyed, reg]),'danger');
     });
 
     // A razed factory takes lines out of the shared pool, so bank what it was making here rather than leaving it to
