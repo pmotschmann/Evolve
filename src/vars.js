@@ -1329,8 +1329,12 @@ if (convertVersion(global['version']) < 104009){
     }
 }
 
+if (convertVersion(global['version']) < 105000){
+    global.settings.pause = true;
+}
+
 if (convertVersion(global['version']) <= 105000){
-// The Kuiper Belt was replaced by the dwarf planet Makemake
+    // The Kuiper Belt was replaced by the dwarf planet Makemake
     if (global['tech'] && global.tech.hasOwnProperty('kuiper')){
         global.tech['makemake'] = global.tech['kuiper'];
         delete global.tech['kuiper'];
@@ -1411,7 +1415,7 @@ if (convertVersion(global['version']) <= 105000){
         }
     }
 
-// Migrate skilled-servant capacity without duplicating prior grants.
+    // Migrate skilled-servant capacity without duplicating prior grants.
     if (global['race'] && global.race['servants']){
         if (!global.race.servants.hasOwnProperty('sbase')){
             global.race.servants['sbase'] = global.race.servants['smax'] || 0;
@@ -1441,13 +1445,13 @@ if (convertVersion(global['version']) <= 105000){
         });
     }
 
-// Move legacy Tau Ceti graphene allocation from Titan storage.
+    // Move legacy Tau Ceti graphene allocation from Titan storage.
     if (global['tauceti'] && global.tauceti['refueling_station'] && !global.tauceti.refueling_station.hasOwnProperty('Lumber')){
         global.tauceti.refueling_station['Lumber'] = 0;
         global.tauceti.refueling_station['Coal'] = 0;
         global.tauceti.refueling_station['Oil'] = 0;
 
-// Apply the Tau Ceti allocation migration only to isolation saves.
+    // Apply the Tau Ceti allocation migration only to isolation saves.
         let old = (global.tech && global.tech['isolation'] && global['space'] && global.space['g_factory']) ? global.space.g_factory : false;
         if (old){
             global.tauceti.refueling_station['Lumber'] = old['Lumber'] || 0;
@@ -1461,7 +1465,7 @@ if (convertVersion(global['version']) <= 105000){
         }
     }
 
-// Legacy ship migration for 3D navigation.
+    // Legacy ship migration for 3D navigation.
     if (global.space && global.space.shipyard && global.space.shipyard.ships && Array.isArray(global.space.shipyard.ships)){
         let fn = (ship) => {
             if (ship.transit > 0) {
@@ -1610,7 +1614,7 @@ if (convertVersion(global['version']) <= 105000){
         global.genes['geneReset'] = { p: phage, g: genes };
     }
 
-// Refund the Mutation-line price difference for existing purchased ranks.
+    // Refund the Mutation-line price difference for existing purchased ranks.
     if (!global.genes['evolveReprice']){
         // Ranks 1 to 8 only. Rank 9 is new with this change, so nobody ever paid an old price for it.
         let wasCost = [10,35,70,175,440,1100,2750,6875];
