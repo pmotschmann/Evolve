@@ -5006,10 +5006,8 @@ export function buildTemplate(key, region){
                     Steel(r={}){ return costMultiplier('nanite_factory', r.offset, 1000, dirt_adjust(1.25)); }
                 },
                 effect(){
-                    let val = spatialReasoning(2500);
-                    if (this.hasOwnProperty('storage')){ //fix for wiki
-                        val = spatialReasoning(this.storage.res('Nanite') * this.storage.multiplier());
-                    }
+                    let storage = actions.city.nanite_factory.storage;
+                    let val = spatialReasoning(storage.res('Nanite') * storage.multiplier());
                     return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
                 },
                 special: true,
@@ -6324,11 +6322,11 @@ export function checkCityRequirements(action){
 
 function checkTechPath(tech){
     let path = 'standard';
-    if (global.race['truepath']){
-        path = 'truepath';
-    }
-    else if (global.race['iceage']){
+    if (global.race['iceage']){
         path = 'iceage';
+    }
+    else if (global.race['truepath']){
+        path = 'truepath';
     }
     if ((!techPath[path].includes(techEra(actions.tech[tech])) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
         return false;

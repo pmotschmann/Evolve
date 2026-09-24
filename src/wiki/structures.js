@@ -689,7 +689,9 @@ function undergroundPage(content,path){
             }
         });
     });
-    fossilTracker[Object.keys(fossilTracker)[0]].func(true);
+    if (Object.keys(fossilTracker).length){
+        fossilTracker[Object.keys(fossilTracker)[0]].func(true);
+    }
 }
 
 function surfacePage(content){

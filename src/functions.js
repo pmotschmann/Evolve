@@ -3879,7 +3879,7 @@ const valAdjust = {
     revive: false,
     fast_growth: false,
     spores: false,
-    parasite: false,
+    parasite: true,
     terrifying: false,
     fibroblast: true,
     hivemind: true,
@@ -3965,6 +3965,9 @@ function getTraitVals(trait, rank, species){
         else if (trait === 'catnip' || trait === 'anise'){
             let tier = rank ? rankTier(rank) : 1;
             vals = tier <= 2 ? [] : (tier === 3  ? [vals[0]] : [vals[0],vals[1]]);
+        }
+        else if (trait === 'parasite'){
+            vals = [vals[0], vals[1]];
         }
         else if (trait === 'musical' && global.race['iceage']){
             vals = [+(vals[0] / 3).toFixed(1)];

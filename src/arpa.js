@@ -1777,7 +1777,7 @@ function checkRequirements(tech){
     if (arpaProjects[tech]['condition'] && !arpaProjects[tech].condition()){
         return false;
     }
-    let c_path = global.race['truepath'] ? 'truepath' : 'standard';
+    let c_path = global.race['iceage'] ? 'iceage' : (global.race['truepath'] ? 'truepath' : 'standard');
     if (arpaProjects[tech].hasOwnProperty('path') && !arpaProjects[tech].path.includes(c_path)){
         return false;
     }

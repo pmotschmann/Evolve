@@ -2990,9 +2990,9 @@ function fastLoop(){
                 const ship = galaxy_ship_types[j].ships[i];
                 if (global[area][ship]){
                     let operating = 0;
+                    const num_on = global[area][ship].on;
+                    const id = actions[area][region][ship].id;
                     if (global[area][ship].hasOwnProperty('on') && req && (p_on['s_gate'] || area !== 'galaxy')){
-                        const id = actions[area][region][ship].id;
-                        const num_on = global[area][ship].on;
                         operating = num_on;
 
                         // Support cost
@@ -3080,15 +3080,14 @@ function fastLoop(){
                             }
                         }
 
-                        let andrOnSel = `#${id} .on`;
-                        if (operating < num_on){
-                            powerBadge(andrOnSel,true,`ON ${operating}/${num_on}`);
-                        }
-                        else {
-                            powerBadge(andrOnSel,false,`ON`);
-                        }
-
                         used_support += operating * operating_cost;
+                    }
+                    let andrOnSel = `#${id} .on`;
+                    if (operating < num_on){
+                        powerBadge(andrOnSel,true,`ON ${operating}/${num_on}`);
+                    }
+                    else {
+                        powerBadge(andrOnSel,false,`ON`);
                     }
                     gal_on[ship] = operating;
                 }
@@ -7792,7 +7791,9 @@ function fastLoop(){
                     }
                     return amount;
                 }
-                [['oil_well', oil_prod * oil_prod_mod], ['oil_extractor', extract_prod * extract_prod_mod], ['oil_pump', pump_prod * pump_prod_mod]].sort((a, b) => {
+
+                let values = [['oil_well', oil_prod * oil_prod_mod], ['oil_extractor', extract_prod * extract_prod_mod], ['oil_pump', pump_prod * pump_prod_mod]];
+                values.sort((a, b) => {
                     if(a[1] > b[1]) return -1; //sort from high to low
                     else if (a[1] < b[1]) return 1;
                     return 0;

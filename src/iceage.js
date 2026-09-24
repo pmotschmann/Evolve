@@ -3749,6 +3749,7 @@ const iceAgeModules = {
                 count(){ return Math.floor(global.aberrants.herbivores.count); },
                 show_count: true,
                 spared: true,
+                wiki: false,
                 condition(){ return global.aberrants.herbivores.count || global.aberrants.herbivores.slain},
                 effect(){
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
@@ -3840,6 +3841,7 @@ const iceAgeModules = {
                 count(){ return Math.floor(global.aberrants.carnivores.count); },
                 show_count: true,
                 spared: true,
+                wiki: false,
                 condition(){ return global.aberrants.carnivores.count || global.aberrants.carnivores.slain},
                 effect(){
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
@@ -3931,6 +3933,7 @@ const iceAgeModules = {
                 count(){ return Math.floor(global.aberrants.scavengers.count); },
                 show_count: true,
                 spared: true,
+                wiki: false,
                 condition(){ return global.aberrants.scavengers.count || global.aberrants.scavengers.slain},
                 effect(){
                     let desc = `<div>${loc('surface_aberrant_effect1')}</div>`;
