@@ -10,7 +10,7 @@ import { spatialReasoning, faithTempleCount } from './resources.js';
 import { jobScale, hugeScale, jobStack, jobStackStep, workerScale, loadFoundry, limitCraftsmen } from './jobs.js';
 import { garrisonSize, armorCalc, armyRating, soldierDeath } from './civics.js';
 import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait, servantTrait, geneVars, geneBonus } from './races.js';
-import { checkRequirements, incrementStruct } from './space.js';
+import { checkRequirements, incrementStruct, fuel_adjust } from './space.js';
 import { arpa } from './arpa.js';
 import { blast_away } from './resets.js';
 
@@ -53,7 +53,7 @@ const iceAgeModules = {
                             modRes('Mana',-1,true);
                         }
                     }
-                    return gain;
+                    return +(gain).toFixed(1);
                 },
                 touchlabel: loc(`collect`)
             },
@@ -772,18 +772,12 @@ const iceAgeModules = {
                 effect(wiki){
                     let desc = `<div>${loc('city_max_morale', [hugeEffect(1)])}</div>`;
                     desc += `<div>${loc('space_red_vr_center_effect1', [hugeEffect(2)])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('spend', [this.consume('Lumber'), global.resource.Lumber.name])}`;
+                    desc += `<div class="has-text-caution">${loc('spend', [this.support_fuel().a, global.resource.Lumber.name])}`;
                     desc += `<div class="has-text-special">${loc('underground_bonfire_effect', [global.resource.Lumber.name, hugeEffect(3)])}</div>`;
                     return desc;
                 },
                 powered(){ return 0; },
-                consume(res){
-                    switch (res){
-                        case 'Lumber':
-                            return hugeAdjust(3 * hugeScale(p_on['bonfire'] || 1));
-                    }
-                    return 0
-                },
+                support_fuel(){ return { r: 'Lumber', a: hugeAdjust(3 * hugeScale(p_on['bonfire'] || 1)) }; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -1090,16 +1084,10 @@ const iceAgeModules = {
                     return powerCostMod(50, true);
                 },
                 effect(){
-                    return `<div class='has-text-caution'>${loc('spend_power', [+(this.consume('Oil')).toFixed(1), global.resource.Oil.name, this.powered()])}</div>
+                    return `<div class='has-text-caution'>${loc('spend_power', [+(this.support_fuel().a).toFixed(1), global.resource.Oil.name, this.powered()])}</div>
                         <div>${loc('underground_mineshaft_elevator_effect2')}</div>`;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Oil':
-                            return ice_fuel_adjust(100);
-                    }
-                    return 0
-                },
+                support_fuel(){ return { r: 'Oil', a: 100 }; },
                 action(args){
                     return false;
                 },
@@ -2018,7 +2006,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let power = -(this.powered());
-                    return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[+(ice_fuel_adjust(this.p_fuel().a)).toFixed(1)])}</span>`;
+                    return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[+(fuel_adjust(this.p_fuel().a)).toFixed(1)])}</span>`;
                 },
                 powered(wiki){
                     let power = 0;
@@ -2157,22 +2145,12 @@ const iceAgeModules = {
                 },
                 effect(){
                     let desc = `<div>${loc('plus_max_resource',[jobScale(1),loc(`job_core_miner`)])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('spend', [+(this.consume('Water')).toFixed(1), global.resource.Water.name])}, 
-                    ${loc('spend', [+(this.consume('Steel')).toFixed(1), global.resource.Steel.name])}, 
-                    ${loc('spend', [+(this.consume('Alloy')).toFixed(1), global.resource.Alloy.name])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('spend', [+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}, 
+                    ${loc('spend', [+(this.support_fuel()[1].a).toFixed(1), global.resource.Steel.name])}, 
+                    ${loc('spend', [+(this.support_fuel()[2].a).toFixed(1), global.resource.Alloy.name])}</div>`;
                     return desc;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(30);
-                        case 'Steel':
-                            return hugeAdjust(10);
-                        case 'Alloy':
-                            return hugeAdjust(1);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(30) }, { r: 'Steel', a: hugeAdjust(10) }, { r: 'Alloy', a: hugeAdjust(1) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -2263,18 +2241,10 @@ const iceAgeModules = {
                         mineshaft_effect = 1;
                     }
                     return `<div>${loc('interstellar_stellar_forge_effect3', [+(this.smelting()).toFixed(1)])}</div><div>${loc('underground_core_forge_effect', [hugeEffect(5 * mineshaft_effect, 2)])}</div>
-                        <span class="has-text-caution">${loc('spend',[+(this.consume('Water')).toFixed(1), global.resource.Water.name])}</span>
-                        <span class="has-text-caution">${loc('spend',[+(this.consume('Coal')).toFixed(1), global.resource.Coal.name])}</span>`;
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}</span>
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[1].a).toFixed(1), global.resource.Coal.name])}</span>`;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(30);
-                        case 'Coal':
-                            return hugeAdjust(20);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(30) }, { r: 'Coal', a: hugeAdjust(20) }]; },
                 smelting(){
                     return 3;
                 },
@@ -2317,18 +2287,10 @@ const iceAgeModules = {
                         mineshaft_effect = 1;
                     }
                     return `<div>${loc(`underground_core_refinery_effect${global.tech['surface_uranium'] >= 3 ? '2' : '1'}`, [hugeEffect(5 * mineshaft_effect, 2)])}</div>
-                        <span class="has-text-caution">${loc('spend',[+(this.consume('Water')).toFixed(1), global.resource.Water.name])}</span>
-                        <span class="has-text-caution">${loc('spend',[+this.consume('Oil').toFixed(1), global.resource.Oil.name])}</span>`;
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}</span>
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[1].a).toFixed(1), global.resource.Oil.name])}</span>`;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(15);
-                        case 'Oil':
-                            return ice_fuel_adjust(hugeAdjust(10));
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(15) }, { r: 'Oil', a: hugeAdjust(10) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -2367,18 +2329,10 @@ const iceAgeModules = {
                         mineshaft_effect = 1;
                     }
                     return `<div>${loc('city_foundry_effect1', [hugeEffect(2)])}</div><div>${loc('city_crafted_mats', [hugeEffect(15 * mineshaft_effect, 2)])}</div>
-                        <span class="has-text-caution">${loc('spend',[+(this.consume('Water')).toFixed(1), global.resource.Water.name])}</span>
-                        <span class="has-text-caution">${loc('spend',[+(this.consume('Titanium')).toFixed(1), global.resource.Titanium.name])}</span>`;
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}</span>
+                        <span class="has-text-caution">${loc('spend',[+(this.support_fuel()[1].a).toFixed(1), global.resource.Titanium.name])}</span>`;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(20);
-                        case 'Titanium':
-                            return hugeAdjust(8);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(20) }, { r: 'Titanium', a: hugeAdjust(8) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -2552,7 +2506,7 @@ const iceAgeModules = {
                     if (global.race.universe === 'evil'){
                         desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
                     }
-                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[hugeAdjust(2)])}</div>`;
+                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[hugeEffect(2)])}</div>`;
                     return desc;
                 },
                 action(args){
@@ -2834,7 +2788,7 @@ const iceAgeModules = {
                 },
                 effect(){
                     let bunks = this.soldiers();
-                    let desc = `<div class="has-text-caution">${loc('space_used_support', [actions.surface.wastes.info.name()])}, ${loc('spend', [+(this.consume('Food')).toFixed(1), global.resource.Food.name])}</div>`;
+                    let desc = `<div class="has-text-caution">${loc('space_used_support', [actions.surface.wastes.info.name()])}, ${loc('spend', [+(this.support_fuel()[0].a).toFixed(1), global.resource.Food.name])}</div>`;
                     if (global.race.universe === 'evil'){
                         desc += `<div>${loc('plus_max_resource',[hugeEffect(1),global.resource.Authority.name])}</div>`;
                     }
@@ -2842,13 +2796,7 @@ const iceAgeModules = {
                     desc += `<div>${loc('plus_max_resource',[bunks,loc('civics_garrison_soldiers')])}</div>`;
                     return desc;
                 },
-                consume(res){
-                    switch (res){
-                        case 'Food':
-                            return hugeAdjust(25);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Food', a: hugeAdjust(25) }]; },
                 s_type: 'wastes',
                 support(){ return -1; },
                 powered(){ return 0; },
@@ -3075,7 +3023,7 @@ const iceAgeModules = {
                 },
                 effect(wiki){
                     let food = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
-                    let desc = `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), +(this.consume('Water')).toFixed(0), global.resource.Water.name])}</div>`;
+                    let desc = `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), +(this.support_fuel()[0].a).toFixed(0), global.resource.Water.name])}</div>`;
                     if (global.race['artifical']){
                         desc += `<div>${loc('galaxy_foothold_effect', [this.support(), actions.surface.wastes.info.name()])}</div>`;
                         desc += `<div>${loc('gain', [hugeEffect(50), global.resource.Food.name])}</div>`;
@@ -3111,13 +3059,7 @@ const iceAgeModules = {
                         return p_on['surface_farm'] || 0;
                     }
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(30);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(30) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -3146,7 +3088,7 @@ const iceAgeModules = {
                     Iron(r={}){ return undergroundCostMultiplier('surface_zoo', r.offset, 260000, 1.42, 'wastes', 'surface'); }
                 },
                 effect(wiki){
-                    let desc = `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), +(this.consume('Food')).toFixed(0), global.resource.Food.name])}</div>`;
+                    let desc = `<div class="has-text-caution">${loc('requires_power_combo_effect', [this.powered(), +(this.support_fuel()[0].a).toFixed(0), global.resource.Food.name])}</div>`;
                     desc += `<div>${loc('surface_zoo_effect1', [hugeEffect(0.2 * ecoMinorTraitEffect('trees', 'playful'), 2)])}</div>`;
                     desc += `<div>${loc('surface_zoo_effect2', [hugeEffect(0.5 * ecoMinorTraitEffect('herbivores', 'playful'), 2)])}</div>`;
                     desc += `<div>${loc('surface_zoo_effect3', [hugeEffect(1.5 * ecoMinorTraitEffect('carnivores', 'playful'), 2)])}</div>`;
@@ -3155,13 +3097,7 @@ const iceAgeModules = {
                     return desc;
                 },
                 powered(){ return powerCostMod(8); },
-                consume(res){
-                    switch (res){
-                        case 'Food':
-                            return hugeAdjust(150);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Food', a: hugeAdjust(150) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -3294,7 +3230,7 @@ const iceAgeModules = {
                 storage: {
                     res(res){
                         let list = {
-                            'Power_Bones': 50
+                            'Power_Bones': hugeAdjust(50)
                         };
                         return res ? (list[res] || 0) : list;
                     },
@@ -3533,7 +3469,7 @@ const iceAgeModules = {
                     Sheet_Metal(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 6000, 1.23, 'ecosystem', 'surface'); }
                 },
                 effect(wiki){
-                    let desc = `<span class="has-text-caution">${loc('spend',[+(this.consume('Water')).toFixed(1), global.resource.Water.name])}, ${loc('minus_power',[this.powered()])}</span>`;
+                    let desc = `<span class="has-text-caution">${loc('spend',[+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}, ${loc('minus_power',[this.powered()])}</span>`;
                     desc += `<div>${loc('surface_water_pipe_effect', [+(this.support()).toFixed(1)])}</div>`;
                     return desc;
                 },
@@ -3548,13 +3484,7 @@ const iceAgeModules = {
                     }
                     return hugeAdjust(total);
                 },
-                consume(res){
-                    switch (res){
-                        case 'Water':
-                            return hugeAdjust(25);
-                    }
-                    return 0
-                },
+                support_fuel(){ return [{ r: 'Water', a: hugeAdjust(25) }]; },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -4424,7 +4354,7 @@ const iceAgeModules = {
                 cost: {
                     Money(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 5000000, 1.32, 'crater', 'surface'); },
                     Power_Bones(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 25, 1.25, 'crater', 'surface'); },
-                    Oil(r={}){ return ice_fuel_adjust(undergroundCostMultiplier('fuel_refinery', r.offset, 90000, 1.35, 'crater', 'surface')).toFixed(1); },
+                    Oil(r={}){ return +fuel_adjust(undergroundCostMultiplier('fuel_refinery', r.offset, 90000, 1.35, 'crater', 'surface')).toFixed(1); },
                     Lumber(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 520000, 1.35, 'crater', 'surface'); },
                     Sheet_Metal(r={}){ return undergroundCostMultiplier('fuel_refinery', r.offset, 110000, 1.32, 'crater', 'surface'); }
                 },
@@ -4616,9 +4546,9 @@ const iceAgeModules = {
                     Super_Fuel(r={}){ 
                         let count = (global.surface.thruster_fuel?.count || 0) + (r.offset || 0);
                         if (count < 500){
-                            return count < 500 ? +ice_fuel_adjust(1000).toFixed(1) : 0;
+                            return count < 500 ? +fuel_adjust(1000).toFixed(1) : 0;
                         } else if (count < 5000){
-                            return +ice_fuel_adjust(undergroundCostMultiplier('thruster_fuel', count - 500, 1000, 1.001, 'thruster_site', 'surface'));
+                            return +fuel_adjust(undergroundCostMultiplier('thruster_fuel', count - 500, 1000, 1.001, 'thruster_site', 'surface'));
                         } else{ return 0; }
                     },
                     Brick(r={}){
@@ -4738,13 +4668,6 @@ const iceAgeModules = {
                 effect(){
                     return `<div class='has-text-caution'>${loc('minus_power', [this.powered()])}</div>
                         <div>${loc('surface_nuclear_heater_desc')}</div>`;
-                },
-                consume(res){
-                    switch (res){
-                        case 'Uranium':
-                            return 250;
-                    }
-                    return 0
                 },
                 postPower(o){
                     if (o && p_on['nuclear_heater_complete']){
@@ -6316,13 +6239,17 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
             multiplier += traits.pack_mentality.vars()[0];
         }
     }
-    if (structure === 'stone_house'){
+    if (['stone_house', 'surface_apartment'].includes('structure')){
         if (global.race['solitary']){
             multiplier += traits.solitary.vars()[1];
         }
         if (global.race['pack_mentality']){
             multiplier -= traits.pack_mentality.vars()[1];
         }
+    }
+    
+    if (['hollow','stone_house','surface_apartment'].includes(structure)){
+        base *= geneBonus('frugal', false, true);
     }
     if (['under_mine', 'under_coal_mine', 'smelter', 'coal_power', 'under_factory', 'oil_pump', 'fluid_depot', 'under_oil_power', 'nanite_factory'].includes(structure)){
         multiplier -= govActive('dirty_jobs',0);
@@ -6369,31 +6296,6 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
         count = common.count;
     }
     return Math.round((multiplier ** count) * base);
-}
-
-export function ice_fuel_adjust(fuel){
-    if (global.race.universe === 'heavy'){
-        fuel *= 1.25 + (0.5 * darkEffect('heavy'));
-    }
-    if (global.race['truepath']){
-        fuel *= 1.25;
-    }
-    if (global.stats.achieve['heavyweight']){
-        fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
-    }
-    if (global.city.ptrait.includes('dense')){
-        fuel *= planetTraits.dense.vars()[2];
-    }
-    if (global.race['heavy']){
-        fuel *= 1 + (traits.heavy.vars()[0] / 100);
-    }
-    if (global.race['gravity_well']){
-        fuel *= 1.35 + (9.65 * darkEffect('heavy'));
-    }
-    if (eventActive('launch_day')){
-        fuel *= 0.95;
-    }
-    return fuel;
 }
 
 export function drawPerkUnderground(){

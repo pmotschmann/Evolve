@@ -2535,9 +2535,7 @@ export const traits = {
     },
     nostalgic: { //morale reduction for science/high tech techs.
         name(){ return loc('trait_nostalgic_name'); },
-        desc(v){
-            return loc('trait_nostalgic',v);
-        },
+        desc(v){ return loc('trait_nostalgic',v); },
         type: 'major',
         origin: 'raptors',
         taxonomy: 'production',
@@ -2579,7 +2577,7 @@ export const traits = {
         desc(v){ return loc('trait_wooly',v); },
         type: 'major',
         origin: 'mammuth',
-        taxonomy: 'combat',
+        taxonomy: 'resource',
         val: 100,
         vars(r){
             // [percentage of warehouse storage per citizen, citizens needed per trade route]
@@ -5037,16 +5035,17 @@ export function geneUnlocked(gene){
 // Some minor traits should not be mutated by some species
 // Negative logic, don't hurt your brain
 const geneUnsuited = {
-    arborist(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? true : false; },
-    chlorophyll(){ return global.race['sappy'] ? false : true; },
-    fireweave(){ return global.race['smoldering'] ? false : true; },
-    stonecutter(){ return global.race['sappy'] ? true : false; },
-    sapper(){ return global.race['flier'] ? true : false; },
-    duneborn(){ return global.race['flier'] ? true : false; },
-    featherlight(){ return global.race['truepath'] ? false : true; },
-    despot(){ return global.race.universe === 'evil' ? false : true; },
-    thaumaturge(){ return global.race.universe === 'magic' ? false : true; },
-    infernal(){ return global.race['truepath'] ? true : false; }
+    arborist(){ return !global.race['iceage'] && (global.race['kindling_kindred'] || global.race['smoldering']) ? true : false; },
+    chlorophyll(){ return !global.race['sappy'] || global.race['iceage'] ? true : false; },
+    fireweave(){ return !global.race['smoldering'] ? true : false; },
+    stonecutter(){ return !global.race['iceage'] || global.race['sappy'] ? true : false; },
+    sapper(){ return !global.race['flier'] ? true : false; },
+    duneborn(){ return !global.race['flier'] ? true : false; },
+    featherlight(){ return !global.race['truepath'] || global.race['iceage'] ? true : false; },
+    despot(){ return global.race.universe !== 'evil' ? true : false; },
+    thaumaturge(){ return global.race.universe !== 'magic' ? true : false; },
+    infernal(){ return global.race['truepath'] || global.race['iceage'] ? true : false; },
+    nanoweaver(){ return global.race['iceage'] ? true : false; }
 };
 
 export function geneSuited(gene){
@@ -5748,7 +5747,7 @@ export function geneBonus(gene,idx,reduce){
     let rank = geneRank(gene);
     if (rank <= 0 || !traits[gene]){ return 1; }
     let vars = geneVars(gene);
-    return reduce ? 1 - (vars[idx || 0] * rank / 100) : 1 + (vars[idx || 0] * rank / 100);
+    return reduce ? (1 - (vars[idx || 0]/100)) ** rank : 1 + (vars[idx || 0] * rank / 100);
 }
 
 // The combined multiplier for temple-derived effects; priest capacity and trade routes do not use it.
@@ -6654,6 +6653,9 @@ export function cleanAddTrait(trait){
             setPurgatory('eden','eden_cement');
             break;
         case 'sappy':
+            if (global.race['iceage']){
+                break;
+            }
             if (global.civic.d_job === 'quarry_worker'){
                 global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
             }
@@ -6953,6 +6955,9 @@ export function cleanRemoveTrait(trait,rank){
             }
             break;
         case 'sappy':
+            if (global.race['iceage']){
+                break;
+            }
             setResourceName('Stone');
             defineGovernor(); // Rename resource in storage balance config
             checkPurgatory('tech','hammer');
@@ -7203,7 +7208,7 @@ export function shapeShift(genus,setup,forceClean){
     if (genus){
         if (genus !== 'none'){
             Object.keys(genus_def[genus].traits).forEach(function (trait) {
-                if (!global.race[trait] && trait !== 'high_pop' && (!global.race['iceage'] || trait !== 'sappy')){
+                if (!global.race[trait] && trait !== 'high_pop'){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
                     }

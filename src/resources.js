@@ -1426,10 +1426,7 @@ export function setResourceName(name){
             global.resource[name].name = loc(`resource_Program_name`);
         }
     }
-    if (global.race['iceage']){
-        //stone remains stone in ice age
-    }
-    else if (global.race['sappy']){
+    if (global.race['sappy']){
         switch(name){
             case 'Stone':
                 global['resource'][name].name = loc('resource_Amber_name');
@@ -1513,6 +1510,14 @@ export function setResourceName(name){
         switch(name){
             case 'Positronium':
                 global['resource'][name].name = loc('resource_Electronium_name');
+                break;
+        }
+    }
+
+    if (global.race['iceage']){
+        switch(name){
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Stone_name');
                 break;
         }
     }
@@ -2703,7 +2708,7 @@ export function tradeSellPrice(res){
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
     if (global.race['cunning']){
-        rate *= (1 - geneVars('cunning')[0] / 100) ** geneRank('cunning');
+        rate *= geneBonus('cunning',false, true);
     }
     if (global.race['arrogant']){
         rate *= 1 + (traits.arrogant.vars()[0] / 100);

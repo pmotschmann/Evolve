@@ -1028,7 +1028,7 @@ const outerTruth = {
             storage: {
                 res(res){
                     let list = {
-                        'Cipher': 100000
+                        'Cipher': hugeAdjust(100000)
                     };
                     return res ? (list[res] || 0) : list;
                 },
@@ -2718,7 +2718,7 @@ export const tauCetiModules = {
                 }
                 return effectText + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
-            powered(){ return powerCostMod(7500, true); },
+            powered(){ return 7500; },
             switchable(){ return global.tauceti.hasOwnProperty('server_farm') && global.tauceti.server_farm.count >= 100; },
             operating(){
                 if (!global.tauceti.hasOwnProperty('server_farm') || global.tauceti.server_farm.count < 100){ return false; }
@@ -3348,7 +3348,7 @@ export const tauCetiModules = {
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('plus_max_resource',[this.workers(),loc('job_pit_miner')])}</div>`;
                 if (!tauEnabled()){
-                    desc = desc + `<div>${loc('plus_max_resource',[spatialReasoning(this.storage.res('Materials') * this.storage.multiplier()),loc('resource_Materials_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[+(this.storage.res('Materials') * this.storage.multiplier()).toFixed(0),loc('resource_Materials_name')])}</div>`;
                     desc = desc + `<div>${loc('tau_home_mining_pit_effect',[global.resource.Materials.name])}</div>`;
                 }
                 else {
@@ -3395,7 +3395,7 @@ export const tauCetiModules = {
             storage: {
                 res(res){
                     let list = {
-                        'Materials': 1000000
+                        'Materials': hugeAdjust(1000000)
                     };
                     if (tauEnabled()){
                         delete list.Materials;
@@ -3474,7 +3474,7 @@ export const tauCetiModules = {
                 let desc = `<div>${loc('plus_max_resource',[20+'%',global.resource.Knowledge.name])}</div>`;
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('plus_max_resource',[(this.knowVal()).toLocaleString(),global.resource.Knowledge.name])}</div>`;
-                    desc = desc + `<div>${loc('plus_max_resource',[(this.storage.res('Cipher') * this.storage.multiplier()).toLocaleString(),global.resource.Cipher.name])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[+((this.storage.res('Cipher') * this.storage.multiplier()).toFixed(0)).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
                 }
                 if (global.tech['outpost_boost']){

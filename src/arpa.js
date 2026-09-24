@@ -2100,7 +2100,7 @@ function genetics(){
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if (global.race.species !== 'hellspawn' && ((global.race.species !== 'sludge' && global.race.species !== 'ultra_sludge') || !global.race['modified'])){
-                let conflict_traits = ['dumb','smart','iceage','sappy']; //Conflicting traits are paired together
+                let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
                 let swap_traits = {}; //swap available traits with another one under certain cirucmstances
                 if (global.race['iceage']){
                     swap_traits.kindling_kindred = 'iron_wood';

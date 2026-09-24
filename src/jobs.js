@@ -352,7 +352,7 @@ export const job_data = {
                 return loc('job_dig_demon_desc');
             }
             else if (global.tech['mining'] >= 3){
-                return global.race['sappy'] && global.tech['alumina'] ? loc('job_miner_desc2_amber') : loc('job_miner_desc2');
+                return global.race['sappy'] && global.tech['alumina'] && !global.race['iceage'] ? loc('job_miner_desc2_amber') : loc('job_miner_desc2');
             }
             else {
                 return loc('job_miner_desc1');
