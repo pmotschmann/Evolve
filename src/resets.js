@@ -1416,8 +1416,8 @@ export function living_extinction(){
         global.stats.plasmid += gains.plasmid;
     }
     global.stats.pdebt = gains.pdebt;
-    global.prestige.AICore.count += gains.cores;
-    global.stats.cores += gains.cores;
+    global.prestige.Fossil.count += gains.fossil;
+    global.stats.fossil += gains.fossil;
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;

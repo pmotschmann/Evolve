@@ -5638,8 +5638,8 @@ export function geneVars(gene){
 // Return a gene slot index, preserving slot zero as a valid result.
 export function geneSlotOf(gene){
     if (geneSlotMap === null){
-        geneSlotMap = {};
         let slots = geneSlots();
+        geneSlotMap = {};
         for (let i=0; i<slots.length; i++){
             if (slots[i] && slots[i].g && geneSlotMap[slots[i].g] === undefined){
                 geneSlotMap[slots[i].g] = i;

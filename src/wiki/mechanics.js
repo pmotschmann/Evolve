@@ -1754,6 +1754,9 @@ function jobStressCalc(info){
                 else if (job === 'titan_colonist'){
                     return loc('job_colonist_tp',[getSolarName('titan')]);
                 }
+                else if (job === 'iceage_gardener'){
+                    return loc('job_gardener');
+                }
                 return loc('job_'+job);
             },
             workersLabel(job){

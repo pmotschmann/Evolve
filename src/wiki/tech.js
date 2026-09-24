@@ -5316,7 +5316,7 @@ const alt_era_r = {
 };
 
 export function renderTechPage(era,path){
-    let content = sideMenu('create');;
+    let content = sideMenu('create');
     let techListing = [];
     let otherTechs = [];
     let techs = path === 'truepath' ? truepath_tech : path === 'iceage' ? iceage_tech : standard_tech;
@@ -5325,6 +5325,9 @@ export function renderTechPage(era,path){
     Object.keys(techs).forEach(function (actionName){
         let action = techs[actionName];
         if (action.hasOwnProperty('era') && (techInEra(action,era) || techInEra(action,alt_era[era])) && (!action.hasOwnProperty('wiki') || action.wiki)){
+            if(path === 'iceage' && Array.isArray(action.era) && era === 'globalized' && action.era.includes('glacial')){
+                return; //some ice age techs are moved from globalized into glacial and would show up on both sections on the wiki. This is a bandaid fix.
+            }
             let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action, { era: era });

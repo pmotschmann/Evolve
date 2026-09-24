@@ -5292,12 +5292,12 @@ const techs = {
         title(){ return loc('tech_giant_thrusters'); },
         desc(){ return loc('tech_giant_thrusters'); },
         category: 'science',
-        era: ['dimensional','glacial'],
-        era_a(){ return !global.race['iceage'] ? 'dimensional' : 'glacial'; },
+        era: ['dimensional','solar', 'glacial'],
+        era_a(){ return !global.race['iceage'] ? (global.race['truepath'] ? 'solar' : 'dimensional') : 'glacial'; },
         reqs: { thrusters: 1 },
         grant: ['thrusters',2],
         cost: {
-            Knowledge(){ return global.race['iceage'] ? 2500000 : 60000000; },
+            Knowledge(){ return global.race['iceage'] ? 2500000 : global.race['truepath'] ? 20000000 : 60000000; },
             Super_Fuel(){ return global.race['iceage'] ? 35000 : 0; }
         },
         effect(){return global.race['iceage'] ? loc('tech_giant_thrusters_effect_alt') : loc('tech_giant_thrusters_effect');},
@@ -10243,6 +10243,7 @@ const techs = {
         path: ['standard', 'iceage'],
         reqs: { particles: 2, supercollider: 2 },
         grant: ['particles',3],
+        condition(){ return !global.race['truepath']; /*for iceage + truepath */ },
         cost: {
             Knowledge(){ return 125000; }
         },
@@ -11523,6 +11524,7 @@ const techs = {
         era: ['early_space', 'glacial'],
         era_a(){ return !global.race['iceage'] ? 'early_space' : 'glacial'; },
         path: ['standard', 'iceage'],
+        condition(){ return !global.race['truepath']; /*for iceage + truepath */ },
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
@@ -11572,7 +11574,8 @@ const techs = {
         desc(){ return loc('tech_unite_desc'); },
         category: 'special',
         era: 'globalized',
-        path: ['truepath'],
+        path: ['truepath', 'iceage'],
+        condition(){ return global.race['truepath']; },
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
