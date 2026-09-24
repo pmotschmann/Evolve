@@ -447,9 +447,6 @@ export function techEra(c_action){
 // not just whichever one happens to be active in the loaded save.
 export function techInEra(c_action,era){
     if (!c_action || era === undefined){ return false; }
-    if (Array.isArray(c_action.era) && era === 'globalized' && c_action.era.includes('glacial')){
-        return false; //some ice age techs are moved from globalized into glacial and would show up on both sections on the wiki. This is a bandaid fix.
-    }
     return Array.isArray(c_action.era) ? c_action.era.includes(era) : c_action.era === era;
 }
 
