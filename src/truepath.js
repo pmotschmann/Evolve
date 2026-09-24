@@ -19,7 +19,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden, zApocalypse } from './resets.js';
 import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
-import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap } from './stars.js';
+import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap, starConstants } from './stars.js';
 import { loc } from './locale.js';
 import { supplyMode, supplyRegionName, activeSupplyRegions, capitalGone, supplyPool, partitioned, regAmount, poolMod,
          syncTotal } from './supply.js';
@@ -39,7 +39,7 @@ import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipAr
          shipFlagship, fleetsFor, fleetWorthForming, shipyardLocations, shipSpaceworthy, sensorUpgrade,
          improvedSensors, dockedFields, shipCanMakeTrip, startPatrol, tradeLegDays, locSystemName, shipDestinations,
          shipCanLaunch, shipManned, refitParts, refitDesign, refitCosts, refitChanged, refitBlocked, refitDrains,
-         applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips } from './ships.js';
+         applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips, massRelaySpeedBoost } from './ships.js';
 
 const outerTruth = {
     spc_titan: {
@@ -6148,6 +6148,38 @@ export function trackInfestation(){
     if (fleetCmdUnlocked()){ fleetCmdDay(); }
 }
 
+// Prevent infestation from spiralling infinitely. Once current infestation reaches the softcap, crashing enemy ships 
+// start accidentally hitting existing zombies, which effectively reduces their incoming numbers. 
+// infestationSoftCapCrushed indicates the amount crushed by a landed ship, reaching a hardcap at 2*softcap.
+// Thresholds are the same as zFleetHulls.
+export function infestationSoftCap(resettle){
+    let resettleStage = resettle ?? global.tech.resettle ?? 0;
+    if (global.tech.overmind) // Bleed Overmind
+        return Infinity;
+    if (resettleStage < 11) // Initial resettlement
+        return 25000;
+    if (resettleStage >= 11 && resettleStage < 14) // Zombie Intelligence Tech
+        return 40000;
+    if (resettleStage >= 14 && resettleStage < 19) // Zombie Counter Tech, before Assault
+        return 80000;
+    if (resettleStage == 19) // Sever Uplink Assault
+        return 160000;
+    if (resettleStage >= 20) // After Assault
+        return 80000;
+}
+export function infestationSoftCapCrushed(current, amount){
+    let softCap = infestationSoftCap();
+    if (current <= softCap) // Not enough infestation on surface to hit anything accidentally
+        return 0;
+
+    if (current >= softCap * 2) // Hardcap, on average hits the same amount as incoming
+        return Math.round(amount * seededRandom(0.75, 1.25, true));
+
+    // Quadratically increasing up to hardcap
+    let x = current / softCap - 1; //0..1
+    return Math.round(amount * (x * x) * seededRandom(0.75, 1.25, true));
+}
+
 // Regions the resettlement arc keeps off the board until Titan is properly reoccupied. Until then their
 // hordes are unknown and their ruins are not yours to worry about.
 const titanRegions = ['spc_titan','spc_enceladus'];
@@ -6410,6 +6442,25 @@ function zUplinkWatch(fleet){
 const zAssaultSizes = [[0.50,3],[0.35,4],[0.15,5]];
 const zAftermathSizes = [[0.50,1],[0.40,2],[0.10,3]];
 function zFleetSize(fleet){
+    if (global.tech.overmind){
+        // Sizes get progressively larger as overmind keeps being bled.
+        // Each survived 20 days adds on average +1 ship to the fleet size
+        let rampDays = global.race.daysSinceBleedOvermind ?? 0;
+
+        let baseAmount = Math.floor(rampDays / 20);
+        let remainder = rampDays / 20 - baseAmount;
+        if (seededRandom(0, 1, true) < remainder)
+            baseAmount++;
+        
+        let roll = seededRandom(0, 1, true);
+        for (let i=0; i < zAssaultSizes.length; i++){
+            roll -= zAssaultSizes[i][0];
+            if (roll < 0)
+                return baseAmount + zAssaultSizes[i][1];
+        }
+        return baseAmount + zAssaultSizes[zAssaultSizes.length - 1][1];
+    }
+
     let table = zAssault() ? zAssaultSizes : (global.tech['resettle'] && global.tech.resettle >= 20 ? zAftermathSizes : false);
     if (table){
         let roll = seededRandom(0,1,true);
@@ -6732,12 +6783,25 @@ function zBattle(locationName,foes,rounds){
     zBattleLog(locationName,guards,foes,tally.dealt,tally.taken,tally.lost.length,tally.downed.length);
 
     // Select combat messages from the defeated enemy type.
-    zMessage(loc(foes.some(f => f.syn) ? 'syndicate_orbit_engage' : 'zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
+    let synd = foes.some(f => f.syn);
+
+    zMessage(loc(synd ? 'syndicate_orbit_engage' : 'zcombat_engage',[guards.length,foes.length,regionName(locationName)]),'warning');
     tally.lost.forEach(function(ship){ destroyPlayerShip(ship,locationName); });
     if (tally.lost.length > 0){ drawShips(); }
-    tally.downed.forEach(function(foe){
-        zMessage(loc(foe.syn ? 'syndicate_orbit_destroyed' : 'zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
-    });
+
+    if (tally.downed.length > 1 && !synd){ 
+        //TBA: syndicate multiple message
+        zMessage(loc('zcombat_foe_destroyed_multiple', [tally.downed.length, regionName(locationName)]), 'success');
+    }
+    else if (tally.downed.length == 1){
+        zMessage(loc(synd ? 'syndicate_orbit_destroyed' : 'zcombat_foe_destroyed',[foe.name,regionName(locationName)]),'success');
+    }
+    else{ 
+        //TBA: syndicate multiple message
+        tally.downed.forEach(function(foe){
+            zMessage(loc('syndicate_orbit_destroyed', [foe.name,regionName(locationName)]),'success');
+        });
+    }
 
     // Award the horde task only for destroyed horde enemies.
     if (tally.downed.some(foe => !foe.syn)){
@@ -6820,6 +6884,7 @@ function zFleetMove(fleet){
         let arrivals = landings[locationName];
         zEngage(locationName,arrivals);
 
+        let message_log = {};
         zCullDowned(arrivals).forEach(function(ship){
             const at = shipPort(ship);
             if (!global.race.zhorde.hasOwnProperty(at)){ return; }
@@ -6827,11 +6892,37 @@ function zFleetMove(fleet){
             // two percent of hull it lost getting here.
             let load = Math.max(0,Math.round(ship.load * (1 - ship.damage / 200)));
             if (load <= 0){ return; }
-            global.race.zhorde[at] += load;
-            zMessage(loc('zfleet_landing',[ship.name,regionName(at),load.toLocaleString()]),'danger');
+
+            let crushed = infestationSoftCapCrushed(global.race.zhorde[at], load);
+
+            global.race.zhorde[at] += load - crushed;
+            let regName = regionName(at);
+            if (message_log.hasOwnProperty(regName))
+                message_log[regName].push({shipName: ship.name, load: load, crushed: crushed});
+            else
+                message_log[regName] = [{shipName: ship.name, load: load, crushed: crushed}];
+
             // A landing on a region whose horde was a secret gives the game away.
             if (!global.race['zfound']){ global.race['zfound'] = {}; }
             global.race.zfound[at] = true;
+        });
+        Object.keys(message_log).forEach(reg => {
+            let msg = message_log[reg];
+            if (msg.length > 1){
+                let totalInflux = msg.reduce((t, i) => t + i.load, 0);
+                let totalCrushed = msg.reduce((t, i) => t + i.crushed, 0);
+
+                if (msg[0].crushed == 0)
+                    zMessage(loc('zfleet_landing_multiple',[msg.length, reg, totalInflux.toLocaleString()]),'danger');
+                else
+                    zMessage(loc('zfleet_landing_crushed_multiple',[msg.length, reg, totalInflux.toLocaleString(), totalCrushed.crushed.toLocaleString()]),'danger');
+            }
+            else{
+                if (msg[0].crushed == 0)
+                    zMessage(loc('zfleet_landing',[msg[0].shipName, reg, msg[0].load.toLocaleString()]),'danger');
+                else
+                    zMessage(loc('zfleet_landing_crushed',[msg[0].shipName, reg, msg[0].load.toLocaleString(), msg[0].crushed.toLocaleString()]),'danger');
+            }
         });
         renderSpace();
     });
@@ -8282,6 +8373,7 @@ function razeStructures(region,razings){
 
     let ambush = Object.keys(losses).length > 0 && !infestationFound(region);
 
+    let messageLog = {};
     Object.keys(losses).forEach(function(s){
         let lost = losses[s];
         global[cat][s].count -= lost;
@@ -8294,7 +8386,22 @@ function razeStructures(region,razings){
             }
             global[cat][s].on -= turned_off;
         }
-        zMessage(loc('infestation_razed',[lost,structTitle(cat,region,s),regionName(region)]),'danger');
+        
+        let regName = regionName(region);
+        if (messageLog.hasOwnProperty(regName))
+            messageLog[regName].push({name: structTitle(cat,region,s), count: lost});
+        else
+            messageLog[regName] = [{name: structTitle(cat,region,s), count: lost}];
+    });
+    Object.keys(messageLog).forEach(reg => {
+        let destroyed;
+        messageLog[reg].forEach(o => {
+            if (destroyed)
+                destroyed += ', ' + o.count.toLocaleString() + ' ' + o.name;
+            else
+                destroyed = o.count.toLocaleString() + ' ' + o.name;
+        });
+        zMessage(loc('infestation_razed',[destroyed, reg]),'danger');
     });
 
     // A razed factory takes lines out of the shared pool, so bank what it was making here rather than leaving it to
@@ -8800,7 +8907,7 @@ export function drawShipYard(){
                     return loc('outer_shipyard_sensor_range',[sensorRange(global.space.shipyard.blueprint)]);
                 },
                 speedText(){
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
+                    let speed = shipSpeed(global.space.shipyard.blueprint) * starConstants.KM_S_PER_SHIPUNIT;
                     return Math.round(speed) + 'km/s';
                 },
                 fuelText(){
@@ -9221,7 +9328,7 @@ function fleetDesignerModal(modal, draft){
                 return role + ': ' + ship.name + ' (' + loc('outer_shipyard_class_' + ship.class) + ')';
             },
             templateStats(ship){
-                let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(ship)) + 'km/s';
+                let speed = Math.round(shipSpeed(ship) * starConstants.KM_S_PER_SHIPUNIT) + 'km/s';
                 let roleStat = ship.class === 'freighter'
                     ? loc('supply_freighter_load') + ': ' + freightCapacity(ship)
                     : ship.class === 'supply_ship'
@@ -9562,7 +9669,7 @@ function drawShipRow(list,i,ship,regionNames){
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
-            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row2.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
             row2.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
@@ -9587,7 +9694,7 @@ function drawShipRow(list,i,ship,regionNames){
             row1.append(`<span class="name has-text-caution">${ship.name}</span><span v-show="copyMode()"> | <a class="loadDesign" @click="loadDesign(${i})" role="button">${loc(`outer_shipyard_copy_design`)}</a> | <a class="copyBuild" @click="copyBuild(${i})" role="button">${loc(`outer_shipyard_copy_build`)}</a></span><span v-show="loadFleetShow(${i})"> | <a class="loadFleet" @click="loadFleet(${i})" role="button">${loc('outer_shipyard_fleet_template_load')}</a></span><a class="fleetFold" v-show="fleetFoldShow(${i})" @click="fleetFold(${i})" role="button" :aria-expanded="fleetFolded(${i}) ? 'false' : 'true'" :aria-label="fleetFoldLabel(${i})"><span class="groupArrow" v-html="fleetArrow(${i})"></span></a><span v-show="fleetTag(${i})" class="flagship" v-html="fleetTag(${i})"></span><span v-show="fleetShow(${i})"> | <a class="fleetToggle" @click="fleetAction(${i})" role="button" v-html="fleetText(${i})"></a></span> | `);
             row1.append(`<span class="shipStat" v-show="!isUnarmed(${i})"><span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span></span><wbr>`);
-            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row1.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
             row1.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
@@ -9808,10 +9915,24 @@ function drawShipRow(list,i,ship,regionNames){
                 },
                 // A fleet keeps pace with its slowest ship, which is what its trips are planned on.
                 speedText(id){
-                    let pace = fleetPace(rowGroup(global.space.shipyard.ships[id]));
+                    let ship = global.space.shipyard.ships[id];
+                    if (ship.speed)
+                        return Math.round(ship.speed * starConstants.KM_S_PER_SHIPUNIT) + 'km/s'
+
+                    let pace = fleetPace(rowGroup(ship));
                     if (!pace){ return `0km/s`; }
-                    let speed = (149597870.7/225/24/3600) * shipSpeed(pace);
+                    let speed = shipSpeed(pace) * starConstants.KM_S_PER_SHIPUNIT;
+
                     return Math.round(speed) + 'km/s';
+                },
+                // Highlight ships sped up by the mass relay
+                speedRelay(id){
+                    let ship = global.space.shipyard.ships[id];
+                    if (ship.relayBoost)
+                        return ship.relayBoost > 1;
+
+                    let boost = massRelaySpeedBoost(ship);
+                    return boost > 1;
                 },
                 fuelText(id){
                     return groupFuelText(rowGroup(global.space.shipyard.ships[id]));
@@ -11162,7 +11283,7 @@ function shipDispatchModal(id, modal){
     let slowest = fleetPace(group);
     let fuel = shipFuelUse(slowest);
     let fuelText = fuel.res ? `${fuel.burn} ${global.resource[fuel.res].name}/s` : `N/A`;
-    let speed = Math.round((149597870.7/225/24/3600) * shipSpeed(slowest));
+    let speed = Math.round(shipSpeed(slowest) * starConstants.KM_S_PER_SHIPUNIT);
     let damage = Math.max(...group.map(s => s.damage));
     let hullClass = damage <= 10 ? `has-text-success` : (damage >= 65 ? `has-text-danger` : (damage >= 40 ? `has-text-caution` : ``));
     let sum = fn => group.reduce((t,s) => t + fn(s), 0);
@@ -11482,7 +11603,7 @@ function shipRefitModal(id, modal){
             return watts < 0 ? `<span class="has-text-danger">${watts}kW</span>` : `${watts}kW`;
         };
         let speedText = function(bp){
-            return Math.round((149597870.7/225/24/3600) * shipSpeed(bp)) + 'km/s';
+            return Math.round(shipSpeed(bp) * starConstants.KM_S_PER_SHIPUNIT) + 'km/s';
         };
         let fuelText = function(bp){
             let fuel = shipFuelUse(bp);

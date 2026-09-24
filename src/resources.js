@@ -2670,7 +2670,7 @@ export function tradeSellPrice(res){
     }
     let price = 1 / divide;
     if(res){
-        let price = global.resource[res].value * tradeRatio[res] / divide;
+        price = global.resource[res].value * tradeRatio[res] / divide;
     }
     if (global.city['wharf']){
         price = price * (1 + hugeAdjust(global.city['wharf'].count * 0.01));

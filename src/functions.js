@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack, p_on, quantum_level, tmp_vars, touchDevice, writeSave } from './vars.js';
 import { encodeExportString, decodeExportString, decodeSaveString } from './save.js';
 import { loc, lastLocalization } from './locale.js';
-import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier, traitRank} from './races.js';
+import { races, traits, genus_def, traitSkin, fathomCheck, geneBonus, geneFlat, geneVars, rankTier, traitRank, geneBaseOf} from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale, jobStack, hugeScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -4174,18 +4174,21 @@ export function getTraitDesc(info, trait, opts){
     }
     if (tpage || rpage){
         info.append(`<div class="type"><h2 class="has-text-warning">${traitName}</h2>${rank}</div>`);
-        if (tpage && traits[trait].hasOwnProperty('val')){
-            info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
-        }
-        else {
-            if (traits[trait].type === 'minor'){
-                let base = traits[trait].base;
-                info.append(`<div class="type"><span class="has-text-caution">${loc(`wiki_trait_minor`)} <span class="pickBase base${base}">${base}</span></span></div>`);
-            }
-            else{
-                info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
-            }
-        }
+
+        let base = geneBaseOf(trait);
+        let baseHtml = base ? `<span class="pickBase base${base}">${base}</span>` : `<span class="pickBase baseNone">&middot;</span>`;
+        let val = traits[trait].val;
+        let valHtml = (tpage && val) ? `<span>${loc(`wiki_trait_value`,[val])}</span>` : '';
+
+        info.append(String.raw
+            `<div class="type">
+                <span class="has-text-caution">
+                    ${loc(`wiki_trait_${traits[trait].type}`)} 
+                    ${baseHtml}
+                </span>
+                ${valHtml}
+            </div>`);
+
         if (fanatic){
             info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
         }

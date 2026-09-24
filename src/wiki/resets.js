@@ -370,8 +370,8 @@ export function resetsPage(content){
             2: ['wiki.html#challenges-gameplay-scenarios_truepath',false],
         }
     });
-    section = createCalcSection(section,'za','gain');
-    prestigeCalc(section,'plasmid',false,'za');
-    prestigeCalc(section,'phage',false,'za');
-    sideMenu('add',`resets-prestige`,'za',loc('wiki_resets_zombie_apocalypse'));
+    section = createCalcSection(section,'zombie_apocalypse','gain');
+    prestigeCalc(section,'plasmid',false,'zombie_apocalypse');
+    prestigeCalc(section,'phage',false,'zombie_apocalypse');
+    sideMenu('add',`resets-prestige`,'zombie_apocalypse',loc('wiki_resets_zombie_apocalypse'));
 }

@@ -15,7 +15,7 @@ import { loc } from './locale.js';
 
 // Every fixed figure the star table and the solar map are tuned by, gathered in one place. Values
 // only — the caches and camera state the map keeps are mutable and live with the code using them.
-const starConstants = {
+export const starConstants = {
     // --- The gas cow, moon spread and random points ---
     // The gas cow giant
     COW_ID: 'cow_planet',
@@ -628,6 +628,9 @@ const starConstants = {
     ELEMENT_SPREAD: [0.35, 2.4],
     // What a system's composition is reported in. Nothing reads this yet.
     ELEMENTS: ['Iron','Copper','Aluminium','Titanium','Iridium','Uranium','Neutronium','Helium_3','Elerium','Adamantite','Orichalcum'],
+    // Unit conversion constants
+    KM_PER_AU: 149597870.7,
+    KM_S_PER_SHIPUNIT: 7.695363719136, //shipUnit - shipSpeed() unit, equal to 0.00444.. AU / day
 };
 
 // Read off entries above, so they are filled in once the table exists.
@@ -6322,7 +6325,7 @@ function drawMapFrame() {
                         ctx.fillText(beacons.b[0].n, 0, -starConstants.BEACON_GROUP_LABEL_PX);
                     }
                     else{
-                        const text = loc('scout_beacon_group', [count]);
+                        const text = loc('scout_beacon_group', [beacons.cnt]);
                         ctx.fillText(text, 0, -starConstants.BEACON_GROUP_LABEL_PX);
                     }
                 }
