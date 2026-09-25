@@ -3551,6 +3551,48 @@ const spaceProjects = {
                 };
             }
         },
+        area_51: {
+            id: 'space-area_51',
+            title(){ return loc('space_dwarf_area_51_title'); },
+            desc(){
+                return `<div>${loc('space_dwarf_area_51_desc',[planetName().dwarf])}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'science',
+            reqs: { science: 12, dwarf: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(r={}){ return spaceCostMultiplier('area_51', r.offset, 900000000, 1.28); },
+                Knowledge(r={}){ return spaceCostMultiplier('area_51', r.offset, 7500000, 1.28); },
+                Polymer(r={}){ return spaceCostMultiplier('area_51', r.offset, 25000000, 1.28); },
+                Stanene(r={}){ return spaceCostMultiplier('area_51', r.offset, 12000000, 1.28); },
+                Unobtainium(r={}){ return spaceCostMultiplier('area_51', r.offset, 125000, 1.28); },
+                Elerium(r={}){ return spaceCostMultiplier('area_51', r.offset, 12500, 1.28); },
+            },
+            effect(){
+                let sci = this.sciVal(), prof = this.profVal();
+                let desc = `<div>${loc('space_dwarf_area_51_effect',[sizeApproximation(sci,1),global.resource.Knowledge.name,job_data.scientist.name()])}</div>`;
+                desc += `<div>${loc('space_dwarf_area_51_effect',[sizeApproximation(prof,1),global.resource.Knowledge.name,job_data.professor.name()])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            // Knowledge cap per scientist and professor, adjusted for High Pop.
+            sciVal(){ return hugeAdjust(highPopAdjust(4000)); },
+            profVal(){ return hugeAdjust(highPopAdjust(2000)); },
+            powered(){ return powerCostMod(12); },
+            action(args){
+                if (payCosts(this)){
+                    incrementStruct('area_51');
+                    powerOnNewStruct(this);
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['area_51','space']
+                };
+            }
+        },
     },
     spc_titan: outerTruthTech().spc_titan,
     spc_enceladus: outerTruthTech().spc_enceladus,
@@ -7866,6 +7908,7 @@ const structDefinitions = {
     e_reactor: { count: 0, on: 0 },
     world_collider: { count: 0 },
     world_controller: { count: 0, on: 0 },
+    area_51: { count: 0, on: 0 },
     starport: { count: 0, on: 0, support: 0, s_max: 0 },
     mining_droid: { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 },
     processing: { count: 0, on: 0 },

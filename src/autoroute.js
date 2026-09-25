@@ -12,26 +12,25 @@ import { shipFleet, shipFleets, startFreightRoute, stopFreightRoute, dispatchFre
 
 // --- Tuning ---------------------------------------------------------------------------------------
 
-// Priority resources for automatic routes and Market Trader.
-export const PRIORITY = ['Food','Oil','Helium_3','Elerium','Coal'];
-
-// Production seconds per game day.
-const SECONDS_PER_DAY = 5;
-
-// Shortage horizon in game days.
-const HORIZON = 400;
-
-// Minimum surplus measured in days of consumption.
-const SURPLUS_DAYS = 30;
-
-// Maximum shortages per relief route.
-export const MAX_STOPS = 3;
-
-// A balance route is only worth setting up for a stockpile this close to overflowing.
-const FULL_FRACTION = 0.92;
-
-// Days an idle fleet waits before replanning.
-const IDLE_DAYS = 5;
+// Every fixed figure the freight planner works from. Also read by the governor and the wiki.
+export const routeConstants = {
+    // Priority resources for automatic routes and Market Trader.
+    priority: ['Food','Oil','Helium_3','Elerium','Coal'],
+    // Production seconds per game day.
+    secondsPerDay: 5,
+    // Shortage horizon in game days.
+    horizon: 400,
+    // Minimum surplus measured in days of consumption.
+    surplusDays: 30,
+    // Maximum shortages per relief route.
+    maxStops: 3,
+    // A balance route is only worth setting up for a stockpile this close to overflowing.
+    fullFraction: 0.92,
+    // Days an idle fleet waits before replanning.
+    idleDays: 5,
+    // What the governor will interrupt for what.
+    rank: { relief: 3, build: 2, balance: 1 },
+};
 
 // --- Opting in ------------------------------------------------------------------------------------
 
@@ -114,14 +113,14 @@ function shippable(){
 // A pool's net rate for a resource, in units per day.
 function perDay(res, pool){
     const diff = pass ? ledgers(res).diff : regDiff(res);
-    return (diff[pool] || 0) * SECONDS_PER_DAY;
+    return (diff[pool] || 0) * routeConstants.secondsPerDay;
 }
 
 // What a pool can spare: the stock it holds over and above a month of its own consumption.
 function sparable(res, pool){
     const rate = perDay(res, pool);
     if (rate < 0){ return 0; }
-    return Math.max(0, amountOf(res, pool) - Math.max(0, -rate) * SURPLUS_DAYS);
+    return Math.max(0, amountOf(res, pool) - Math.max(0, -rate) * routeConstants.surplusDays);
 }
 
 // Room left in a pool's store. An uncapped resource has room without limit.
@@ -169,8 +168,8 @@ function reliefComing(res, pool, within){
 // --- Finding the work ------------------------------------------------------------------------------
 
 function priorityOf(res){
-    const at = PRIORITY.indexOf(res);
-    return at < 0 ? PRIORITY.length : at;
+    const at = routeConstants.priority.indexOf(res);
+    return at < 0 ? routeConstants.priority.length : at;
 }
 
 // Shortages a fleet has already been sent to answer.
@@ -195,7 +194,7 @@ function claimed(){
 }
 
 // Every world spending a resource faster than it makes it, with no relief already on the way.
-export function findShortages(horizon = HORIZON){
+export function findShortages(horizon = routeConstants.horizon){
     const shortages = [];
     const spokenFor = claimed();
     const goods = shippable();
@@ -328,7 +327,7 @@ function overflowPiles(){
             const cap = capOf(res, from);
             if (cap <= 0){ continue; }                              // uncapped or unknown: never overflows
             if (perDay(res, from) <= 0){ continue; }                // not filling up
-            if (amountOf(res, from) < cap * FULL_FRACTION){ continue; }
+            if (amountOf(res, from) < cap * routeConstants.fullFraction){ continue; }
             if (beingMoved.has(`${from}:${res}`)){ continue; }
             // Somewhere that is not making its own.
             const sinks = [];
@@ -409,7 +408,7 @@ function planRelief(group, shortages, suppliers){
         stops.push({ zone: supplier.pool, pickups: [short.res] });
         stops.push({ zone: short.pool, pickups: [] });
         used.push(short);
-        if (used.length >= MAX_STOPS){ break; }
+        if (used.length >= routeConstants.maxStops){ break; }
     }
     if (!used.length){ return false; }
     return { stops: tidy(withRefuelling(group, tidy(stops))), used };
@@ -440,13 +439,11 @@ function managedFleets(){
     return out;
 }
 
-// What the governor will interrupt for what.
-const RANK = { relief: 3, build: 2, balance: 1 };
 function availableFor(group, wanting){
     const route = group[0].tradeRoute;
     if (!route){ return true; }
     // Untagged routes have the lowest interruption priority.
-    return RANK[wanting] > (RANK[route.auto] || 0);
+    return routeConstants.rank[wanting] > (routeConstants.rank[route.auto] || 0);
 }
 
 // Per-hull replanning cooldown; discarded on reload.
@@ -455,7 +452,7 @@ const idle = new WeakMap();
 // State used to invalidate a fleet's replanning cooldown.
 function idleMark(group){
     const route = group[0].tradeRoute;
-    return route ? `route:${RANK[route.auto] || 0}` : `at:${shipPort(group[0])}`;
+    return route ? `route:${routeConstants.rank[route.auto] || 0}` : `at:${shipPort(group[0])}`;
 }
 
 function resting(group){
@@ -464,7 +461,7 @@ function resting(group){
     // A hull that has just joined has not looked yet, so the fleet looks again.
     return group.every(function(ship){
         const since = idle.get(ship);
-        return since && since.mark === mark && today >= since.day && today - since.day < IDLE_DAYS;
+        return since && since.mark === mark && today >= since.day && today - since.day < routeConstants.idleDays;
     });
 }
 
@@ -504,7 +501,7 @@ function dispatch(group, home, stops, kind, tried){
 // Try shorter relief routes when longer routes cannot launch.
 function commit(group, home, wants, kind, tried){
     const suppliers = new Map();
-    for (let take = Math.min(MAX_STOPS, wants.length); take >= 1; take--){
+    for (let take = Math.min(routeConstants.maxStops, wants.length); take >= 1; take--){
         const plan = planRelief(group, wants.slice(0, take), suppliers);
         if (plan && dispatch(group, home, plan.stops, kind, tried)){ return plan.used; }
     }
@@ -529,7 +526,7 @@ export function runAutoRoutes(config){
     if (supplyMode() === 'global' || !global.space || !global.space.shipyard){ return; }
     const fleets = managedFleets().filter(group => !resting(group));
     if (!fleets.length){ return; }
-    const horizon = config && config.horizon > 0 ? config.horizon : HORIZON;
+    const horizon = config && config.horizon > 0 ? config.horizon : routeConstants.horizon;
     const balance = !config || config.balance;
 
     pass = { ledgers: new Map() };

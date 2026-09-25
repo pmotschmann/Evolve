@@ -1244,7 +1244,7 @@ function fastLoop(){
     const date = new Date();
     const astroSign = astrologySign();
     breakdown.p['Global'] = {};
-    var global_multiplier = 1;
+    var global_multiplier = 10000;
     let applyPlasmid = false;
     let pBonus = plasmidBonus('raw');
     if (global.prestige.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
@@ -1996,14 +1996,18 @@ function fastLoop(){
                 const bm = global.city.market['bm'] || {};
                 for (const pool in bm){
                     for (const res in bm[pool]){
-                        const routes = bm[pool][res];
+                        let routes = bm[pool][res];
                         if (!(routes > 0) || !global.resource[res] || !global.resource[res].display){ continue; }
-                        const price = blackMarketPrice(res, pool) * routes;
+                        used_trade += routes;
+                        // Pay routes from shared Money, limiting active routes by affordability.
+                        const unit = blackMarketPrice(res, pool);
+                        if (unit > 0){
+                            routes = Math.min(routes, Math.floor(global.resource.Money.amount / (unit * time_multiplier)));
+                        }
+                        if (routes <= 0){ continue; }
+                        const price = unit * routes;
                         const volume = blackMarketVolume(res) * routes;
                         if (volume <= 0){ continue; }
-                        // Paid out of the civilisation's money, which is not split between worlds.
-                        if (global.resource.Money.amount < price * time_multiplier){ continue; }
-                        used_trade += routes;
                         modRes('Money', -(price * time_multiplier));
                         modRes(res, volume * time_multiplier, false, pool);
                         breakdown.p.consume.Money[loc('trade')] -= price;
@@ -10429,6 +10433,14 @@ function midLoop(){
             let gain = (p_on['seismic'] * actions.space.spc_hell.seismic.knowVal() * p_on['geothermal']);
             caps['Knowledge'] += gain;
             breakdown.c.Knowledge[loc('space_seismic_title')] = gain+'v';
+        }
+
+        if (global.space['area_51'] && p_on['area_51'] > 0){
+            let area_51 = actions.space.spc_dwarf.area_51;
+            let gain = p_on['area_51'] * (workerScale(global.civic.scientist.workers,'scientist') * area_51.sciVal()
+                + workerScale(global.civic.professor.workers,'professor') * area_51.profVal());
+            caps['Knowledge'] += gain;
+            breakdown.c.Knowledge[loc('space_dwarf_area_51_title')] = gain+'v';
         }
 
         if (global.interstellar['laboratory'] && int_on['laboratory'] > 0){

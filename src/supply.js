@@ -27,6 +27,16 @@ export function supplyFragmented(){
     return global.tech['shadow'] && global.tech.shadow >= 8 ? true : false;
 }
 
+// Return whether Zone Security combines the inner worlds into one supply zone.
+export function supplySecured(){
+    return global.tech['shadow'] && global.tech.shadow >= 16 ? true : false;
+}
+
+// Return the supply stage for completed research.
+function supplyStage(){
+    return supplySecured() ? 'inner' : (supplyFragmented() ? 'full' : 'sol');
+}
+
 // Resources split by supply zone
 export function partitioned(res){
     return !!atomic_mass[res] && supplyMode() !== 'global';
@@ -526,16 +536,25 @@ const STARTING_ZONES = [
 // The Tau Ceti zone, which is the same at every stage.
 const TAU_ZONE = STARTING_ZONES.find(zone => zone.r.includes('tau_home'));
 
+// Zones combined by Zone Security; Mercury also includes the Sun.
+const INNER_ZONE = [CAPITAL, 'spc_moon', 'spc_red', 'spc_sun', 'spc_hell', 'spc_belt', 'spc_dwarf'];
+
 // Whether a region belongs to the Sol system's stockpile.
 function solRegion(region){
     return region.startsWith('spc_');
 }
 
-// Return zones for a 'sol' or 'full' supply stage.
+// Return zones for a 'sol', 'full' or 'inner' supply stage.
 function stageZones(stage){
     if (stage === 'full'){
         // Skip the destroyed capital zone.
         return STARTING_ZONES.filter(zone => !(capitalGone() && zone.r[0] === CAPITAL));
+    }
+    if (stage === 'inner'){
+        // Build the inner pool from the capital and remaining inner worlds.
+        const home = capitalZone();
+        const inner = [home, ...INNER_ZONE.filter(region => region !== home && !(capitalGone() && region === CAPITAL))];
+        return [{ r: inner, p: 'inner' }, ...STARTING_ZONES.filter(zone => !zone.r.some(region => INNER_ZONE.includes(region)))];
     }
     const home = capitalZone();
     const worlds = supplyRegions().filter(region => solRegion(region) && region !== home && !(capitalGone() && region === CAPITAL));
@@ -548,11 +567,36 @@ function applyZones(stage){
     const kept = groups.filter(group => !group.r.some(region => solRegion(region) || region.startsWith('tau_')));
     const zones = stageZones(stage).map(zone => zone.p ? { r: zone.r.slice(), p: zone.p } : { r: zone.r.slice() });
     groups.splice(0, groups.length, ...kept, ...zones);
+    refreshPools();
+    foldRetiredPools();
     poolsChanged();
 }
 
+// Move retired-pool records to their replacement pool.
+function foldRetiredPools(){
+    const deployed = global.race['supply_deployed'];
+    if (deployed){
+        for (const pool of Object.keys(deployed)){
+            const into = supplyPool(pool);
+            if (into === pool || !Array.isArray(deployed[pool])){ continue; }
+            deployed[into] = (Array.isArray(deployed[into]) ? deployed[into] : []).concat(deployed[pool]);
+            delete deployed[pool];
+        }
+    }
+    const bm = global.city['market'] && global.city.market['bm'];
+    if (bm){
+        for (const pool of Object.keys(bm)){
+            const into = supplyPool(pool);
+            if (into === pool){ continue; }
+            if (!bm[into]){ bm[into] = {}; }
+            for (const res in bm[pool]){ bm[into][res] = (bm[into][res] || 0) + bm[pool][res]; }
+            delete bm[pool];
+        }
+    }
+}
+
 // First division of the stockpile when supply zones unlock.
-export function splitSupply(stage = supplyFragmented() ? 'full' : 'sol'){
+export function splitSupply(stage = supplyStage()){
     // Marked first, so the zones are regional while they are laid out.
     global.race['supplySplit'] = stage;
     applyZones(stage);
@@ -566,21 +610,21 @@ export function splitSupply(stage = supplyFragmented() ? 'full' : 'sol'){
     }
 }
 
-// Break the Sol stockpile into the full set of zones. Its stock is divided by storage on the next pass.
-function fragmentSupply(){
+// Split the Sol stockpile into later-stage zones; storage divides it next pass.
+function fragmentSupply(stage){
     const from = supplyPool(capitalZone());
-    applyZones('full');
+    applyZones(stage);
     for (const res in atomic_mass){
         if (!global.resource[res]){ continue; }
         if (regAmount(res, from) > 0){ global.resource[res].regDeal = { from: from }; }
     }
-    global.race['supplySplit'] = 'full';
+    global.race['supplySplit'] = stage;
 }
 
 // Synchronize supply zones with research and return the resulting change, if any.
 export function syncSupplyZones(){
     if (!supplyUnlocked()){ return false; }
-    const want = supplyFragmented() ? 'full' : 'sol';
+    const want = supplyStage();
     // Saves from before the Sol stage were always fully split.
     const have = global.race['supplySplit'] === true ? 'full' : global.race['supplySplit'];
     if (have === want){
@@ -591,14 +635,19 @@ export function syncSupplyZones(){
         splitSupply(want);
         return 'split';
     }
+    // Split the Sol pool before moving to a later stage.
+    if (have === 'sol'){
+        fragmentSupply(want);
+        return 'fragment';
+    }
     if (want === 'full'){
-        fragmentSupply();
+        fragmentSupply('full');
         return 'fragment';
     }
     // Pools merged this way fold their ledgers together on the next pass, so nothing is lost.
-    applyZones('sol');
-    global.race['supplySplit'] = 'sol';
-    return 'merge';
+    applyZones(want);
+    global.race['supplySplit'] = want;
+    return want === 'inner' ? 'secure' : 'merge';
 }
 
 // Whether this resource is still waiting to be divided between the worlds.

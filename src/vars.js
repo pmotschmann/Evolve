@@ -1720,7 +1720,7 @@ if (global['space'] && global.space['shipyard'] && global.space.shipyard.hasOwnP
 
 global['version'] = '1.5.0';
 delete global['revision'];
-global['beta'] = 54;
+global['beta'] = 55;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

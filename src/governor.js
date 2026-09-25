@@ -14,7 +14,7 @@ import { isStargateOn, checkSpaceRequirements } from './space.js';
 import { stabilize_blackhole } from './tech.js';
 import { checkPathRequirements, titanReclaimed } from './truepath.js';
 import { shipCosts } from './ships.js';
-import { runAutoRoutes, PRIORITY } from './autoroute.js';
+import { runAutoRoutes, routeConstants } from './autoroute.js';
 import { checkEdenRequirements } from './edenic.js';
 
 export const gmen = {
@@ -1173,8 +1173,11 @@ export const freightHorizonDefault = 400; // Days ahead a shortage has to bite b
 export const marketTraderMarginDefault = 0;  // Extra production per second to buy beyond breaking even
 export const marketTraderReserveDefault = 0; // Money the trader will not spend below
 
-// Route priority for Market Trader shortages; Water follows the shared freight priorities.
-export const marketTraderPriority = PRIORITY.concat(['Water']);
+// Resources whose shortages may reclaim routes from any other resource.
+export const marketTraderEssential = routeConstants.priority.concat(['Uranium']);
+
+// Route priority for Market Trader shortages; Water follows the essentials.
+export const marketTraderPriority = marketTraderEssential.concat(['Water']);
 
 export function marketTraderRank(res){
     const at = marketTraderPriority.indexOf(res);
@@ -1192,7 +1195,7 @@ export function marketTraderConfig(){
     };
 }
 
-// Assign black-market routes to regional shortages, reclaiming only surplus routes when needed.
+// Assign black-market routes to shortages; essentials may reclaim any route.
 export function runMarketTrader(cfg){
     const pools = supplyPools();
     if (!pools.length){ return; }
@@ -1201,6 +1204,7 @@ export function runMarketTrader(cfg){
 
     let deficits = [];      // Regional shortages needing routes.
     let spare = [];         // Routes supporting a regional surplus.
+    let held = [];          // Routes reserved for nonessential shortages; essentials may reclaim them.
 
     for (const pool of pools){
         for (const res of blackMarketable()){
@@ -1210,13 +1214,18 @@ export function runMarketTrader(cfg){
             const diff = regDiff(res)[pool] || 0;
             // Production excluding black-market imports.
             const base = diff - (routes * vol);
+            const rank = marketTraderRank(res);
+            const essential = marketTraderEssential.includes(res);
 
             if (diff < 0){
-                deficits.push({ pool, res, short: -diff, rank: marketTraderRank(res),
+                deficits.push({ pool, res, short: -diff, rank, essential,
                     want: Math.ceil((-diff + cfg.margin) / vol) });
             }
-            else if (routes > 0 && base >= cfg.margin){
-                spare.push({ pool, res, routes, rank: marketTraderRank(res) });
+            if (routes > 0 && diff >= 0 && base >= cfg.margin){
+                spare.push({ pool, res, routes, rank });
+            }
+            else if (routes > 0 && !essential){
+                held.push({ pool, res, routes, rank });
             }
         }
     }
@@ -1224,22 +1233,26 @@ export function runMarketTrader(cfg){
 
     // Prioritize configured resources, then the largest shortfall.
     deficits.sort((a,b) => a.rank - b.rank || b.short - a.short);
-    // Reclaim lower-priority surplus routes first.
+    // Reclaim larger, lower-priority holdings first.
     spare.sort((a,b) => b.rank - a.rank);
+    held.sort((a,b) => b.rank - a.rank || b.routes - a.routes);
+
+    const reclaim = function(from, d){
+        for (const s of from){
+            if (free() >= d.want){ break; }
+            // Do not reclaim the route being evaluated.
+            if (s.routes <= 0 || (s.pool === d.pool && s.res === d.res)){ continue; }
+            const take = Math.min(s.routes, d.want - free());
+            bmAdjust(s.res, s.pool, -take);
+            s.routes -= take;
+        }
+    };
 
     for (const d of deficits){
         // Respect the configured money reserve.
         if (global.resource.Money.amount <= cfg.reserve){ break; }
-        if (free() < d.want){
-            for (const s of spare){
-                if (free() >= d.want){ break; }
-                // Do not reclaim the route being evaluated.
-                if (s.routes <= 0 || (s.pool === d.pool && s.res === d.res)){ continue; }
-                const take = Math.min(s.routes, d.want - free());
-                bmAdjust(s.res, s.pool, -take);
-                s.routes -= take;
-            }
-        }
+        if (free() < d.want){ reclaim(spare, d); }
+        if (free() < d.want && d.essential){ reclaim(held, d); }
         const add = Math.min(d.want, free());
         if (add > 0){ bmAdjust(d.res, d.pool, add); }
     }
