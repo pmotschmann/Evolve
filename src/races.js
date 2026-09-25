@@ -2525,7 +2525,7 @@ export const traits = {
         name(){ return loc('trait_scrounger_name'); },
         desc(v){ return loc('trait_scrounger',v); },
         type: 'major',
-        origin: 'raptors',
+        origin: 'raptor',
         taxonomy: 'production',
         val: 100,
         vars(r){
@@ -2537,7 +2537,7 @@ export const traits = {
         name(){ return loc('trait_nostalgic_name'); },
         desc(v){ return loc('trait_nostalgic',v); },
         type: 'major',
-        origin: 'raptors',
+        origin: 'raptor',
         taxonomy: 'production',
         val: -120,
         vars(r){
@@ -4109,22 +4109,22 @@ export const races = {
         fanaticism: 'living_tool',
         basic(){ return false; }
     },
-    raptors: {
-        name: loc('race_raptors'),
-        desc(){ return global.race['raptor_plumage'] ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
+    raptor: {
+        name: loc('race_raptor'),
+        desc(){ return global.race['raptor_plumage'] ? loc('race_raptor_desc_feathered') : loc('race_raptor_desc'); },
         type: 'primordial',
-        home: loc('race_raptors_home'),
-        entity: loc('race_raptors_entity'),
+        home: loc('race_raptor_home'),
+        entity: loc('race_raptor_entity'),
         traits: {
             scrounger: 1,
             nostalgic: 1
         },
         solar: {
-            red: loc('race_raptors_solar_red'),
-            hell: loc('race_raptors_solar_hell'),
-            gas: loc('race_raptors_solar_gas'),
-            gas_moon: loc('race_raptors_solar_gas_moon'),
-            dwarf: loc('race_raptors_solar_dwarf'),
+            red: loc('race_raptor_solar_red'),
+            hell: loc('race_raptor_solar_hell'),
+            gas: loc('race_raptor_solar_gas'),
+            gas_moon: loc('race_raptor_solar_gas_moon'),
+            dwarf: loc('race_raptor_solar_dwarf'),
         },
         fanaticism: 'scrounger',
         basic(){ return false; }

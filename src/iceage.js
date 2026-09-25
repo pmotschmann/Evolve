@@ -3819,6 +3819,12 @@ const iceAgeModules = {
                             global.aberrants.herbivores.slain++;
                             global.stats.hslain = global.aberrants.carnivores.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.herbivores.count--;
                             drawEcology('aberrant_herbivores');
                         }
@@ -3911,6 +3917,12 @@ const iceAgeModules = {
                             global.aberrants.carnivores.slain++;
                             global.stats.cslain = global.aberrants.carnivores.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.carnivores.count--;
                             drawEcology('aberrant_carnivores');
                         }
@@ -4003,6 +4015,12 @@ const iceAgeModules = {
                             global.aberrants.scavengers.slain++;
                             global.stats.sslain = global.aberrants.scavengers.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.scavengers.count--;
                             drawEcology('aberrant_scavengers');
                         }

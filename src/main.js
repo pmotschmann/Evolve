@@ -11866,7 +11866,6 @@ function midLoop(){
                 }
 
                 if ((global.portal.spire.boss === 'djinni' && global.race.species === 'djinn') ||
-                    (global.portal.spire.boss === 'raptor' && global.race.species === 'raptors') ||
                     (global.portal.spire.boss === 'dino' && (global.race.species === 'rexicus' || (global.race.srace === 'rexicus' && global.race['artifical'] && global.race['imitation']))) ||
                     global.portal.spire.boss === global.race.species){
                     unlockAchieve('doppelganger');

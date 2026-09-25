@@ -49,6 +49,9 @@ export function warhead(){
         if (global.race['truepath']){
             unlockAchieve('ashanddust');
         }
+        if (global.race['deep_power'] && global.race.universe === 'magic'){
+            unlockAchieve('hubris');
+        }
         checkAchievements();
 
         grandDeathTour('md');
