@@ -13,7 +13,7 @@ import { loc } from './locale.js';
 import { supplyPool, supplyMode, supplyRegions, partitioned, regAmount, regDiff, poolMod, syncTotal } from './supply.js';
 import { makePoint, retireShipFields, makeLeg } from './shipsave.js';
 import { zEngage, syndicateMove, resolveBody, drawShips, updateCosts, tempCoord, tempParent, tempOffset, tempSystem,
-         tauCetiModules, regionName } from './truepath.js';
+         tauCetiModules, regionName, shipyardView, shipyardViewUnlocked } from './truepath.js';
 
 // --- The ship ------------------------------------------------------------------------------------
 
@@ -509,6 +509,15 @@ export function buildTPShip(ship, queue, fleetBuild){
         }
     }
 
+    // Switch to the new hull's yard when viewing another system.
+    if (shipyardViewUnlocked()){
+        let view = shipyardView();
+        let hidden = view.sys === 'yards'
+            ? !activeRepairYards().includes(locationName)
+            : view.sys !== 'all' && locSystem(locationName) !== view.sys;
+        if (hidden){ view.sys = locSystem(locationName); }
+    }
+
     drawShips();
     updateCosts();
     if (!queue){
@@ -932,10 +941,13 @@ export function freightWeight(ship){
     for (const res in cargo){ total += (atomic_mass[res] || 0) * (Number(cargo[res]) || 0); }
     return total;
 }
+// A freighter never loses more than this share of its speed to cargo, however heavy the load.
+const FREIGHT_PENALTY_CAP = 75;
+
 export function freightSpeedPenalty(ship){
     if (!ship || ship.class !== 'freighter'){ return 0; }
     const penalty = Math.floor(freightWeight(ship) / 1750000);
-    return shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty;
+    return Math.min(FREIGHT_PENALTY_CAP, shipSpecial(ship) === 'extra_thruster' ? penalty / 2 : penalty);
 }
 
 // Remaining whole days to a ship's final destination, including any later jump-gate legs.

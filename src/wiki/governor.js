@@ -1,9 +1,9 @@
 import { loc } from './../locale.js';
 import { sideMenu, subSideMenu, infoBoxBuilder } from './functions.js';
 import { govBoost } from './government.js';
-import { gmen, gov_traits, gov_tasks, repairWaitCap, repairWaitCapFavoured, freightHorizonDefault, marketTraderPriority } from './../governor.js';
+import { gmen, gov_traits, gov_tasks, repairWaitCap, repairWaitCapFavoured, freightHorizonDefault, marketTraderEssential } from './../governor.js';
 import { global } from './../vars.js';
-import { MAX_STOPS } from './../autoroute.js';
+import { routeConstants } from './../autoroute.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
 
@@ -360,7 +360,7 @@ export function governPage(content){
                     5: [loc('supply_freighter_route_build')],
                     6: [loc('supply_freighter_route_balance')],
                     // Read from the task itself so the documented limits cannot drift from the code.
-                    7: [MAX_STOPS],
+                    7: [routeConstants.maxStops],
                     8: [loc('gov_task_freight_horizon'),freightHorizonDefault,loc('gov_task_freight_balance')],
                     9: [loc('tech_syndicate_threat_analysis')]
                 },
@@ -388,7 +388,7 @@ export function governPage(content){
                 para_data: {
                     1: [loc('tab_black_market')],
                     // List fuels from the task's route-priority order.
-                    6: [marketTraderPriority.filter(r => r !== 'Food')
+                    6: [marketTraderEssential.filter(r => r !== 'Food')
                         .map(r => global.resource[r] ? global.resource[r].name : loc(`resource_${r}_name`)).join(', ')],
                     // Use the task's configured setting labels.
                     7: [loc('gov_task_trader_margin'),loc('gov_task_trader_reserve')],

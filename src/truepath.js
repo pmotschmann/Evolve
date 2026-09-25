@@ -7266,8 +7266,44 @@ export const sWarfare = {
     commandPower: 10,           // Power draw once complete.
     commandMoonFire: 0.5,       // Share of its firepower that reaches Ganymede.
     commandRepair: 2,           // Hull repaired per day while powered.
-    commandFit: { class: 'dreadnought', power: 'none', engine: 'none', weapon: 'disruptor', armor: 'neutronium', sensor: 'quantum', special: 'none' }
+    commandFit: { class: 'dreadnought', power: 'none', engine: 'none', weapon: 'disruptor', armor: 'neutronium', sensor: 'quantum', special: 'none' },
+    // Zone Security patrol requirements.
+    secureFleets: 2,            // Qualifying fleets on patrol.
+    secureFirepower: 2000,      // Combined firepower each of them needs.
+    secureHulls: ['cruiser','battlecruiser','dreadnought'],     // At least one of these per fleet.
+    secureSensor: 'quantum',    // Sensor at least one ship per fleet must carry.
+    // Required route coverage; a stop in any zone of a set fulfills it.
+    secureCover: [['spc_home','spc_moon'], ['spc_red'], ['spc_dwarf'], ['spc_hell'], ['spc_belt']]
 };
+
+// Return Zone Security patrol requirements and coverage status.
+export function zoneSecurityStatus(){
+    const fleets = new Map();
+    allShips().forEach(function(ship){
+        const patrol = shipPatrol(ship);
+        if (!patrol){ return; }
+        // Group ships by fleet; unassigned ships form one-ship fleets.
+        const key = global.tech['syard_fleet'] && ship.fid ? `f${ship.fid}` : ship;
+        if (!fleets.has(key)){ fleets.set(key, { ships: [], stops: new Set() }); }
+        const fleet = fleets.get(key);
+        fleet.ships.push(ship);
+        patrol.stops.forEach(stop => fleet.stops.add(stop));
+    });
+
+    const covered = new Set();
+    let count = 0;
+    fleets.forEach(function(fleet){
+        const heavy = fleet.ships.some(s => sWarfare.secureHulls.includes(s.class));
+        const scan = fleet.ships.some(s => s.sensor === sWarfare.secureSensor);
+        const fire = fleet.ships.reduce((t,s) => t + shipAttackPower(s), 0);
+        if (!heavy || !scan || fire < sWarfare.secureFirepower){ return; }
+        count++;
+        fleet.stops.forEach(stop => covered.add(stop));
+    });
+
+    const cover = sWarfare.secureCover.map(set => set.some(world => covered.has(world)));
+    return { fleets: count, cover, met: count >= sWarfare.secureFleets && cover.every(c => c) };
+}
 
 const counterEspionageZoneDefs = [
     { id: 'city', cat: 'city', active: 'spc_home' },

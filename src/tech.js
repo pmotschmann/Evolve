@@ -11,7 +11,7 @@ import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCo
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { drawShipYard, jumpGateShutdown, jumpGateRestart, surveyTheme, stealthStudied, revealAlienInfiltrators,
-         containmentCaptureChance, interrogationDuration, sWarfare } from './truepath.js';
+         containmentCaptureChance, interrogationDuration, sWarfare, zoneSecurityStatus, regionName } from './truepath.js';
 import { aerographeneSpeedBonus, shipCapacitorSaving, grantSupplyFreighters, sensorUpgrade } from './ships.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
@@ -19,7 +19,7 @@ import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRe
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 import { ecoGainMajorTrait, drawPerkUnderground } from './iceage.js';
-import { activeSupplyRegions } from './supply.js';
+import { activeSupplyRegions, capitalZone } from './supply.js';
 
 const techs = {
     club: {
@@ -5191,6 +5191,30 @@ const techs = {
         },
         action(){
             if (payCosts(this)){
+                return true;
+            }
+            return false;
+        }
+    },
+    area_51: {
+        id: 'tech-area_51',
+        title(){ return loc('tech_area_51'); },
+        desc(){ return loc('tech_area_51'); },
+        category: 'science',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 15, dwarf: 2, science: 11 },
+        grant: ['science',12],
+        cost: {
+            Knowledge(){ return 27000000; },
+            Alien_Intel(){ return 750; }
+        },
+        effect(){
+            return `<div>${loc('tech_area_51_effect',[planetName().dwarf])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                initStruct(actions.space.spc_dwarf.area_51);
                 return true;
             }
             return false;
@@ -19028,6 +19052,42 @@ const techs = {
             return false;
         }
     },
+    zone_security: {
+        id: 'tech-zone_security',
+        title(){ return loc('tech_zone_security'); },
+        desc(){ return loc('tech_zone_security'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 15 },
+        grant: ['shadow',16],
+        cost: {
+            Knowledge(){ return 28000000; },
+            Alien_Intel(){ return 1000; }
+        },
+        effect(){
+            // Show Zone Security patrol requirements and their completion state.
+            const status = zoneSecurityStatus();
+            const mark = ok => ok ? 'has-text-success' : 'has-text-danger';
+            const worlds = sWarfare.secureCover.map(function(set, i){
+                const name = set.length > 1 ? loc('tech_zone_security_either',[regionName(set[0]),regionName(set[1])]) : regionName(set[0]);
+                return `<span class="${mark(status.cover[i])}">${name}</span>`;
+            }).join(', ');
+            return `<div>${loc('tech_zone_security_effect')}</div>`
+                + `<div>${loc('tech_zone_security_req',[sWarfare.secureFleets,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
+                + `<div class="${mark(status.fleets >= sWarfare.secureFleets)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.secureFleets])}</div>`
+                + `<div>${loc('tech_zone_security_cover',[worlds])}</div>`;
+        },
+        action(){
+            // Require patrols before researching Zone Security.
+            if (!zoneSecurityStatus().met){ return false; }
+            if (payCosts(this)){
+                messageQueue(loc('tech_zone_security_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
     alien_containment: {
         id: 'tech-alien_containment',
         title(){ return loc('tech_alien_containment'); },
@@ -19054,7 +19114,7 @@ const techs = {
         id: 'tech-tungsten_mine',
         title(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
         desc(){ return loc('tech_tungsten_mine',[global.resource.Tungsten.name]); },
-        category: 'science',
+        category: 'mining',
         era: 'shadow_war',
         path: ['truepath'],
         reqs: { shadow: 7, hell: 1 },
