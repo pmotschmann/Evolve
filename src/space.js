@@ -3575,8 +3575,8 @@ const spaceProjects = {
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             // Knowledge cap per scientist and professor, adjusted for High Pop.
-            sciVal(){ return hugeAdjust(highPopAdjust(4000)); },
-            profVal(){ return hugeAdjust(highPopAdjust(2000)); },
+            sciVal(){ return hugeAdjust(highPopAdjust(3000)); },
+            profVal(){ return hugeAdjust(highPopAdjust(1500)); },
             powered(){ return powerCostMod(12); },
             action(args){
                 if (payCosts(this)){
