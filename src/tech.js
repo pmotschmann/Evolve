@@ -9988,6 +9988,9 @@ const techs = {
                 if (global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt'])){
                     messageQueue(loc('tech_mad_info_easter'),'info',false,['progress']);
                 }
+                else if(global.race['deep_power'] && global.race.universe === 'magic'){
+                    messageQueue(loc('tech_mad_info_primal'),'info',false,['progress']);
+                }
                 else {
                     messageQueue(loc('tech_mad_info'),'info',false,['progress']);
                 }

@@ -7845,7 +7845,7 @@ function xeno_race(){
     if (!global.custom.hasOwnProperty('race1')){
         skip.push('hybrid');
     }
-    if (!global.achieve.living_extinction?.l){
+    if (!global.stats.achieve.living_extinction?.l){
         skip.push('primordial');
     }
     

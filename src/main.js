@@ -10282,7 +10282,7 @@ function midLoop(){
                 if (global.resource[res].display){
                     let res_total = 0;
                     for (const zone of citizenZones()){
-                        let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(list[res] * multiplier * citizenShare(zone));
+                        let gain = traits.wooly.vars()[0] * highPopAdjust(hugeAdjust(global.resource[global.race.species].amount)) / 100 * spatialReasoning(list[res] * multiplier * citizenShare(zone));
                         addCap(res, gain, `${zone}:Wooly`);
                         res_total += gain;
                     }

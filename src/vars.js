@@ -1329,7 +1329,7 @@ if (convertVersion(global['version']) < 104009){
     }
 }
 
-if (convertVersion(global['version']) < 105000){
+if (convertVersion(global['version']) < 105000 && global.settings?.pause){
     global.settings.pause = true;
 }
 
