@@ -4311,7 +4311,7 @@ export const tauCetiModules = {
                 if (global.race['lone_survivor']){
                     val *= 2;
                 }
-                val = hugeEffect(val);
+                val = hugeAdjust(val);
                 return +(val).toFixed(1);
             },
             s_type: 'tau_red',
@@ -4512,7 +4512,7 @@ export const tauCetiModules = {
                 if (global.race['lone_survivor']){
                     val *= 2;
                 }
-                val = hugeAdjust(2);
+                val = hugeAdjust(val);
                 return val;
             },
             s_type: 'tau_red',

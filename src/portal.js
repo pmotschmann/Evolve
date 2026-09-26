@@ -4850,10 +4850,11 @@ export function bloodwar(report = true){
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
             cap *= (global.stats.achieve['what_is_best'] && global.stats.achieve.what_is_best.e >= 3 ? 0.96 : 0.97) ** hugeAdjust(p_on['soul_attractor']);
         }
-        if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
+        cap = Math.max(1, Math.round(cap));
+        if (forgeOperating && global.portal.soul_forge.kills >= cap){
             day_report.soul_forge.gem_craft = true;
-            let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
-            global.portal.soul_forge.kills -= Math.round(cap) * gems;
+            let gems = Math.floor(global.portal.soul_forge.kills / cap);
+            global.portal.soul_forge.kills -= cap * gems;
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && hellRand(0,c_max + 1) === 0){
                 day_report.soul_forge.corrupt = true;
@@ -5065,9 +5066,10 @@ export function hellguard(){
         if (global.race['ghostly']){
             cap *= 2 - traits.ghostly.vars()[1];
         }
-        if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
-            let gems = Math.floor(global.portal.soul_forge.kills / Math.round(cap));
-            global.portal.soul_forge.kills -= Math.round(cap) * gems;
+        cap = Math.max(1, Math.round(cap));
+        if (forgeOperating && global.portal.soul_forge.kills >= cap){
+            let gems = Math.floor(global.portal.soul_forge.kills / cap);
+            global.portal.soul_forge.kills -= cap * gems;
             global.resource.Soul_Gem.amount += gems;
         }
     }

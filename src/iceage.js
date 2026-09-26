@@ -2506,7 +2506,7 @@ const iceAgeModules = {
                     if (global.race.universe === 'evil'){
                         desc += `<div>${loc('plus_max_resource',[1,global.resource.Authority.name])}</div>`;
                     }
-                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[hugeEffect(2)])}</div>`;
+                    desc += `<div>${loc('underground_hunting_lodge_effect_perk',[2])}</div>`;
                     return desc;
                 },
                 action(args){
@@ -3819,6 +3819,12 @@ const iceAgeModules = {
                             global.aberrants.herbivores.slain++;
                             global.stats.hslain = global.aberrants.carnivores.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.herbivores.count--;
                             drawEcology('aberrant_herbivores');
                         }
@@ -3911,6 +3917,12 @@ const iceAgeModules = {
                             global.aberrants.carnivores.slain++;
                             global.stats.cslain = global.aberrants.carnivores.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.carnivores.count--;
                             drawEcology('aberrant_carnivores');
                         }
@@ -4003,6 +4015,12 @@ const iceAgeModules = {
                             global.aberrants.scavengers.slain++;
                             global.stats.sslain = global.aberrants.scavengers.slain;
                             global.stats.aslain++;
+                            if (global.stats.hslain + global.stats.cslain + global.stats.sslain >= 1000){
+                                unlockAchieve('aberrant_slayer');
+                            }
+                            if (stats.loot_mult >= 500){
+                                unlockAchieve('aberrant_jackpot');
+                            }
                             global.aberrants.scavengers.count--;
                             drawEcology('aberrant_scavengers');
                         }
@@ -6010,7 +6028,6 @@ export function ecoGainMajorTrait(lifeform, trait, suppress, force){
     let success = false;
     if (Object.keys(curr_traits).length < ecosystemInfo.majorTraitCap() /*6*/ || force){
         if (global.aberrants.trees.mutations >= 10 && lifeform === 'trees' && global.race['iceage']){
-            console.log(Math.rand(0, 5));
             if (Math.rand(0, 5) === 0){
                 trait = 'hivemind';
             }

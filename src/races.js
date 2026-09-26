@@ -259,8 +259,10 @@ export const genus_def = {
     primordial: {
         traits: {
             deep_power: 1,
-            ancient: 1
+            ancient: 1,
+            connected: 1
         },
+        emergent: ['connected'],
         oppose: ['synthetic']
     },
     hybrid: {
@@ -2515,17 +2517,29 @@ export const traits = {
         type: 'genus',
         origin: 'primordial',
         taxonomy: 'resource',
-        val: -160,
+        val: -240,
         vars(r){
             // [reduction to quantum in percentage]
-            return traitScale(r || traitRank('ancient') || 1, [35], [20], [12]);
+            return traitScale(r || traitRank('ancient') || 1, [95], [60], [35]);
+        }
+    },
+    connected: { //harmonic energy raises combat rating
+        name(){ return loc('trait_connected_name'); },
+        desc(v){ return loc('trait_connected',v); },
+        type: 'genus',
+        origin: 'primordial',
+        taxonomy: 'combat',
+        val: 60,
+        vars(r){
+            // [percentage of harmonic added to rating]
+            return traitScale(r || traitRank('connected') || 1, [15], [40], [75]);
         }
     },
     scrounger: { //scavengers are available, scavengers produce raider resources
         name(){ return loc('trait_scrounger_name'); },
         desc(v){ return loc('trait_scrounger',v); },
         type: 'major',
-        origin: 'raptors',
+        origin: 'raptor',
         taxonomy: 'production',
         val: 100,
         vars(r){
@@ -2537,7 +2551,7 @@ export const traits = {
         name(){ return loc('trait_nostalgic_name'); },
         desc(v){ return loc('trait_nostalgic',v); },
         type: 'major',
-        origin: 'raptors',
+        origin: 'raptor',
         taxonomy: 'production',
         val: -120,
         vars(r){
@@ -2584,7 +2598,7 @@ export const traits = {
             return traitScale(r || traitRank('wooly') || 1, [0.55, 16], [1, 12], [1.4, 10]);
         }
     },
-    mourning: { //global production reduced when citizens die. (works similar to warmonger) (UNIMPLEMENTED)
+    mourning: { //global production reduced when citizens die. (works similar to warmonger)
         name(){ return loc('trait_mourning_name'); },
         desc(v){ return loc('trait_mourning',v); },
         type: 'major',
@@ -4109,22 +4123,22 @@ export const races = {
         fanaticism: 'living_tool',
         basic(){ return false; }
     },
-    raptors: {
-        name: loc('race_raptors'),
-        desc(){ return global.race['raptor_plumage'] ? loc('race_raptors_desc_feathered') : loc('race_raptors_desc'); },
+    raptor: {
+        name: loc('race_raptor'),
+        desc(){ return global.race['raptor_plumage'] ? loc('race_raptor_desc_feathered') : loc('race_raptor_desc'); },
         type: 'primordial',
-        home: loc('race_raptors_home'),
-        entity: loc('race_raptors_entity'),
+        home: loc('race_raptor_home'),
+        entity: loc('race_raptor_entity'),
         traits: {
             scrounger: 1,
             nostalgic: 1
         },
         solar: {
-            red: loc('race_raptors_solar_red'),
-            hell: loc('race_raptors_solar_hell'),
-            gas: loc('race_raptors_solar_gas'),
-            gas_moon: loc('race_raptors_solar_gas_moon'),
-            dwarf: loc('race_raptors_solar_dwarf'),
+            red: loc('race_raptor_solar_red'),
+            hell: loc('race_raptor_solar_hell'),
+            gas: loc('race_raptor_solar_gas'),
+            gas_moon: loc('race_raptor_solar_gas_moon'),
+            dwarf: loc('race_raptor_solar_dwarf'),
         },
         fanaticism: 'scrounger',
         basic(){ return false; }
@@ -7119,6 +7133,7 @@ export function cleanRemoveTrait(trait,rank){
             calc_mastery(true);
             break;
         case 'humongous':
+            updateHumongous(rank, 0);
             break;
         default:
             break;
@@ -7304,7 +7319,10 @@ export function combineTraits(){
 function updateHumongous(prev, curr){
     //humongous makes buildings more expensive and more powerful. Existing buildings have to be reduced when humongous is obtained.
     let prev_scale = prev ? traits.humongous.vars(prev)[1] : 1;
-    let ratio = traits.humongous.vars(curr)[1] / prev_scale;
+    let ratio = 1 / prev_scale;
+    if (curr > 0){
+        ratio = traits.humongous.vars(curr)[1] / prev_scale;
+    }
     if (ratio > 1){
         const adjust = (c_action, cat, region) => {
             if(c_action.id){
@@ -7502,28 +7520,24 @@ export function setTraitRank(trait,opts){
         if (rank === global.race[trait]){
             return false;
         }
-        if (trait === 'humongous'){
-            updateHumongous(global.race[trait], rank);
-        }
         global.race[trait] = rank;
-        afterRankChange(trait);
+        afterRankChange(trait, rank);
         return true;
     }
     else if (opts['set']){
-        if (trait === 'humongous'){
-            updateHumongous(global.race[trait], opts['set']);
-        }
         global.race[trait] = opts['set'];
-        afterRankChange(trait);
+        afterRankChange(trait, opts['set']);
         return true;
     }
     return false;
 }
 
 // A genus property is the average of the traits feeding it, so moving one of those traits moves the property.
-function afterRankChange(trait){
+function afterRankChange(trait, prev){
     // Recalculate traits granted by Imitation when its rank changes.
     if (trait === 'imitation'){ setImitation(); }
+    //check for building adjustment from Humongous when its rank changes.
+    if (trait === 'humongous'){ updateHumongous(global.race.humongous, prev); }
     // Shapeshifter also requires emergent traits to be resynchronized.
     if (!genusFeeder(trait) && trait !== 'shapeshifter'){ return; }
     syncGenusEmergent();

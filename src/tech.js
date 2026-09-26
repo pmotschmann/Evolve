@@ -9953,7 +9953,7 @@ const techs = {
     },
     mad: {
         id: 'tech-mad',
-        title(){ return loc('tech_mad'); },
+        title(){ return (global.race['deep_power'] && global.race.universe === 'magic') ? loc('tech_mad_primal') : loc('tech_mad'); },
         desc(){ return loc('tech_mad_desc'); },
         category: 'special',
         era: 'globalized',
@@ -9967,14 +9967,29 @@ const techs = {
         },
         cost: {
             Knowledge(){ return 120000; },
-            Oil(){ return global.city.ptrait.includes('dense') ? 10000 : 8500; },
-            Uranium(){ return 1250; }
+            Oil(){
+                if (global.race['deep_power'] && global.race.universe === 'magic'){
+                    return 0;
+                }
+                return global.city.ptrait.includes('dense') ? 10000 : 8500;
+            },
+            Uranium(){ return (global.race['deep_power'] && global.race.universe === 'magic') ? 0 : 1250; },
+            Mana(){ return (global.race['deep_power'] && global.race.universe === 'magic') ? 200 : 0; },
+            Crystal(){ return (global.race['deep_power'] && global.race.universe === 'magic') ? 8000 : 0; }
         },
-        effect(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_mad_effect_easter') : loc('tech_mad_effect'); },
+        effect(){
+            if (global.race['deep_power'] && global.race.universe === 'magic'){
+                return loc('tech_mad_effect_primal');
+            }
+            return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_mad_effect_easter') : loc('tech_mad_effect');
+        },
         action(){
             if (payCosts(this)){
                 if (global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt'])){
                     messageQueue(loc('tech_mad_info_easter'),'info',false,['progress']);
+                }
+                else if(global.race['deep_power'] && global.race.universe === 'magic'){
+                    messageQueue(loc('tech_mad_info_primal'),'info',false,['progress']);
                 }
                 else {
                     messageQueue(loc('tech_mad_info'),'info',false,['progress']);

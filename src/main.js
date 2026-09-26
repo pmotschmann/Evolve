@@ -10282,7 +10282,7 @@ function midLoop(){
                 if (global.resource[res].display){
                     let res_total = 0;
                     for (const zone of citizenZones()){
-                        let gain = traits.wooly.vars()[0] * highPopAdjust(global.resource[global.race.species].amount) / 100 * spatialReasoning(list[res] * multiplier * citizenShare(zone));
+                        let gain = traits.wooly.vars()[0] * highPopAdjust(hugeAdjust(global.resource[global.race.species].amount)) / 100 * spatialReasoning(list[res] * multiplier * citizenShare(zone));
                         addCap(res, gain, `${zone}:Wooly`);
                         res_total += gain;
                     }
@@ -11878,7 +11878,6 @@ function midLoop(){
                 }
 
                 if ((global.portal.spire.boss === 'djinni' && global.race.species === 'djinn') ||
-                    (global.portal.spire.boss === 'raptor' && global.race.species === 'raptors') ||
                     (global.portal.spire.boss === 'dino' && (global.race.species === 'rexicus' || (global.race.srace === 'rexicus' && global.race['artifical'] && global.race['imitation']))) ||
                     global.portal.spire.boss === global.race.species){
                     unlockAchieve('doppelganger');
