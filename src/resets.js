@@ -50,7 +50,7 @@ export function warhead(){
             unlockAchieve('ashanddust');
         }
         if (global.race['deep_power'] && global.race.universe === 'magic'){
-            unlockAchieve('hubris');
+            unlockFeat('hubris');
         }
         checkAchievements();
 

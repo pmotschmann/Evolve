@@ -9699,7 +9699,7 @@ export function ascendLab(hybrid,wiki){
                         // See the fanaticism picker above: no <template> around a list Vue mounts on.
                         let genus = `<div class="genus_selection"><section>`;
                         Object.keys(genus_def).forEach(function (type){
-                            if (type !== 'hybrid'){
+                            if (type !== 'hybrid' && type !== 'omnivore'){
                                 if (isWiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
                                     // Same handler the trait checkboxes use: picking a genus changes
                                     // what the genome costs, so the genes remaining has to be redone.

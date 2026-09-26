@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, seededRandom, keyMultiplier, sizeApproximation, p_on, support_on, decayPerks} from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery, modalCloseButton, calcDeepPower } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, calc_mastery, modalCloseButton, calcDeepPower, calcPillar } from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck, blubberFill, geneBonus, geneVars, templeOutputBonus} from './races.js';
 import { defineGovernor, govActive, removeTask } from './governor.js';
@@ -2519,6 +2519,11 @@ export function armyRating(val,type,wound,analysis){
         mastery *= calcDeepPower('combat');
         army *= 1 + mastery;
         data.push({ k: 'mastery', v: mastery });
+    }
+    if (global.race['connected']){
+        let harmonic = (calcPillar()-1) * traits.connected.vars()[0];
+        army *= 1 + harmonic[0];
+        data.push({ k: 'mastery', v: harmonic[0] });
     }
     if (global.underground['hunting_lodge_perk']){
         let hunter = (global.underground['hunting_lodge_perk'].count * 0.02);

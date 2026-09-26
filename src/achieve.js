@@ -43,7 +43,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare','escape_velocity','what_is_best','hubris'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare','escape_velocity','what_is_best'
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
@@ -321,6 +321,11 @@ export const feats = {
         name: loc("feat_fool_name"),
         desc: loc("feat_fool_desc"),
         flair: loc("feat_fool_flair")
+    },
+    hubris: {
+        name: loc("feat_hubris_name"),
+        desc: loc("feat_hubris_desc"),
+        flair: loc("feat_hubris_flair"),
     },
     secret_cow: {
         name: loc("feat_secret_cow_name"),
