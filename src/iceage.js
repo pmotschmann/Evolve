@@ -8,6 +8,7 @@ import { govActive } from './governor.js';
 import { production, highPopAdjust, hugeAdjust } from './prod.js';
 import { spatialReasoning, faithTempleCount } from './resources.js';
 import { jobScale, hugeScale, jobStack, jobStackStep, workerScale, loadFoundry, limitCraftsmen } from './jobs.js';
+import { unlockAchieve } from './achieve.js';
 import { garrisonSize, armorCalc, armyRating, soldierDeath } from './civics.js';
 import { races, traits, fathomCheck, traitCostMod, planetTraits, racialTrait, servantTrait, geneVars, geneBonus } from './races.js';
 import { checkRequirements, incrementStruct, fuel_adjust } from './space.js';
@@ -2898,9 +2899,8 @@ const iceAgeModules = {
                         let list = {
                             'Money': global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000
                         };
-                        let extraVal = govActive('extravagant',2);
-                        if (extraVal){
-                            safe *= 2;
+                        if (govActive('extravagant',2)){
+                            list.Money *= 2;
                         }
                         return res ? (list[res] || 0) : list;
                     },

@@ -847,7 +847,7 @@ const spaceProjects = {
             storage: {
                 res(res){
                     let list = {
-                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 100000 : 50000) : 25000) : 0)
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_safe'] >= 2 ? (global.tech['home_safe'] >= 3 ? 100000 : 50000) : 25000) : 0)
                     };
                     return res ? (list[res] || 0) : list;
                 },

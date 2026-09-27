@@ -1047,8 +1047,11 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
             } while (done < totalSteps && performance.now() < until);
         }
         catch (e){
-            // Never leave reactivity suppressed if a simulated tick throws.
-            console.error('Offline catch-up error:', e);
+            // Never leave reactivity suppressed if a simulated tick throws. The modal closes as if
+            // cancelled; on a beta build say why, and where in the run it happened.
+            if (global['beta']){
+                console.error(`Offline catch-up aborted at step ${done + 1} of ${totalSteps} (${daysPerStep} day(s) per step, game day ${global.stats.days}):`, e);
+            }
             finalize(true);
             return;
         }
@@ -6864,23 +6867,27 @@ function fastLoop(){
         if(p_on['core_mine']){
             let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
             base = workerScale(base, 'core_miner');
-            let traits = racialTrait(base, 'miner');
+            // Not named `traits`: that would shadow the trait table the two lookups below read from.
+            let trait_mods = racialTrait(base, 'miner');
             if (global.race['tough']){
-                traits *= 1 + (traits.tough.vars()[0] / 100);
+                trait_mods *= 1 + (traits.tough.vars()[0] / 100);
             }
             let ogreFathom = fathomCheck('ogre');
             if (ogreFathom > 0){
-                traits *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
+                trait_mods *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
-            traits = traits ** 0.5;
-            base *= traits * job_data.core_miner.impact();
+            trait_mods = trait_mods ** 0.5;
+            base *= trait_mods * job_data.core_miner.impact();
             base = hugeAdjust(base); //humongous avoids hardship penalty
-            if (global.race['gravity_well']){ delta = teamster(delta); }
             let iridium_base = base * (1 + global.city.geology['Iridium'] || 0) * production('psychic_boost','Iridium');
             let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * production('psychic_boost','Titanium') * 5;
             let multiplier = global_multiplier * hunger * shrineMetal.mult * job_data.core_miner.mine_effect();
             let iridium_delta = iridium_base * multiplier * (1 + iridium_smelter);
             let titanium_delta = titanium_base * multiplier;
+            if (global.race['gravity_well']){
+                iridium_delta = teamster(iridium_delta);
+                titanium_delta = teamster(titanium_delta);
+            }
             
             breakdown.p['Iridium'][loc('job_core_miner')] = iridium_base + 'v';
             if (iridium_delta > 0){
