@@ -10409,6 +10409,13 @@ export function detectorNetwork(){
     return Object.keys(sites).every(site => sites[site].late || detectorBuilt(sites[site]));
 }
 
+// Every available Detector powered, and the Listening Post with them. Unlike detectorNetwork this
+// counts the late sites and wants power, not just completion.
+export function detectorGridActive(){
+    const sites = detectorSites();
+    return Object.keys(sites).every(site => detectorOn(sites[site])) && actions.space.spc_gas_moon.listening_post.active();
+}
+
 // Detection radius against a stealth hull. Halved, until Stealth Detection teaches the arrays what
 // a corsair looks like and they read one as far as they read anything else.
 export function detectorStealthAU(){

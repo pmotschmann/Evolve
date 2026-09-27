@@ -16,7 +16,7 @@ import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, syndicateActive, tpStorageMultiplier, tritonWar, erisWar, calcAIDrift, tauEnabled,
          trackInfestation, salvageShip, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey,
          womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes,
-         driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork } from './truepath.js';
+         driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork, detectorGridActive, regionName } from './truepath.js';
 import { autoRefuelShip, shipCrewSize, sensorRange, shipCosts, buildTPShipQueue, atShipyard, shipyardZone,
          tankerRefuel, repairShipYards, supplyShipElerium, seedStarterSupplyRoutes, shipMoving, shipPort, shipDockedAt,
          shipBound, refreshDock } from './ships.js';
@@ -2529,9 +2529,13 @@ function fastLoop(){
                     }
                 }
                 else{
-                    p_on['struct'] = Math.min(p_on['struct'], Math.floor(power_grid_temp / power));
-                    p_on['struct'] = Math.max(0, p_on['struct']);
-                    power = p_on['struct'] * c_action.powered();
+                    // As many units as what is left of the grid covers
+                    const kw = c_action.powered();
+                    if (kw > 0){
+                        // The epsilon keeps float division (0.3 / 0.1 = 2.999…) from dropping a unit
+                        p_on[struct] = Math.max(0, Math.min(p_on[struct], Math.floor(power_grid_temp / kw + 1e-9)));
+                    }
+                    power = p_on[struct] * kw;
                 }
 
                 if (c_action.hasOwnProperty('p_fuel')){
@@ -12795,6 +12799,11 @@ function longLoop(){
             }
             else if (global.tech.shadow === 8 && detectorNetwork()){
                 global.tech.shadow = 9;
+                drawTech();
+            }
+            else if (global.tech.shadow === 18 && detectorGridActive() && global.race['sy_base']){
+                global.tech.shadow = 19;
+                messageQueue(loc('syndicate_base_located',[regionName(global.race.sy_base.home)]),'info',false,['progress']);
                 drawTech();
             }
         }

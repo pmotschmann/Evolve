@@ -9516,6 +9516,7 @@
   "outer_shipyard_weapon_none": "No Weapons",
   "syndicate_corsair_name": "Corsair %0",
   "syndicate_corsairs_msg": "Your intelligence operatives report the syndicate is launching a new offensive targeting your freighters.",
+  "syndicate_base_located": "The location of a second Syndicate base has been detected on %0.",
   "syndicate_venus_active": "Your intelligence operatives report that the syndicate base on %0 has begun launching corsairs of its own.",
   "syndicate_corsair_lock": "A ship has locked onto the %0 and is closing fast.",
   "syndicate_cargo_taken": "The %0 was boarded near %1. Raiders stripped the holds of %2 and broke for open space.",
