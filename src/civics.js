@@ -2523,7 +2523,7 @@ export function armyRating(val,type,wound,analysis){
     if (global.race['connected']){
         let harmonic = (calcPillar()-1) * traits.connected.vars()[0];
         army *= 1 + harmonic[0];
-        data.push({ k: 'mastery', v: harmonic[0] });
+        data.push({ k: 'trait_connected_name', v: harmonic[0] });
     }
     if (global.underground['hunting_lodge_perk']){
         let hunter = (global.underground['hunting_lodge_perk'].count * 0.02);
@@ -2675,7 +2675,7 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? 1 : 0;
+        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? 0 : 1;
         altText = global.race['deep_power'] && global.race.universe === 'magic' ? 2 : altText;
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(['civics_mad_arm_grenades', 'civics_mad_arm_missiles', 'civics_mad_arm_meteor'][altText])}</button></div>`));
