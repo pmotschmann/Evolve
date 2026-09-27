@@ -7456,7 +7456,7 @@ function updateHumongous(prev, curr){
 
 // Interpolate major and genus trait values from ranks 0.1 to 2.
 function traitScale(r, low, mid, high){
-    r = Math.max(0.1, r);
+    r = Math.max(0.1, Math.min(r, 2.4));
     let from = r < 1 ? low : mid;
     let to = r < 1 ? mid : high;
     let f = r < 1 ? (r - 0.1) / 0.9 : (r <= 2 ? r - 1 : 1 + (r - 2) / 2);

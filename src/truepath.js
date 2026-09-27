@@ -41,6 +41,17 @@ import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipAr
          shipCanLaunch, shipManned, refitParts, refitDesign, refitCosts, refitChanged, refitBlocked, refitDrains,
          applyRefit, fleetCommandCost, fleetCommandFree, formFleet, joinFleet, withdrawShips, massRelaySpeedBoost } from './ships.js';
 
+// Detector site definitions and map anchors; outerTruth reads them at load.
+const detectorSiteData = {
+    city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
+    spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
+    spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
+    spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' },
+    // Late detector sites unlock with Advanced Sensor Net.
+    spc_makemake:  { region: 'space', key: 'detector_makemake',  map: 'spc_makemake',  world: 'makemake',  reqs: { shadow: 18 }, late: true },
+    spc_enceladus: { region: 'space', key: 'detector_enceladus', map: 'spc_enceladus', world: 'enceladus', reqs: { shadow: 18 }, late: true }
+};
+
 const outerTruth = {
     spc_titan: {
         info: {
@@ -1155,7 +1166,8 @@ const outerTruth = {
                     p: ['munitions_depot','space']
                 };
             },
-        }
+        },
+        detector_enceladus: detectorTemplate('spc_enceladus'),
     },
     spc_triton: {
         info: {
@@ -1543,6 +1555,7 @@ const outerTruth = {
                 };
             }
         },
+        detector_makemake: detectorTemplate('spc_makemake'),
     },
     spc_eris: {
         info: {
@@ -6277,6 +6290,10 @@ const zFleetOddsStart = 0.08;   // chance of a launch on the first day
 const zFleetOddsEnd = 0.40;     // ...and once the ramp is complete.
 const zAssaultOdds = 0.60;       // stands in for the above during the assault.
 const zFleetLoadStart = 0.25;   // share of a hull's cargo that lands on the first day
+const zRaidMax = 6;             // Maximum ordinary raids aloft.
+const zRaidHeld = [1,2,3];      // Held-hull caps for standard, assault, and endless raids.
+const zAssaultSpeed = 1.5;      // Assault-hull speed multiplier.
+const zEndlessSpeed = 2;        // Endless-assault hull speed multiplier.
 
 // --- The zombie assault ---------------------------------------------------------------------------
 const zUplinkSilent = 25;     // game days of nothing whatsoever after the uplink is cut
@@ -6550,7 +6567,13 @@ function zFleetDay(){
         // Through the assault enemy fleets take off more frequently.
         let oddsEnd = zAssault() ? zAssaultOdds : zFleetOddsEnd;
         if (seededRandom(0,1,true) < zFleetOddsStart + (oddsEnd - zFleetOddsStart) * ramp){
-            zFleetLaunch(fleet,ramp);
+            // Queue launches at the raid cap and add their hulls to the next sortie.
+            if (zRaidsAloft(fleet) >= zRaidMax){
+                fleet.zq = Math.min((fleet.zq || 0) + 1, zRaidHeldMax());
+            }
+            else {
+                zFleetLaunch(fleet,ramp);
+            }
         }
     }
 
@@ -6837,6 +6860,10 @@ export function zWarfareVars(){
         oddsStart: zFleetOddsStart,
         oddsEnd: zFleetOddsEnd,
         loadStart: zFleetLoadStart,
+        raidMax: zRaidMax,
+        raidHeld: zRaidHeld,
+        assaultSpeed: zAssaultSpeed,
+        endlessSpeed: zEndlessSpeed,
         pairOdds: zPairOdds,
         pairSize: zPairSize,
         hulls: zFleetHulls,
@@ -7056,6 +7083,11 @@ function zFleetSortie(fleet,classes,target,ramp,opts){
     if (opts.mark){
         ships.forEach(function(ship){ ship[opts.mark] = true; });
     }
+    // Apply the sortie speed before planning its trip.
+    let pace = zFleetSpeed();
+    if (pace !== 1){
+        ships.forEach(function(ship){ ship.zs = pace; });
+    }
     zEngage('spc_home',ships);
     let flying = zCullDowned(ships);
     if (flying.length === 0){ return 0; }
@@ -7100,7 +7132,8 @@ function zFleetLaunch(fleet,ramp){
     let avail = zFleetClasses();
     if (avail.length === 0){ return; }
 
-    let count = zFleetSize(fleet);
+    // Add hulls held at the raid cap to this sortie.
+    let count = zFleetSize(fleet) + Math.min(fleet.zq || 0, zRaidHeldMax());
     let classes = [];
     for (let i=0; i<count; i++){
         let cls = zFleetClass(avail);
@@ -7112,7 +7145,34 @@ function zFleetLaunch(fleet,ramp){
         }
     }
 
-    zFleetSortie(fleet,classes,target,ramp);
+    // Clear held hulls once a sortie finds a course.
+    if (zFleetSortie(fleet,classes,target,ramp,{ mark: 'zr' }) !== undefined){
+        delete fleet.zq;
+    }
+}
+
+// Count active sorties, grouping ships launched together.
+function zRaidsAloft(fleet){
+    let sorties = new Set();
+    let solo = 0;
+    fleet.s.forEach(function(ship){
+        if (!ship.zr || ship.damage >= 100){ return; }
+        if (ship.zf){ sorties.add(ship.zf); }
+        else { solo++; }
+    });
+    return sorties.size + solo;
+}
+
+// Return the phase-specific held-hull cap.
+function zRaidHeldMax(){
+    if (zEndless()){ return zRaidHeld[2]; }
+    return zAssault() ? zRaidHeld[1] : zRaidHeld[0];
+}
+
+// Return the current sortie speed multiplier.
+function zFleetSpeed(){
+    if (zEndless()){ return zEndlessSpeed; }
+    return zAssault() ? zAssaultSpeed : 1;
 }
 
 // The strike on the colony at Tau Ceti: a hundred days after Titan comes under threat the horde puts together
@@ -7273,36 +7333,64 @@ export const sWarfare = {
     secureHulls: ['cruiser','battlecruiser','dreadnought'],     // At least one of these per fleet.
     secureSensor: 'quantum',    // Sensor at least one ship per fleet must carry.
     // Required route coverage; a stop in any zone of a set fulfills it.
-    secureCover: [['spc_home','spc_moon'], ['spc_red'], ['spc_dwarf'], ['spc_hell'], ['spc_belt']]
+    secureCover: [['spc_home','spc_moon'], ['spc_red'], ['spc_dwarf'], ['spc_hell'], ['spc_belt']],
+    // Outer Security requirements; fleets use Zone Security specifications.
+    outerFleets: 2,             // Fleets required to cover outer worlds.
+    outerTotal: 4,              // Total qualifying fleets required.
+    outerStops: 3,              // Maximum route stops for outer patrol fleets.
+    outerCover: [['spc_gas','spc_gas_moon'], ['spc_titan','spc_enceladus'], ['spc_makemake']]
 };
 
-// Return Zone Security patrol requirements and coverage status.
-export function zoneSecurityStatus(){
+// Return qualifying patrol fleets and their route stops, excluding routes over `maxStops`.
+function securePatrols(maxStops){
     const fleets = new Map();
     allShips().forEach(function(ship){
         const patrol = shipPatrol(ship);
         if (!patrol){ return; }
         // Group ships by fleet; unassigned ships form one-ship fleets.
         const key = global.tech['syard_fleet'] && ship.fid ? `f${ship.fid}` : ship;
-        if (!fleets.has(key)){ fleets.set(key, { ships: [], stops: new Set() }); }
+        if (!fleets.has(key)){ fleets.set(key, { ships: [], stops: new Set(), length: 0 }); }
         const fleet = fleets.get(key);
         fleet.ships.push(ship);
+        fleet.length = Math.max(fleet.length, patrol.stops.length);
         patrol.stops.forEach(stop => fleet.stops.add(stop));
     });
 
-    const covered = new Set();
-    let count = 0;
+    const out = [];
     fleets.forEach(function(fleet){
         const heavy = fleet.ships.some(s => sWarfare.secureHulls.includes(s.class));
         const scan = fleet.ships.some(s => s.sensor === sWarfare.secureSensor);
         const fire = fleet.ships.reduce((t,s) => t + shipAttackPower(s), 0);
         if (!heavy || !scan || fire < sWarfare.secureFirepower){ return; }
-        count++;
-        fleet.stops.forEach(stop => covered.add(stop));
+        if (maxStops && fleet.length > maxStops){ return; }
+        out.push(fleet);
     });
+    return out;
+}
 
-    const cover = sWarfare.secureCover.map(set => set.some(world => covered.has(world)));
-    return { fleets: count, cover, met: count >= sWarfare.secureFleets && cover.every(c => c) };
+// Return requirement sets covered by patrol routes.
+function patrolCover(fleets, sets){
+    return sets.map(set => set.some(world => fleets.some(fleet => fleet.stops.has(world))));
+}
+
+// Return Zone Security patrol requirements and coverage status.
+export function zoneSecurityStatus(){
+    const fleets = securePatrols();
+    const cover = patrolCover(fleets, sWarfare.secureCover);
+    return { fleets: fleets.length, cover, met: fleets.length >= sWarfare.secureFleets && cover.every(c => c) };
+}
+
+// Return Outer Security patrol requirements and coverage status.
+export function outerSecurityStatus(){
+    const fleets = securePatrols(sWarfare.outerStops);
+    const touches = sets => fleets.filter(fleet => sets.some(set => set.some(world => fleet.stops.has(world)))).length;
+    const inner = touches(sWarfare.secureCover);
+    const outer = touches(sWarfare.outerCover);
+    const innerCover = patrolCover(fleets, sWarfare.secureCover);
+    const outerCover = patrolCover(fleets, sWarfare.outerCover);
+    const met = fleets.length >= sWarfare.outerTotal && inner >= sWarfare.secureFleets && outer >= sWarfare.outerFleets
+        && innerCover.every(c => c) && outerCover.every(c => c);
+    return { fleets: fleets.length, inner, outer, innerCover, outerCover, met };
 }
 
 const counterEspionageZoneDefs = [
@@ -10185,6 +10273,8 @@ export function syndicate(region,extra){
 
 // Return the sensor-range multiplier against a target.
 export function sensorStealth(foe){
+    // The Listening Post negates ship stealth.
+    if (actions.space.spc_gas_moon.listening_post.active()){ return 1; }
     const stealth = foe ? (foe.stealth || 1) : sWarfare.stealth;
     return stealth < 1 && improvedSensors() ? Math.max(stealth, sensorUpgrade.stealth) : stealth;
 }
@@ -10277,19 +10367,24 @@ export function sectorCommandComplete(){
 // --- Detectors -----------------------------------------------------------------------------------
 // Ground detector structures and detection helpers.
 
-// Detector site definitions and map anchors.
-const detectorSiteData = {
-    city:      { region: 'city',  key: 'detector',       map: 'spc_home',  world: 'home' },
-    spc_red:   { region: 'space', key: 'detector_red',   map: 'spc_red',   world: 'red' },
-    spc_hell:  { region: 'space', key: 'detector_hell',  map: 'spc_hell',  world: 'hell' },
-    spc_dwarf: { region: 'space', key: 'detector_dwarf', map: 'spc_dwarf', world: 'dwarf' }
-};
+// Use detector sites defined near the module start for outerTruth.
 
 // Return detector sites that remain available after orbit decay.
 export function detectorSites(){
     const sites = { ...detectorSiteData };
     if (capitalGone()){ delete sites.city; }
     return sites;
+}
+
+// Return the Listening Post Detector range multiplier.
+function detectorBoost(){
+    const post = actions.space.spc_gas_moon.listening_post;
+    return post.active() ? post.boost : 1;
+}
+
+// Return an ordinary Detector's radius.
+function detectorRangeAU(){
+    return sWarfare.detectorRange * detectorBoost();
 }
 
 // Return detector segments required for the current capital state.
@@ -10311,38 +10406,47 @@ function detectorOn(at){
 // A network requires every available detector site; power does not affect completion.
 export function detectorNetwork(){
     const sites = detectorSites();
-    return Object.keys(sites).every(site => detectorBuilt(sites[site]));
+    return Object.keys(sites).every(site => sites[site].late || detectorBuilt(sites[site]));
 }
 
 // Detection radius against a stealth hull. Halved, until Stealth Detection teaches the arrays what
 // a corsair looks like and they read one as far as they read anything else.
 export function detectorStealthAU(){
-    return global.tech['shadow'] && global.tech.shadow >= 10 ? sWarfare.detectorRange : sWarfare.detectorStealthRange;
+    const reach = global.tech['shadow'] && global.tech.shadow >= 10 ? sWarfare.detectorRange : sWarfare.detectorStealthRange;
+    return reach * detectorBoost();
 }
 
-// Detection radius against one hull.
-function detectorReach(ship, site){
-    const reach = (ship.stealth || 1) < 1 ? detectorStealthAU() : sWarfare.detectorRange;
-    return site ? reach * infiltratorFactor(site.region === 'city' ? 'city' : site.map, site.key) : reach;
+// Return powered ground detectors with normal and stealth ranges.
+function detectorArrays(){
+    const sites = detectorSites();
+    const arrays = Object.keys(sites).filter(site => detectorOn(sites[site]))
+        .map(site => ({ site: sites[site], range: detectorRangeAU(), stealth: detectorStealthAU() }));
+    const post = actions.space.spc_gas_moon.listening_post;
+    if (post.active()){
+        arrays.push({ site: { region: 'space', key: 'listening_post', map: 'spc_gas_moon' }, range: post.range, stealth: post.range });
+    }
+    return arrays;
+}
+
+// Return one array's detection radius against a hull.
+function detectorReach(ship, array){
+    const reach = (ship.stealth || 1) < 1 ? array.stealth : array.range;
+    return reach * infiltratorFactor(array.site.region === 'city' ? 'city' : array.site.map, array.site.key);
 }
 
 // Detect hulls within the active detector radius.
 function detectorContact(foe){
-    const sites = detectorSites();
-    for (const site of Object.keys(sites)){
-        if (!detectorOn(sites[site])){ continue; }
-        if (dist3(genXYZcoord(sites[site].map), shipPosition(foe)) <= detectorReach(foe,sites[site])){ return true; }
+    for (const array of detectorArrays()){
+        if (dist3(genXYZcoord(array.site.map), shipPosition(foe)) <= detectorReach(foe,array)){ return true; }
     }
     return false;
 }
 
 // Return whether one active detector reaches both the fleet and corsair.
 function detectorCue(at, foe){
-    const sites = detectorSites();
-    for (const site of Object.keys(sites)){
-        if (!detectorOn(sites[site])){ continue; }
-        const post = genXYZcoord(sites[site].map);
-        if (dist3(post, shipPosition(foe)) <= detectorReach(foe,sites[site]) && dist3(post, at) <= sWarfare.detectorRange){ return true; }
+    for (const array of detectorArrays()){
+        const post = genXYZcoord(array.site.map);
+        if (dist3(post, shipPosition(foe)) <= detectorReach(foe,array) && dist3(post, at) <= array.range){ return true; }
     }
     return false;
 }
@@ -10366,7 +10470,7 @@ export function detectorTemplate(site){
         },
         type: 'megaproject',
         category: 'military',
-        reqs: { planet_defense: 1 },
+        reqs: at.reqs || { planet_defense: 1 },
         condition(){ return site !== 'city' || !capitalGone(); },
         path: ['truepath'],
         queue_size: 5,
@@ -10380,7 +10484,7 @@ export function detectorTemplate(site){
         },
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
-            let desc = `<div>${loc('detector_effect',[sWarfare.detectorRange,planetName()[at.world],detectorStealthAU()])}</div>`;
+            let desc = `<div>${loc('detector_effect',[detectorRangeAU(),planetName()[at.world],detectorStealthAU()])}</div>`;
             if (count < detectorSegments()){
                 return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[detectorSegments() - count])}</div>`;
             }

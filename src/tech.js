@@ -11,7 +11,7 @@ import { buildGarrison, checkControlling, govTitle, defineFleetCommand, defineCo
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { drawShipYard, jumpGateShutdown, jumpGateRestart, surveyTheme, stealthStudied, revealAlienInfiltrators,
-         containmentCaptureChance, interrogationDuration, sWarfare, zoneSecurityStatus, regionName } from './truepath.js';
+         containmentCaptureChance, interrogationDuration, sWarfare, zoneSecurityStatus, outerSecurityStatus, regionName } from './truepath.js';
 import { aerographeneSpeedBonus, shipCapacitorSaving, grantSupplyFreighters, sensorUpgrade } from './ships.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
@@ -19059,14 +19059,14 @@ const techs = {
         id: 'tech-zone_security',
         title(){ return loc('tech_zone_security'); },
         desc(){ return loc('tech_zone_security'); },
-        category: 'progress',
+        category: 'space_militarization',
         era: 'shadow_war',
         path: ['truepath'],
         reqs: { shadow: 15 },
         grant: ['shadow',16],
         cost: {
             Knowledge(){ return 28000000; },
-            Alien_Intel(){ return 1000; }
+            Alien_Intel(){ return 800; }
         },
         effect(){
             // Show Zone Security patrol requirements and their completion state.
@@ -19089,6 +19089,72 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    outer_security: {
+        id: 'tech-outer_security',
+        title(){ return loc('tech_outer_security'); },
+        desc(){ return loc('tech_outer_security'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 16 },
+        grant: ['shadow',17],
+        cost: {
+            Knowledge(){ return 28500000; },
+            Alien_Intel(){ return 800; }
+        },
+        effect(){
+            // Show Outer Security patrol requirements and their completion state.
+            const status = outerSecurityStatus();
+            const mark = ok => ok ? 'has-text-success' : 'has-text-danger';
+            const worlds = (sets, cover) => sets.map(function(set, i){
+                const name = set.length > 1 ? loc('tech_zone_security_either',[regionName(set[0]),regionName(set[1])]) : regionName(set[0]);
+                return `<span class="${mark(cover[i])}">${name}</span>`;
+            }).join(', ');
+            return `<div>${loc('tech_outer_security_effect')}</div>`
+                + `<div>${loc('tech_zone_security_req',[sWarfare.outerTotal,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
+                + `<div>${loc('tech_outer_security_stops',[sWarfare.outerStops])}</div>`
+                + `<div class="${mark(status.fleets >= sWarfare.outerTotal)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.outerTotal])}</div>`
+                + `<div class="${mark(status.inner >= sWarfare.secureFleets)}">${loc('tech_outer_security_inner',[status.inner,sWarfare.secureFleets])}</div>`
+                + `<div>${loc('tech_zone_security_cover',[worlds(sWarfare.secureCover,status.innerCover)])}</div>`
+                + `<div class="${mark(status.outer >= sWarfare.outerFleets)}">${loc('tech_outer_security_outer',[status.outer,sWarfare.outerFleets])}</div>`
+                + `<div>${loc('tech_zone_security_cover',[worlds(sWarfare.outerCover,status.outerCover)])}</div>`;
+        },
+        action(){
+            // Require patrols before researching Outer Security.
+            if (!outerSecurityStatus().met){ return false; }
+            if (payCosts(this)){
+                messageQueue(loc('tech_outer_security_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    advanced_sensor_net: {
+        id: 'tech-advanced_sensor_net',
+        title(){ return loc('tech_advanced_sensor_net'); },
+        desc(){ return loc('tech_advanced_sensor_net'); },
+        category: 'space_militarization',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 17 },
+        grant: ['shadow',18],
+        cost: {
+            Knowledge(){ return 29000000; },
+            Alien_Intel(){ return 1000; }
+        },
+        effect(){
+            return `<div>${loc('tech_advanced_sensor_net_effect',[loc('space_gas_moon_listening_post_title'),planetName().gas_moon,planetName().makemake,planetName().enceladus])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderSpace();
         }
     },
     alien_containment: {

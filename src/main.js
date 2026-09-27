@@ -2711,7 +2711,8 @@ function fastLoop(){
             if (enabled){ group.providers.forEach(function(provider){
                 const state = global[provider.region][provider.struct];
                 if (!state){ return; }
-                let active = typeof provider.c_action.powered === 'function'
+                // Treat p_on as active only for providers that enter the power grid.
+                let active = typeof provider.c_action.powered === 'function' && Number(provider.c_action.powered()) !== 0
                     ? (p_on[provider.struct] || 0)
                     : (state.on === undefined ? (state.count > 0 ? 1 : 0) : state.on);
                 if (provider.c_action.hasOwnProperty('support_fuel')){

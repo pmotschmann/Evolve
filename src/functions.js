@@ -2466,10 +2466,11 @@ export function adjustCosts(c_action, opts){
     costs = undergroundTradeAdjust(costs, c_action, args);
     costs = razedAdjust(costs, c_action, args);
     costs = craftAdjust(costs, args);
-    return bindCostArgs(costs, args);
+    return bindCostArgs(costs, c_action, args);
 }
 
-function bindCostArgs(costs, args){
+function bindCostArgs(costs, c_action, args){
+    args['a'] = c_action;
     const bound = {};
     Object.keys(costs).forEach(function (res){
         const fn = costs[res];
