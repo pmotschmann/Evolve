@@ -1305,7 +1305,7 @@ export const actions = {
             storage: {
                 res(res){
                     let list = {
-                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 5000 : 2000) : 1000) : 0)
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_safe'] >= 2 ? (global.tech['home_safe'] >= 3 ? 5000 : 2000) : 1000) : 0)
                     };
                     return list[res] || list;
                 },
@@ -1369,7 +1369,7 @@ export const actions = {
             storage: {
                 res(res){
                     let list = {
-                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 10000 : 5000) : 2000) : 0)
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_safe'] >= 2 ? (global.tech['home_safe'] >= 3 ? 10000 : 5000) : 2000) : 0)
                     };
                     if (govActive('extravagant',2)){
                         list.Money *= 2;

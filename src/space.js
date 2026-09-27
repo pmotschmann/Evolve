@@ -847,7 +847,7 @@ const spaceProjects = {
             storage: {
                 res(res){
                     let list = {
-                        'Money': (global.tech['home_safe'] ? (global.tech['home_save'] >= 2 ? (global.tech['home_save'] >= 3 ? 100000 : 50000) : 25000) : 0)
+                        'Money': (global.tech['home_safe'] ? (global.tech['home_safe'] >= 2 ? (global.tech['home_safe'] >= 3 ? 100000 : 50000) : 25000) : 0)
                     };
                     return res ? (list[res] || 0) : list;
                 },
@@ -2690,6 +2690,67 @@ const spaceProjects = {
                 return {
                     d: { count: 0, on: 0 },
                     p: ['oil_extractor','space']
+                };
+            }
+        },
+        listening_post: {
+            id: 'space-listening_post',
+            title(){ return loc('space_gas_moon_listening_post_title'); },
+            desc(wiki){
+                let head = `<div>${loc('space_gas_moon_listening_post_desc')}</div>`;
+                if (!this.complete() || wiki){
+                    return head + `<div class="has-text-special">${loc('requires_segments',[this.segments])}</div>`;
+                }
+                return head + `<div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            type: 'megaproject',
+            category: 'military',
+            reqs: { shadow: 18 },
+            path: ['truepath'],
+            segments: 25,       // Construction segments required.
+            range: 3,           // Detection radius in AU.
+            boost: 1.5,         // Active Detector range multiplier.
+            built(){ return global.space.hasOwnProperty('listening_post') ? global.space.listening_post.count : 0; },
+            complete(){ return this.built() >= this.segments; },
+            active(){ return this.complete() && p_on['listening_post'] > 0 ? true : false; },
+            queue_size: 5,
+            queue_complete(){ return this.segments - this.built(); },
+            cost: {
+                Money(r={}){ return ((r.offset || 0) + r.a.built()) < r.a.segments ? 165000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + r.a.built()) < r.a.segments ? 2500000 : 0; },
+                Orichalcum(r={}){ return ((r.offset || 0) + r.a.built()) < r.a.segments ? 5000000 : 0; },
+                Positronium(r={}){ return ((r.offset || 0) + r.a.built()) < r.a.segments ? 25000 : 0; },
+                Quantium(r={}){ return ((r.offset || 0) + r.a.built()) < r.a.segments ? 3000000 : 0; }
+            },
+            effect(wiki){
+                let count = (wiki?.count ?? 0) + this.built();
+                let desc = `<div>${loc('space_gas_moon_listening_post_effect',[this.range,planetName().gas_moon])}</div>`;
+                desc += `<div>${loc('space_gas_moon_listening_post_sensors')}</div>`;
+                desc += `<div>${loc('space_gas_moon_listening_post_boost',[Math.round((this.boost - 1) * 100),sWarfare.detectorRange * this.boost])}</div>`;
+                if (count < this.segments){
+                    return desc + `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[this.segments - count])}</div>`;
+                }
+                return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(25, true); },
+            switchable(){ return this.complete(); },
+            on_cap(){ return this.complete() ? 1 : 0; },
+            action(args){
+                if (!this.complete() && payCosts(this)){
+                    incrementStruct(this);
+                    if (this.complete()){
+                        global.space.listening_post.on = 1;
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            },
+            struct(){
+                return {
+                    d: { count: 0, on: 0 },
+                    p: ['listening_post','space']
                 };
             }
         },
@@ -7896,6 +7957,7 @@ const structDefinitions = {
     gas_storage: { count: 0 },
     star_dock: { count: 0, ship: 0, probe: 0, template: 'human' },
     sector_command: { count: 0, on: 0, damage: 0 },
+    listening_post: { count: 0, on: 0 },
     outpost: { count: 0, on: 0 },
     drone: { count: 0 },
     oil_extractor: { count: 0, on: 0 },

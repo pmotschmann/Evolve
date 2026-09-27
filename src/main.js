@@ -16,7 +16,7 @@ import { asphodelResist, mechStationEffect, renderEdenic } from './edenic.js';
 import { renderTauCeti, syndicate, syndicateActive, tpStorageMultiplier, tritonWar, erisWar, calcAIDrift, tauEnabled,
          trackInfestation, salvageShip, pinSalvage, beaconsActive, finalBeacons, checkTungstenSurvey,
          womlingVillagePop, womlingFarmFood, womlingArtisans, womlingArtisansPer, womlingPop, womlingMarketRoutes,
-         driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork } from './truepath.js';
+         driftingPoint, facilityFindings, syndicateWithdrawal, syndicateDay, alienContainmentTick, detectorNetwork, detectorGridActive, regionName } from './truepath.js';
 import { autoRefuelShip, shipCrewSize, sensorRange, shipCosts, buildTPShipQueue, atShipyard, shipyardZone,
          tankerRefuel, repairShipYards, supplyShipElerium, seedStarterSupplyRoutes, shipMoving, shipPort, shipDockedAt,
          shipBound, refreshDock } from './ships.js';
@@ -1047,8 +1047,11 @@ function runOfflineCatchup(totalSteps, daysPerStep, creditedMinutes){
             } while (done < totalSteps && performance.now() < until);
         }
         catch (e){
-            // Never leave reactivity suppressed if a simulated tick throws.
-            console.error('Offline catch-up error:', e);
+            // Never leave reactivity suppressed if a simulated tick throws. The modal closes as if
+            // cancelled; on a beta build say why, and where in the run it happened.
+            if (global['beta']){
+                console.error(`Offline catch-up aborted at step ${done + 1} of ${totalSteps} (${daysPerStep} day(s) per step, game day ${global.stats.days}):`, e);
+            }
             finalize(true);
             return;
         }
@@ -2529,9 +2532,13 @@ function fastLoop(){
                     }
                 }
                 else{
-                    p_on['struct'] = Math.min(p_on['struct'], Math.floor(power_grid_temp / power));
-                    p_on['struct'] = Math.max(0, p_on['struct']);
-                    power = p_on['struct'] * c_action.powered();
+                    // As many units as what is left of the grid covers
+                    const kw = c_action.powered();
+                    if (kw > 0){
+                        // The epsilon keeps float division (0.3 / 0.1 = 2.999…) from dropping a unit
+                        p_on[struct] = Math.max(0, Math.min(p_on[struct], Math.floor(power_grid_temp / kw + 1e-9)));
+                    }
+                    power = p_on[struct] * kw;
                 }
 
                 if (c_action.hasOwnProperty('p_fuel')){
@@ -2711,7 +2718,8 @@ function fastLoop(){
             if (enabled){ group.providers.forEach(function(provider){
                 const state = global[provider.region][provider.struct];
                 if (!state){ return; }
-                let active = typeof provider.c_action.powered === 'function'
+                // Treat p_on as active only for providers that enter the power grid.
+                let active = typeof provider.c_action.powered === 'function' && Number(provider.c_action.powered()) !== 0
                     ? (p_on[provider.struct] || 0)
                     : (state.on === undefined ? (state.count > 0 ? 1 : 0) : state.on);
                 if (provider.c_action.hasOwnProperty('support_fuel')){
@@ -6859,23 +6867,27 @@ function fastLoop(){
         if(p_on['core_mine']){
             let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
             base = workerScale(base, 'core_miner');
-            let traits = racialTrait(base, 'miner');
+            // Not named `traits`: that would shadow the trait table the two lookups below read from.
+            let trait_mods = racialTrait(base, 'miner');
             if (global.race['tough']){
-                traits *= 1 + (traits.tough.vars()[0] / 100);
+                trait_mods *= 1 + (traits.tough.vars()[0] / 100);
             }
             let ogreFathom = fathomCheck('ogre');
             if (ogreFathom > 0){
-                traits *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
+                trait_mods *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
-            traits = traits ** 0.5;
-            base *= traits * job_data.core_miner.impact();
+            trait_mods = trait_mods ** 0.5;
+            base *= trait_mods * job_data.core_miner.impact();
             base = hugeAdjust(base); //humongous avoids hardship penalty
-            if (global.race['gravity_well']){ delta = teamster(delta); }
             let iridium_base = base * (1 + global.city.geology['Iridium'] || 0) * production('psychic_boost','Iridium');
             let titanium_base = base * (1 + global.city.geology['Titanium'] || 0) * production('psychic_boost','Titanium') * 5;
             let multiplier = global_multiplier * hunger * shrineMetal.mult * job_data.core_miner.mine_effect();
             let iridium_delta = iridium_base * multiplier * (1 + iridium_smelter);
             let titanium_delta = titanium_base * multiplier;
+            if (global.race['gravity_well']){
+                iridium_delta = teamster(iridium_delta);
+                titanium_delta = teamster(titanium_delta);
+            }
             
             breakdown.p['Iridium'][loc('job_core_miner')] = iridium_base + 'v';
             if (iridium_delta > 0){
@@ -12794,6 +12806,11 @@ function longLoop(){
             }
             else if (global.tech.shadow === 8 && detectorNetwork()){
                 global.tech.shadow = 9;
+                drawTech();
+            }
+            else if (global.tech.shadow === 18 && detectorGridActive() && global.race['sy_base']){
+                global.tech.shadow = 19;
+                messageQueue(loc('syndicate_base_located',[regionName(global.race.sy_base.home)]),'info',false,['progress']);
                 drawTech();
             }
         }

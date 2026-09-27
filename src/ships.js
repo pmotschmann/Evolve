@@ -1010,6 +1010,8 @@ export function shipSpeed(ship){
         case 'emdrive': speed = 37500 / mass * boost; break;
         case 'electrokinetic': speed = (global.tech.syard_engine >= 6 ? 140 : 56) / mass * boost; break;
     }
+    // Apply the launch-stamped speed multiplier to assault hulls.
+    if (ship.zs){ speed *= ship.zs; }
     return ship.class === 'freighter' ? speed * Math.max(0.25, 1 - freightSpeedPenalty(ship) / 100) : speed;
 }
 

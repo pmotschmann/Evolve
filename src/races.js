@@ -3,7 +3,7 @@ import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, 
 import { loc } from './locale.js';
 import { defineIndustry, factoryData, nf_resources } from './industry.js';
 import { jobScale, jobStack, loadFoundry, job_data } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, fibonacci } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, fibonacci } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass, craftCost, supplyValue } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
 import { govActive, removeTask, defineGovernor } from './governor.js';
@@ -6310,7 +6310,8 @@ function setPurgatory(s,t){
     // Remove tech from research queue
     if (s === 'tech'){
         if (global.tech['r_queue'] && global.r_queue.display){
-            for (let i=0; i<global.r_queue.queue.length; i++){
+            // Backwards, so a splice does not skip the entry that slides into its place.
+            for (let i=global.r_queue.queue.length-1; i>=0; i--){
                 const struct = global.r_queue.queue[i];
                 const t_action = actions[struct.action][struct.type];
                 if (t_action['grant'] && t_action.grant[0] === t){
@@ -6323,23 +6324,23 @@ function setPurgatory(s,t){
     // Remove structures from building queue
     else {
         if (global.tech['queue'] && global.queue.display){
-            for (let i=0; i<global.queue.queue.length; i++){
+            for (let i=global.queue.queue.length-1; i>=0; i--){
                 const struct = global.queue.queue[i];
                 if (struct.action === s && struct.type === t){
-                    global.queue.queue.splice(idx,1);
+                    global.queue.queue.splice(i,1);
                     // Remove info dialog (different code for city and space)
                     if (spaceSectors.includes(struct.action)){
                         for (const region in actions[struct.action]) {
                             if (actions[struct.action][region][struct.type]){
                                 const c_action = actions[struct.action][region][struct.type];
-                                clearPopper(`q${c_action.id}${idx}`);
+                                clearPopper(`q${c_action.id}${i}`);
                                 break;
                             }
                         }
                     }
                     else {
                         const c_action = actions[struct.action][struct.type];
-                        clearPopper(`q${c_action.id}${idx}`);
+                        clearPopper(`q${c_action.id}${i}`);
                     }
                 }
             }
@@ -7456,7 +7457,7 @@ function updateHumongous(prev, curr){
 
 // Interpolate major and genus trait values from ranks 0.1 to 2.
 function traitScale(r, low, mid, high){
-    r = Math.max(0.1, r);
+    r = Math.max(0.1, Math.min(r, 2.4));
     let from = r < 1 ? low : mid;
     let to = r < 1 ? mid : high;
     let f = r < 1 ? (r - 0.1) / 0.9 : (r <= 2 ? r - 1 : 1 + (r - 2) / 2);

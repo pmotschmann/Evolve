@@ -32,8 +32,14 @@ export function supplySecured(){
     return global.tech['shadow'] && global.tech.shadow >= 16 ? true : false;
 }
 
+// Return whether Outer Security merges the outer worlds into one supply zone.
+export function supplyOuterSecured(){
+    return global.tech['shadow'] && global.tech.shadow >= 17 ? true : false;
+}
+
 // Return the supply stage for completed research.
 function supplyStage(){
+    if (supplyOuterSecured()){ return 'outer'; }
     return supplySecured() ? 'inner' : (supplyFragmented() ? 'full' : 'sol');
 }
 
@@ -539,22 +545,29 @@ const TAU_ZONE = STARTING_ZONES.find(zone => zone.r.includes('tau_home'));
 // Zones combined by Zone Security; Mercury also includes the Sun.
 const INNER_ZONE = [CAPITAL, 'spc_moon', 'spc_red', 'spc_sun', 'spc_hell', 'spc_belt', 'spc_dwarf'];
 
+// Outer Security merged zones; Jupiter is the pool.
+const OUTER_ZONE = ['spc_gas', 'spc_gas_moon', 'spc_titan', 'spc_enceladus', 'spc_makemake'];
+
 // Whether a region belongs to the Sol system's stockpile.
 function solRegion(region){
     return region.startsWith('spc_');
 }
 
-// Return zones for a 'sol', 'full' or 'inner' supply stage.
+// Return zones for a 'sol', 'full', 'inner' or 'outer' supply stage.
 function stageZones(stage){
     if (stage === 'full'){
         // Skip the destroyed capital zone.
         return STARTING_ZONES.filter(zone => !(capitalGone() && zone.r[0] === CAPITAL));
     }
-    if (stage === 'inner'){
+    if (stage === 'inner' || stage === 'outer'){
         // Build the inner pool from the capital and remaining inner worlds.
         const home = capitalZone();
         const inner = [home, ...INNER_ZONE.filter(region => region !== home && !(capitalGone() && region === CAPITAL))];
-        return [{ r: inner, p: 'inner' }, ...STARTING_ZONES.filter(zone => !zone.r.some(region => INNER_ZONE.includes(region)))];
+        const merged = [{ r: inner, p: 'inner' }];
+        if (stage === 'outer'){ merged.push({ r: OUTER_ZONE.slice(), p: 'outer' }); }
+        // Remove starting zones contained by merged zones.
+        const absorbed = [...INNER_ZONE, ...(stage === 'outer' ? OUTER_ZONE : [])];
+        return [...merged, ...STARTING_ZONES.filter(zone => !zone.r.some(region => absorbed.includes(region)))];
     }
     const home = capitalZone();
     const worlds = supplyRegions().filter(region => solRegion(region) && region !== home && !(capitalGone() && region === CAPITAL));
@@ -647,7 +660,7 @@ export function syncSupplyZones(){
     // Pools merged this way fold their ledgers together on the next pass, so nothing is lost.
     applyZones(want);
     global.race['supplySplit'] = want;
-    return want === 'inner' ? 'secure' : 'merge';
+    return want === 'inner' || want === 'outer' ? 'secure' : 'merge';
 }
 
 // Whether this resource is still waiting to be divided between the worlds.

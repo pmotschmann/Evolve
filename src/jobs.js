@@ -329,7 +329,7 @@ export const job_data = {
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_water_collector_desc',[gain]);
             if (global.civic.d_job === 'water_collector'){
-                desc = desc + ' ' + loc('job_default',[jobName('water_collector')]);
+                desc = desc + ' ' + loc('job_default',[job_data.water_collector.name()]);
             }
             return desc;
         },
