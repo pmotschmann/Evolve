@@ -11032,7 +11032,7 @@ function midLoop(){
                 unemployed -= artisan;
             }
 
-            let heal_chance = global.tech['tech_womling_firstaid'] ? 3 : 4;
+            let heal_chance = global.tech['womling_firstaid'] ? 3 : 4;
             // Injury and recovery are a coupled per-mid-loop roll, so a compressed step has to
             // roll them once per mid loop it stands for rather than scaling either side.
             for (let w = midSteps(); w > 0; w--){
@@ -12812,6 +12812,11 @@ function longLoop(){
                 global.tech.shadow = 19;
                 messageQueue(loc('syndicate_base_located',[regionName(global.race.sy_base.home)]),'info',false,['progress']);
                 drawTech();
+            }
+            // Enable the outer base world tab once the base is located.
+            if (global.tech.shadow >= 19 && global.race['sy_base'] && !global.settings.space.sybase){
+                global.settings.space.sybase = true;
+                renderSpace();
             }
         }
 

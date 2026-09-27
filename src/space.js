@@ -3660,6 +3660,7 @@ const spaceProjects = {
     spc_triton: outerTruthTech().spc_triton,
     spc_makemake: outerTruthTech().spc_makemake,
     spc_eris: outerTruthTech().spc_eris,
+    spc_sybase: outerTruthTech().spc_sybase,
     spc_venus: outerTruthTech().spc_venus,
     spc_survey: outerTruthTech().spc_survey,
 };

@@ -3789,7 +3789,7 @@ export function renderFortress(){
                 property = fortressModules[region].info.prop();
             }
 
-            if (typeof fortressModules[region].info['support'] && global.portal[fortressModules[region].info['support']]){
+            if (fortressModules[region].info['support'] && global.portal[fortressModules[region].info['support']]){
                 let support = fortressModules[region].info['support'];
                 if (fortressModules[region].info['hide_support']){
                     parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);

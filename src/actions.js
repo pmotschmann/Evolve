@@ -5619,7 +5619,7 @@ const raceList = [
     'synth','nano',
     'ghast','shoggoth',
     'dwarf','raccoon','lichen','wyvern','beholder','djinn','narwhal','bombardier','nephilim',
-    'raptors','rexicus','mammuth',
+    'raptor','rexicus','mammuth',
     'custom','hybrid'
 ];
 raceList.forEach(function(race){
@@ -9563,7 +9563,7 @@ function sentience(){
         }
     }
 
-    if(global.race.species === 'raptors'){
+    if(global.race.species === 'raptor'){
         global.race['raptor_plumage'] = Math.rand(0, 2);
     }
     

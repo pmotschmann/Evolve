@@ -6628,7 +6628,7 @@ const techs = {
             }
             return false;
         },
-        flair(){ return loc('tech_bone_axe_flair'); }
+        flair(){ return loc('tech_bone_chainsaw_flair'); }
     },
     bone_hammer: {
         id: 'tech-bone_hammer',
@@ -9091,7 +9091,7 @@ const techs = {
         action(){
             if (payCosts(this)){
                 initStruct(actions.city.slave_pen);
-                if(global.tech['iceage']){
+                if(global.race['iceage']){
                     initStruct(actions.underground.under_slave_pen);
                 }
                 global.resource.Slave.amount = 0;

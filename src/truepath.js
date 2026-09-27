@@ -2182,6 +2182,27 @@ const outerTruth = {
         }
     },
     // The moon that turns out to be worth landing on.
+    // Outer Syndicate base at Pluto or Haumea, available after Shadow 19.
+    spc_sybase: {
+        info: {
+            name(){
+                let world = sybaseWorld();
+                return world ? planetName()[world] : loc('space_sybase_unknown');
+            },
+            desc(){
+                let world = sybaseWorld();
+                if (!world){ return loc('space_sybase_unknown'); }
+                return `<div>${loc(`space_sybase_${world}_desc`,[planetName()[world]])}</div><div class="has-text-danger">${loc('space_sybase_info_desc')}</div>`;
+            },
+            zone: 'outer',
+            showDest(){
+                let show = sybaseFound();
+                return {r: show, l: show};
+            },
+            syndicate(){ return false; },
+            nav(){ return sybaseFound(); }
+        },
+    },
     spc_survey: {
         info: {
             name(){
@@ -2490,12 +2511,27 @@ function surveyFound(){
     return global.tech['survey'] && global.tech.survey >= 2 && surveyBody() ? true : false;
 }
 
+// Return the outer base world, or false before it is located.
+export function sybaseWorld(){
+    let home = global.race['sy_base'] ? global.race.sy_base.home : false;
+    return home ? home.replace('spc_','') : false;
+}
+
+// Return whether Shadow 19 has located the outer base.
+export function sybaseFound(){
+    return global.tech['shadow'] && global.tech.shadow >= 19 && sybaseWorld() ? true : false;
+}
+
 // spc_survey has no entry of its own in the position table — it stands in for a real moon, and which one is not
 // known until the roll.
 export function resolveBody(locationName){
     if (locationName === 'spc_survey'){
         let moon = surveyBody();
         return moon ? `spc_${moon}` : locationName;
+    }
+    // Resolve spc_sybase to its configured dwarf planet.
+    if (locationName === 'spc_sybase'){
+        return global.race['sy_base'] && global.race.sy_base.home ? global.race.sy_base.home : locationName;
     }
     return locationName;
 }
@@ -5486,7 +5522,7 @@ export const tauCetiModules = {
             reqs: { tau_gas2: 3 },
             grant: ['tau_gas2',4],
             path: ['truepath'],
-            queue_complete(){ return global.tech.tau_gas3 >= 4 ? 0 : 1; },
+            queue_complete(){ return global.tech.tau_gas2 >= 4 ? 0 : 1; },
             cost: {
                 Money(){ return global.race['lone_survivor'] ? 1500000000 : 3000000000; },
                 Helium_3(){ return 5000000; }
@@ -7307,6 +7343,9 @@ export const sWarfare = {
     guardFleet: 6,          // Corsairs in the guard fleet.
     guardRepair: 1,         // Guard hull repair per day.
     guardRounds: 50,        // Maximum daily guard combat rounds.
+    baseRounds: 5,          // Daily outer-base combat round cap.
+    blockadeRounds: 10,     // Blockade rounds per departing corsair.
+    blockadeTurnBack: 25,   // Damage threshold that triggers a second exchange and retreat.
     // Ground detector settings; use detectorSegments() for orbit-decay adjustments.
     detectorSegments: 10,   // Segments to finish one array.
     detectorSegmentsLost: 12,   // Segments to finish one array with no homeworld to build on.
@@ -7803,8 +7842,11 @@ function corsairSortie(corsair){
 
 // Launch a hunt, raid, or prowl route.
 function corsairLaunch(corsair,target,raid,prowl){
+    if (corsair.damage >= 100){ return false; }
     const trip = planShipTrip(corsair,target);
     if (!trip || (!prowl && tripDays(trip) > sWarfare.huntDays)){ return false; }
+    // Run the blockade only for valid departures.
+    if (corsairBlockaded(corsair) && !corsairRunBlockade(corsair)){ return false; }
     initializeShipTrip(corsair,target,trip);
     corsair.od = false;
     corsair.home = false;
@@ -7967,8 +8009,8 @@ export function stealthStudied(){
     return corsairsFought() >= sWarfare.studyFights || corsairsDestroyed() >= sWarfare.studyKills ? true : false;
 }
 
-// The corsair is lost: the base that built it goes quiet for a while.
-function corsairLost(corsair,where){
+// Mark a destroyed corsair and delay its base; `quiet` suppresses its loss message.
+function corsairLost(corsair,where,quiet){
     const base = global.race.sy_base[corsair.syn];
     if (base){
         const fleet = corsairFleet(base);
@@ -7978,7 +8020,7 @@ function corsairLost(corsair,where){
         // Delay all base launches after a loss.
         base.ready = global.stats.days + Math.round(seededRandom(sWarfare.lostMin,sWarfare.lostMax,true));
     }
-    zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success');
+    if (!quiet){ zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success'); }
 }
 
 // Scale plunder capacity by remaining hull integrity.
@@ -8169,8 +8211,8 @@ function corsairBaseDay(region){
 
     const fleet = corsairFleet(base);
 
-    // Launch a corsair into an available berth.
-    if (corsairBaseAwake(region) && fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
+    // Launch corsairs only from awake, unblocked bases with capacity.
+    if (corsairBaseAwake(region) && !baseBlockaded(region) && fleet.length < corsairBerths(region) && global.stats.days >= base.ready){
         const ship = corsairHull(region);
         fleet.push(ship);
         base.launched++;
@@ -8395,6 +8437,64 @@ function syndicateGuardDay(){
     });
 }
 
+// --- Outer base siege ------------------------------------------------------------------------------
+// Resolve combat between outer-base guards and docked corsairs.
+
+// Resolve one siege day before corsair launches.
+function syndicateBaseSiegeDay(){
+    if (!sybaseFound()){ return; }
+    const home = global.race.sy_base.home;
+    const base = global.race.sy_base[home];
+    if (!base || base.closed){ return; }
+    if (guardsAt('spc_sybase').length === 0){ return; }
+
+    const inPort = corsairFleet(base).filter(c => c.damage < 100 && shipDockedAt(c) === home);
+    if (inPort.length === 0){ return; }
+
+    zBattle('spc_sybase',inPort,sWarfare.baseRounds);
+    corsairEngaged();
+    // Suppress duplicate kill messages.
+    inPort.filter(c => c.damage >= 100).forEach(c => corsairLost(c,'spc_sybase',true));
+}
+
+// Return whether player ships blockade the located outer base.
+function baseBlockaded(region){
+    if (!sybaseFound() || region !== global.race.sy_base.home){ return false; }
+    return guardsAt('spc_sybase').length > 0;
+}
+
+// Return whether a corsair departs a blockaded base.
+function corsairBlockaded(corsair){
+    return shipDockedAt(corsair) === corsair.syn && baseBlockaded(corsair.syn);
+}
+
+// Resolve one cached daily blockade attempt and return whether the corsair escapes.
+function corsairRunBlockade(corsair){
+    const today = global.stats.days;
+    if (corsair.bk && corsair.bk.d === today){ return corsair.bk.ok; }
+
+    zBattle('spc_sybase',[corsair],sWarfare.blockadeRounds);
+    corsairEngaged();
+    let ok = corsair.damage < sWarfare.blockadeTurnBack;
+    if (!ok && corsair.damage < 100){
+        zBattle('spc_sybase',[corsair],sWarfare.blockadeRounds);
+    }
+
+    if (corsair.damage >= 100){
+        // Suppress the duplicate loss message.
+        corsairLost(corsair,'spc_sybase',true);
+        ok = false;
+    }
+    else if (!ok){
+        zMessage(loc('syndicate_blockade_turned',[corsair.name,regionName('spc_sybase')]),'success');
+    }
+    else {
+        zMessage(loc('syndicate_blockade_through',[corsair.name,regionName('spc_sybase')]),'warning');
+    }
+    corsair.bk = { d: today, ok: ok };
+    return ok;
+}
+
 // --- The day, and the tick ---------------------------------------------------------------------------
 
 // Advance Syndicate bases, guard post, and patrols each day.
@@ -8403,6 +8503,7 @@ export function syndicateDay(){
     sectorCommandDay();
     syndicateWatch();
     if (!corsairsActive()){ return; }
+    syndicateBaseSiegeDay();
     syndicateBases().forEach(corsairBaseDay);
     syndicateTrace();
     syndicateGuardDay();

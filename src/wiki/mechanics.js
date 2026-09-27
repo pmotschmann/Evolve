@@ -745,7 +745,7 @@ export function mechanicsPage(content){
     { // Syndicate
         let syndicate = infoBoxBuilder(mainContent,{ name: 'syndicate', template: 'mechanics', label: loc('wiki_mechanics_syndicate'), paragraphs: 2, h_level: 2,
             para_data: {
-                1: [loc('wiki_mechanics_syndicate'),loc('wiki_challenges_scenarios_truepath'),loc('wiki_mechanics_syndicate_para1_note1'),loc('tech_shipyard',[races[global.race.species ? global.race.species : human].solar.dwarf])],
+                1: [loc('wiki_mechanics_syndicate'),loc('wiki_challenges_scenarios_truepath'),loc('wiki_mechanics_syndicate_para1_note1'),loc('tech_shipyard',[races[global.race.species ? global.race.species : 'human'].solar.dwarf])],
                 2: [loc('galaxy_piracy'),loc('tab_galactic')]
             },
             data_link: {

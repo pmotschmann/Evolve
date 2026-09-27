@@ -2961,7 +2961,7 @@ function setRegionStates(reset){
         space: [
             'moon','red','hell','venus','survey','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
             'nebula','neutron','blackhole','sirius','stargate','gateway','gorddon',
-            'alien1','alien2','chthonian','titan','enceladus','triton','eris','makemake'
+            'alien1','alien2','chthonian','titan','enceladus','triton','eris','makemake','sybase'
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire','wasteland'],
         eden: ['asphodel','elysium','isle','palace'],

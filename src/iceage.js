@@ -267,7 +267,7 @@ const iceAgeModules = {
                         return loc('underground_mushroom_soul');
                     }
                     else if (global.race['detritivore']){
-                        return loc('underground_mushroom_detritivore');
+                        return loc('underground_mushroom_mulch');
                     }
                     if (global.race['carnivore']){
                         return loc('underground_mushroom_meat');
@@ -5038,7 +5038,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
     deaths = 0;
     let hp = enemy_stats.health;
     let rounds = 0;
-    while(hp > 0 && army > 0 && (real ? 100 : 10)){
+    while(hp > 0 && army > 0 && rounds < (real ? 100 : 10)){
         let rating = armyRating(army, Math.min(army, injuries), 'army');
         let damage = rand(rating * 0.3, rating,true);
         damage *= t_effect('sappy');
