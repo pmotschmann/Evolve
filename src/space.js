@@ -7908,7 +7908,7 @@ function xeno_race(){
         skip.push('hybrid');
     }
     if (!global.stats.achieve.living_extinction?.l){
-        skip.push('raptors'); 
+        skip.push('raptor'); 
         skip.push('rexicus'); 
         skip.push('mammuth');
     }
