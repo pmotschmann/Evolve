@@ -2314,7 +2314,7 @@ const fortressModules = {
             title(){ return loc('portal_ancient_pillars_title'); },
             desc(){ return loc('portal_ancient_pillars_desc'); },
             reqs: { hell_ruins: 2 },
-            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : 0; },
+            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : false; },
             cost: {
                 Harmony(r={}){
                     if (r.offset !== undefined){
@@ -4768,7 +4768,7 @@ export function bloodwar(report = true){
         global.portal.fortress.pity++;
     }
 
-    if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
+    if (global.stats.dkills >= 10000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
         messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);
