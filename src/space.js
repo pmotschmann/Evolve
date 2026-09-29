@@ -7908,7 +7908,9 @@ function xeno_race(){
         skip.push('hybrid');
     }
     if (!global.stats.achieve.living_extinction?.l){
-        skip.push('primordial');
+        skip.push('raptors'); 
+        skip.push('rexicus'); 
+        skip.push('mammuth');
     }
     
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
