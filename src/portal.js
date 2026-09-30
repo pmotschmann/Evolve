@@ -2314,7 +2314,7 @@ const fortressModules = {
             title(){ return loc('portal_ancient_pillars_title'); },
             desc(){ return loc('portal_ancient_pillars_desc'); },
             reqs: { hell_ruins: 2 },
-            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : 0; },
+            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : false; },
             cost: {
                 Harmony(r={}){
                     if (r.offset !== undefined){

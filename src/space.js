@@ -7908,7 +7908,9 @@ function xeno_race(){
         skip.push('hybrid');
     }
     if (!global.stats.achieve.living_extinction?.l){
-        skip.push('primordial');
+        skip.push('raptor'); 
+        skip.push('rexicus'); 
+        skip.push('mammuth');
     }
     
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
@@ -10024,11 +10026,11 @@ export function ascendLab(hybrid,wiki){
         return boost > 0 ? +(rank + boost).toFixed(6) : rank;
     }
 
-// Move lab ranks by 0.05, subject to extinction-achievement gates away from rank 1.
-    function stepLabRank(t, down){
+// Move lab ranks by step, subject to extinction-achievement gates away from rank 1.
+    function stepLabRank(t, step){
         let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
         let now = tRanks[t] || 1;
-        let rank = +Math.min(2, Math.max(0.1, now + (down ? -0.05 : 0.05))).toFixed(2);
+        let rank = +Math.min(2, Math.max(0.1, now + step)).toFixed(2);
         let need = 0;
         if (rank < 1){
             need = rank >= 0.5 ? 3 : (rank >= 0.25 ? 4 : 5);
@@ -10181,14 +10183,16 @@ export function ascendLab(hybrid,wiki){
                 reduce(i){
                     let held = labAt(genome,i);
                     if (!held){ return; }
-                    stepLabRank(held,true);
+                    let keyMult = keyMultiplier();
+                    stepLabRank(held, keyMult * -0.05);
                     repriceGenome();
                     vBind({ el: `#traitSlots .labStrand` },'update');
                 },
                 increase(i){
                     let held = labAt(genome,i);
                     if (!held){ return; }
-                    stepLabRank(held,false);
+                    let keyMult = keyMultiplier();
+                    stepLabRank(held, keyMult * 0.05);
                     repriceGenome();
                     vBind({ el: `#traitSlots .labStrand` },'update');
                 },
