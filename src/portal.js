@@ -4768,7 +4768,7 @@ export function bloodwar(report = true){
         global.portal.fortress.pity++;
     }
 
-    if (global.stats.dkills >= 10000 && global.tech['gateway'] && !global.tech['hell_pit']){
+    if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
         messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);

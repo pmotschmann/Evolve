@@ -2681,7 +2681,7 @@ function defineMad(){
         let resetGazebo = 'missiles';
         if (altText == 1)
             resetGazebo = 'grenades';
-        else if (altText)
+        else if (altText == 2)
             resetGazebo = 'meteor';
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(`civics_mad_arm_${resetGazebo}`)}</button></div>`));
