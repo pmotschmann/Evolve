@@ -4008,6 +4008,7 @@ function fastLoop(){
                     biodome += support_on['biodome'] * production('biodome','cat_food') * production('psychic_boost','Food');
                 }
             }
+
             breakdown.p['Food'][actions.space.spc_red.biodome.title()] = biodome + 'v';
             if (biodome > 0){
                 breakdown.p['Food'][`ᄂ${loc('space_syndicate')}+0`] = -((1 - red_synd) * 100) + '%';
