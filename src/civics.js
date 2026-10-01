@@ -2675,7 +2675,7 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? 0 : 1;
+        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? 1 : 0;
         altText = global.race['deep_power'] && global.race.universe === 'magic' ? 2 : altText;
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(['civics_mad_arm_grenades', 'civics_mad_arm_missiles', 'civics_mad_arm_meteor'][altText])}</button></div>`));

@@ -4743,10 +4743,10 @@ const iceAgeModules = {
                         if (!global['sim']){
                             writeBackup();
                         }
+                        global.tech['thrusters'] = 6;
                         if (webWorker.w){
                             webWorker.w.terminate();
                         }
-                        global.tech['thrusters'] = 6;
                         $('#main').addClass('blast');
                         $('#city-thruster_launch .button').addClass('blast_burn');
                         setTimeout(function(){

@@ -7625,6 +7625,7 @@ export function getStructNumActive(c_action,wiki){
     if (!num_on){ // This is also a null check
         return 0;
     }
+
     // Electricity: production is negative, consumption is positive
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
         if (global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
