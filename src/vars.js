@@ -1269,6 +1269,10 @@ if (convertVersion(global['version']) <= 103015){
         global.portal['harbor'] = global.portal.harbour;
         delete global.portal.harbour;
     }
+    let index = global.power?.indexOf('prtl_lake:harbour');
+    if(index > -1){
+        global.power[index] = 'prtl_lake:harbor';
+    }
 }
 
 if (convertVersion(global['version']) <= 103017){

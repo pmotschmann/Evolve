@@ -545,7 +545,10 @@ export const traits = {
         val: 60,
         vars(r){
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
-            return traitScale(r || traitRank('high_pop') || 1, [2, 50, 1.2], [4, 26, 3.5], [7, 15.8, 6.5]);
+            let trait = traitScale(r || traitRank('high_pop') || 1, [2, 1, 1.2], [4, 1.04, 3.5], [7, 1.16, 6.5]);
+            trait[0] = Math.floor(trait[0]); //citizen cap can not be a decimal
+            trait[1] = 100 / trait[0] * trait[1]; //convert second value into worker effectiveness per citizen.
+            return trait;
         },
     },
     fast_growth: { // Greatly increases odds of population growth each cycle
@@ -775,6 +778,7 @@ export const traits = {
         taxonomy: 'utility',
         val: 80,
         vars(r){
+            // [% increase to Warmonger Effect]
             return traitScale(r || traitRank('immoral') || 1, [-40], [0], [40]);
         },
     },
@@ -1693,6 +1697,8 @@ export const traits = {
         taxonomy: 'production',
         val: 180,
         vars(r){
+            // [Breakpoint]
+            // Lower production than usual below the breakpoint, higher past the breakpoint.
             return traitScale(r || traitRank('hivemind') || 1, [13], [10], [6]);
         }
     },
@@ -2150,6 +2156,7 @@ export const traits = {
         taxonomy: 'utility',
         val: -80,
         vars(r){
+            // [Nanite Mult]
             return traitScale(r || traitRank('deconstructor') || 1, [25], [100], [150]);
         }
     },
@@ -2173,6 +2180,7 @@ export const traits = {
         taxonomy: 'resource',
         val: -60,
         vars(r){
+            // [Hunting Reduce]
             return traitScale(r || traitRank('dark_dweller') || 1, [99], [60], [25]);
         }
     },
@@ -2196,6 +2204,7 @@ export const traits = {
         taxonomy: 'utility',
         val: -40,
         vars(r){
+            // [Food Multi * 10000]
             return traitScale(r || traitRank('anthropophagite') || 1, [0.25], [1], [2.5]);
         }
     },
@@ -2293,6 +2302,7 @@ export const traits = {
         val: -100,
         vars(r){
             // [Randomly Die]
+            // [% Chance/Day, Death Multiplier]
             return traitScale(r || traitRank('unstable') || 1, [7,10], [4,10], [1,10]);
         }
     },
@@ -2436,7 +2446,7 @@ export const traits = {
         val: 260,
         vars(r){
             // [Wish Cooldown Period]
-            return traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]);
+            return Math.round(traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]));
         }
     },
     devious: {
@@ -2483,7 +2493,7 @@ export const traits = {
         taxonomy: 'utility',
         val: 160,
         vars(r){
-// Major and genus rank bonuses; Empowered ranks cap at 2.
+            // Major and genus rank bonuses; Empowered ranks can go beyond 2
             return traitScale(Math.min(2, r || traitRank('empowered') || 1), [0.01,0.005], [0.2,0.1], [0.4,0.2]);
         }
     },
@@ -2504,7 +2514,7 @@ export const traits = {
         desc(v){ return loc('trait_deep_power',v); },
         type: 'genus',
         origin: 'primordial',
-        taxonomy: 'combat',
+        taxonomy: 'utility',
         val: 180,
         vars(r){
             // [mastery increase multiplier]
@@ -2570,7 +2580,7 @@ export const traits = {
             // [production/storage/job mult, building cost/creep mult]
             let trait = traitScale(r || traitRank('humongous') || 1, [1.01, 2], [1.05, 3], [1.1, 4]);
             trait[1] = Math.floor(trait[1]); //building cost modifier can not be a decimal
-            trait[0] *= trait[1]; //building effect is directly modified by cost modifier
+            trait[0] *= trait[1]; //mult is directly modified by cost modifier
             return trait;
         }
     },
@@ -4672,7 +4682,7 @@ export function racialTrait(workers,type){
     if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
         modifier *= 1.1;
     }
-    if (type === 'lumberjack' && global.race['evil'] && (global.race.universe === 'evil' || !global.race['soul_eater'])){
+    if (type === 'lumberjack' && global.race['evil'] && (global.race.universe === 'evil' || !global.race['soul_eater']) && !global.race['iceage']){
         if (global.race['living_tool']){
             modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.3 : 0);
         }

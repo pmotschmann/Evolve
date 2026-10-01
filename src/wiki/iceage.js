@@ -47,9 +47,9 @@ export function iceagePage(content){
             1: [loc('underground_mineshaft'), loc('evo_challenge_iceage'), `${loc('job_miner')}s`],
             2: [loc('wiki_iceage_mineshaft_rooted')],
             4: [loc('tech_coal_lanterns'), loc('underground_mineshaft_elevator')],
-            5: [100],
-            6: [2000, loc('tech_coal_lanterns')],
-            7: [200000, loc('underground_mineshaft_elevator')],
+            5: [10],
+            6: [200, loc('tech_coal_lanterns')],
+            7: [2000, loc('underground_mineshaft_elevator')],
             8: [loc('tech_core_digging'), loc('underground_core_tap'), `${loc('job_core_miner')}s`, loc('underground_core_forge'), loc('underground_core_refinery'), loc('underground_core_blacksmith')]
         },
         data_color: {

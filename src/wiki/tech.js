@@ -4399,7 +4399,7 @@ const specialRequirements = {
             category: 'unique',
             subreqs: [
                 {
-                    title: loc(`underground_mineshaft_depth`, [20000]),
+                    title: loc(`underground_mineshaft_depth`, [2000]),
                     color: global.tech['mineshaft_depth'] >= 1,
                     link: 'wiki.html#underground-structures-support_beams'
                 }

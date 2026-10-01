@@ -771,7 +771,7 @@ export const events = {
     slave_escape1: slaveLoss('minor','escape1'),
     slave_escape2: slaveLoss('minor','escape2'),
     slave_escape3: slaveLoss('minor','death4'),
-    shooting_star: basicEvent('shooting_star','primitive','neutral'),
+    shooting_star: basicEvent('shooting_star','primitive','neutral', undefined, (!global.race['iceage'] || global.tech['surface'] >= 1)),
     tumbleweed: basicEvent('tumbleweed','primitive','neutral'),
     flashmob: basicEvent('flashmob','high_tech','neutral'),
     witch_hunt: {
@@ -990,7 +990,7 @@ export const events = {
         return true;
     }),
     cat: basicEvent('cat','primitive','neutral'),
-    omen: basicEvent('omen','primitive','neutral'),
+    omen: basicEvent('omen','primitive','neutral', undefined, !global.race['iceage']),
     theft: basicEvent('theft','primitive','neutral',function(){
         let thief = Math.rand(0,10);
         return loc(`event_theft_type${thief}`);
