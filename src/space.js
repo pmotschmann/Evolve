@@ -1389,7 +1389,7 @@ const spaceProjects = {
                         lab = `<div>${loc('city_wardenclyffe_effect4',[hugeEffect(2)])}</div>`;
                     }
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[hugeEffect(sci, 0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
             },
             knowVal(){
                 let gain = 500;
@@ -2039,12 +2039,12 @@ const spaceProjects = {
             },
             effect(){
                 let know = this.knowVal();
-                return `<div>${loc('space_university_effect',[know,global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                return `<div>${loc('space_university_effect',[hugeEffect(know, 0),global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             knowVal(){
                 let gain = 3500;
                 gain *= infiltratorFactor('spc_hell','seismic');
-                gain = hugeAdjust(gain, 2);
+                gain = hugeAdjust(gain);
                 return gain;
             },
             powered(){ return 8; },

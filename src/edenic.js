@@ -327,13 +327,9 @@ const edenicModules = {
                 Soul_Gem(r={}){ return spaceCostMultiplier('research_station', r.offset, 10, 1.12, 'eden'); },
             },
             effect(){
-                let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-                let souls = 200 + attact;
-                if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
-                    souls *= 1 + hugeAdjust(p_on['symposium'] * piracy('gxy_gorddon'));
-                }
+                let souls = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div>`;
-                desc += `<div>${loc('eden_research_station_effect',[hugeEffect(highPopAdjust(souls), 0), loc('job_ghost_trapper')])}</div>`;
+                desc += `<div>${loc('eden_research_station_effect',[hugeEffect(souls, 0), loc('job_ghost_trapper')])}</div>`;
                 if (global.tech['science'] && global.tech.science >= 22){
                     let boost = 1;
                     if (global.race['warlord'] && global.eden['corruptor']){
@@ -354,6 +350,15 @@ const edenicModules = {
             s_type: 'asphodel',
             support(){ return -1; },
             powered(){ return 0; },
+            knowVal(){
+                let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+                let knowledge = 200 + attact;
+                if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
+                    knowledge *= 1 + hugeAdjust(p_on['symposium'] * piracy('gxy_gorddon'));
+                }
+                knowledge = hugeAdjust(highPopAdjust(knowledge));
+                return knowledge;
+            },
             action(args){
                 if (payCosts(this)){
                     incrementStruct('research_station','eden');

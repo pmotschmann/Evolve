@@ -2824,7 +2824,7 @@ const techs = {
         title(){ return loc('tech_mechanical_storage'); },
         desc(){ return loc('tech_mechanical_storage'); },
         category: 'storage',
-        era: 'discovery',
+        era: 'industrialized',
         reqs: { storage: 2, smelting: 2, alumina: 1, high_tech: 2 },
         path: ['iceage'],
         grant: ['storage',4],
@@ -5380,9 +5380,7 @@ const techs = {
         action(){
             if (payCosts(this)){
                 initStruct(actions.underground.depths.depths_support_beams);
-                if(global.tech['mineshaft_depth'] >= 2){
-                    initStruct(actions.underground.industry.industrial_support_beams);
-                }
+                initStruct(actions.underground.industry.industrial_support_beams);
                 return true;
             }
             return false;
@@ -5809,6 +5807,7 @@ const techs = {
         era: 'discovery',
         reqs: { high_tech: 1 },
         grant: ['high_tech',2],
+        condition(){ return !global.race['iceage'] || global.tech['mineshaft_depth'] >= 2 },
         cost: {
             Knowledge(){ return traitCostMod('stubborn',13500); },
             Copper(){ return 1000; }
@@ -9091,8 +9090,8 @@ const techs = {
         action(){
             if (payCosts(this)){
                 initStruct(actions.city.slave_pen);
-                if(global.race['iceage']){
-                    initStruct(actions.underground.under_slave_pen);
+                if(global.tech['iceage']){
+                    initStruct(actions.underground.cave.under_slave_pen);
                 }
                 global.resource.Slave.amount = 0;
                 return true;
