@@ -4597,9 +4597,8 @@ export const tauCetiModules = {
                 Quantium(r={}){ return spaceCostMultiplier('womling_lab', r.offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
-                let know = this.knowVal();
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[this.support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[this.knowVal()])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[+(this.knowVal()).toFixed(0)])}</div>`;
                 if (global.race['humongous']){
                     desc = desc + `<div>${loc('tau_red_womling_employ',[hugeEffect(1)])}</div>`;
                 }

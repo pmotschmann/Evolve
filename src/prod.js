@@ -137,7 +137,7 @@ function baseProduction(id,val,wiki){
                 case 'food':
                     return highPopAdjust(global.race.universe === 'evil' ? 0.1 : 0.25);
                 case 'cat_food':
-                    return hugeAdjust(2);
+                    return 2;
                 case 'lumber':
                     return highPopAdjust(1.5);
             }
@@ -149,6 +149,7 @@ function baseProduction(id,val,wiki){
         case 'outpost':
         {
             let vals = {
+                f: 0, //this only exists so the b value can get adjusted for humongous
                 b: 0.025,
                 d: 0,
                 n: 0
@@ -555,7 +556,7 @@ function baseProduction(id,val,wiki){
         }
         case 'alien_outpost':
         {
-            return 0.01 / hugeAdjust(1);
+            return 0.01;
         }
         case 'psychic_boost':
         {
