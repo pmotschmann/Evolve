@@ -5562,13 +5562,17 @@ export function buildTemplate(key, region){
                             global.city['banquet'].on = 1;
                         }
                         global.city['banquet'].count = 1; //banquet hall can be powered on once at most
-                        drawCity();
+                        if (global.race['iceage']){
+                            renderUnderground();
+                        }
+                        else{
+                            drawCity();
+                        }
                         return true;
                     }
                     return false;
                 },
                 count(){ return global.city['banquet'].level },
-                on_cap(){ return Math.min(global.city['banquet'].level, 1); }, //todo: test whether this works and remove redundancies for previous method
                 struct(){
                     return {
                         d: { count: 0, on: 0, strength: 0, level: 0 },
@@ -6171,6 +6175,7 @@ function setChallenge(challenge){
         if (challenge === 'orbit_decay'){
             delete global.race['cataclysm'];
             delete global.race['warlord'];
+            delete global.race['iceage'];
             if (global.race['lone_survivor']){
                 delete global.race['lone_survivor'];
                 ['nerfed','badgenes'].forEach(function(gene){
@@ -6220,7 +6225,7 @@ function setScenario(scenario){
             }
         }
 
-        if (scenario === 'cataclysm' || scenario === 'lone_survivor' || scenario === 'warlord'){
+        if (scenario === 'cataclysm' || scenario === 'lone_survivor' || scenario === 'warlord' || scenario === 'iceage'){
             delete global.race['orbit_decay'];
         }
 
@@ -10229,6 +10234,11 @@ function iceAgeStart(){
 
         global.resource.Lumber.amount = 0;
         global.resource.Stone.amount = 0;
+
+        global.city.calendar.temp = 0;
+        global.city.calendar.weather = 0;
+        global.city.calendar.wind = 0;
+        global.city.calendar.season = 3;
 
         if(!global.aberrants){
             global.aberrants = {

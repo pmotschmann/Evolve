@@ -2072,7 +2072,7 @@ export function marketItem(mount,market_item,name,color,full){
                 let rate = tradeRatio[res] * tradeVolumeBonus();
                 rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
-                let price = tradeBuyPrice(res) / hugeAdjust(1);
+                let price = +(tradeBuyPrice(res) / hugeAdjust(1)).toFixed(2);
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
             },
             purchase(res){
@@ -3372,7 +3372,7 @@ function loadRouteCounter(){
         if (breakdown.hasOwnProperty('t_route')){
             Object.keys(breakdown.t_route).forEach(function(k){
                 if (breakdown.t_route[k] > 0){
-                    bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.t_route[k]}</span></div>`);
+                    bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${+(breakdown.t_route[k]).toFixed(1)}</span></div>`);
                 }
             });
         }
@@ -4639,7 +4639,7 @@ export const plasmidBonus = (function (){
             global.race['spiritual'] || '0',
             global.tech['outpost_boost'] || '0',
             p_on['alien_outpost'] || '0',
-            hugeAdjust(1)
+            global.race['humongous'] || '0'
         ].join('-');
 
         if (!plasma[key]){
