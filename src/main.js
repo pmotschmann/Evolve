@@ -4081,7 +4081,6 @@ function fastLoop(){
             if (global.race['high_pop']){
                 food_consume_mod /= traits.high_pop.vars()[0];
             }
-            food_consume_mod = hugeAdjust(food_consume_mod);
             let banquet = 1;
             if(global.city.banquet){
                 if(global.city.banquet.on){
@@ -4105,8 +4104,8 @@ function fastLoop(){
             if(!global.race['fasting']){
                 // An idle citizen normally feeds itself halfway; a grazer feeds itself entirely.
                 let idle_fed = global.race['grazer'] ? 1 : 0.5;
-                consume = (global.resource[global.race.species].amount + soldiers
-                    - (global.civic.unemployed.workers * idle_fed)
+                consume = hugeAdjust((global.resource[global.race.species].amount) + soldiers
+                    - hugeAdjust(global.civic.unemployed.workers * idle_fed)
                     - (workerScale(global.civic.hunter.workers,'hunter') * 0.5)) * food_consume_mod;
                 if (global.race['forager']){
                     consume -= global.civic.forager.workers;
@@ -8759,7 +8758,7 @@ function fastLoop(){
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier * hunger : 0;
         if (FactoryMoney && global.race['discharge'] && global.race['discharge'] > 0){rawCash *= 0.5;}
         if (global.tech['currency'] >= 1){
-            let citizens = hugeAdjust(global.resource[global.race.species].amount) + global.civic.garrison.workers - global.civic.unemployed.workers;
+            let citizens = hugeAdjust(global.resource[global.race.species].amount) + global.civic.garrison.workers - hugeAdjust(global.civic.unemployed.workers);
             let income_base = citizens;
             if (global.race['high_pop']){
                 income_base = highPopAdjust(income_base);
@@ -14132,7 +14131,7 @@ function healSoldiers(astroSign){
 
     let fathom = fathomCheck('troll');
     if (fathom > 0){
-        healed += Math.round(jobScale(20 * traits.regenerative.vars(1)[0] * fathom));
+        healed += Math.round(jobScale(traits.regenerative.vars(1)[0] * fathom));
     }
     let hc = global.city['hospital'] ? global.city.hospital.count : 0;
     if (global.race['orbit_decayed'] && global.race['truepath']){
