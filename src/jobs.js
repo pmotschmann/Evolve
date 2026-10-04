@@ -490,8 +490,8 @@ export const job_data = {
                 morale *= traits.high_pop.vars()[1] / 100;
             }
             morale = +workerScale(morale,'entertainer').toFixed(2);
-            let water = +(morale).toFixed(1);
-            return loc('job_gardener_desc_iceage',[water, +(morale).toFixed(2), +actions.underground.depths.color_garden.mushroom_effect().toFixed(1)]);
+            let water = +(morale).toFixed(2);
+            return loc('job_gardener_desc_iceage',[water, morale, +(actions.underground.depths.color_garden.mushroom_effect()).toFixed(2)]);
         },
         stress(){ return 10; },
         color(){ return 'advanced'; }

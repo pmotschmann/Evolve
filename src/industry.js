@@ -666,7 +666,7 @@ export const factoryData = {
             + (global.interstellar['int_factory'] ? global.interstellar.int_factory.on * 2 : 0)
             + (global.portal['hell_factory'] ? global.portal.hell_factory.on * actions.portal.prtl_wasteland.hell_factory.lines() : 0)
             + (global.underground['under_factory'] ? global.underground.under_factory.on * actions.underground.industry.under_factory.lines() : 0)
-            + Math.floor(global.surface['crater_factory'] ? global.surface.crater_factory.on * global.civic.crater_worker.workers / jobScale(2) : 0)
+            + (global.surface['crater_factory'] ? global.surface.crater_factory.on * actions.surface.crater.crater_factory.lines() : 0)
             + (global.space['industrial_complex'] ? global.space.industrial_complex.on * actions.space.spc_venus.industrial_complex.lines() : 0)
             + (global.tauceti['tau_factory'] ? global.tauceti.tau_factory.on * (global.tech['isolation'] ? 5 : 3) : 0);
     },
@@ -697,7 +697,7 @@ export const factoryData = {
         add('space:red_factory', p_on['red_factory'] || 0);
         add('interstellar:int_factory', (p_on['int_factory'] || 0) * 2);
         add('underground:under_factory', (p_on['under_factory'] || 0) * actions.underground.industry.under_factory.lines());
-        add('surface:crater_factory', Math.floor((support_on['crater_factory'] || 0) * global.civic.crater_worker.workers / jobScale(2)));
+        add('surface:crater_factory', (support_on['crater_factory'] || 0) * actions.surface.crater.crater_factory.lines());
         add('portal:hell_factory', (p_on['hell_factory'] || 0) * actions.portal.prtl_wasteland.hell_factory.lines());
         add('space:industrial_complex', (actions.space.spc_venus.descender.operating() ? (support_on['industrial_complex'] || 0) : 0) * actions.space.spc_venus.industrial_complex.lines());
         add('tauceti:tau_factory', (support_on['tau_factory'] || 0) * (global.tech['isolation'] ? 5 : 3));

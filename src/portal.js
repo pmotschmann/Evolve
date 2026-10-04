@@ -154,7 +154,7 @@ const fortressModules = {
             powered(){ return powerCostMod(2); },
             effect(){
                 if (global.race['humongous']){
-                return `<div>${loc('portal_war_droid_effect_huge', [hugeEffect(1)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                    return `<div>${loc('portal_war_droid_effect_huge', [hugeEffect(global.tech['hdroid'] ? 2 : 1)])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 }
                 return `<div>${loc('portal_war_droid_effect')}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },

@@ -1158,7 +1158,7 @@ const spaceProjects = {
             effect(){
                 let c_worker = global.race['cataclysm'] && !global.race['flier'] ? `<div>${loc('plus_max_resource',[jobScale(1),loc('job_resource_worker',[global.resource.Cement.name])])}</div>` : ``;
                 let fab = global.race['cataclysm'] || decayPerks() ? 5 : 2;
-                fab = highPopAdjust(fab);
+                fab = hugeAdjust(highPopAdjust(fab));
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[hugeEffect(fab, 2)])}</div>`;
             },
             s_type: 'red',
@@ -1265,7 +1265,7 @@ const spaceProjects = {
             },
             effect(){
                 let food = production('biodome','food');
-                let cat_fd = global.race['cataclysm'] || decayPerks() ? `<div>${loc('produce',[hugeEffect(production('biodome','cat_food'), 2),global.resource.Food.name])}</div>` : ``;
+                let cat_fd = global.race['cataclysm'] || decayPerks() ? `<div>${loc('produce',[+(production('biodome','cat_food')).toFixed(2),global.resource.Food.name])}</div>` : ``;
                 let cat_wd = (global.race['cataclysm'] || decayPerks()) && !global.race['kindling_kindred'] && !global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[hugeEffect(production('biodome','lumber'), 2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 let food_cap = spatialReasoning(this.storage.res('Food') * this.storage.multiplier());
@@ -1292,6 +1292,9 @@ const spaceProjects = {
                     };
                     if (global.race['artifical']){
                         list.Food = 500;
+                    }
+                    else if (!decayPerks()){
+                        delete list.Food;
                     }
                     return res ? (list[res] || 0) : list;
                 },
@@ -1389,7 +1392,7 @@ const spaceProjects = {
                         lab = `<div>${loc('city_wardenclyffe_effect4',[hugeEffect(2)])}</div>`;
                     }
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[hugeEffect(sci, 0)])}</div><div>${loc('plus_max_resource',[elerium,global.resource.Elerium.name])}</div>`;
             },
             knowVal(){
                 let gain = 500;
@@ -2039,12 +2042,12 @@ const spaceProjects = {
             },
             effect(){
                 let know = this.knowVal();
-                return `<div>${loc('space_university_effect',[know,global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                return `<div>${loc('space_university_effect',[hugeEffect(know, 0),global.resource.Knowledge.name,spaceProjects.spc_hell.geothermal.title()])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
             knowVal(){
                 let gain = 3500;
                 gain *= infiltratorFactor('spc_hell','seismic');
-                gain = hugeAdjust(gain, 2);
+                gain = hugeAdjust(gain);
                 return gain;
             },
             powered(){ return 8; },
@@ -6932,7 +6935,7 @@ const galaxyProjects = {
                             const ship = galaxy_ship_types[j].ships[i];
                             if (!gatewayArmada.includes(ship) && actions[area][region][ship].hasOwnProperty('ship') && gal_on[ship]){
                                 // Every ship with the 'ship' property has both civ() and mil() functions
-                                crew += gal_on[ship] * (actions[area][region][ship].ship.civ() + actions[area][region][ship].ship.mil());
+                                crew += hugeAdjust(gal_on[ship] * (actions[area][region][ship].ship.civ() + actions[area][region][ship].ship.mil()));
                             }
                         }
 
@@ -6945,7 +6948,7 @@ const galaxyProjects = {
                     }
                 }
                 let pirate = piracy('gxy_gorddon');
-                let gain = hugeAdjust(dorm + gtrade + leave) * pirate;
+                let gain = (hugeAdjust(dorm + gtrade) + leave) * pirate;
                 gain = hugeAdjust(gain);
                 return gain;
             },

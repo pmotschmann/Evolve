@@ -507,6 +507,7 @@ const iceAgeModules = {
                 storage: {
                     res(res){
                         let list = {
+                            'Food': 50,
                             'Lumber': 100,
                             'Stone': 100,
                             'Chrysotile': 100,
@@ -522,6 +523,9 @@ const iceAgeModules = {
                             'Crates': actions.underground.cave.storage_space.containers('crates'),
                             'Containers': actions.underground.cave.storage_space.containers('containers')
                         };
+                        if (global.race['artifical']){
+                            delete list.Food;
+                        }
                         Object.keys(list).forEach(function(r){
                             if (p_on['storage_space']){
                                 list[r] *= 1 + hugeAdjust(0.02 * p_on['storage_space']);
@@ -582,7 +586,7 @@ const iceAgeModules = {
                 storage: {
                     res(res){
                         let list = {
-                            'Money': bank_vault() / 5
+                            'Money': bank_vault() / 3
                         };
                         return res ? (list[res] || 0) : list;
                     },
@@ -656,6 +660,7 @@ const iceAgeModules = {
                         multiplier *= (global.tech['supercollider'] / ratio) + 1;
                     }
                     multiplier *= getShrineBonus('know').mult;
+                    multiplier = hugeAdjust(multiplier);
                     return (base * multiplier);
                 },
                 breakthrough_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc. Rolled every fastLoop interval (4 times/second)
@@ -751,10 +756,7 @@ const iceAgeModules = {
                 },
                 struct(){
                     return {
-                        d: {
-                            count: 0,
-                            asbestos: 50
-                        },
+                        d: { count: 0 },
                         p: ['under_mine','underground']
                     };
                 },
@@ -773,12 +775,20 @@ const iceAgeModules = {
                 effect(wiki){
                     let desc = `<div>${loc('city_max_morale', [hugeEffect(1)])}</div>`;
                     desc += `<div>${loc('space_red_vr_center_effect1', [hugeEffect(2)])}</div>`;
-                    desc += `<div class="has-text-caution">${loc('spend', [this.support_fuel().a, global.resource.Lumber.name])}`;
-                    desc += `<div class="has-text-special">${loc('underground_bonfire_effect', [global.resource.Lumber.name, hugeEffect(3)])}</div>`;
+                    desc += `<div class="has-text-caution">${loc('spend', [+(this.support_fuel().a).toFixed(1), global.resource.Lumber.name])}`;
+                    desc += `<div class="has-text-special">${loc('underground_bonfire_effect', [global.resource.Lumber.name, hugeScale(hugeEffect(3))])}</div>`;
                     return desc;
                 },
                 powered(){ return 0; },
-                support_fuel(){ return { r: 'Lumber', a: hugeAdjust(3 * hugeScale(p_on['bonfire'] || 1)) }; },
+                support_fuel(){
+                    let fuel = { r: 'Lumber', a: hugeAdjust(3) };
+                    let num_powered = p_on['bonfire'] || 0;
+                    if (num_powered > 0){
+                        num_powered = hugeScale(num_powered-1);
+                    }
+                    fuel.a *= 1+num_powered;
+                    return fuel;
+                },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -1359,7 +1369,7 @@ const iceAgeModules = {
                     if (global.race['flier']){
                         routes += traits.flier.vars()[1];
                     }
-                    return hugeAdjust(routes);
+                    return routes;
                 },
                 price_reduction(){
                     return (1 - 0.99 ** hugeAdjust(1)) * 100;
@@ -1683,7 +1693,7 @@ const iceAgeModules = {
                     let desc = `<div>${loc('portal_archaeology_effect',[jobScale(1)])}</div>${ false ? `<div>${loc('underground_archaeological_dig_effect1',[(100 / this.relic_chance()).toFixed(2)])}</div>` : ''}
                         <div>${loc('underground_archaeological_dig_effect2',[global.underground['archaeological_dig']?.relics || 0, (this.knowVal()).toFixed(0)])}</div>`;
                     if (global.tech['high_tech'] >= 2){
-                        desc += `<div class="has-text-caution">${loc('underground_archaeological_dig_effect3',[this.powered(), 30])}</div>`;
+                        desc += `<div class="has-text-caution">${loc('underground_archaeological_dig_effect3',[this.powered(), hugeEffect(30)])}</div>`;
                     }
                     return desc;
                     
@@ -1691,7 +1701,7 @@ const iceAgeModules = {
                 knowVal(){
                     let knowledge = 250;
                     if (p_on['archaeological_dig']){
-                        knowledge += 30 * p_on['archaeological_dig'];
+                        knowledge += 30 * hugeAdjust(p_on['archaeological_dig']);
                     }
                     if (p_on['under_biolab']){
                         knowledge *= 1 + ((p_on['under_biolab'] * actions.underground.industry.under_biolab.bio_effect()) / 100);
@@ -1711,8 +1721,8 @@ const iceAgeModules = {
                     }
                     base /= workers;
                     if (p_on['archaeological_dig']){
-                        base -= 20 * p_on['archaeological_dig'];
-                        base *= 0.99 ** p_on['archaeological_dig'];
+                        base -= 20 * hugeAdjust(p_on['archaeological_dig']);
+                        base *= 0.99 ** hugeAdjust(p_on['archaeological_dig']);
                     }
                     base = Math.max(1, base);
                     return base;
@@ -1849,7 +1859,7 @@ const iceAgeModules = {
                 effect(wiki){
                     let prod = production('water_pump');
                     let max = spatialReasoning(this.storage.res('Water') * this.storage.multiplier());
-                    return `<div>${loc('gain',[prod, global.resource.Water.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Water.name])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
+                    return `<div>${loc('gain',[+(prod).toFixed(1), global.resource.Water.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Water.name])}</div><div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
                 },
                 powered(){ return powerCostMod(3); },
                 powerBalancer(){
@@ -1941,7 +1951,7 @@ const iceAgeModules = {
                     Steel(r={}){ return undergroundCostMultiplier('oil_pump', r.offset, 21000, 1.45, 'industry'); }
                 },
                 effect(){
-                    let oil = +this.production().toFixed(2);
+                    let oil = +(this.production()).toFixed(2);
                     let oc = spatialReasoning(this.storage.res('Oil') * this.storage.multiplier());
                     let desc = `<div>${loc('city_oil_well_effect',[oil,oc])}</div>`;
                     if (global.race['blubber'] && global.underground.hasOwnProperty('oil_pump')){
@@ -2638,7 +2648,7 @@ const iceAgeModules = {
                         }
                         incrementStruct(this);
                         global.civic.craftsman.display = true;
-                        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+                        if (!global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['iron_wood']){
                             global.resource.Plywood.display = true;
                         }
                         global.resource.Brick.display = true;
@@ -2682,7 +2692,7 @@ const iceAgeModules = {
                     return desc;
                 },
                 trophy_effect(creature){
-                    if(!global.underground['arena']){
+                    if(!global.underground['arena']?.count){
                         return 1;
                     }
                     if (creature === 'herbivores'){
@@ -2699,7 +2709,7 @@ const iceAgeModules = {
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
-                        if (global.underground['arena'].count === 1){
+                        if (!global.tech['ecoMutate']){
                             global.tech['ecoMutate'] = 1;
                             drawPerkUnderground();
                         }
@@ -2980,7 +2990,7 @@ const iceAgeModules = {
                     return result;
                 },
                 creation_cooldown_mult(){
-                    return 1 / hugeAdjust(support_on['genetics_lab'] || 1);
+                    return 1 / (hugeAdjust(support_on['genetics_lab'] || 0) + 1);
                 },
                 s_type: 'wastes',
                 support(){ return -1; },
@@ -3381,12 +3391,10 @@ const iceAgeModules = {
                         let corpse_change = corpse_cycle(corpses);
                         desc += `<div>${loc('surface_overview_corpses', [Math.floor(info.corpses), `${corpse_change >= 0 ? '+' : ''}${+corpse_change.toFixed(2)}`])}</div>`;
                     }
-
-                    let water_ratio = (info.water - this.total_water_use()) / info.area;
-                    if (water_ratio < 0.22 || drought > 0){
+                    if (drought > 0){
                         desc += `<div class="has-text-danger">${loc('surface_overview_warn_drought')}</div>`;
                     }
-                    else if (water_ratio > 0.4 || flood > 0){
+                    else if (flood > 0){
                         desc += `<div class="has-text-danger">${loc('surface_overview_warn_flood')}</div>`;
                     }
                     return desc;
@@ -3463,10 +3471,10 @@ const iceAgeModules = {
                 spared: true,
                 reqs: { surface: 4 },
                 cost: {
-                    Money(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 250000, 1.23, 'ecosystem', 'surface'); },
-                    Titanium(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 4500, 1.25, 'ecosystem', 'surface'); },
-                    Iron(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 140000, 1.25, 'ecosystem', 'surface'); },
-                    Sheet_Metal(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 6000, 1.23, 'ecosystem', 'surface'); }
+                    Money(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 250000, 1.25, 'ecosystem', 'surface'); },
+                    Titanium(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 4500, 1.28, 'ecosystem', 'surface'); },
+                    Iron(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 140000, 1.28, 'ecosystem', 'surface'); },
+                    Sheet_Metal(r={}){ return undergroundCostMultiplier('water_pipe', r.offset, 6000, 1.25, 'ecosystem', 'surface'); }
                 },
                 effect(wiki){
                     let desc = `<span class="has-text-caution">${loc('spend',[+(this.support_fuel()[0].a).toFixed(1), global.resource.Water.name])}, ${loc('minus_power',[this.powered()])}</span>`;
@@ -4340,18 +4348,18 @@ const iceAgeModules = {
                     Aluminium(r={}){ return undergroundCostMultiplier('crater_factory', r.offset, 560000, 1.42, 'crater', 'surface'); }
                 },
                 effect(){
-                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_factory_effect', [1, jobScale(2)])}</div>`;
+                    return `<div class="has-text-caution">${loc('space_used_support',[loc('surface_crater')])}</div><div>${loc('surface_crater_factory_effect', [hugeScale(1), jobScale(2)])}</div>`;
                 },
                 s_type: 'crater',
                 special: true,
                 support(){ return -1; },
                 powered(){ return 0; },
-                manufacturing(){ return Math.floor(global.civic.crater_worker.workers / jobScale(2)); },
+                lines(){ return hugeScale(1) * Math.floor(global.civic.crater_worker.workers / jobScale(2)); },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
                         if(powerOnNewStruct(this)){
-                            factoryData.addFactoryLines(this.manufacturing());
+                            factoryData.addFactoryLines(this.lines());
                         }
                         return true;
                     }
@@ -4699,7 +4707,7 @@ const iceAgeModules = {
                         renderSurface();
                     }
                     else {
-                        if (global.tech['thrusters'] > 3 && global.tech['thrusters'] < 5){
+                        if (global.tech['thrusters'] > 3 && global.tech['thrusters'] < 6){
                             global.tech['thrusters'] = 3;
                             renderSurface();
                         }
@@ -4827,7 +4835,7 @@ function cave_fight(real=false, seed=global['warseed']){
     let rounds = 0;
     
     while(creatures > 0 && army > 0 && rounds < (real ? 100 : 10)){
-        let rating = armyRating(army, Math.min(army, injuries), 'army');
+        let rating = armyRating(army, 'army', Math.min(army, injuries));
         creatures -= Math.ceil(rand(rating * 0.3, rating,true));
         if (creatures > 0){
             let new_deaths = Math.ceil(rand(creatures / 15, creatures / 5,true));
@@ -5068,7 +5076,7 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
                 attacked(a_effect('unstable') * enemy_stats.fight, 'unstable', false);
             }
             if (revive_active > 0){ //gain extra hp. Can go above hp cap.
-                hp = enemy_stats.health * revive_active;
+                hp = Math.round(enemy_stats.health * revive_active);
                 fight_log.push(['aberrant_revive', (enemy_stats.health * revive_active).toFixed(0)]);
                 revive_active = 0;
             }
@@ -5089,8 +5097,9 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
                 attacked(attack_deaths, i === 0 ? 'enemy_attack' : 'grenadier', i === 0);
                 if (aberrant_traits.regenerative && i === 0){
                     let regen = enemy_stats.health * a_effect('regenerative');
-                    hp += Math.min(Math.max(enemy_stats.health - hp, 0), regen);
-                    fight_log.push(['regenerative', enemy_stats.health * a_effect('regenerative'), hp]);
+                    regen = Math.round(Math.min(Math.max(enemy_stats.health - hp, 0), regen));
+                    hp += regen;
+                    fight_log.push(['regenerative', regen, hp]);
                 }
             }
         }
@@ -5140,38 +5149,26 @@ function aberrant_fight(lifeform, real=false, seed=global['warseed']){
 export const ecosystemInfo = {
     trees: {
         plant: true,
-        water_min: 0.1, //minimum tolerate water ratio. Ratio is water / area
-        water_max: 0.4, //maximum tolerable water ratio
         water_use: 0.2, //amount of flat water used per tree per in-game day. Consumption of all lifeforms as accounted for first before determining tolerable water ratios
-        decay_rate: 0.99, //multiplier to existing trees per in-game day if water conditions are not met
         growth_rate: 1.01, //multiplier to amount of trees each day as long as water conditions are met
         size: 2 //growth rate slows down once size reaches past 50% of total area, stops completely once it hits 100% and decays once it hits >100%
     },
     herbivores: {
         prey: true,
-        water_min: 0.2,
-        water_max: 0.4,
         water_use: 0.08,
         trees_use: 0.008,
-        decay_rate: 0.98,
         growth_rate: 1.008,
         size: 5,
     },
     carnivores: {
-        water_min: 0.2,
-        water_max: 0.4,
         water_use: 0.1,
         meat_use: 0.004,
-        decay_rate: 0.96,
         growth_rate: 1.004,
         size: 10
     },
     scavengers: {
-        water_min: 0.2,
-        water_max: 0.4,
         water_use: 0.05,
         corpse_use: 0.0015,
-        decay_rate: 0.99,
         growth_rate: 1.008,
         size: 3
     },
@@ -5185,7 +5182,7 @@ export const ecosystemInfo = {
     },
     minorTraitEffects: {
         promiscuous: 3,
-        hardy: 3,
+        hardy: 1,
         compact: 2,
         forager: 1,
         playful: 3,
@@ -5193,7 +5190,7 @@ export const ecosystemInfo = {
     },
     plantMinorTraitEffects: {
         promiscuous: 3,
-        hardy: 3,
+        hardy: 1,
         compact: 2,
         forager: 3,
         playful: 3,
@@ -5796,11 +5793,11 @@ export function surfaceEcosystem(){ //run every longLoop (5 seconds)
         global.surface.overview.cooldown = Math.max(0, global.surface.overview.cooldown - (1 / actions.surface.wastes.genetics_lab.creation_cooldown_mult()));
     }
 
-    let danger = (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.herbivores.traits.aggressive || 0).effect * Math.max(0, global.aberrants.herbivores.count - 2)) + 
-        (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.carnivores.traits.aggressive || 0).effect * Math.max(0, global.aberrants.carnivores.count - 2)) + 
-        (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.scavengers.traits.aggressive || 0).effect * Math.max(0, global.aberrants.scavengers.count - 2));
+    let danger = (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.herbivores.traits.aggressive || 0).effect * (global.aberrants.herbivores.count ** 2) / 3) + 
+        (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.carnivores.traits.aggressive || 0).effect * (global.aberrants.carnivores.count ** 2) / 3) + 
+        (ecosystemInfo.majorTraits.aggressive.trait_effect(global.aberrants.scavengers.traits.aggressive || 0).effect * (global.aberrants.scavengers.count ** 2) / 3);
     if (danger > 0){
-        if (Math.rand(0, 1000) < danger){ //total chance is 0.1% multiplied by agressive trait rank multiplied by aberrants of that type above 2.
+        if (Math.rand(0, 1000) < danger){ //total chance is 0.1% multiplied by aggressive trait rank multiplied by aberrants of that type above 2.
             //raze a ecosystem or wastes building
             let location = 'surface';
             let targetList = ['great_heater', 'watch_tower', 'woodcutter', 'surface_apartment', 'genetics_lab', 'surface_farm', 'surface_zoo', 'bone_storage', 'area_heater', 'water_pipe'];
@@ -5888,48 +5885,49 @@ function growth_cycle(lifeform){
         let size_ratio = self.count / max_allowed;
         let fed = 1; //multiplier to growth rate based on which conditions are not fully applied.
         let forager = !eco_info.plant ? ecoMinorTraitEffect(lifeform, 'forager') : 1;
-        let decay = ecoMinorTraitEffect(lifeform, 'hardy');
+        let water_min = 0.2 / ecoMinorTraitEffect(lifeform, 'hardy');
+        let water_max = 0.4 + (0.2 - water_min);
         if (eco_info.trees_use){
             let eat = eco_info.trees_use * self.count / forager;
             let avail = (global.surface.trees?.count || 0) / 150 //only 0.667% of trees are available at once
             if (eat > avail){ // up to 5% loss depending on lack of trees
-                results.starve_loss += self.count * 0.05 * (1 - (avail / eat)) / decay;
-                fed *= 1 - (avail / eat / decay);
+                results.starve_loss += self.count * 0.05 * (1 - (avail / eat));
+                fed *= (avail / eat);
             }
         }
         if (eco_info.meat_use){
             let eat = eco_info.meat_use * self.count / forager;
             let avail = (global.surface.herbivores?.count || 0) / 150; //only 0.667% of herbivores are exposed to predators
             if (eat > avail){ //up to 5% loss depending on lack of food
-                results.starve_loss += self.count * 0.05 * (1 - (avail / eat)) / decay;
-                fed *= 1 - (avail / eat / decay);
+                results.starve_loss += self.count * 0.05 * (1 - (avail / eat));
+                fed *= (avail / eat);
             }
-            results.corpse_create = Math.min(eat, avail) * forager;
+            results.corpse_create = Math.min(eco_info.meat_use * self.count, avail);
         }
         if (eco_info.corpse_use){
             let eat = eco_info.corpse_use * self.count / forager; //all corpses are readily available
             if (eat > info.corpses){ //up to 5% loss depending on lack of food
-                results.starve_loss += self.count * 0.05 * (1 - (info.corpses / eat)) / decay;
-                fed *= 1 - (info.corpses / eat / decay);
+                results.starve_loss += self.count * 0.05 * (1 - (info.corpses / eat));
+                fed *= 1 - (info.corpses / eat);
             }
             results.corpse_consume += Math.min(eat, info.corpses); 
         }
-        if (water_ratio <= eco_info.water_min){ //0% loss at 0.1 water -> 5% loss at 0 water
-            results.drought_loss += self.count * (0.05 * (Math.abs(water_ratio - 0.1) / eco_info.water_min)) / decay;
-            fed *= water_ratio / eco_info.water_min;
+        if (water_ratio < water_min){ //once water goes below 0.2 (default), linear loss up to 5% loss at 0 water ratio
+            results.drought_loss += self.count * (0.05 * ((water_min - water_ratio) / water_min));
+            fed *= (water_ratio / water_min);
         }
-        if (water_ratio > eco_info.water_max){ //2% loss per 0.1 above 0.5 up to 10% loss at 1 water
-            results.flood_loss += self.count * (0.02 * ((water_ratio-eco_info.water_max) * 10)) / decay;
-            fed *= (1-water_ratio) / (1-eco_info.water_max);
+        if (water_ratio > water_max){ //once water goes above 0.4 (default) linear reduction up to 10% loss at 1 water ratio
+            results.flood_loss += self.count * (0.1 * ((water_ratio - water_max) / (1 - water_max)));
+            fed *= (1-water_ratio) / (1-water_max);
         }
         if (eco_info.prey){ //carnivores eat prey animals (herbivores)
-            results.carnivore_loss += Math.min(ecosystemInfo.carnivores.meat_use * (global.surface.carnivores?.count || 0), self.count / 100) / ecoMinorTraitEffect('carnivores', 'forager');
+            results.carnivore_loss += Math.min(ecosystemInfo.carnivores.meat_use * (global.surface.carnivores?.count || 0), self.count / 150) / ecoMinorTraitEffect('carnivores', 'forager');
         }
         if (eco_info.plant){ //plants (trees) get eaten by herbivores
-            results.herbivore_loss += ecosystemInfo.herbivores.trees_use * (global.surface.herbivores?.count || 0) / ecoMinorTraitEffect('herbivores', 'forager');
+            results.herbivore_loss += Math.min(ecosystemInfo.herbivores.trees_use * (global.surface.herbivores?.count || 0), self.count / 150) / ecoMinorTraitEffect('herbivores', 'forager');
         }
-        if (size_ratio > 1){ //0-20% loss between 100% to 200% coverage
-            results.size_loss = (self.count * (0.2 * Math.min(1, size_ratio - 1))) / decay;
+        if (size_ratio > 1){ //0-10% loss between 100% to 200% coverage
+            results.size_loss = (self.count * (0.1 * Math.min(1, size_ratio - 1)));
         }
         if (water_ratio > 0 && (self.count >= 2 || eco_info.plant) ){ //grows if there are at least 2 already
             //growth is reduced at >50% size coverage. Linear reduction to 0 at 100% coverage
@@ -6309,7 +6307,7 @@ function undergroundCostMultiplier(structure,offset,base,multiplier,subSector,se
     if (offset){
         count += offset;
     }
-    if (['thruster_fuel', 'mineshaft_elevator'].includes(structure)){
+    if (!['thruster_fuel', 'mineshaft_elevator'].includes(structure)){
         let common = commonCostMultiplier(structure, offset, base, multiplier, sector, count);
         base = common.base;
         multiplier = common.multiplier;

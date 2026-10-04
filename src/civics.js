@@ -2521,9 +2521,9 @@ export function armyRating(val,type,wound,analysis){
         data.push({ k: 'mastery', v: mastery });
     }
     if (global.race['connected']){
-        let harmonic = (calcPillar()-1) * traits.connected.vars()[0];
-        army *= 1 + harmonic[0];
-        data.push({ k: 'mastery', v: harmonic[0] });
+        let harmonic = (calcPillar()[0]-1) * traits.connected.vars()[0] / 100;
+        army *= 1 + harmonic;
+        data.push({ k: 'trait_connected_name', v: harmonic });
     }
     if (global.underground['hunting_lodge_perk']){
         let hunter = (global.underground['hunting_lodge_perk'].count * 0.02);

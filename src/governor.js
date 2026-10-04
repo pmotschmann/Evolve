@@ -1375,8 +1375,8 @@ export const gov_tasks = {
         task(){
             if ( this.req() ){
                 if (global.resource.Crates.amount < global.resource.Crates.max){
-                    let mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
-                    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
+                    let mat = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+                    let cost = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['iceage'] ? 200 : 10;
                     let reserve = global.race.governor.config.storage.crt;
                     if (global.resource[mat].amount > reserve + cost){
                         let build = Math.floor((global.resource[mat].amount - reserve) / cost);
