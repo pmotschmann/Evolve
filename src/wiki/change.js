@@ -7,13 +7,13 @@ export const changeList = [
         version: `1.5.0`,
         date: `8/??/2026`,
         changes: [
-            `Extended Truepath content on Isolation path.`,
+            `Extended Truepath content.`,
             `Genetics 2.0, complete redesign of minor trait system.`,
-            `New Mobile UI`,
+            `New Mobile UI.`,
             `New Ice Age Scenario by CondoSlime.`,
-            `Added new "Offline Time" feature, replaces "Accelerated Time"`,
+            `Added new "Offline Time" feature, replaces "Accelerated Time".`,
             `Added option to Save or Load game from Google Drive.`,
-            `Shrunk save file sizes`,
+            `Shrunk save file sizes.`,
             `Upgraded game from Vue 2 to Vue 3.`,
             `Truepath Star Map now supports WebGL rendering (default when supported).`,
             `Truepath Star Map now has a Z axis making it more realistic and rotatable.`,
@@ -26,7 +26,8 @@ export const changeList = [
             `The planet trait "Dense" now makes the moon orbit faster.`,
             `Rebalanced Spire Mech mechanics, equipment, and weapons.`,
             `Special Spire Mech equipment now has a unique slot.`,
-            `Updated Mech Constructor task with new decision logic.`
+            `Updated Mech Constructor task with new decision logic.`,
+            `Fixed Womling First Aid.`
         ]
     },
     {

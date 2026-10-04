@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates, writeSave, writeBackup } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats, driftClear } from './functions.js';
 import { races, planetTraits } from './races.js';
-import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel, grandDeathTourNeeds } from './achieve.js';
 import { thrusterOrbitProjection } from './iceage.js';
 
 // Mutual Assured Destruction
@@ -1494,7 +1494,81 @@ export function zApocalypse(){
     global.stats.pdebt = gains.pdebt;
 
     global.prestige.TALENs.count += gains.talens;
-    global.stats.TALENs += gains.talens;
+    global.stats.talens += gains.talens;
+
+    let srace = races[god].type !== 'synthetic' && !['junker','sludge','ultra_sludge'].includes(god) ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    global.stats.synth[god] = true;
+
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        srace: srace,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    writeSave();
+    window.location.reload();
+}
+
+// Subjugated
+export function subjugated(){
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'subjugation'
+    });
+
+    unlockAchieve(`extinct_${global.race.species}`);
+    unlockAchieve(`subjugated`);
+
+    unlockAchieve(`squished`,true);
+    if (global.race['junker'] && global.race.species === 'junker'){
+        unlockFeat('the_misery');
+    }
+
+    grandDeathTour('sj');
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('sj');
+    checkAchievements();
+
+    global.stats.subjug++;
+    updateResetStats();
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.stats.pdebt = gains.pdebt;
+
+    global.prestige.Exons.count += gains.exons;
+    global.stats.exons += gains.exons;
 
     let srace = races[god].type !== 'synthetic' && !['junker','sludge','ultra_sludge'].includes(god) ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
     global.stats.synth[god] = true;
@@ -1605,19 +1679,19 @@ function grandDeathTour(type){
             global.stats.death_tour[type][uni] = rank;
         }
 
-        let gdt_rank = 5;
-        Object.keys(global.stats.death_tour).forEach(function(k){
+        // Each method's best rank in any universe but micro, best first. The feat's rank is the lowest among the
+        // best grandDeathTourNeeds of them, so which methods make up the set is the player's choice.
+        let best = Object.keys(global.stats.death_tour).map(function(k){
             let universe = 0;
             Object.keys(global.stats.death_tour[k]).forEach(function(u){
                 if (u !== 'm' && global.stats.death_tour[k][u] > universe){
                     universe = global.stats.death_tour[k][u];
                 }
             });
-            if (gdt_rank > universe){
-                gdt_rank = universe;
-            }
-        });
+            return universe;
+        }).sort((a,b) => b - a);
 
+        let gdt_rank = best.length >= grandDeathTourNeeds ? Math.min(5, best[grandDeathTourNeeds - 1]) : 0;
         if (gdt_rank > 0){
             unlockFeat('grand_death_tour',false,gdt_rank);
         }

@@ -186,6 +186,8 @@ document.addEventListener('mousemove', (e) => {
     });
 });
 
+// Decided before index() draws the tabs, so an upgraded save with genetics opens on the genetics tab.
+const upgradeNotice = upgrade15Notice();
 index();
 var revision = global['revision'] ? global['revision'] : '';
 if (global['beta']){
@@ -230,9 +232,8 @@ if (global.genes['geneReset'] && !global.genes.geneReset['found']){
 if (global.genes['evolveReprice'] && !global.genes.evolveReprice['told']){
     let back = global.genes.evolveReprice.p || 0;
     if (back > 0){
-        let bank = global.race.universe === 'antimatter'
-            ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-        messageQueue(loc('arpa_evolve_reprice',[back,bank]),'success',false,['progress']);
+        // The refund is always paid in Plasmids (see the evolveReprice migration in vars.js).
+        messageQueue(loc('arpa_evolve_reprice',[back,loc('resource_Plasmid_plural_name')]),'success',false,['progress']);
     }
     global.genes.evolveReprice['told'] = true;
 }
@@ -244,6 +245,64 @@ if (global.genes['geneReset'] && !global.genes.geneReset['told']){
         messageQueue(loc('arpa_gene_refund',[r.p,loc('resource_Phage_name'),r.g,loc('resource_Genes_name')]),'success',false,['progress']);
     }
     global.genes.geneReset['told'] = true;
+}
+
+if (upgradeNotice){ drawUpgradeModal(upgradeNotice); }
+
+// Returns the one-time notice for a pre-1.5 save, or false for other saves.
+function upgrade15Notice(){
+    if (!global['upgrade15']){ return false; }
+    delete global['upgrade15'];
+    const reset = global.genes['geneReset'] || {};
+    const reprice = global.genes['evolveReprice'] || {};
+    const notice = {
+        phage: Number(reset.p) || 0,
+        genes: Number(reset.g) || 0,
+        plasmid: Number(reprice.p) || 0,
+        genetics: global.settings.arpa && global.settings.arpa.genetics ? true : false
+    };
+    if (notice.genetics){
+        // The genetics tab, under ARPA, paused (the migration has already paused every pre-1.5 save).
+        global.settings.civTabs = 5;
+        global.settings.arpa.arpaTabs = 1;
+        global.settings.pause = true;
+    }
+    return notice;
+}
+
+function drawUpgradeModal(notice){
+    let lines = ``;
+    if (notice.phage > 0 || notice.genes > 0){
+        lines += `<p class="offlineMsg">${loc('arpa_gene_refund',[notice.phage,loc('resource_Phage_name'),notice.genes,loc('resource_Genes_name')])}</p>`;
+    }
+    if (notice.plasmid > 0){
+        lines += `<p class="offlineMsg">${loc('arpa_evolve_reprice',[notice.plasmid,loc('resource_Plasmid_plural_name')])}</p>`;
+    }
+    // Pre-1.5 saves are paused; genetics saves also explain the reprice.
+    if (notice.genetics){
+        lines += `<p class="offlineMsg has-text-caution">${loc('upgrade15_genetics',[loc(global.race['artifical'] ? 'tab_arpa_machine' : 'tab_arpa_genetics')])}</p>`;
+    }
+    else {
+        lines += `<p class="offlineMsg has-text-caution">${loc('upgrade15_paused')}</p>`;
+    }
+    $('#upgradeModal').remove();
+    let overlay = $(`<div id="upgradeModal"><div class="offlineBox">`
+        + `<p class="offlineTitle has-text-warning">${loc('upgrade15_title')}</p>`
+        + `<p class="offlineMsg">${loc('upgrade15_intro')}</p>`
+        + lines
+        + `<button id="upgradeClose" class="button">${loc('offline_time_close')}</button>`
+        + `</div></div>`);
+    $('body').append(overlay);
+    let close = function(){
+        overlay.remove();
+        $(document).off('keydown.upgradeModal');
+    };
+    overlay.on('click touchend', '#upgradeClose', function(e){ e.preventDefault(); close(); });
+    overlay.on('click touchend', function(e){ if (e.target === overlay[0]){ close(); } });
+    $(document).on('keydown.upgradeModal', function(e){ if (e.key === 'Escape'){ close(); } });
+    // A paused game does not reach the save in the loop, so the cleared flag is written now; otherwise every
+    // reload before unpausing would show this again.
+    writeSave();
 }
 
 if (global.lastMsg){

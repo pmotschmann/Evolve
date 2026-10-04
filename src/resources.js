@@ -1002,6 +1002,7 @@ export function defineResources(wiki){
     loadSpecialResource('Fossil');
     loadSpecialResource('AICore');
     loadSpecialResource('TALENs');
+    loadSpecialResource('Exons');
 }
 
 export function tradeSummery(){
@@ -3841,7 +3842,7 @@ function freightGroupWeight(ships){
 function freightRouteSpeed(ships){
     const fleet = shipFleet(ships[0]);
     const group = fleet.length ? fleet : ships;
-    return Math.round((149597870.7 / 225 / 24 / 3600) * Math.min(...group.map(shipSpeed)));
+    return Math.round((149597870.7 / 225 / 24 / 3600) * Math.min(...group.map(s => shipSpeed(s))));
 }
 
 // Fill the least-loaded holds first. This leaves every freighter's total cargo within one unit

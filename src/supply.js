@@ -76,6 +76,10 @@ export function homeZone(){
 // Categories that carry regions, and the one that does not.
 const REGION_CATS = ['space','interstellar','galaxy','portal','tauceti','eden'];
 
+// Regions that are never yours to store anything at: the Syndicate's outer base. Left out of the index
+// entirely, so no stage can pool them and their actions draw on the capital, as untagged actions do.
+const NO_SUPPLY_REGIONS = ['spc_sybase'];
+
 // Cache region data by the current capital region.
 let regionList = false;
 let structMap = false;
@@ -92,6 +96,7 @@ function buildIndex(){
         for (const region of Object.keys(actions[cat])){
             const bucket = actions[cat][region];
             if (!bucket || typeof bucket !== 'object'){ continue; }
+            if (NO_SUPPLY_REGIONS.includes(region)){ continue; }
             regionList.push(region);
             for (const key of Object.keys(bucket)){
                 if (key === 'info'){ continue; }   // the region's own header, not a building

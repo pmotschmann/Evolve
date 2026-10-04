@@ -48,7 +48,8 @@ const achieve_list = {
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
         'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger',
-        'back_on_track','living_extinction','aberrant_slayer','aberrant_jackpot','zombie_genocider','shadow_war','brainless'
+        'zombie_genocider','shadow_war','brainless','subjugated',
+        'back_on_track','living_extinction','aberrant_slayer','aberrant_jackpot',
     ],
 };
 
@@ -100,6 +101,9 @@ Object.keys(achieve_list).forEach(function(type){
         type: type
     });
 });
+
+// Number of distinct extinction methods required for Grand Death Tour.
+export const grandDeathTourNeeds = 6;
 
 export const feats = {
     utopia: {
@@ -194,7 +198,7 @@ export const feats = {
     },
     grand_death_tour: {
         name: loc("feat_grand_death_tour_name"),
-        desc: loc("feat_grand_death_tour_desc",[6]),
+        desc: loc("feat_grand_death_tour_desc",[grandDeathTourNeeds]),
         flair: loc("feat_grand_death_tour_flair")
     },
     novice: {
@@ -2977,6 +2981,9 @@ export function drawStats(){
     }
     if (global.stats.zappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_zappoc_resets")}</span> {{ format(s.zappoc) }}</div>`);
+    }
+    if (global.stats.subjug > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_subjug_resets")}</span> {{ format(s.subjug) }}</div>`);
     }
     if (global.stats.enslaved > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_enslaved_resets")}</span> {{ format(s.enslaved) }}</div>`);

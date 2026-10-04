@@ -2181,8 +2181,7 @@ const outerTruth = {
             }
         }
     },
-    // The moon that turns out to be worth landing on.
-    // Outer Syndicate base at Pluto or Haumea, available after Shadow 19.
+    // Outer Syndicate base at Pluto or Haumea
     spc_sybase: {
         info: {
             name(){
@@ -2201,6 +2200,48 @@ const outerTruth = {
             },
             syndicate(){ return false; },
             nav(){ return sybaseFound(); }
+        },
+        sybase_attack: {
+            id: 'space-sybase_attack',
+            title(){ return loc('space_sybase_attack_title'); },
+            desc(){ return loc('space_sybase_attack_desc',[regionName('spc_sybase')]); },
+            reqs: { shadow: 19 },
+            grant: ['shadow',20],
+            path: ['truepath'],
+            queue_complete(){ return 0; },
+            cost: {},
+            effect(){
+                const ready = sybaseAssaultFleet() ? true : false;
+                return `<div>${loc('space_sybase_attack_effect')}</div>`
+                    + `<div class="${ready ? 'has-text-success' : 'has-text-danger'}">${loc('space_sybase_attack_req',[
+                        sWarfare.assaultDreadnoughts,loc('outer_shipyard_class_dreadnought'),
+                        sWarfare.assaultBattlecruisers,loc('outer_shipyard_class_battlecruiser')])}</div>`;
+            },
+            // Return 0 to prevent the build queue from retrying a failed assault.
+            action(){
+                return sybaseAssault() ? true : 0;
+            }
+        },
+        sybase_search: {
+            id: 'space-sybase_search',
+            title(){ return loc('space_sybase_search_title'); },
+            desc(){ return loc('space_sybase_search_desc',[regionName('spc_sybase')]); },
+            reqs: { shadow: 20 },
+            grant: ['shadow',21],
+            path: ['truepath'],
+            queue_complete(){ return 0; },
+            cost: {
+                Knowledge(){ return 20000000; },
+                Alien_Intel(){ return 1000; }
+            },
+            effect(){ return loc('space_sybase_search_effect'); },
+            action(){
+                return false;
+                if (payCosts(this)){
+                    return true;
+                }
+                return false;
+            }
         },
     },
     spc_survey: {
@@ -7321,6 +7362,7 @@ export const sWarfare = {
     catchAU: 0.05,          // Interception distance.
     huntDays: 30,           // Longest trip a corsair will make for a freighter or a raid.
     innerAU: 3.5,           // Radius from the Sun of the worlds a corsair prowls with nothing in reach.
+    safeHarbors: ['spc_dwarf'], // Worlds corsairs never raid, prowl to, or hunt freighters at (Ceres).
     stealth: 0.25,          // Sensor-range multiplier against corsairs.
     overdrive: 2,           // Speed multiplier while pursuing a target.
     rounds: 5,              // Maximum combat rounds before retreating.
@@ -7345,6 +7387,10 @@ export const sWarfare = {
     baseRounds: 5,          // Daily outer-base combat round cap.
     blockadeRounds: 10,     // Blockade rounds per departing corsair.
     blockadeTurnBack: 25,   // Damage threshold that triggers a second exchange and retreat.
+    assaultCorsairs: 5,     // Fresh defenders per attack on the outer base.
+    assaultDreadnoughts: 1, // Dreadnoughts a fleet needs to attack...
+    assaultBattlecruisers: 2,   // ...or Battlecruisers instead.
+    assaultMaxRounds: 1000, // Safety cap on an attack fought to the finish.
     // Ground detector settings; use detectorSegments() for orbit-decay adjustments.
     detectorSegments: 10,   // Segments to finish one array.
     detectorSegmentsLost: 12,   // Segments to finish one array with no homeworld to build on.
@@ -7797,6 +7843,11 @@ function encounterWhere(ship){
     return shipDestination(ship) || shipPort(ship);
 }
 
+// Whether a world is off-limits to corsairs altogether.
+function corsairSafe(region){
+    return sWarfare.safeHarbors.includes(region);
+}
+
 // Hunt freighters first, then raid a world.
 function corsairHunt(corsair){
     return corsairChase(corsair) || corsairSortie(corsair);
@@ -7812,7 +7863,7 @@ function corsairChase(corsair){
     const tried = new Set();
     for (const ship of prey){
         const target = encounterWhere(ship);
-        if (tried.has(target)){ continue; }
+        if (tried.has(target) || corsairSafe(target)){ continue; }
         tried.add(target);
         if (shipDockedAt(corsair) === target){ continue; }
         if (corsairLaunch(corsair,target,false)){ return true; }
@@ -7859,6 +7910,7 @@ function corsairBeat(){
     const sun = genXYZcoord('spc_sun');
     return Object.keys(spaceTech()).filter(region => region !== 'spc_sun_gate'
         && !syndicateBases().includes(region)
+        && !corsairSafe(region)
         && regionReachable(region)
         && dist3(genXYZcoord(region),sun) <= sWarfare.innerAU);
 }
@@ -7877,6 +7929,7 @@ function corsairProwl(corsair){
 function corsairRaidable(region){
     if (syndicateBases().includes(region)){ return false; }
     if (region === 'spc_sun_gate'){ return false; }     // Gates cannot be raided.
+    if (corsairSafe(region)){ return false; }
     if (!regionReachable(region)){ return false; }
     return activeSupplyRegions().includes(region);
 }
@@ -8174,6 +8227,8 @@ function corsairStalk(corsair){
     let quarry = false, near = Infinity;
     for (const ship of ships){
         if (ship.class !== 'freighter' || ship.damage >= 100){ continue; }
+        // A freighter at its moorings in a safe harbor is out of reach, even of a corsair passing close by.
+        if (corsairSafe(shipDockedAt(ship))){ continue; }
         const at = shipPosition(ship);
         if (!at){ continue; }
         const away = dist3(from,at);
@@ -8492,6 +8547,72 @@ function corsairRunBlockade(corsair){
     }
     corsair.bk = { d: today, ok: ok };
     return ok;
+}
+
+// --- Attacking the outer base --------------------------------------------------------------------------
+
+// Ship counts a fleet over the outer base needs before it can attack: this many of either class will do.
+function sybaseAssaultNeeds(){
+    return { dreadnought: sWarfare.assaultDreadnoughts, battlecruiser: sWarfare.assaultBattlecruisers };
+}
+
+// Return the largest qualifying fleet in orbit over the outer base.
+export function sybaseAssaultFleet(){
+    const ships = (global.space.shipyard?.ships || []).filter(s => s.damage < 100 && shipDockedAt(s) === 'spc_sybase');
+    const needs = sybaseAssaultNeeds();
+    const seen = new Set();
+    let best = false;
+    for (const ship of ships){
+        if (seen.has(ship)){ continue; }
+        let group = shipFleet(ship).filter(s => s.damage < 100);
+        if (group.length === 0){ group = [ship]; }
+        group.forEach(s => seen.add(s));
+        const qualifies = Object.keys(needs).some(cls => group.filter(s => s.class === cls).length >= needs[cls]);
+        if (qualifies && (!best || group.length > best.length)){ best = group; }
+    }
+    return best;
+}
+
+// Resolve an outer-base assault and return whether the attackers win.
+function sybaseAssault(){
+    if (!sybaseFound()){ return false; }
+    const home = global.race.sy_base.home;
+    const base = global.race.sy_base[home];
+    if (!base || base.closed){ return false; }
+    const fleet = sybaseAssaultFleet();
+    if (!fleet){ return false; }
+
+    const foes = [];
+    for (let i = 0; i < sWarfare.assaultCorsairs; i++){
+        const defender = corsairHull(home);
+        defender.guard = true;      // Defends the base; never part of its raiding fleet.
+        foes.push(defender);
+    }
+
+    const tally = { dealt: 0, taken: 0, lost: [], downed: [] };
+    const alive = list => list.some(s => s.damage < 100);
+    // Fought to the finish. The cap only exists so a fight where neither side can land a hit ends.
+    for (let round = 0; round < sWarfare.assaultMaxRounds && alive(fleet) && alive(foes); round++){
+        zVolley('spc_sybase',fleet,foes,tally);
+    }
+
+    zBattleLog('spc_sybase',fleet,foes,tally.dealt,tally.taken,tally.lost.length,tally.downed.length);
+    tally.lost.forEach(function(ship){ destroyPlayerShip(ship,'spc_sybase'); });
+    if (tally.lost.length > 0){ drawShips(); }
+    corsairEngaged();
+    base.lost += tally.downed.length;
+
+    const place = regionName('spc_sybase');
+    if (!alive(foes)){
+        // The base falls: it launches nothing more, and the raiders it already had out are gone with it.
+        base.closed = true;
+        corsairFleet(base).length = 0;
+        messageQueue(loc('sybase_attack_won',[place]),'success',false,['combat','progress']);
+        renderSpace();
+        return true;
+    }
+    messageQueue(loc(alive(fleet) ? 'sybase_attack_stalled' : 'sybase_attack_lost',[place]),'danger',false,['combat','progress']);
+    return false;
 }
 
 // --- The day, and the tick ---------------------------------------------------------------------------

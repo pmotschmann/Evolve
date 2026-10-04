@@ -6001,6 +6001,24 @@ function placeGenusPair(pair){
     return false;
 }
 
+// Place overflow major traits in complete recessive pairs.
+// neighbours shared a base.
+function placeRecessiveSpill(spill){
+    for (let n=0; n<spill.length; n+=genes.strand_slots){
+        let pair = spill.slice(n,n + genes.strand_slots);
+        if (pair.length < genes.strand_slots){
+            // Prefer an ordinary slot for an unpaired trait.
+            if (placeTrait(pair[0]) !== false){ continue; }
+        }
+        growRecessivePair();
+        // Growing adds the new pair at the end of the major strand, past every pair already laid.
+        let l = strandBase('major') + (majorPairCount() - 1) * genes.strand_slots;
+        let base = geneBaseOf(pair[0]) || genes.gene_strand[0];
+        setGeneSlot(l,pair[0],{ base: base });
+        if (pair[1]){ setGeneSlot(l + 1,pair[1],{ base: genes.gene_pairs[base] }); }
+    }
+}
+
 // Lay this run's traits out on a fresh strand.
 export function layoutStrand(){
     bumpGeneCache();
@@ -6099,17 +6117,12 @@ export function layoutStrand(){
             if (b.length > 0){ order.push(b.shift()); }
         }
     });
-    // Add recessive pairs for imported majors before using minor-strand slots.
+    // Put overflow majors in recessive pairs before filling minor slots.
+    let spill = [];
     order.concat(loose).forEach(function(t){
-        if (placeTrait(t,{ overflow: false }) !== false){ return; }
-        if (growRecessivePair()){
-            if (placeTrait(t,{ overflow: false }) !== false){ return; }
-            // The new pair took nothing, so it is handed back.
-            global.race['geneRecess']--;
-            bumpGeneCache();
-        }
-        placeTrait(t);
+        if (placeTrait(t,{ overflow: false }) === false){ spill.push(t); }
     });
+    placeRecessiveSpill(spill);
 
     // Minor genes last, into whatever the majors left behind.
     carried.forEach(function(c){

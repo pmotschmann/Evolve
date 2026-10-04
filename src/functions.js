@@ -2211,6 +2211,7 @@ export function getResetConstants(type, inputs){
             rc.plasmid_cap = 1800;
             break;
         case 'za':
+        case 'sj':
             rc.pop_divisor = 1.5;
             rc.k_inc = 10000;
             rc.k_mult = 1.006;
@@ -2235,6 +2236,7 @@ export function calcPrestige(type,inputs){
         supercoiled: 0,
         fossil: 0,
         talens: 0,
+        exons: 0,
         pdebt: 0
     };
 
@@ -2412,6 +2414,10 @@ export function calcPrestige(type,inputs){
 
     if (type === 'za'){
         gains.talens = 1;
+    }
+
+    if (type === 'sj'){
+        gains.exons = 1;
     }
 
     if((type === 'thruster' || type === 'living_extinction') && global.race['iceage']){

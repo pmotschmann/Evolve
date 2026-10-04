@@ -371,7 +371,27 @@ export function resetsPage(content){
         }
     });
     section = createCalcSection(section,'zombie_apocalypse','gain');
-    prestigeCalc(section,'plasmid',false,'zombie_apocalypse');
-    prestigeCalc(section,'phage',false,'zombie_apocalypse');
+    // The calculators take calcPrestige's own reset code ('za'), not the section name.
+    prestigeCalc(section,'plasmid',false,'za');
+    prestigeCalc(section,'phage',false,'za');
     sideMenu('add',`resets-prestige`,'zombie_apocalypse',loc('wiki_resets_zombie_apocalypse'));
+
+    // Subjugated
+    section = infoBoxBuilder(mainContent,{ name: 'subjugated', template: 'resets', paragraphs: 5, break: [2,4,5], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            4: [loc('wiki_resets_subjugated'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_exons')],
+            5: [loc('wiki_resets_subjugated')],
+        },
+        data_color: {
+            4: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+        }
+    });
+    section = createCalcSection(section,'subjugated','gain');
+    prestigeCalc(section,'plasmid',false,'sj');
+    prestigeCalc(section,'phage',false,'sj');
+    sideMenu('add',`resets-prestige`,'subjugated',loc('wiki_resets_subjugated'));
 }

@@ -2,8 +2,8 @@ import { $ } from '../dom.js';
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
-import { achievements, feats, universeAffix, geneticistGenes } from './../achieve.js';
-import { races, biomes, genus_def, traits, traitSkin, geneCatalog, genePermanent } from './../races.js';
+import { achievements, feats, universeAffix, geneticistGenes, grandDeathTourNeeds } from './../achieve.js';
+import { races, biomes, genus_def, traitSkin, geneCatalog, genePermanent } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
 
@@ -539,9 +539,10 @@ function featDesc(feat,showFlair){
             ai: 'wiki_resets_ai', 
             vc: 'wiki_resets_vacuum',
             md: 'wiki_resets_mad_wish',
-            za: 'wiki_resets_zombie_apocalypse'
+            za: 'wiki_resets_zombie_apocalypse',
+            sj: 'wiki_resets_subjugated'
         };
-        ['ct','bh','di','ai','vc','md','za'].forEach(function (key){
+        ['ct','bh','di','ai','vc','md','za','sj'].forEach(function (key){
             let reset = 0;
             Object.keys(global.stats.death_tour[key]).forEach(function(k){
                 if (global.stats.death_tour[key][k] > reset){
@@ -558,7 +559,7 @@ function featDesc(feat,showFlair){
             }
         });
         path += `</div>`;
-        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${path}${flair}`);
+        content = $(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`,[grandDeathTourNeeds])}</div>${path}${flair}`);
         options = { wide: true, classes: 'w25' };
     }
     else if (feat === 'planned_obsolescence') {

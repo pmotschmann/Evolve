@@ -1335,6 +1335,19 @@ if (convertVersion(global['version']) < 104009){
 
 if (convertVersion(global['version']) < 105000 && global.settings){
     global.settings.pause = true;
+    // An upgraded save, not a new game (which also starts without a version): main.js explains the 1.5
+    // refunds once the UI is up, then clears this.
+    if (!global['new']){ global['upgrade15'] = true; }
+}
+
+if (convertVersion(global['version']) <= 105000 && global['stats']){
+    // Correct prestige resources stored under their display-name keys.
+    [['TALENs','talens'],['Exons','exons']].forEach(function([bad, good]){
+        if (!global.stats.hasOwnProperty(bad)){ return; }
+        const held = global['prestige'] && global.prestige[bad] ? Number(global.prestige[bad].count) || 0 : 0;
+        global.stats[good] = Math.max(Number(global.stats[good]) || 0, held);
+        delete global.stats[bad];
+    });
 }
 
 if (convertVersion(global['version']) <= 105000){
@@ -1630,8 +1643,8 @@ if (convertVersion(global['version']) <= 105000){
             if (diff > 0){ back += diff; }
         }
         if (back > 0 && global.prestige){
-            // Into whichever bank this universe actually pays CRISPR out of.
-            let bank = global.race && global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+            // Refund repriced ranks as Plasmids regardless of the current universe.
+            let bank = 'Plasmid';
             if (global.prestige[bank]){
                 global.prestige[bank].count += back;
             }
@@ -2074,7 +2087,7 @@ export function setupStats(){
         'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','apotheosis',
-        'terraform','aiappoc','matrix','retire','eden','zappoc','enslaved','blastaway','lextinct',
+        'terraform','aiappoc','matrix','retire','eden','zappoc','subjug','enslaved','blastaway','lextinct',
         'aslain','hslain','cslain','sslain','geck','dark','harmony','blood','cores','artifact','supercoiled',
         'fossil','talens','exons','cattle','tcattle','murders','tmurders','psykill','tpsykill','pdebt','uDead','zkills'
     ].forEach(function(k){
@@ -2166,6 +2179,9 @@ export function setupStats(){
     }
     if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('za')){
         global.stats.death_tour['za'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
+    }
+    if (global.stats['death_tour'] && !global.stats.death_tour.hasOwnProperty('sj')){
+        global.stats.death_tour['sj'] = { l: 0, h: 0, a: 0, e: 0, m: 0, mg: 0 };
     }
     if (!global.stats['warlord']){
         global.stats['warlord'] = { k: false, p: false, a: false, r: false, g: false };

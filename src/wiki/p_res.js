@@ -221,6 +221,12 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'apotheosis':
             title += loc('wiki_resets_apotheosis') + " ";
             break;
+        case 'za':
+            title += loc('wiki_resets_zombie_apocalypse') + " ";
+            break;
+        case 'sj':
+            title += loc('wiki_resets_subjugated') + " ";
+            break;
         default:
             break;
     }

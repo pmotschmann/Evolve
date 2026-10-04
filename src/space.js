@@ -9163,11 +9163,11 @@ function labBlocked(genome,trait){
     return false;
 }
 
-// Find a compatible slot, preferring an already oriented pair.
+// Find an ordinary compatible slot, preferring an oriented pair.
 function labOpenSlot(genome,kind,trait){
     let open = false, fresh = false;
     labSlots(genome,kind).forEach(function(i){
-        if (open !== false || labLocked(genome,i) || labAt(genome,i)){ return; }
+        if (open !== false || labLocked(genome,i) || labIsRecessive(genome,i) || labAt(genome,i)){ return; }
         if (!labFits(genome,i,trait)){ return; }
         if (labPairBase(genome,i)){ open = i; }
         else if (fresh === false){ fresh = i; }
@@ -9194,18 +9194,11 @@ function labPlaceOrder(genome){
     return order.concat(loose);
 }
 
-// Place unassigned traits, adding recessive major pairs before using minor slots.
+// Auto-place traits in ordinary major slots, then minor slots.
 function labAutoPlace(genome){
     labPlaceOrder(genome).forEach(function(t){
         if (genome.slots[t] !== undefined){ return; }
         let pick = labOpenSlot(genome,'major',t);
-        if (pick === false){
-            genome.recessive = (genome.recessive || 0) + 1;
-            labFitSpan(genome);
-            pick = labOpenSlot(genome,'major',t);
-            // The new pair took nothing, so it is handed back.
-            if (pick === false){ genome.recessive--; }
-        }
         if (pick === false){ pick = labOpenSlot(genome,'minor',t); }
         if (pick !== false){ genome.slots[t] = pick; }
     });
@@ -10029,11 +10022,12 @@ export function ascendLab(hybrid,wiki){
         return boost > 0 ? +(rank + boost).toFixed(6) : rank;
     }
 
-// Move lab ranks by step, subject to extinction-achievement gates away from rank 1.
+// Move lab ranks in 0.1 steps, subject to extinction-achievement gates.
     function stepLabRank(t, step){
         let unlock = global.stats.achieve[`extinct_${traits[t].origin}`] && global.stats.achieve[`extinct_${traits[t].origin}`].l || 0;
         let now = tRanks[t] || 1;
-        let rank = +Math.min(2, Math.max(0.1, now + step)).toFixed(2);
+        let from = step < 0 ? Math.ceil(now * 10 - 1e-9) : Math.floor(now * 10 + 1e-9);
+        let rank = +Math.min(2, Math.max(0.1, (from + Math.round(step * 10)) / 10)).toFixed(1);
         let need = 0;
         if (rank < 1){
             need = rank >= 0.5 ? 3 : (rank >= 0.25 ? 4 : 5);
@@ -10187,7 +10181,7 @@ export function ascendLab(hybrid,wiki){
                     let held = labAt(genome,i);
                     if (!held){ return; }
                     let keyMult = keyMultiplier();
-                    stepLabRank(held, keyMult * -0.05);
+                    stepLabRank(held, keyMult * -0.1);
                     repriceGenome();
                     vBind({ el: `#traitSlots .labStrand` },'update');
                 },
@@ -10195,7 +10189,7 @@ export function ascendLab(hybrid,wiki){
                     let held = labAt(genome,i);
                     if (!held){ return; }
                     let keyMult = keyMultiplier();
-                    stepLabRank(held, keyMult * 0.05);
+                    stepLabRank(held, keyMult * 0.1);
                     repriceGenome();
                     vBind({ el: `#traitSlots .labStrand` },'update');
                 },
