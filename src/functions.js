@@ -4298,3 +4298,12 @@ export function getTraitDesc(info, trait, opts){
         });
     }
 }
+
+export function time_mult(t){
+    if (webWorker.offline){
+        // Offline catch-up: a single fast loop simulates offlineScale whole game days of
+        // production at once (one game day = longRatio fast loops of 0.25s each).
+        t *= webWorker.longRatio * webWorker.offlineScale;
+    }
+    return t;
+}

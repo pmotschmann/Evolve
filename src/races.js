@@ -2446,7 +2446,7 @@ export const traits = {
         val: 260,
         vars(r){
             // [Wish Cooldown Period]
-            return Math.round(traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]));
+            return traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]);
         }
     },
     devious: {
@@ -8318,7 +8318,7 @@ function minorWish(parent){
                 }
             },
             wish(v){
-                return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
+                return v <= 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);
@@ -8794,7 +8794,7 @@ function majorWish(parent){
                 }
             },
             wish(v){
-                return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${v}</span>`;
+                return v <= 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);
