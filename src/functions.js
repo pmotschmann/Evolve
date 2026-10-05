@@ -16,6 +16,7 @@ import { astrologySign, astroVal } from './seasons.js';
 import { partitioned, supplyMode, supplyPool, supplyOf, poolMod, regAmount, regMax, regDiff, syncTotal, ensureLedger, regDelta, CAPITAL, ANYWHERE } from './supply.js';
 import { TPShipDesc } from './truepath.js';
 import { shipCosts, freightArrivals, shipyardZone } from './ships.js';
+import { logisticsYield } from './logistics.js';
 import { mechCost, mechDesc } from './portal.js';
 
 var popperRef = false;
@@ -872,6 +873,8 @@ export function modRes(res,val,notrack,region){
     if (partitioned(res)){
         return modRegRes(res,val,notrack,region);
     }
+    // Scale tracked production by its source world's logistics.
+    if (!notrack && region !== ANYWHERE){ val = logisticsYield(res,val,region); }
     let count = global.resource[res].amount + val;
     let success = true;
     let max = notrack ? global.resource[res].max : tmp_vars.resource[res].temp_max;
@@ -925,15 +928,19 @@ function modRegRes(res,val,notrack,region){
 // Accumulate resource changes by zone before applying them.
 export function zoneTally(){
     const by = {};
+    // Keep each zone's production separate for logistics scaling.
+    const made = {};
     let shortages = [];
     return {
         add(zone, amount){
             if (amount){ by[zone] = (by[zone] || 0) + amount; }
+            if (amount > 0){ made[zone] = (made[zone] || 0) + amount; }
             return this;
         },
         // A multiplier on the whole of it — the global rate, hunger, and the like.
         scale(f){
             for (const z in by){ by[z] *= f; }
+            for (const z in made){ made[z] *= f; }
             return this;
         },
         total(){
@@ -950,7 +957,11 @@ export function zoneTally(){
             const m = mult === undefined ? 1 : mult;
             shortages = [];
             if (supplyMode() === 'global'){
-                return modRes(res, this.total() * m, notrack);
+                if (notrack){ return modRes(res, this.total() * m, notrack); }
+                // Scale each zone before combining its production with the total.
+                let sum = this.total() * m;
+                for (const z in made){ sum += logisticsYield(res, made[z] * m, z, false) - made[z] * m; }
+                return modRes(res, sum, notrack, ANYWHERE);
             }
             // Apply one combined balance per shared pool. Applying each member in object-key order
             // can report a shortage before a later linked member's production has arrived.

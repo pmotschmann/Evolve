@@ -12,14 +12,15 @@ import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { drawShipYard, jumpGateShutdown, jumpGateRestart, surveyTheme, stealthStudied, revealAlienInfiltrators,
          containmentCaptureChance, interrogationDuration, sWarfare, zoneSecurityStatus, outerSecurityStatus, regionName } from './truepath.js';
-import { aerographeneSpeedBonus, shipCapacitorSaving, grantSupplyFreighters, sensorUpgrade } from './ships.js';
+import { aerographeneSpeedBonus, shipCapacitorSaving, sensorUpgrade } from './ships.js';
 import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 import { ecoGainMajorTrait, drawPerkUnderground } from './iceage.js';
-import { activeSupplyRegions, capitalZone } from './supply.js';
+import { capitalZone } from './supply.js';
+import { logiConst } from './logistics.js';
 
 const techs = {
     club: {
@@ -18892,7 +18893,7 @@ const techs = {
             Knowledge(){ return 20500000; }
         },
         effect(){
-            return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div>`;
+            return `<div>${loc('tech_syndicate_threat_analysis_effect')}</div><div class="has-text-danger">${loc('tech_syndicate_threat_analysis_warn',[logiConst.start,logiConst.tauStart])}</div>`;
         },
         action(){
             if (checkAffordable(this) && !global['sim']){
@@ -18902,7 +18903,6 @@ const techs = {
                 initStruct(actions.space.spc_dwarf.c_warehouse);
                 initStruct(actions.space.spc_hell.m_warehouse);
                 global.settings.showSupplyZones = true;
-                grantSupplyFreighters(activeSupplyRegions());
                 messageQueue(loc('tech_syndicate_threat_analysis_msg'),'info',false,['progress']);
                 return true;
             }
@@ -18930,7 +18930,7 @@ const techs = {
             }
             if (payCosts(this)){
                 messageQueue(loc('tech_syndicate_tactics_msg',[loc(`outer_shipyard_class_corsair`),loc(`outer_shipyard_class_destroyer`),loc(`outer_shipyard_class_cruiser`)]),'info',false,['progress']);
-                // Granting shadow 8 wakes the Venus base and breaks the Sol system into its supply zones.
+                // Granting shadow 8 wakes the Venus base.
                 messageQueue(loc('syndicate_venus_active',[planetName().venus]),'danger',false,['combat','progress']);
                 return true;
             }
@@ -19076,6 +19076,7 @@ const techs = {
                 return `<span class="${mark(status.cover[i])}">${name}</span>`;
             }).join(', ');
             return `<div>${loc('tech_zone_security_effect')}</div>`
+                + `<div class="has-text-success">${loc('tech_zone_security_logistics',[logiConst.solRest,logiConst.rest])}</div>`
                 + `<div>${loc('tech_zone_security_req',[sWarfare.secureFleets,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
                 + `<div class="${mark(status.fleets >= sWarfare.secureFleets)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.secureFleets])}</div>`
                 + `<div>${loc('tech_zone_security_cover',[worlds])}</div>`;
@@ -19084,7 +19085,7 @@ const techs = {
             // Require patrols before researching Zone Security.
             if (!zoneSecurityStatus().met){ return false; }
             if (payCosts(this)){
-                messageQueue(loc('tech_zone_security_msg'),'info',false,['progress']);
+                messageQueue(loc('tech_zone_security_msg',[logiConst.rest]),'info',false,['progress']);
                 return true;
             }
             return false;
@@ -19112,6 +19113,7 @@ const techs = {
                 return `<span class="${mark(cover[i])}">${name}</span>`;
             }).join(', ');
             return `<div>${loc('tech_outer_security_effect')}</div>`
+                + `<div class="has-text-success">${loc('tech_outer_security_logistics',[logiConst.solRest,logiConst.rest])}</div>`
                 + `<div>${loc('tech_zone_security_req',[sWarfare.outerTotal,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
                 + `<div>${loc('tech_outer_security_stops',[sWarfare.outerStops])}</div>`
                 + `<div class="${mark(status.fleets >= sWarfare.outerTotal)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.outerTotal])}</div>`
@@ -19124,7 +19126,7 @@ const techs = {
             // Require patrols before researching Outer Security.
             if (!outerSecurityStatus().met){ return false; }
             if (payCosts(this)){
-                messageQueue(loc('tech_outer_security_msg'),'info',false,['progress']);
+                messageQueue(loc('tech_outer_security_msg',[logiConst.rest]),'info',false,['progress']);
                 return true;
             }
             return false;

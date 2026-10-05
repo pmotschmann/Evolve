@@ -21,6 +21,7 @@ import { autoRefuelShip, shipCrewSize, sensorRange, shipCosts, buildTPShipQueue,
          tankerRefuel, repairShipYards, supplyShipElerium, seedStarterSupplyRoutes, shipMoving, shipPort, shipDockedAt,
          shipBound, refreshDock } from './ships.js';
 import { genXYZcoord, randomCoord, advanceSolarMap, paintSolarMap, mapAhead, mapPaintsOn, syncMapFrames } from './stars.js';
+import { logiConst, logisticsActive, startLogistics, logisticsDay, logisticsClaim, logisticsShareMult } from './logistics.js';
 import { arpa, buildArpa, sequenceLabs } from './arpa.js';
 import { events, eventList, rollEvent } from './events.js';
 import { defineGovernor, govern, govActive, removeTask } from './governor.js';
@@ -1689,11 +1690,16 @@ function fastLoop(){
     // Apply a pooled resource change and optionally record source pools.
     function applyShare(res, amount, share, mult, drawn){
         const m = mult === undefined ? 1 : mult;
-        if (!partitioned(res)){ return modRes(res, amount * m); }
+        // Output still goes through the tally under logistics, so each world's share is scaled by its own.
+        if (!partitioned(res) && !(amount >= 0 && logisticsActive())){ return modRes(res, amount * m); }
         if (amount >= 0){
             const tally = zoneTally();
             for (const zone in share){ tally.add(zone, amount * share[zone]); }
-            return tally.apply(res, mult);
+            const applied = tally.apply(res, mult);
+            // One source pooled over several worlds: its breakdown line shows the blended penalty.
+            // Only real output claims: a zero draw (-0 passes the check above) would take another source's line.
+            if (amount > 0 && logisticsActive() && !partitioned(res)){ logisticsClaim(res, logisticsShareMult(share)); }
+            return applied;
         }
         // Apply a pooled cost to reachable zones and report any shortage.
         const owed = {};
@@ -2772,11 +2778,20 @@ function fastLoop(){
         }
 
         // Support grids
+        // support_on is keyed by bare structure name, which two regions can share: Titan's graphene plant
+        // and Alpha Centauri's are both g_factory. A grid whose consumer is not built in its own region
+        // must not zero a same-named structure that stands in another, which another grid has switched on.
+        const builtElsewhere = function(consumer){
+            return ['space','interstellar','galaxy','portal','tauceti','eden','underground','surface']
+                .some(region => region !== consumer.region && global[region]?.[consumer.struct]);
+        };
         Object.values(structureGrids.support).forEach(function(group){
             const anchor = group.anchor;
             const anchorState = anchor && global[anchor.region][anchor.struct];
             if (!anchorState){
-                group.consumers.forEach(function(consumer){ support_on[consumer.struct] = 0; });
+                group.consumers.forEach(function(consumer){
+                    if (!builtElsewhere(consumer)){ support_on[consumer.struct] = 0; }
+                });
                 return;
             }
 
@@ -2821,7 +2836,10 @@ function fastLoop(){
                 const consumer = structureGrids.entries.get(key);
                 if (!consumer){ return; }
                 const state = global[consumer.region][consumer.struct];
-                if (!state){ support_on[consumer.struct] = 0; return; }
+                if (!state){
+                    if (!builtElsewhere(consumer)){ support_on[consumer.struct] = 0; }
+                    return;
+                }
                 const supportSize = Math.max(0,-consumer.c_action.support());
                 let active = state.on || 0;
                 if (global.power.includes(key)){
@@ -4037,6 +4055,9 @@ function fastLoop(){
                 }
             }
 
+            // Everything above is grown at the capital; the Tau Ceti farm's own call must not claim it.
+            logisticsClaim('Food', supplyRegionKey('city'));
+
             if (global.tauceti['tau_farm'] && p_on['tau_farm']){
                 let colony_val = 1 + hugeAdjust((support_on['colony'] || 0) * 0.5);
                 let food_base = production('tau_farm','food') * p_on['tau_farm'] * production('psychic_boost','Food');
@@ -4258,6 +4279,14 @@ function fastLoop(){
 
             let delta = grownAt.total();
 
+            // The pooled food sources sit on different worlds, so each line is noted for its own.
+            const biodomeLabel = actions.space.spc_red.biodome.title();
+            const nitrogenLabel = actions.space.spc_venus.nitrogen_harvester.title();
+            logisticsClaim('Food', function(label){
+                if (label === biodomeLabel){ return supplyZone('space:biodome'); }
+                if (label === nitrogenLabel){ return supplyZone('space:nitrogen_harvester'); }
+                return supplyRegionKey('city');
+            });
             const foodApplied = grownAt.apply('Food', time_multiplier);
             const starvingPools = grownAt.shortagePools();
             const localStarvation = supplyMode() === 'regional' && starvingPools.length > 0;
@@ -5899,8 +5928,9 @@ function fastLoop(){
                     }
                     delta *= shrineMetal.mult * mworks.Titanium;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
-                    applyShare('Titanium', (delta / divisor) * geneBonus('assayer'), smelterAt, time_multiplier);
+                    // The line first, so the logistics note the output adds lands under it.
                     bdShare('Titanium', loc('resource_Steel_name'), titanium / divisor, smelterAt);
+                    applyShare('Titanium', (delta / divisor) * geneBonus('assayer'), smelterAt, time_multiplier);
                 }
             }
         }
@@ -7418,6 +7448,16 @@ function fastLoop(){
                     breakdown.p['Iron'][loc('space_metalworks_title')] = ((mworks.Iron - 1) * 100).toFixed(1) + '%';
                 }
 
+                // The pooled iron sources sit on different worlds, so each line is noted for its own,
+                // before the foragers' own call below could claim them.
+                const ironZones = {
+                    [job_data.space_miner.name()]: supplyZone('space:iron_ship'),
+                    [job_data.pit_miner.name()]: supplyZone('tauceti:mining_pit'),
+                    [loc('tau_red_womlings')]: supplyZone('tauceti:womling_mine'),
+                    [loc('tau_roid_mining_ship')]: supplyZone('tauceti:mining_ship')
+                };
+                logisticsClaim('Iron', label => ironZones[label] || supplyRegionKey('city'));
+
                 if (global.race['forager'] && global.tech['dowsing']){
                     let forage = global.tech.dowsing >= 2 ? 2 : 1;
                     let foragers = workerScale(global.civic.forager.workers,'forager');
@@ -7467,8 +7507,9 @@ function fastLoop(){
                     }
                     delta *= shrineMetal.mult * mworks.Titanium * production('psychic_boost','Titanium');
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
-                    modRes('Titanium', ((delta * time_multiplier) / divisor) * geneBonus('assayer'), false, supplyRegionKey('city'));
+                    // The line first, so the logistics note the output adds lands under it.
                     breakdown.p['Titanium'][loc('resource_Iron_name')] = (iron / divisor) + 'v';
+                    modRes('Titanium', ((delta * time_multiplier) / divisor) * geneBonus('assayer'), false, supplyRegionKey('city'));
                 }
             }
 
@@ -7942,6 +7983,14 @@ function fastLoop(){
             }
 
             breakdown.p['Oil'][loc('hunger')] = ((hunger - 1) * 100) + '%';
+            // The pooled oil sources sit on different worlds, so each line is noted for its own.
+            const oilZones = {
+                [loc('space_gas_moon_oil_extractor_title')]: supplyZone('space:oil_extractor'),
+                [loc('underground_oil_pump')]: supplyZone('industry:oil_pump'),
+                [loc('tau_roid_whaling_ship')]: supplyZone('tauceti:whaling_ship')
+            };
+            const oilHome = global.race['warlord'] ? supplyZone('portal:pumpjack') : supplyRegionKey('city');
+            logisticsClaim('Oil', label => oilZones[label] || oilHome);
             oilAt.apply('Oil', time_multiplier * geneBonus('resilient') * geneBonus('abyssal'));
         }
 
@@ -9540,6 +9589,12 @@ function midLoop(){
         }
         else if (zoneChange === 'fragment'){
             messageQueue(loc('supply_fragment'),'warning',false,['progress']);
+        }
+        // The Shadow War cuts the supply lines with Syndicate Threat Analysis; every world drops to its
+        // starting logistics. Started here rather than in the research, so a save already past it catches up.
+        if (global.race['truepath'] && global.tech['shadow'] >= 5 && startLogistics()){
+            messageQueue(loc('logistics_start',[logiConst.start,logiConst.tauStart]),'warning',false,['progress']);
+            drawResourceTab('supply_zones');
         }
 
         // Track storage capacity by its supplying zone.
@@ -13800,6 +13855,7 @@ function longLoop(){
         if (global.race['truepath'] && global.space['shipyard']){
             syndicateDay();
         }
+        logisticsDay();
 
         // Advance alien-containment interrogations by the elapsed game time.
         if (global.race['truepath'] && global.space['alien_containment']){

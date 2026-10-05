@@ -2,6 +2,7 @@ import { $ } from './dom.js';
 import { global, tmp_vars, save, message_logs, message_filters, webWorker, writeSave } from './vars.js';
 import { loc, locales } from './locale.js';
 import { supplyMode } from './supply.js';
+import { logisticsActive } from './logistics.js';
 import { setupStats, alevel } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, clearTabPanels, flushTabPanelClears, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon, updateMobileMsg, mobileMsgLines, MOBILE_MSG_MAX, modalCloseButton } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
@@ -689,7 +690,7 @@ export function loadTab(tab){
                     <b-tab-item id="resEjector" :visible="s.showEjector" :label="label('tab_ejector')"></b-tab-item>
                     <b-tab-item id="resCargo" :visible="s.showCargo" :label="label('tab_cargo')"></b-tab-item>
                     <b-tab-item id="resAlchemy" :visible="s.showAlchemy" :label="label('tab_alchemy')"></b-tab-item>
-                    <b-tab-item id="resSupplyZones" :visible="s.showSupplyZones" :label="label('tab_supply_zones')"></b-tab-item>
+                    <b-tab-item id="resSupplyZones" :visible="s.showSupplyZones" :label="label(zonesLabel())"></b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabResource`,
@@ -701,6 +702,10 @@ export function loadTab(tab){
                         // place is smugglers, so the tab is named for what it has become.
                         marketLabel(){
                             return supplyMode() === 'global' ? 'tab_market' : 'tab_black_market';
+                        },
+                        // The Shadow War reuses the supply tab to run its freighters' supply routes.
+                        zonesLabel(){
+                            return logisticsActive() ? 'tab_logistics' : 'tab_supply_zones';
                         },
                         swapTab(tab){
                             if (!global.settings.tabLoad){

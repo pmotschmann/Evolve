@@ -8,7 +8,9 @@ import { hellSupression } from './portal.js';
 import { syndicate, womlingArtisans } from './truepath.js';
 import { freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeedPenalty, dispatchFreighter,
          startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes,
-         deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip, shipPosition, shipMoving, shipDockedAt, shipDestination } from './ships.js';
+         deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip, shipPosition, shipMoving, shipDockedAt, shipDestination,
+         supplyRouteStops, supplyRouteValid } from './ships.js';
+import { logiConst, logisticsActive, logisticsWorlds, logisticsOf, logisticsRest, routeSupplyEstimate } from './logistics.js';
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
@@ -4014,7 +4016,193 @@ function appendDockedFreighterCard(host, group, pool, resources, card = false){
     }});
     return card;
 }
+// --- Logistics -------------------------------------------------------------------------------------
+// Under the Shadow War the supply tab runs freighter supply routes and shows each world's logistics.
+
+let logisticsTimer = false;
+let logisticsIds = [];
+let logisticsShape = '';
+
+// Where every freighter is and where it is bound, so the tab knows when it has to be rebuilt.
+function logisticsLayout(){
+    return (global.space.shipyard?.ships || []).map(function(ship, i){
+        if (ship.class !== 'freighter'){ return ''; }
+        return `${i}:${shipDockedAt(ship) || ''}>${shipDestination(ship) || ''}${ship.tradeRoute ? '*' : ''}${ship.fid || ''}`;
+    }).join('|') + `|${logisticsWorlds().join(',')}`;
+}
+
+function refreshLogisticsTab(){
+    logisticsTimer = false;
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
+    if (!logisticsActive() || !$('#resSupplyZones').length){ return; }
+    if (logisticsLayout() !== logisticsShape){
+        initSupplyZones();
+        return;
+    }
+    logisticsIds.forEach(id => vBind({ el: `#${id}` }, 'update'));
+    logisticsTimer = setTimeout(refreshLogisticsTab, 1000);
+}
+
+// A logistics value with one decimal at most.
+function logiFmt(v){
+    return +(Number(v) || 0).toFixed(1);
+}
+
+function logiValueClass(v){
+    if (v >= logiConst.rest){ return 'has-text-success'; }
+    if (v >= logiConst.solRest){ return 'has-text-warning'; }
+    if (v >= logiConst.start){ return 'has-text-caution'; }
+    return 'has-text-danger';
+}
+
+// The supply a freighter group has aboard, and the robbery it is still paying for, as a line of text.
+function logisticsCargoText(ships){
+    const aboard = ships.filter(ship => ship.logi);
+    if (!aboard.length){ return loc('logistics_cargo_none'); }
+    const total = aboard.reduce((t,ship) => t + (ship.logi.v || 0), 0);
+    return loc('logistics_cargo',[logiFmt(total),supplyRegionName(aboard[0].logi.t, true)]);
+}
+
+// Methods shared by docked and inbound freighter cards.
+function logisticsCardMethods(ships){
+    return {
+        cargo(){ return logisticsCargoText(ships); },
+        robbed(){ return ships.some(ship => ship.robbed); },
+        hasRoute(){ return !!ships[0].tradeRoute; },
+        summary(){ return routeSummary(ships[0]); },
+        managed(){ return ''; },
+        speed(){ return freightRouteSpeed(ships); },
+        loopValue(){
+            const route = ships[0].tradeRoute;
+            if (!route || !Array.isArray(route.stops)){ return ''; }
+            const est = routeSupplyEstimate(route.stops, ships.filter(ship => ship.class === 'freighter'));
+            return loc('logistics_route_worth',[logiFmt(est.total)]);
+        },
+        stopRoute(){ if (stopFreightRoute(ships[0])){ initSupplyZones(); } },
+        openMap(){ freightSolarMapModal(this.$buefy, ships[0]); }
+    };
+}
+
+const logisticsCargoMarkup = `<div class="supplyFreighterStats"><span class="has-text-caution">{{ cargo() }}</span><span class="has-text-danger" v-show="robbed()">${loc('logistics_robbed',[logiConst.robbedShare * 100])}</span><span v-show="hasRoute()">${loc('supply_freighter_route_speed',['{{ speed() }}'])}</span><span class="has-text-success" v-show="hasRoute()">{{ loopValue() }}</span></div>`;
+
+function appendLogisticsFreighter(host, group, port, worlds){
+    const ships = group.ships;
+    const id = `logiFreighter_${freightGroupKey(ships)}`;
+    const card = document.createElement('article');
+    card.id = id;
+    card.className = 'supplyFreighter';
+    const others = worlds.filter(world => world !== port);
+    card.innerHTML = `<header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span></div>${logisticsCargoMarkup}</header>`
+        + `<section class="supplyRoutePanel">${routeSummaryMarkup}`
+        + `<div class="supplyRouteActions" v-show="hasRoute()"><button class="button is-small" @click="openMap">${loc('outer_shipyard_map')}</button><button class="button is-small" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div>`
+        + `<div v-show="!hasRoute()"><div class="supplyRouteStops"><div class="supplyRouteStop" v-for="(stop,index) in stops"><span class="supplyRouteNumber">{{ index + 1 }}</span><b-select v-model="stop.zone" :disabled="index === 0"><option v-for="zone in zones" :value="zone">{{ zoneName(zone) }}</option></b-select><button class="button is-small" v-show="index > 1" @click="remove(index)">×</button></div></div>`
+        + `<div class="logisticsEstimate"><div class="logisticsEstimateHead has-text-warning">${loc('logistics_route_estimate')}</div>`
+        + `<div class="logisticsLeg" v-for="leg in estimate().legs"><span>{{ leg.from }} → {{ leg.to }}</span><span>${loc('logistics_route_au',['{{ leg.dist }}'])}</span><span class="has-text-caution" v-show="crowd(leg)">{{ crowd(leg) }}</span><span class="has-text-success">+{{ leg.value }}</span></div>`
+        + `<div class="logisticsLoop">{{ loopText() }}</div></div>`
+        + `<div class="supplyRouteActions"><button class="button is-small" v-show="stops.length < ${supplyRouteStops}" @click="add">${loc('supply_freighter_route_add_stop')}</button><button class="button is-info" @click="start">${loc('supply_freighter_route_start')}</button><button class="button is-small" @click="openMap">${loc('outer_shipyard_map')}</button></div>`
+        + `<p class="has-text-danger" v-show="routeError">{{ routeError }}</p></div></section>`
+        + (others.length ? `<footer class="supplyDispatch"><span>${loc('logistics_send')}:</span><div>${others.map(target => `<button class="button is-small" @click="send('${target}')">${supplyRegionName(target, true)}</button>`).join('')}</div></footer>` : '');
+    host.append(card);
+    logisticsIds.push(id);
+
+    const freighters = ships.filter(ship => ship.class === 'freighter');
+    const first = others.length ? others[0] : port;
+    vBind({ el: card, data: { zones: worlds, stops: [{ zone: port }, { zone: first }], routeError: '' }, methods: Object.assign(logisticsCardMethods(ships), {
+        zoneName(zone){ return supplyRegionName(zone, true); },
+        estimate(){ return routeSupplyEstimate(this.stops, freighters); },
+        crowd(leg){
+            const lost = Math.max(0, leg.others - logiConst.freeLanes) * logiConst.lanePenalty;
+            return lost > 0 ? loc('logistics_route_crowded',[lost]) : '';
+        },
+        loopText(){
+            const est = this.estimate();
+            return freighters.length > 1
+                ? loc('logistics_route_fleet',[logiFmt(est.total),freighters.length,Math.round(est.bonus * 100)])
+                : loc('logistics_route_loop',[logiFmt(est.total)]);
+        },
+        add(){ if (this.stops.length < supplyRouteStops){ this.stops.push({ zone: this.zones.find(zone => !this.stops.some(stop => stop.zone === zone)) || port }); } },
+        remove(index){ this.stops.splice(index, 1); },
+        start(){
+            if (!supplyRouteValid(this.stops)){ this.routeError = loc('logistics_route_invalid',[supplyRouteStops]); return; }
+            if (!startFreightRoute(ships[0], this.stops)){ this.routeError = loc('supply_freighter_route_invalid'); return; }
+            this.routeError = '';
+            initSupplyZones();
+        },
+        send(destination){ if (dispatchFreighter(ships[0], destination)){ initSupplyZones(); } }
+    })});
+}
+
+function appendLogisticsInbound(host, group){
+    const ships = group.ships;
+    const id = `logiInbound_${freightGroupKey(ships)}`;
+    host.append($(`<article id="${id}" class="supplyFreighter supplyFreighterIncoming"><header class="supplyFreighterHead"><div><span class="supplyFreighterName has-text-info">${group.name}</span><span class="supplyInboundStatus has-text-caution">{{ arrival() }}</span></div>${logisticsCargoMarkup}</header>${routeSummaryMarkup}<div class="supplyFreighterActions"><button class="button is-small" @click="openMap">${loc('outer_shipyard_map')}</button><button class="button is-small" v-show="hasRoute()" @click="stopRoute">${loc('supply_freighter_stop_route')}</button></div></article>`));
+    logisticsIds.push(id);
+    vBind({ el: `#${id}`, data: {}, methods: Object.assign(logisticsCardMethods(ships), {
+        arrival(){ return loc('supply_freighter_arriving',[shipArrivalTime(ships[0])]); }
+    })});
+}
+
+function initLogisticsTab(host){
+    host.append($(`<div class="storage-header supplyZonesTitle"><h2>${loc('tab_logistics')}</h2></div>`));
+    host.append($(`<p class="logisticsIntro">${loc('logistics_intro',[logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest])}</p>`));
+    const worlds = logisticsWorlds();
+    const freighters = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && ship.damage < 100);
+    const placed = new Set();
+    const places = worlds.concat(['']);
+    places.forEach(function(world){
+        const docked = freighters.filter(ship => !placed.has(ship) && (world ? shipDockedAt(ship) === world : shipDockedAt(ship)));
+        const incoming = freighters.filter(ship => !placed.has(ship) && shipMoving(ship) && (world ? shipDestination(ship) === world : true));
+        docked.concat(incoming).forEach(ship => placed.add(ship));
+        if (!world && !docked.length && !incoming.length){ return; }
+
+        const head = world
+            ? `<h3 class="res has-text-warning">${supplyRegionName(world, true)}</h3><div class="supplyZoneMeta"><span>${loc('logistics_world_output',['{{ value() }}'])}</span><span>{{ settle() }}</span></div>`
+            : `<h3 class="res has-text-warning">${loc('logistics_elsewhere')}</h3>`;
+        const valueBox = world ? `<span class="supplyZoneCount logisticsValue" :class="tone()">{{ value() }}</span>` : '';
+        const id = world ? `logiWorld_${world}` : 'logiWorld_elsewhere';
+        const card = $(`<section class="market-item supplyZone logisticsWorld" data-supply-pool="${world}"><header id="${id}" class="supplyZoneHead"><div>${head}</div>${valueBox}</header></section>`);
+        host.append(card);
+        if (world){
+            logisticsIds.push(id);
+            vBind({ el: `#${id}`, data: {}, methods: {
+                value(){ return logiFmt(logisticsOf(world)); },
+                tone(){ return logiValueClass(logisticsOf(world)); },
+                settle(){
+                    const rest = logisticsRest(world);
+                    return logisticsOf(world) > rest ? loc('logistics_world_rest',[rest,logiConst.decayDays]) : loc('logistics_world_steady');
+                }
+            }});
+        }
+
+        if (!docked.length && !incoming.length){
+            card.append(`<div class="supplyZoneEmpty has-text-caution">${loc('supply_zone_no_freighters')}</div>`);
+            return;
+        }
+        if (incoming.length){
+            const arrivals = $('<div class="supplyFreighterList supplyInboundList"></div>');
+            card.append(arrivals);
+            freightGroups(incoming).forEach(group => appendLogisticsInbound(arrivals, group));
+        }
+        if (docked.length){
+            const dockList = $('<div class="supplyFreighterList supplyDockedList"></div>');
+            card.append(dockList);
+            freightGroups(docked).forEach(group => appendLogisticsFreighter(dockList.get(0), group, shipDockedAt(group.ships[0]), worlds));
+        }
+    });
+    logisticsShape = logisticsLayout();
+    logisticsTimer = setTimeout(refreshLogisticsTab, 1000);
+}
+
 export function initSupplyZones(){
+    if (logisticsTimer){ clearTimeout(logisticsTimer); logisticsTimer = false; }
+    logisticsIds = [];
+    if (logisticsActive()){
+        if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 5)){ return; }
+        const host = $('#resSupplyZones');
+        clearElement(host);
+        initLogisticsTab(host);
+        return;
+    }
     // Also migrates existing regional saves: the unlock already happened there, so the tech action
     // will not run again to seed the new starter routes.
     seedStarterSupplyRoutes();

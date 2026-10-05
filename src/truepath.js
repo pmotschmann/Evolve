@@ -4,7 +4,7 @@ import { vBind, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCos
          darkEffect, adjustCosts, getWeaselTechLevelRequirement, calcPrestige, modRes, clearElement, popover,
          deepClone, buildQueue, timeCheck, timeFormat, actionPool, poolHeld, modalCloseButton } from './functions.js';
 import { races, traits, geneBonus, traitCostMod, fathomCheck, orbitLength } from './races.js';
-import { spatialReasoning, unlockContainers, atomic_mass } from './resources.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, govEffect, soldierDeath, soldierTrainingRate, soldierRecoveryRate, buildGarrison,
          rivalCollapsed, govTitle } from './civics.js';
 import { jobScale, jobStackStep, job_data, loadFoundry, limitCraftsmen, workerScale, hugeScale } from './jobs.js';
@@ -21,8 +21,8 @@ import { loadTab } from './index.js';
 import { zombieGenociderTask, shadowWarTask } from './achieve.js';
 import { genXYZcoord, randomCoord, dist3, setOrbits, starData, buildSolarMap, starConstants } from './stars.js';
 import { loc } from './locale.js';
-import { supplyMode, supplyRegionName, activeSupplyRegions, capitalGone, supplyPool, partitioned, regAmount, poolMod,
-         syncTotal } from './supply.js';
+import { supplyMode, supplyRegionName, activeSupplyRegions, capitalGone } from './supply.js';
+import { logiConst, logisticsActive, logisticsOf, shiftLogistics, cargoBonus } from './logistics.js';
 import { refundUnderground } from './iceage.js';
 import { retiredShipFields } from './shipsave.js';
 import { shipDockedAt, allShips, fleetCmd, fleetCmdUnlocked, fleetCmdDay, shipArmorSoak, shipSpeed, shipArmorFactor,
@@ -7362,6 +7362,8 @@ export const sWarfare = {
     catchAU: 0.05,          // Interception distance.
     huntDays: 30,           // Longest trip a corsair will make for a freighter or a raid.
     innerAU: 3.5,           // Radius from the Sun of the worlds a corsair prowls with nothing in reach.
+    tauDrained: 20,         // Raiders leave Tau Ceti alone until every raidable Sol world is below this logistics.
+    raidReach: 1,           // AU added to every distance when weighing a raid's haul against the trip, so a world right next to a raider does not win on proximity alone.
     safeHarbors: ['spc_dwarf'], // Worlds corsairs never raid, prowl to, or hunt freighters at (Ceres).
     stealth: 0.25,          // Sensor-range multiplier against corsairs.
     overdrive: 2,           // Speed multiplier while pursuing a target.
@@ -7371,7 +7373,6 @@ export const sWarfare = {
     chaseSpeed: 1.1,        // Patrol speed multiplier while pursuing.
     sneak: 2,               // Opening raid shots.
     sneakDetected: 1,       // Opening raid shots when a detector array had the approach.
-    plunder: 1000000,       // Maximum raid cargo units.
     engagements: 5,         // Engagements required to advance Shadow War.
     studyFights: 250,       // Engagements needed to complete stealth study.
     studyKills: 1,          // Destroyed corsairs needed to complete stealth study.
@@ -7863,7 +7864,7 @@ function corsairChase(corsair){
     const tried = new Set();
     for (const ship of prey){
         const target = encounterWhere(ship);
-        if (tried.has(target) || corsairSafe(target)){ continue; }
+        if (tried.has(target) || corsairSafe(target) || corsairTauClosed(target)){ continue; }
         tried.add(target);
         if (shipDockedAt(corsair) === target){ continue; }
         if (corsairLaunch(corsair,target,false)){ return true; }
@@ -7930,29 +7931,34 @@ function corsairRaidable(region){
     if (syndicateBases().includes(region)){ return false; }
     if (region === 'spc_sun_gate'){ return false; }     // Gates cannot be raided.
     if (corsairSafe(region)){ return false; }
+    if (corsairTauClosed(region)){ return false; }
     if (!regionReachable(region)){ return false; }
     return activeSupplyRegions().includes(region);
 }
 
-// List reachable raid targets, prioritizing stocked worlds.
+// Whether Sol raid targets are drained enough to unlock Tau Ceti.
+function corsairTauClosed(region){
+    if (typeof region !== 'string' || !region.startsWith('tau_')){ return false; }
+    return activeSupplyRegions().some(sol => sol.startsWith('spc_') && corsairRaidable(sol) && logisticsOf(sol) >= sWarfare.tauDrained);
+}
+
+// Logistics a raider can steal from a world.
+function corsairTake(corsair,region){
+    const hold = Math.max(0,100 - (corsair.damage || 0)) * logiConst.raidShare;
+    return Math.max(0,Math.min(hold,logisticsOf(region) - logiConst.floor));
+}
+
+// List reachable raid targets, prioritizing logistics and then distance.
 function corsairMarks(corsair){
     const from = shipPosition(corsair);
     if (!from){ return []; }
-    const reachable = activeSupplyRegions().filter(corsairRaidable)
-        .sort((a,b) => dist3(from,genXYZcoord(a)) - dist3(from,genXYZcoord(b)));
-    const stocked = reachable.filter(corsairZoneStocked);
-    return stocked.length > 0 ? stocked : reachable;
-}
-
-// Return whether a region's supply pool has stock.
-function corsairZoneStocked(region){
-    if (supplyMode() === 'global'){ return false; }
-    const pool = supplyPool(region);
-    for (const res in atomic_mass){
-        if (!global.resource[res] || !partitioned(res)){ continue; }
-        if (regAmount(res,pool) >= 1){ return true; }
-    }
-    return false;
+    return activeSupplyRegions().filter(corsairRaidable)
+        .map(function(region){
+            const away = dist3(from,genXYZcoord(region));
+            return { region: region, away: away, score: corsairTake(corsair,region) / (away + sWarfare.raidReach) };
+        })
+        .sort((a,b) => b.score - a.score || a.away - b.away)
+        .map(mark => mark.region);
 }
 
 // Return home and cancel any pending raid.
@@ -7984,8 +7990,8 @@ function corsairSpotted(group){
     return seededRandom(0,1,true) < scan / (scan + sWarfare.evade);
 }
 
-// Resolve corsair combat and return damage totals.
-function corsairFight(corsair,group,where,sneak){
+// Resolve corsair combat; `fire` scales defender damage.
+function corsairFight(corsair,group,where,sneak,fire = 1){
     let dealt = 0, taken = 0;
     const lost = [], downed = [];
     const mark = function(){
@@ -8011,7 +8017,7 @@ function corsairFight(corsair,group,where,sneak){
         group.forEach(function(ship){
             if (ship.damage >= 100 || corsair.damage >= 100){ return; }
             if (seededRandom(0,1,true) >= playerAccuracy(scan,corsair)){ return; }
-            const hit = combatDamage(ship,corsair);
+            const hit = fire === 1 ? combatDamage(ship,corsair) : Math.max(1,Math.round(combatDamage(ship,corsair) * fire));
             corsair.damage += hit;
             dealt += hit;
             if (corsair.damage >= 100){ corsair.damage = 100; downed.push(corsair); }
@@ -8075,79 +8081,42 @@ function corsairLost(corsair,where,quiet){
     if (!quiet){ zMessage(loc('syndicate_corsair_destroyed',[corsair.name,regionName(where)]),'success'); }
 }
 
-// Scale plunder capacity by remaining hull integrity.
-function corsairHold(corsair){
-    return Math.floor(sWarfare.plunder * Math.max(0,100 - (corsair.damage || 0)) / 100);
-}
-
 // Return surviving freighters in a trade fleet.
 function corsairHolds(freighter){
     return tradeFreighters(tradeFleet(freighter)).filter(ship => ship.damage < 100);
 }
 
-// Format stolen resources for raid messages.
-function corsairManifest(taken){
-    return Object.keys(taken)
-        .sort((a,b) => taken[b] - taken[a])
-        .map(res => `${global.resource[res] ? global.resource[res].name : res}: ${sizeApproximation(taken[res],0)}`)
-        .join(', ');
-}
-
-// Strip cargo off a fleet, fullest hold and biggest consignment first, until the corsair is full.
-function corsairPlunderHolds(corsair,freighters){
-    let room = corsairHold(corsair);
-    let took = 0;
-    const taken = {};
-    const order = freighters.slice().sort((a,b) => freightLoad(b) - freightLoad(a));
-    for (const ship of order){
-        if (room <= 0){ break; }
-        const cargo = freightCargo(ship);
-        for (const res of Object.keys(cargo).sort((a,b) => cargo[b] - cargo[a])){
-            if (room <= 0){ break; }
-            const take = Math.min(room,cargo[res]);
-            cargo[res] -= take;
-            if (cargo[res] <= 0){ delete cargo[res]; }
-            room -= take;
-            took += take;
-            taken[res] = (taken[res] || 0) + take;
-        }
-    }
+// Remove a fleet's supply cargo after a corsair robbery.
+function corsairRob(corsair,freighters){
+    let robbed = 0, took = 0;
+    freighters.forEach(function(ship){
+        if (!ship.logi){ return; }
+        took += ship.logi.v || 0;
+        robbed++;
+        delete ship.logi;
+        ship.robbed = true;
+    });
+    took = +(took).toFixed(2);
     corsair.haul += took;
-    return { total: took, taken: taken };
+    return { robbed: robbed, took: took };
 }
 
-// Plunder regional stock until the corsair is full.
-function corsairPlunderZone(corsair,region){
-    if (supplyMode() === 'global'){ return { total: 0, taken: {} }; }
-    const pool = supplyPool(region);
-    let room = corsairHold(corsair);
-    let took = 0;
-    const taken = {};
-    const stock = Object.keys(atomic_mass)
-        .filter(res => global.resource[res] && partitioned(res) && regAmount(res,pool) >= 1)
-        .sort((a,b) => regAmount(b,pool) - regAmount(a,pool));
-    for (const res of stock){
-        if (room <= 0){ break; }
-        const take = Math.min(room,Math.floor(regAmount(res,pool)));
-        if (take <= 0){ continue; }
-        poolMod(res,pool,-take);
-        syncTotal(res);
-        room -= take;
-        took += take;
-        taken[res] = (taken[res] || 0) + take;
-    }
+// Reduce world logistics by the raider's remaining hull.
+function corsairDrain(corsair,region){
+    const want = Math.max(0,100 - (corsair.damage || 0)) * logiConst.raidShare;
+    const took = -shiftLogistics(region,-want);
     corsair.haul += took;
-    return { total: took, taken: taken };
+    return took;
 }
 
-// A freighter caught on its own. Cargo is stolen, if the fleet is empty it is instead destroyed.
+// Resolve an unescorted freighter raid.
 function corsairRaid(corsair,freighter){
     const where = encounterWhere(freighter);
     const base = global.race.sy_base[corsair.syn];
-    const load = corsairPlunderHolds(corsair,corsairHolds(freighter));
-    if (load.total > 0){
-        if (base){ base.taken++; base.haul += load.total; }
-        zMessage(loc('syndicate_cargo_taken',[freighter.name,regionName(where),corsairManifest(load.taken)]),'danger');
+    const load = corsairRob(corsair,corsairHolds(freighter));
+    if (load.robbed > 0){
+        if (base){ base.taken++; base.haul += load.took; }
+        zMessage(loc('syndicate_supply_taken',[freighter.name,regionName(where),load.took]),'danger');
         corsairGoHome(corsair);
     }
     else {
@@ -8168,10 +8137,10 @@ function corsairAmbush(corsair,escort,freighter){
     if (!fight.alive){ corsairLost(corsair,where); return; }
     if (fight.taken > fight.dealt){
         const base = global.race.sy_base[corsair.syn];
-        const load = corsairPlunderHolds(corsair,corsairHolds(freighter));
-        if (load.total > 0){
-            if (base){ base.taken++; base.haul += load.total; }
-            zMessage(loc('syndicate_cargo_taken',[freighter.name,regionName(where),corsairManifest(load.taken)]),'danger');
+        const load = corsairRob(corsair,corsairHolds(freighter));
+        if (load.robbed > 0){
+            if (base){ base.taken++; base.haul += load.took; }
+            zMessage(loc('syndicate_supply_taken',[freighter.name,regionName(where),load.took]),'danger');
         }
     }
     else {
@@ -8199,17 +8168,21 @@ function corsairAssault(corsair){
         const seen = detectorContact(corsair);
         const volleys = seen ? sWarfare.sneakDetected : sWarfare.sneak;
         zMessage(loc(seen ? 'syndicate_world_warned' : 'syndicate_world_struck',[regionName(where),volleys]),'danger');
-        const fight = corsairFight(corsair,guard,where,volleys);
+        // World defenders fire at reduced strength during logistics raids.
+        const fight = corsairFight(corsair,guard,where,volleys,logisticsActive() ? logiConst.guardFire : 1);
         if (!fight.alive){ corsairLost(corsair,where); return true; }
         plunder = fight.taken > fight.dealt;
         if (!plunder){ zMessage(loc('syndicate_world_held',[regionName(where)]),'success'); }
     }
 
     if (plunder){
-        const load = corsairPlunderZone(corsair,where);
-        if (load.total > 0){
-            if (base){ base.looted = (base.looted || 0) + 1; base.haul += load.total; }
-            zMessage(loc('syndicate_world_looted',[regionName(where),corsairManifest(load.taken)]),'danger');
+        const took = corsairDrain(corsair,where);
+        if (took > 0){
+            if (base){ base.looted = (base.looted || 0) + 1; base.haul += took; }
+            zMessage(loc('syndicate_world_drained',[regionName(where),took,logisticsOf(where)]),'danger');
+        }
+        else {
+            zMessage(loc('syndicate_world_bare',[regionName(where)]),'warning');
         }
     }
     corsairGoHome(corsair);
@@ -9675,8 +9648,9 @@ function fleetDesignerModal(modal, draft){
             },
             templateStats(ship){
                 let speed = Math.round(shipSpeed(ship) * starConstants.KM_S_PER_SHIPUNIT) + 'km/s';
+                // A freighter flies supply rather than goods unless supply zones are dividing the stockpile.
                 let roleStat = ship.class === 'freighter'
-                    ? loc('supply_freighter_load') + ': ' + freightCapacity(ship)
+                    ? (supplyMode() === 'regional' ? loc('supply_freighter_load') + ': ' + freightCapacity(ship) : loc('logistics_freighter_bonus',[cargoBonus(ship)]))
                     : ship.class === 'supply_ship'
                         ? loc('outer_shipyard_special') + ': ' + loc('outer_shipyard_special_' + shipSpecial(ship))
                         : loc('firepower') + ': ' + shipAttackPower(ship);
@@ -9824,8 +9798,8 @@ function copyShipDesign(ship){
         'fid','flag',
         // Assigned patrol or freight route.
         'patrol','tradeRoute',
-        // Cargo resources.
-        'cargo',
+        // Cargo resources, and supply cargo under logistics.
+        'cargo','logi','robbed',
         // Starter-freighter assignment flags.
         'supplyGrant','supplyRouteStarter','supplyDockFixed'
     ].forEach(function(runtime){
@@ -9994,6 +9968,11 @@ function drawShipGroup(list,g,locationName,regionNames,repairYards){
     });
 }
 
+// What a freighter's hold readout is called: its supply, unless supply zones have it carrying goods.
+function cargoLabel(){
+    return loc(supplyMode() === 'regional' ? 'supply_freighter_load' : 'logistics_freighter_label');
+}
+
 function drawShipRow(list,i,ship,regionNames){
     {
         let dispatch = `<button id="ship${i}loc" class="button is-info" @click="pickDest(${i})">
@@ -10018,7 +9997,7 @@ function drawShipRow(list,i,ship,regionNames){
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row2.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
-            row2.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
+            row2.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${cargoLabel()}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
             row2.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
@@ -10043,7 +10022,7 @@ function drawShipRow(list,i,ship,regionNames){
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-bind:class="{ 'has-text-info': speedRelay(${i}) }" v-html="speedText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat"><span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': fuelShort(${i}) }" v-html="fuelText(${i})"></span></span><wbr>`);
             row1.append(`<button class="button is-small is-info shipRefuel" v-show="manualRefuelShow(${i})" @click="manualRefuel(${i})">${loc('outer_shipyard_refuel')}</button><wbr>`);
-            row1.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${loc('supply_freighter_load')}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
+            row1.append(`<span class="shipStat" v-show="cargoText(${i})"><span class="has-text-warning">${cargoLabel()}</span> <span class="pad" v-html="cargoText(${i})"></span></span><wbr>`);
             row1.append(`<span class="shipStat" v-show="hullShow(${i})"><span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span></span><wbr>`);
 
             row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
@@ -10240,6 +10219,11 @@ function drawShipRow(list,i,ship,regionNames){
                 cargoText(id){
                     let ship = global.space.shipyard.ships[id];
                     if (!ship || ship.class !== 'freighter'){ return ``; }
+                    // A freighter carries supply for one world rather than goods, unless supply zones are
+                    // dividing the stockpile.
+                    if (supplyMode() !== 'regional'){
+                        return ship.logi ? loc('logistics_cargo',[ship.logi.v,supplyRegionName(ship.logi.t, true)]) : loc('logistics_cargo_none');
+                    }
                     let contents = Object.entries(freightCargo(ship)).filter(([,amount]) => amount > 0)
                         .map(([res,amount]) => `${global.resource[res].name}: ${sizeApproximation(amount,0)}`).join(', ');
                     return `${sizeApproximation(freightLoad(ship),0)} / ${freightCapacity(ship)}${contents ? ` — ${contents}` : ``}`;

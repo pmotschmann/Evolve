@@ -1902,7 +1902,7 @@ const spaceProjects = {
             title(){ return loc('city_shed_title3'); },
             desc(){ return loc('city_shed_title3'); },
             type: 'storage',
-            reqs: { shadow: 5 },
+            reqs: { shadow: 5, locked: 1 },
             path: ['truepath'],
             cost: {
                 Money(r={}){ return spaceCostMultiplier('m_warehouse', r.offset, 175000, 1.28, 'space'); },
@@ -3467,7 +3467,7 @@ const spaceProjects = {
             title(){ return loc('city_shed_title3'); },
             desc(){ return loc('city_shed_title3'); },
             type: 'storage',
-            reqs: { shadow: 5 },
+            reqs: { shadow: 5, locked: 1 },
             path: ['truepath'],
             cost: {
                 Money(r={}){ return spaceCostMultiplier('c_warehouse', r.offset, 175000, 1.28, 'space'); },

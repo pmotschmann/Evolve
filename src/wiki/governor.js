@@ -1,9 +1,7 @@
 import { loc } from './../locale.js';
 import { sideMenu, subSideMenu, infoBoxBuilder } from './functions.js';
 import { govBoost } from './government.js';
-import { gmen, gov_traits, gov_tasks, repairWaitCap, repairWaitCapFavoured, freightHorizonDefault, marketTraderEssential } from './../governor.js';
-import { global } from './../vars.js';
-import { routeConstants } from './../autoroute.js';
+import { gmen, gov_traits, gov_tasks, repairWaitCap, repairWaitCapFavoured } from './../governor.js';
 import { hoovedRename } from './../functions.js';
 import { hoovedReskin } from './../races.js';
 
@@ -335,70 +333,6 @@ export function governPage(content){
                 data_link: {
                     6: ['plain','plain'],
                     7: ['wiki.html#matrioshka-tp_tech-reconstruction']
-                }
-            });
-            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
-        }
-
-        {
-            let task = 'freight';
-            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 9, break: [3,5,6,7,8,9], h_level: 3,
-                text: {
-                    1: `wiki_governor_task_${task}1`,
-                    2: `wiki_governor_task_${task}2`,
-                    3: `wiki_governor_task_${task}3`,
-                    4: `wiki_governor_task_${task}4`,
-                    5: `wiki_governor_task_${task}5`,
-                    6: `wiki_governor_task_${task}6`,
-                    7: `wiki_governor_task_${task}7`,
-                    8: `wiki_governor_task_${task}8`,
-                    9: `wiki_governor_task_unlock`
-                },
-                para_data: {
-                    2: [loc('tab_supply_zones'),loc('supply_freighter_routes')],
-                    3: [loc('supply_freighter_route_relief')],
-                    5: [loc('supply_freighter_route_build')],
-                    6: [loc('supply_freighter_route_balance')],
-                    // Read from the task itself so the documented limits cannot drift from the code.
-                    7: [routeConstants.maxStops],
-                    8: [loc('gov_task_freight_horizon'),freightHorizonDefault,loc('gov_task_freight_balance')],
-                    9: [loc('tech_syndicate_threat_analysis')]
-                },
-                data_link: {
-                    2: ['wiki.html#mechanics-gameplay-supply','plain'],
-                    9: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis']
-                }
-            });
-            subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
-        }
-
-        {
-            let task = 'trader';
-            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 8, break: [3,4,6,7,8], h_level: 3,
-                text: {
-                    1: `wiki_governor_task_${task}1`,
-                    2: `wiki_governor_task_${task}2`,
-                    3: `wiki_governor_task_${task}3`,
-                    4: `wiki_governor_task_${task}4`,
-                    5: `wiki_governor_task_${task}5`,
-                    6: `wiki_governor_task_${task}_priority`,
-                    7: `wiki_governor_task_${task}6`,
-                    8: `wiki_governor_task_unlock`
-                },
-                para_data: {
-                    1: [loc('tab_black_market')],
-                    // List fuels from the task's route-priority order.
-                    6: [marketTraderEssential.filter(r => r !== 'Food')
-                        .map(r => global.resource[r] ? global.resource[r].name : loc(`resource_${r}_name`)).join(', ')],
-                    // Use the task's configured setting labels.
-                    7: [loc('gov_task_trader_margin'),loc('gov_task_trader_reserve')],
-                    8: [loc('tab_supply_zones')]
-                },
-                data_color: {
-                    6: ['plain']
-                },
-                data_link: {
-                    8: ['wiki.html#mechanics-gameplay-supply']
                 }
             });
             subSideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));

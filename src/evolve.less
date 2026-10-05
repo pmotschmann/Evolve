@@ -8404,6 +8404,54 @@ div.bigbang {
     opacity: .75;
 }
 
+// Shadow War logistics
+.logisticsIntro {
+    margin: 0 1rem .75rem;
+    font-size: .85rem;
+    opacity: .8;
+}
+.logisticsWorld {
+    .logisticsValue {
+        min-width: 3.2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        opacity: 1;
+    }
+    .supplyRouteStop { grid-template-columns: 1.5rem minmax(10rem, 1fr) auto; }
+}
+.logisticsEstimate {
+    margin: .5rem 0 .75rem;
+    padding: .55rem .75rem;
+    border: rgba(128,128,128,.42) solid .0625rem;
+    border-radius: .4rem;
+    background: rgba(128,128,128,.08);
+    text-align: left;
+    font-size: .85rem;
+}
+.logisticsEstimateHead {
+    margin-bottom: .3rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.logisticsLeg {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    gap: .2rem .8rem;
+    align-items: center;
+}
+.logisticsLoop {
+    margin-top: .35rem;
+    padding-top: .35rem;
+    border-top: rgba(128,128,128,.35) solid .0625rem;
+    font-weight: 700;
+}
+@media only screen and (max-width: 600px) {
+    .logisticsWorld .supplyRouteStop { grid-template-columns: 1.5rem minmax(0, 1fr) auto; }
+    .logisticsLeg { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
 .supplyZoneEmpty,
 .supplyCargoEmpty {
     padding: .75rem 0 .1rem;

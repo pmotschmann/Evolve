@@ -17,9 +17,9 @@ export function supplyMode(){
     return supplyUnlocked() && global.race['supplySplit'] ? 'regional' : 'global';
 }
 
-// Whether Syndicate Threat Analysis has unlocked supply zones.
+// Whether legacy supply zones are active.
 export function supplyUnlocked(){
-    return global.tech['shadow'] && global.tech.shadow >= 5 ? true : false;
+    return global.race['supplyZones'] && global.tech['shadow'] && global.tech.shadow >= 5 ? true : false;
 }
 
 // Return whether Syndicate Tactics has split Sol into regional supply zones.

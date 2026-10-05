@@ -12,7 +12,8 @@ import { actions, structName } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
 import { zWarfareVars, sWarfare, detectorSegments, containmentCaptureChance, interrogationDuration } from './../truepath.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower, fleetVars, sensorUpgrade, improvedSensors, shipPartKey,
-         shipDockedAt } from './../ships.js';
+         shipDockedAt, supplyRouteStops } from './../ships.js';
+import { logiConst } from './../logistics.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1046,6 +1047,7 @@ export function mechanicsPage(content){
                     1: [loc('outer_shipyard_class_freighter')],
                     2: [s.overdriveAU,s.overdrive],
                     3: [s.catchAU],
+                    4: [s.raidReach,s.tauDrained],
                     6: [s.repair,s.haulRepair],
                     7: [s.lostMin,s.lostMax]
                 }
@@ -1090,17 +1092,16 @@ export function mechanicsPage(content){
         }
 
         { // What a raid takes
-            infoBoxBuilder(swar,{ name: 'swar_loot', template: 'mechanics', label: loc('wiki_mechanics_swar_loot'), paragraphs: 7, break: [3,5], h_level: 2,
+            infoBoxBuilder(swar,{ name: 'swar_loot', template: 'mechanics', label: loc('wiki_mechanics_swar_loot'), paragraphs: 5, break: [3,4], h_level: 2,
                 para_data: {
-                    1: [s.plunder.toLocaleString()],
-                    2: [Math.floor(s.plunder * 0.8).toLocaleString()],
-                    3: [loc('outer_shipyard_class_freighter')],
-                    5: [s.sneak,s.sneakDetected],
-                    6: [loc('wiki_mechanics_supply')],
-                    7: [loc('outer_shipyard_class_freighter')]
+                    1: [s.sneak,s.sneakDetected],
+                    2: [pct(logiConst.guardFire)],
+                    3: [loc('wiki_mechanics_logistics'),logiConst.raidShare,100 * logiConst.raidShare,logiConst.floor],
+                    4: [loc('outer_shipyard_class_freighter'),pct(logiConst.robbedShare)],
+                    5: [loc('outer_shipyard_class_freighter')]
                 },
                 data_link: {
-                    6: ['wiki.html#mechanics-gameplay-supply']
+                    3: ['wiki.html#mechanics-gameplay-logistics']
                 }
             });
         }
@@ -1108,49 +1109,30 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`swar`,loc('wiki_mechanics_swar'));
     }
 
-    { // Supply Zones
-        let supply = infoBoxBuilder(mainContent,{ name: 'supply', template: 'mechanics', label: loc('wiki_mechanics_supply'), paragraphs: 4, break: [2,3,4], h_level: 2,
+    { // Shadow War logistics
+        let logistics = infoBoxBuilder(mainContent,{ name: 'logistics', template: 'mechanics', label: loc('wiki_mechanics_logistics'), paragraphs: 3, break: [2,3], h_level: 2,
             para_data: {
-                1: [loc('tech_syndicate_threat_analysis')],
-                2: [loc('supply_zone_sol'),loc('supply_zone_tauceti'),global.resource.Unobtainium.name],
-                3: [loc('tech_syndicate_tactics'),loc('supply_zone_sol')]
+                1: [loc('tech_syndicate_threat_analysis'),logiConst.start,logiConst.cap,100 - logiConst.start,logiConst.cap - 100,logiConst.tauStart],
+                2: [logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest,loc('tech_zone_security'),loc('tech_outer_security')]
             },
             data_link: {
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
-                3: ['wiki.html#shadow_war-tp_tech-syndicate_tactics']
+                2: [false,false,false,false,false,'wiki.html#shadow_war-tp_tech-zone_security','wiki.html#shadow_war-tp_tech-outer_security']
             }
         });
 
-        { // What each world can hold
-            infoBoxBuilder(supply,{ name: 'supply_store', template: 'mechanics', label: loc('wiki_mechanics_supply_store'), paragraphs: 3, break: [2,3], h_level: 2,
+        { // Supply routes
+            infoBoxBuilder(logistics,{ name: 'logistics_routes', template: 'mechanics', label: loc('wiki_mechanics_logistics_routes'), paragraphs: 5, break: [2,3,4,5], h_level: 2,
                 para_data: {
-                    1: [global.resource.Crates.name,global.resource.Containers.name],
-                    3: [loc('tab_resources')]
+                    1: [loc('outer_shipyard_class_freighter'),loc('tab_logistics'),supplyRouteStops],
+                    3: [logiConst.freeLanes,logiConst.lanePenalty],
+                    4: [loc('outer_shipyard_special_extra_cargo'),logiConst.cargoBonus,`${logiConst.fleetShare * 100}%`,logiConst.fleetMax],
+                    5: [`${Math.round((1 - logiConst.routePace) * 100)}%`]
                 }
             });
         }
 
-        { // Paying for things out of one world's store
-            infoBoxBuilder(supply,{ name: 'supply_build', template: 'mechanics', label: loc('wiki_mechanics_supply_build'), paragraphs: 3, break: [2,3], h_level: 2,
-                para_data: {
-                    2: [loc('city_factory'),loc('city_smelter'),loc('job_craftsman')]
-                }
-            });
-        }
-
-        { // Carrying goods between worlds
-            infoBoxBuilder(supply,{ name: 'supply_freight', template: 'mechanics', label: loc('wiki_mechanics_supply_freight'), paragraphs: 4, break: [2,3,4], h_level: 2,
-                para_data: {
-                    1: [loc('tab_supply_zones')],
-                    4: [loc('gov_task_freight')]
-                },
-                data_link: {
-                    4: ['wiki.html#governor-gameplay-freight']
-                }
-            });
-        }
-
-        sideMenu('add',`mechanics-gameplay`,`supply`,loc('wiki_mechanics_supply'));
+        sideMenu('add',`mechanics-gameplay`,`logistics`,loc('wiki_mechanics_logistics'));
     }
 
     { // Alien Infiltrators
