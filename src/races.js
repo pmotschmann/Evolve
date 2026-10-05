@@ -8318,7 +8318,7 @@ function minorWish(parent){
                 }
             },
             wish(v){
-                return v <= 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
+                return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);
@@ -8794,7 +8794,7 @@ function majorWish(parent){
                 }
             },
             wish(v){
-                return v <= 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
+                return v === 0 ? `<span class="has-text-success">${loc(`power_available`)}</span>` : `<span class="has-text-danger">${Math.ceil(v)}</span>`;
             },
             label(v){
                 return loc(`wish_${v}`);

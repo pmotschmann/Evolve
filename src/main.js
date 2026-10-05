@@ -13308,8 +13308,14 @@ function longLoop(){
             if (global.race.wishStats.minor > 0){
                 global.race.wishStats.minor--;
             }
+            if (global.race.wishStats.minor < 0){
+                global.race.wishStats.minor = 0;
+            }
             if (global.race.wishStats.major > 0){
                 global.race.wishStats.major--;
+            }
+            if (global.race.wishStats.major < 0){
+                global.race.wishStats.major = 0;
             }
             if (global.race.wishStats.bad > 0){
                 global.race.wishStats.bad--;
