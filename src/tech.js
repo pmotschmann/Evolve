@@ -18930,8 +18930,6 @@ const techs = {
             }
             if (payCosts(this)){
                 messageQueue(loc('tech_syndicate_tactics_msg',[loc(`outer_shipyard_class_corsair`),loc(`outer_shipyard_class_destroyer`),loc(`outer_shipyard_class_cruiser`)]),'info',false,['progress']);
-                // Granting shadow 8 wakes the Venus base.
-                messageQueue(loc('syndicate_venus_active',[planetName().venus]),'danger',false,['combat','progress']);
                 return true;
             }
             return false;

@@ -18,8 +18,8 @@ export const logiConst = {
     tauStart: 90,       // A Tau Ceti world's value at the same moment.
     floor: 5,           // Raids never take a world below this.
     cap: 110,           // Deliveries never push a world above this.
-    rest: 100,          // A world outside Sol decays back down to this when above it.
-    solRest: 75,        // A Sol world decays back down to this when above it.
+    rest: 90,          // A world outside Sol decays back down to this when above it.
+    solRest: 60,        // A Sol world decays back down to this when above it.
     decayDays: 5,       // Game days per point of decay.
     raidShare: 0.5,     // Points a raider takes per point of hull it has left (percent).
     guardFire: 0.5,     // Share of their usual damage defenders land on a raider.

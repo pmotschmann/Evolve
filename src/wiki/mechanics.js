@@ -1029,14 +1029,13 @@ export function mechanicsPage(content){
         let swar = infoBoxBuilder(mainContent,{ name: 'swar', template: 'mechanics', label: loc('wiki_mechanics_swar'), paragraphs: 4, break: [3], h_level: 2,
             para_data: {
                 1: [loc('tech_syndicate_threat_analysis')],
-                2: [s.startMin,s.startMax,s.homeBerths,loc('outer_shipyard_class_freighter'),getSolarName('venus'),loc('tech_syndicate_tactics'),s.venusBerths],
+                2: [s.startMin,s.startMax,s.homeBerths,loc('outer_shipyard_class_freighter')],
                 3: [pct(s.stealth),loc('outer_shipyard_sensors'),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                 4: [loc('wiki_mechanics_tp_ships')]
             },
             data_link: {
                 3: [false,false,false,'wiki.html#shadow_war-tp_tech-improved_sensors'],
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
-                2: [false,false,false,false,false,'wiki.html#shadow_war-tp_tech-syndicate_tactics'],
                 4: ['wiki.html#mechanics-gameplay-tp_ships']
             }
         });

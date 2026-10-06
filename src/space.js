@@ -3567,12 +3567,12 @@ const spaceProjects = {
             queue_size: 5,
             queue_complete(){ return sWarfare.containmentSegments - (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0); },
             cost: {
-                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 40000000 : 0; },
-                Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 25000000 : 0; },
-                Polymer(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 8000000 : 0; },
-                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000000 : 0; },
-                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 5000 : 0; },
-                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 250000 : 0; }
+                Money(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 1000000000 : 0; },
+                Iron(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 250000000 : 0; },
+                Polymer(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 80000000 : 0; },
+                Tungsten(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 50000000 : 0; },
+                Elerium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 25000 : 0; },
+                Unobtainium(r={}){ return ((r.offset || 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0)) < sWarfare.containmentSegments ? 350000 : 0; }
             },
             effect(wiki){
                 let count = (wiki?.count ?? 0) + (global.space.hasOwnProperty('alien_containment') ? global.space.alien_containment.count : 0);

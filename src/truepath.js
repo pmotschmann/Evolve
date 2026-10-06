@@ -7569,7 +7569,7 @@ export function intelligenceOfficerCost(){
     const alien = counterEspionage();
     if (!alien){ return 0; }
     const assigned = Object.values(alien.officers.assigned).reduce((sum,count) => sum + count, 0);
-    return Math.round(5000000 * (1 + (alien.officers.available + assigned) * 0.25));
+    return Math.round(10000000 * (1 + (alien.officers.available + assigned) * 0.5));
 }
 
 // Start training one Intelligence Officer when funds are available.
@@ -10689,11 +10689,11 @@ export function detectorTemplate(site){
         queue_size: 5,
         queue_complete(){ return detectorSegments() - built(); },
         cost: {
-            Money(r={}){ return priced(r) ? 30000000 : 0; },
-            Adamantite(r={}){ return priced(r) ? 1200000 : 0; },
-            Stanene(r={}){ return priced(r) ? 1800000 : 0; },
-            Bolognium(r={}){ return priced(r) ? 750000 : 0; },
-            Elerium(r={}){ return priced(r) ? 350 : 0; }
+            Money(r={}){ return priced(r) ? 300000000 : 0; },
+            Adamantite(r={}){ return priced(r) ? 12000000 : 0; },
+            Stanene(r={}){ return priced(r) ? 18000000 : 0; },
+            Bolognium(r={}){ return priced(r) ? 7500000 : 0; },
+            Elerium(r={}){ return priced(r) ? 3500 : 0; }
         },
         effect(wiki){
             let count = (wiki?.count ?? 0) + built();
