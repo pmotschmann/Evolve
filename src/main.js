@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName, time_mult } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes, migrateStrand, templeOutputBonus, findMinorTrait} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, syncSupplyZones, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
@@ -1734,12 +1734,7 @@ function fastLoop(){
         return ok;
     }
 
-    var time_multiplier = 0.25;
-    if (webWorker.offline){
-        // Offline catch-up: a single fast loop simulates offlineScale whole game days of
-        // production at once (one game day = longRatio fast loops of 0.25s each).
-        time_multiplier *= webWorker.longRatio * webWorker.offlineScale;
-    }
+    var time_multiplier = time_mult(0.25);
     resetResBuffer();
     if (global.race.species === 'protoplasm'){
         // Early Evolution Game
@@ -13313,8 +13308,14 @@ function longLoop(){
             if (global.race.wishStats.minor > 0){
                 global.race.wishStats.minor--;
             }
+            if (global.race.wishStats.minor < 0){
+                global.race.wishStats.minor = 0;
+            }
             if (global.race.wishStats.major > 0){
                 global.race.wishStats.major--;
+            }
+            if (global.race.wishStats.major < 0){
+                global.race.wishStats.major = 0;
             }
             if (global.race.wishStats.bad > 0){
                 global.race.wishStats.bad--;
@@ -14330,6 +14331,7 @@ function diffCalc(res,period){
         let fast = 1 - (traits.hyper.vars()[0] / 100);
         sec = Math.floor(sec * fast);
     }
+    sec /= time_mult(1);
 
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;

@@ -953,7 +953,7 @@ const iceAgeModules = {
                 },
                 dig_rate(){
                     let ratio = global.underground['mineshaft']?.ratio ?? 100;
-                    let miner_base = workerScale(global.civic.miner.workers * ratio / 100,'mineshaft_miner');
+                    let miner_base = workerScale((global.civic.miner?.workers ?? 0) * ratio / 100,'mineshaft_miner');
                     let trait_mods = racialTrait(miner_base,'miner'); 
                     if (global.race['tough']){
                         trait_mods *= 1 + (traits.tough.vars()[0] / 100);
@@ -3519,7 +3519,7 @@ const iceAgeModules = {
                 spared: true,
                 effect(){
                     let desc = ``;
-                    let lumberjacks = workerScale(global.civic.lumberjack.workers,'lumberjack');
+                    let lumberjacks = workerScale(global.civic.lumberjack?.workers ?? 0,'lumberjack');
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
                         serve *= servantTrait(global.race.servants.jobs.lumberjack,'lumberjack');
