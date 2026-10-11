@@ -5931,11 +5931,12 @@ function growth_cycle(lifeform){
         }
         if (water_ratio > 0 && (self.count >= 2 || eco_info.plant) ){ //grows if there are at least 2 already
             //growth is reduced at >50% size coverage. Linear reduction to 0 at 100% coverage
-            results.grow_gain = self.count * ((eco_info.growth_rate - 1) * (2 - Math.max(1, size_ratio * 2))) * fed * ecoMinorTraitEffect(lifeform, 'promiscuous');
+            let coverage = Math.min(1, size_ratio);
+            results.grow_gain = self.count * ((eco_info.growth_rate - 1) * (2 - Math.max(1, coverage * 2))) * fed * ecoMinorTraitEffect(lifeform, 'promiscuous');
             if (results.grow_gain < 0){
                 results.grow_gain = 0;
             }
-            results.overcrowd_gain_reduce = (2 - Math.max(1, size_ratio * 2));
+            results.overcrowd_gain_reduce = (2 - Math.max(1, Math.min(1, coverage) * 2));
         }
         results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss + results.herbivore_loss;
         results.total_gain = results.grow_gain;
