@@ -9359,7 +9359,8 @@ function fastLoop(){
         }
     }
 
-    if (global.civic['garrison'] && garrisonSize() < garrisonSize(true)){
+    let difference = global.civic['garrison'] ? garrisonSize(true) - garrisonSize() : 0;
+    if (difference > 0){
         let rate = 2.5;
         if (global.race['high_pop']){
             rate *= traits.high_pop.vars()[2];
@@ -9403,13 +9404,12 @@ function fastLoop(){
             global.civic.garrison.rate += traits.brute.vars(1)[1] / 40 * fathom * time_multiplier;
         }
         global.civic.garrison.progress += global.civic.garrison.rate;
-        while (global.civic.garrison.progress >= 100){
-            global.civic.garrison.progress -= 100;
-            global.civic.garrison.workers++;
-
-            if (global.portal['fortress'] && global.portal.fortress['assigned'] && global.portal.fortress.garrison < global.portal.fortress.assigned){
-                global.portal.fortress.garrison++;
-            };
+        let gain = Math.floor(Math.min(difference, global.civic.garrison.progress / 100));
+        global.civic.garrison.workers += gain;
+        global.civic.garrison.progress %= 100;
+        if (global.portal['fortress'] && global.portal.fortress['assigned']){
+            let f_difference = Math.max(global.portal.fortress.assigned - global.portal.fortress.garrison, 0);
+            global.portal.fortress.garrison += Math.min(gain, f_difference);
         }
     }
 

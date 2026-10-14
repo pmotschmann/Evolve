@@ -64,10 +64,9 @@ export const events = {
         }
     },
     fire: {
-        reqs: {
-            resource: 'Lumber',
-            nogenus: 'aquatic',
-            notrait: 'evil'
+        reqs: function(){
+            let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
+            return global.resource.Lumber.display && global.resource.Lumber.name == loc('resource_Lumber_name') && genus !== 'aquatic'
         },
         type: 'major',
         class: 'negative',
@@ -1178,71 +1177,78 @@ export function eventList(type){
             isOk = false;
         }
         if (events[event]['reqs']){
-            Object.keys(events[event].reqs).forEach(function (req) {
-                switch(req){
-                    case 'race':
-                        if (events[event].reqs[req] !== global.race.species){
-                            isOk = false;
-                        }
-                        break;
-                    case 'genus':
-                        if (events[event].reqs[req] !== races[global.race.species].type){
-                            isOk = false;
-                        }
-                        break;
-                    case 'nogenus':
-                        if (events[event].reqs[req] === races[global.race.species].type){
-                            isOk = false;
-                        }
-                        break;
-                    case 'resource':
-                        if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
-                            isOk = false;
-                        }
-                        break;
-                    case 'trait':
-                        if (!global.race[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'notrait':
-                        if (global.race[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'tech':
-                        if (!global.tech[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'notech':
-                        if (global.tech[events[event].reqs[req]]){
-                            isOk = false;
-                        }
-                        break;
-
-                    case 'high_tax_rate':
-                        // there are currently no events with the high_tax_rate requirement
-                        if (global.civic.taxes.tax_rate <= events[event].reqs[req]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'low_morale':
-                        if (global.city.morale.current >= events[event].reqs[req]){
-                            isOk = false;
-                        }
-                        break;
-                    case 'biome':
-                        // there are currently no events with the biome requirement
-                        if (global.city.biome !== events[event].reqs[req]){
-                            isOk = false;
-                        }
-                        break;
-                    default:
-                        isOk = false;
-                        break;
+            if (typeof events[event].reqs === 'function'){
+                if (!events[event].reqs()){
+                    isOk = false;
                 }
-            });
+            }
+            else{
+                Object.keys(events[event].reqs).forEach(function (req) {
+                    switch(req){
+                        case 'race':
+                            if (events[event].reqs[req] !== global.race.species){
+                                isOk = false;
+                            }
+                            break;
+                        case 'genus':
+                            if (events[event].reqs[req] !== races[global.race.species].type){
+                                isOk = false;
+                            }
+                            break;
+                        case 'nogenus':
+                            if (events[event].reqs[req] === races[global.race.species].type){
+                                isOk = false;
+                            }
+                            break;
+                        case 'resource':
+                            if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
+                                isOk = false;
+                            }
+                            break;
+                        case 'trait':
+                            if (!global.race[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'notrait':
+                            if (global.race[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'tech':
+                            if (!global.tech[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'notech':
+                            if (global.tech[events[event].reqs[req]]){
+                                isOk = false;
+                            }
+                            break;
+
+                        case 'high_tax_rate':
+                            // there are currently no events with the high_tax_rate requirement
+                            if (global.civic.taxes.tax_rate <= events[event].reqs[req]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'low_morale':
+                            if (global.city.morale.current >= events[event].reqs[req]){
+                                isOk = false;
+                            }
+                            break;
+                        case 'biome':
+                            // there are currently no events with the biome requirement
+                            if (global.city.biome !== events[event].reqs[req]){
+                                isOk = false;
+                            }
+                            break;
+                        default:
+                            isOk = false;
+                            break;
+                    }
+                });
+            }
         }
         if (isOk && events[event]['condition'] && !events[event].condition()){
             isOk = false;

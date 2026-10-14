@@ -4829,7 +4829,8 @@ function cave_fight(real=false, seed=global['warseed']){
         deaths -= reduction;
         injuries += reduction;
     }
-    army -= Math.min(army, deaths);
+    deaths = Math.min(army, deaths);
+    army -= deaths;
     injuries = Math.min(injuries, army);
     let further_deaths = 0;
     let rounds = 0;
@@ -4843,9 +4844,9 @@ function cave_fight(real=false, seed=global['warseed']){
             let armor = armorCalc(new_deaths);
             let armor_reduce = Math.floor(Math.min(new_deaths, armor, army-injuries));
             injuries += armor_reduce;
-            new_deaths -= armor_reduce;
-            further_deaths += Math.min(army, new_deaths);
-            army -= Math.min(army, new_deaths);
+            new_deaths = Math.min(army, new_deaths-armor_reduce);
+            further_deaths += new_deaths;
+            army -= new_deaths;
             injuries = Math.min(injuries, army);
         }
         rounds++;
