@@ -742,6 +742,7 @@ export function defineResources(wiki){
     loadResource('Nanoweave',wiki,-1,0,false,false,'danger');
     loadResource('Scarletite',wiki,-1,0,false,false,'danger');
     loadResource('Quantium',wiki,-1,0,false,false,'danger');
+    loadResource('Thermite',wiki,-1,0,false,false,'danger');
     loadResource('Corrupt_Gem',wiki,-2,0,false,false,'caution');
     loadResource('Codex',wiki,-2,0,false,false,'caution');
     loadResource('Cipher',wiki,0,1,false,false,'caution');
