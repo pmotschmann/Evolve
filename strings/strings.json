@@ -11639,5 +11639,20 @@
   "wiki_achievements_incomplete": "Incomplete",
   "wiki_achievements_completed": "Completed",
   "wiki_search_placeholder": "No results found.",
-  "wiki_search_regex_support": "RegEx Supported"
+  "wiki_search_regex_support": "RegEx Supported",
+  "ui_active_challenge_genes": "Active Challenge Genes",
+  "ui_strength": "Strength:",
+  "ui_blocking_resource": "(blocking resource)",
+  "ui_first_blocking_resource": "(first blocking resource)",
+  "ui_last_blocking_resource": "(last blocking resource)",
+  "ui_top_bar": "Top Bar",
+  "ui_race_info": "Race Info",
+  "ui_tab_navigation": "Tab Navigation",
+  "ui_external_links": "External Links",
+  "ui_wiki": "Wiki",
+  "ui_donate": "Donate",
+  "ui_distribute_low_power": "Distribute Low Power",
+  "ui_delete": "Delete",
+  "ui_solar_system": "Solar System",
+  "ui_all": "All"
 }

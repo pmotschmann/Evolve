@@ -8152,7 +8152,7 @@ function drawGraph(info,graphInfo){
     chartCont.append(`<div id="graph-${id}-controls" class="graphControls">
         <div>
             <h2></h2>
-            <h2 class="text-button has-text-danger" @click="deleteGraph()">Delete</h2>
+            <h2 class="text-button has-text-danger" @click="deleteGraph()">${loc('ui_delete')}</h2>
         </div>
         <div class="graphTitle">
             <h2>${graphInfo.name}</h2>

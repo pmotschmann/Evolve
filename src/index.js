@@ -897,7 +897,7 @@ export function index(){
 
     // Top Bar
     $('body').append(`<div id="topBar" class="topBar">
-        <h2 class="is-sr-only">Top Bar</h2>
+        <h2 class="is-sr-only">${loc('ui_top_bar')}</h2>
         <span class="planetWrap">
             <span class="planet">{{ race.species | planet }}</span>
             <span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span>
@@ -931,7 +931,7 @@ export function index(){
     // Left Column
     columns.append(`<div class="column is-one-quarter leftColumn">
         <div id="race" class="race colHeader">
-            <h2 class="is-sr-only">Race Info</h2>
+            <h2 class="is-sr-only">${loc('ui_race_info')}</h2>
             <div class="name">{{ name() }}</div>
             <div class="morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
             <div class="power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | replicate | approx }}</span></span></div>
@@ -1161,7 +1161,7 @@ export function index(){
     let content = $(`<div class="content"></div>`);
     mainColumn.append(content);
 
-    content.append(`<h2 class="is-sr-only">Tab Navigation</h2>`);
+    content.append(`<h2 class="is-sr-only">${loc('ui_tab_navigation')}</h2>`);
     let tabs = $(`<b-tabs id="mainTabs" v-model="s.civTabs" :animated="s.animated" @input="swapTab"></b-tabs>`);
     content.append(tabs);
 
@@ -1490,14 +1490,14 @@ export function index(){
                 </h1>
             </span>
             <span class="right">
-                <h2 class="is-sr-only">External Links</h2>
+                <h2 class="is-sr-only">${loc('ui_external_links')}</h2>
                 <ul class="external-links">
-                    <li><a href="wiki.html" target="_blank">Wiki</a></li>
+                    <li><a href="wiki.html" target="_blank">${loc('ui_wiki')}</a></li>
                     <li><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a></li>
                     <li><a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a></li>
                     <li><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></li>
                     <li><a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a></li>
-                    <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></li>
+                    <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">${loc('ui_donate')}</a></li>
                 </ul>
             </span>
         </div>
