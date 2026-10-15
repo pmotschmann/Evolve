@@ -1,4 +1,5 @@
-import {} from './../vars.js';
+import russianChanges from '../../strings/changelog.ru-RU.json';
+import { global } from './../vars.js';
 import { clearElement } from './../functions.js';
 
 export const changeList = [
@@ -3586,6 +3587,10 @@ export const changeList = [
     }
 ];
 
+function localiseChange(text){
+    return global.settings.locale === 'ru-RU' ? (russianChanges[text] ?? text) : text;
+}
+
 export function changeLog(){
     let content = $(`#content`);
     clearElement(content);
@@ -3598,7 +3603,7 @@ export function changeLog(){
         change.append(`<div class="type"><h2 class="has-text-warning" id="${changeList[i].version.replaceAll('.','_')}">v${changeList[i].version}${revision}</h2><span class="has-text-caution">${changeList[i].date}</span></div>`);
 
         for (let j=0; j<changeList[i].changes.length; j++){
-            change.append(`<div class="desc">${changeList[i].changes[j]}</div>`);
+            change.append(`<div class="desc">${localiseChange(changeList[i].changes[j])}</div>`);
         }
     }
 }
@@ -3614,7 +3619,7 @@ export function getTopChange(elm){
     for (let idx=index; idx>=0; idx--){
         elm.append(`<div class="type"><h2 class="has-text-warning">v${changeList[idx].version}${changeList[idx].hasOwnProperty('revision') ? changeList[idx].revision : ''}</h2><span class="has-text-caution">${changeList[idx].date}</span></div>`);
         for (let i=0; i<changeList[idx].changes.length; i++){
-            elm.append(`<div class="desc condense">${changeList[idx].changes[i]}</div>`);
+            elm.append(`<div class="desc condense">${localiseChange(changeList[idx].changes[i])}</div>`);
         }
     }
     return elm;

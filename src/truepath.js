@@ -6426,6 +6426,6 @@ function buildSolarMap(parentNode) {
 }
 
 function solarModal(){
-    $('#modalBox').append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">Solar System</p>'));
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('ui_solar_system')}</p>`));
     buildSolarMap($(`#modalBox`));
 }
