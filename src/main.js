@@ -3403,6 +3403,9 @@ function fastLoop(){
                 morale += hugeAdjust(p_on['surface_zoo']) * 4;
                 global.city.morale.zoo = hugeAdjust(p_on['surface_zoo']) * 4;
             }
+            else{
+                global.city.morale.zoo = 0;
+            }
         }
         else{
             global.city.morale.zoo = 0;
