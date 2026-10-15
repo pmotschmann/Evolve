@@ -9345,6 +9345,19 @@ function fastLoop(){
             }
         }
 
+        if (global.resource.Power_Bones.display){
+            let excess = global.resource.Power_Bones.amount - hugeAdjust(global.surface.bone_storage.count * 50);
+            if (excess > 0){
+                let decay = 0.005 * (0.98 ** hugeAdjust(global.surface.bone_storage.count));
+                decay = excess * (1 - ((1 - decay) ** time_multiplier));
+                modRes('Power_Bones', -(decay));
+                breakdown.p.consume.Power_Bones[loc('evo_challenge_decay')] = -(decay / time_multiplier);
+            }
+            else {
+                delete breakdown.p.consume.Power_Bones[loc('evo_challenge_decay')];
+            }
+        }
+
         if (firstRun){
             if (global.tech['piracy']){
                 renderSpace();
@@ -9667,8 +9680,7 @@ function midLoop(){
             Cipher: 0,
             Nanite: 0,
             Materials: 0,
-            Positronium: 0,
-            Power_Bones: 10
+            Positronium: 0
         };
         // labor caps
         var lCaps = {

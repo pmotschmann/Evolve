@@ -3234,22 +3234,10 @@ const iceAgeModules = {
                     Water(r={}){ return undergroundCostMultiplier('bone_storage', r.offset, 320000, 1.16, 'wastes', 'surface'); }
                 },
                 effect(wiki){
-                    let bones = hugeEffect(this.storage.res('Power_Bones') * this.storage.multiplier(), 0);
-                    return `<div>${loc('plus_max_resource',[bones,global.resource.Power_Bones.name])}</div>`;
-                },
-                storage: {
-                    res(res){
-                        let list = {
-                            'Power_Bones': hugeAdjust(50)
-                        };
-                        return res ? (list[res] || 0) : list;
-                    },
-                    multiplier(wiki){
-                        return BHStorageMulti(1);
-                    },
-                    gain(res, val, multiplier, count){ //not affected by spatial
-                        return Math.floor(count * val * multiplier);
-                    }
+                    let max = hugeEffect(50, 0);
+                    let decay = (1 - (0.98 ** hugeEffect(1))) * 100;
+                    let desc = `<div>${loc('surface_bone_storage_effect1',[max,global.resource.Power_Bones.name])}</div>`;
+                    return `${desc}<div>${loc('surface_bone_storage_effect2',[+(decay).toFixed(1),global.resource.Power_Bones.name])}</div>`;
                 },
                 action(args){
                     if (payCosts(this)){
