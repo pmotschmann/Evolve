@@ -5537,7 +5537,7 @@ export function buildTemplate(key, region){
                 effect(wiki){
                     let strength = global.city['banquet'] ? global.city['banquet'].strength : 0;
                     let level = (wiki?.count ?? 0) + (global.city['banquet'] ? global.city['banquet'].level : 0);
-                    let desc = `<div>Strength: <span class="has-text-caution">${strength}</span></div>`;
+                    let desc = `<div>${loc('ui_strength')} <span class="has-text-caution">${strength}</span></div>`;
                     desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((level >= 5 ? 1.02 : 1.022)**(strength) - 1) * 100)])}</div>`;
                     if(level >= 1){
                         desc += `<div>${loc(`city_banquet_effect2`, [(strength**0.75).toFixed(2)])}</div>`;
@@ -7950,11 +7950,11 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
 
                         if (!global[region][struct]){
                             color = 'has-text-danger';
-                            aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                            aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                         }
                         else if (Math.ceil(structs[region][struct].count / hugeScale(1)) > global[region][struct].count){
                             color = 'has-text-danger';
-                            aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                            aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                         }
                         else if (check_on && Math.ceil(structs[region][struct].on / hugeScale(1)) > num_on){
                             color = 'has-text-alert';
@@ -7976,7 +7976,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     let aria = '';
                     if (global.prestige[res].count < res_cost){
                         color = 'has-text-danger';
-                        aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                        aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                     }
                     empty = false;
                     cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
@@ -7990,7 +7990,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     let aria = '';
                     if (global.portal.purifier.supply < res_cost){
                         color = 'has-text-danger';
-                        aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                        aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                     }
                     empty = false;
                     cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
@@ -8020,7 +8020,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
                             if (tc.r === f_res){
                                 color = 'has-text-danger';
-                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                                aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                             }
                             else {
                                 color = 'has-text-alert';
@@ -8035,7 +8035,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         if (garrisonSize() < res_cost){
                             if (tc.r === f_res){
                                 color = 'has-text-danger';
-                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                                aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                             }
                             else {
                                 color = 'has-text-alert';
@@ -8053,14 +8053,14 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         if (poolHeld(f_res, pool) < res_cost){
                             if (tc.r === f_res){
                                 color = 'has-text-danger';
-                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                                aria = ` <span class="is-sr-only">${loc('ui_blocking_resource')}</span>`;
                             }
                             else {
                                 color = 'has-text-alert';
                             }
                             if (bres && bres !== res && tc.r === f_res){
                                 color += ' grad-from-left';
-                                aria = ' <span class="is-sr-only">(first blocking resource)</span>';
+                                aria = ` <span class="is-sr-only">${loc('ui_first_blocking_resource')}</span>`;
                             }
                             else if (bres && bres === res && tc.r !== f_res){
                                 color += ' grad-from-left-warn';
@@ -8068,7 +8068,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         }
                         else if (bres && bres === res){
                             color += ' grad-from-right';
-                            aria = ' <span class="is-sr-only">(last blocking resource)</span>';
+                            aria = ` <span class="is-sr-only">${loc('ui_last_blocking_resource')}</span>`;
                         }
                         let display_cost = sizeApproximation(res_cost,1);
                         empty = false;
