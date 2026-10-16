@@ -1527,6 +1527,9 @@ export function zApocalypse(){
 
 // Subjugated
 export function subjugated(){
+    if (!global['sim']){
+        writeBackup();
+    }
     clearSavedMessages();
 
     tagEvent('reset',{

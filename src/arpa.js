@@ -12,7 +12,9 @@ import { races, traits, genus_def, cleanAddTrait, cleanRemoveTrait, combineTrait
          geneSlotCount, slotRecessive, strandRecessivePairs, placeTrait, unplaceTrait,
          strandRoom, strandGranted, strandGenusPairs, genusEmergentList, genusEmergentRank, genusEmergent, genusFeeders, geneEmergentParity,
          syncGenusEmergent, geneLike, traitPermanent, permanentEmergent, fanaticGranted,
-         shapeShift, shapeOptions, strandMimic, strandMimicTraits} from './races.js';
+         shapeShift, shapeOptions, strandMimic, strandMimicTraits, geneFusionUnlocked, geneFusions, fusionKey, isFusionKey,
+         fusionParts, fusionCandidates, fusionUsable, fusionName, fusionBasesOf, fusionProblem, designFusion, placeFusion,
+         geneFusionSlotOf, geneSlotStrength, unplaceSlot, fusionStrength, fusionOrigin } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -758,7 +760,6 @@ export const genePool = {
         cost: { Plasmid(){ return 1250; } },
         action(){
             if (payCrispr('mutation')){
-                global.genes['mutation'] = 1;
                 genetics();
                 return true;
             }
@@ -774,7 +775,6 @@ export const genePool = {
         cost: { Plasmid(){ return 1500; } },
         action(){
             if (payCrispr('transformation')){
-                global.genes['mutation'] = 2;
                 genetics();
                 return true;
             }
@@ -790,7 +790,71 @@ export const genePool = {
         cost: { Plasmid(){ return 1750; } },
         action(){
             if (payCrispr('metamorphosis')){
-                global.genes['mutation'] = 3;
+                genetics();
+                return true;
+            }
+            return false;
+        }
+    },
+    rapid_dna: {
+        id: 'genes-rapid_dna',
+        title(){ return loc('arpa_genepool_rapid_dna_title'); },
+        desc(){ return loc('arpa_genepool_rapid_dna_desc',[genes.gene_rapid_discount,loc('resource_Genes_name')]); },
+        reqs: { mutation: 3 },
+        grant: ['mutation',4],
+        condition(){
+            return global.stats.achieve['brainless'] ? true : false;
+        },
+        cost: {
+            Plasmid(){ return 2000; },
+            Phage(){ return 50; },
+            TALENs(){ return 1; }
+        },
+        action(){
+            if (payCrispr('rapid_dna')){
+                genetics();
+                return true;
+            }
+            return false;
+        }
+    },
+    prophetic_blueprint: {
+        id: 'genes-prophetic_blueprint',
+        title(){ return loc('arpa_genepool_prophetic_blueprint_title'); },
+        desc(){ return loc('arpa_genepool_prophetic_blueprint_desc'); },
+        reqs: { mutation: 4 },
+        grant: ['mutation',5],
+        condition(){
+            return global.stats.achieve['subjugated'] ? true : false;
+        },
+        cost: {
+            Plasmid(){ return 2250; },
+            Phage(){ return 100; },
+            Exons(){ return 1; }
+        },
+        action(){
+            if (payCrispr('prophetic_blueprint')){
+                genetics();
+                return true;
+            }
+            return false;
+        }
+    },
+    fusion_proteins: {
+        id: 'genes-fusion_proteins',
+        title(){ return loc('arpa_genepool_fusion_proteins_title'); },
+        desc(){ return loc('arpa_genepool_fusion_proteins_desc'); },
+        reqs: { mutation: 5 },
+        grant: ['mutation',6],
+        condition(){
+            return global.stats.achieve['brainless'] && global.stats.achieve['subjugated'] ? true : false;
+        },
+        cost: {
+            Plasmid(){ return 2500; },
+            Phage(){ return 150; }
+        },
+        action(){
+            if (payCrispr('fusion_proteins')){
                 genetics();
                 return true;
             }
@@ -2293,6 +2357,10 @@ function genetics(){
         });
 
     }
+    else if (global.genes['mutation'] && global.genes.mutation >= 5){
+        // Prophetic Blueprint shows the strands before the genome is sequenced; only minor genes can be worked.
+        geneSlotPanel(parent,{},{ foresight: true });
+    }
 }
 
 export function sequenceLabs(){
@@ -2313,8 +2381,34 @@ export function sequenceLabs(){
 
 // --- Gene slots ---
 // Keep the active strand tab in module state.
-const geneView = { tab: 0 };
-const geneTabCount = 3;
+// fa/fb are the two genes picked in the Fusion Proteins designer.
+const geneView = { tab: 0, fa: '', fb: '' };
+
+// Major, minor, library, and the hybrid designer once Fusion Proteins is bought.
+function geneTabCount(){
+    return geneFusionUnlocked() ? 4 : 3;
+}
+
+// What a slot's contents are called; a hybrid is named for both halves.
+function slotGeneName(s){
+    return s.h ? fusionName(fusionKey(s.g,s.h)) : traitSkin('name',s.g);
+}
+
+// Every gene a slot entry makes live.
+function slotGenes(s){
+    return s && s.g ? (s.h ? [s.g,s.h] : [s.g]) : [];
+}
+
+// A design's description: each half at the strength it runs at, times a rank.
+function fusionText(key,rank){
+    let mult = fusionStrength(key) * (rank || 1);
+    return fusionParts(key).map(function(t){
+        if (!traits[t]){ return ''; }
+        return traits[t].vars
+            ? traits[t].desc(traits[t].vars().map(function(v){ return +(v * mult).toFixed(2); }))
+            : traits[t].desc();
+    }).join(' ');
+}
 
 // Limit breaks are paid in plasmids, or their antimatter counterpart in that universe.
 function geneBreakBank(){
@@ -2326,7 +2420,12 @@ function geneBreakName(){
 }
 
 // What the strand picker is allowed to offer and take away this run, filled in by genetics() before the panel is built.
-let geneMajors = { list: [], offspec: [], removable: {}, canAdd: false };
+let geneMajors = { list: [], offspec: [], removable: {}, canAdd: false, foresight: false };
+
+// Before the genome is sequenced, Prophetic Blueprint shows the major strand without letting it be changed.
+function slotForeseen(slot){
+    return geneMajors.foresight && slotIsMajor(slot) ? true : false;
+}
 
 function majorAddable(trait){
     return geneMajors.canAdd && geneMajors.list.includes(trait) ? true : false;
@@ -2415,11 +2514,11 @@ function emergentInfo(gene){
 }
 
 function geneSlotPanel(parent,traitMethods,majors){
-    geneMajors = Object.assign({ list: [], offspec: [], removable: {}, canAdd: false },majors || {},{
+    geneMajors = Object.assign({ list: [], offspec: [], removable: {}, canAdd: false, foresight: false },majors || {},{
         gain: traitMethods && traitMethods.gain ? traitMethods.gain : false,
         addCost: traitMethods && traitMethods.addCost ? traitMethods.addCost : false
     });
-    if (geneView.tab >= geneTabCount){ geneView.tab = 0; }
+    if (geneView.tab >= geneTabCount()){ geneView.tab = 0; }
     let panel = $(`<div id="geneSlots" class="geneSlots"></div>`);
     parent.append(panel);
 
@@ -2468,7 +2567,9 @@ function geneSlotPanel(parent,traitMethods,majors){
 
     // Render locked genus rungs before player slots.
     let held = strandGenusPairs();
-    let majorRows = ``;
+    let majorRows = geneMajors.foresight
+        ? `<div class="has-text-caution">${loc('arpa_gene_foresight_major')}</div>`
+        : ``;
     if (held > 0){
         majorRows += `<div class="emergeHead has-text-caution">${loc('arpa_gene_genus_row')}</div>`;
         majorRows += strandRows('major',0,held);
@@ -2519,10 +2620,44 @@ function geneSlotPanel(parent,traitMethods,majors){
         <div class="geneEmpty has-text-fade" v-show="library().length === 0">${loc('arpa_gene_none_found')}</div>
     </div>`;
 
+    // Fusion Proteins: design hybrids from two permanently unlocked genes, and list the ones already made.
+    let fusion = ``;
+    if (geneFusionUnlocked()){
+        let fCost = genes.gene_fusion_cost;
+        // Each half opens a picker that lists every candidate with its base and what it does.
+        let half = function(side){
+            return `<button class="button fusionHalf" @click="pickFusion('${side}')" :aria-label="fusionHalfLabel('${side}')">`
+                + `<span class="pickBase" v-for="b of fusionHalfBases(v.${side})" :key="b" v-bind:class="'base' + b">{{ b }}</span>`
+                + `<span v-bind:class="{ 'has-text-warning': v.${side} !== '', 'has-text-fade': v.${side} === '' }">{{ fusionHalfName(v.${side}) }}</span>`
+                + `</button>`;
+        };
+        fusion = `<b-tab-item :label="fusionLabel()"><div class="geneFusion">
+            <div class="fusionIntro has-text-caution">${loc('arpa_gene_fusion_intro',[Math.round(genes.gene_fusion_strength * 100),Math.round(genes.gene_fusion_strength_same * 100)])}</div>
+            <div class="fusionMaker">
+                ${half('fa')}
+                <span class="fusionPlus">+</span>
+                ${half('fb')}
+                <button class="button fusionFuse" :disabled="fuseProblem() !== ''" @click="fuse()">${loc('arpa_gene_fusion_btn',[fCost.TALENs,loc('resource_TALENs_name'),fCost.Exons,loc('resource_Exons_name')])}</button>
+            </div>
+            <div class="has-text-danger" v-show="v.fa !== '' && v.fb !== '' && fuseProblem() !== ''">{{ fuseProblem() }}</div>
+            <div class="geneEntry fusionEntry" v-for="k of fusions()" :key="k">
+                <span class="fusionTitle has-text-warning">{{ fusionTitle(k) }}</span>
+                <span class="geneNote fusionOrigin">{{ fusionMadeOf(k) }}</span>
+                <span class="geneNote fusionBase has-text-caution">{{ fusionBases(k) }}</span>
+                <span class="geneNote fusionStatus has-text-success" v-show="fusionSlotted(k)">${loc('arpa_gene_fusion_slotted')}</span>
+                <span class="geneNote fusionStatus has-text-danger" v-show="!fusionSlotted(k) && !fusionReady(k)">${loc('arpa_gene_fusion_unusable')}</span>
+                <span class="geneNote fusionStatus has-text-fade" v-show="!fusionSlotted(k) && fusionReady(k) && fusionBlocked(k)">${loc('arpa_gene_fusion_blocked')}</span>
+                <span class="geneText">{{ fusionDesc(k) }}</span>
+            </div>
+            <div class="geneEmpty has-text-fade" v-show="fusions().length === 0">${loc('arpa_gene_fusion_none')}</div>
+        </div></b-tab-item>`;
+    }
+
     panel.append(`<b-tabs class="geneTabs" v-model="v.tab" :animated="false">
         <b-tab-item :label="majorLabel()">${majorRows}</b-tab-item>
         <b-tab-item :label="minorLabel()">${minorRows}</b-tab-item>
         <b-tab-item :label="libraryLabel()">${library}</b-tab-item>
+        ${fusion}
     </b-tabs>${summary}`);
 
     vBind({
@@ -2577,6 +2712,73 @@ function geneSlotPanel(parent,traitMethods,majors){
             libraryLabel(){
                 return `${loc('arpa_gene_library')} (${this.library().length})`;
             },
+            // --- Fusion Proteins designer ---------------------------------------------------------
+            fusionLabel(){
+                return `${loc('arpa_gene_fusion_tab')} (${this.fusions().length})`;
+            },
+            fusionHalfName(g){
+                return g ? traitSkin('name',g) : loc('arpa_gene_fusion_choose');
+            },
+            fusionHalfBases(g){
+                let b = g ? geneBaseOf(g) : false;
+                return b ? [b] : [];
+            },
+            fusionHalfLabel(side){
+                let g = this.v[side];
+                return g ? loc('arpa_gene_fusion_change',[traitSkin('name',g)]) : loc('arpa_gene_fusion_choose');
+            },
+            pickFusion(side){
+                let vm = this;
+                let modal = this.$buefy.modal.open({
+                    hasModalCard: false,
+                    content: '<div id="modalBox" class="modalBox"></div>'
+                });
+                modalCloseButton();
+                let checkExist = setInterval(function(){
+                    if (document.getElementById('modalBox')){
+                        clearInterval(checkExist);
+                        // Written through the component, so the choice re-renders straight away.
+                        fusionPickModal(side,vm.v,modal);
+                    }
+                }, 50);
+            },
+            fusions(){
+                return Object.keys(geneFusions()).filter(function(k){ return fusionParts(k).every(function(t){ return traits[t]; }); })
+                    .sort(function(a,b){ return fusionName(a).localeCompare(fusionName(b)); });
+            },
+            fuseProblem(){
+                let why = fusionProblem(this.v.fa,this.v.fb);
+                if (!why){ return ''; }
+                if (why === 'arpa_gene_fusion_cost'){
+                    let c = genes.gene_fusion_cost;
+                    return loc(why,[c.TALENs,loc('resource_TALENs_name'),c.Exons,loc('resource_Exons_name')]);
+                }
+                return loc(why);
+            },
+            fuse(){
+                if (designFusion(this.v.fa,this.v.fb)){
+                    geneView.fa = '';
+                    geneView.fb = '';
+                    genetics();
+                }
+            },
+            fusionTitle(k){ return fusionName(k); },
+            fusionMadeOf(k){ return fusionOrigin(k); },
+            fusionBases(k){
+                return loc('arpa_gene_fusion_bases',[fusionBasesOf(k).join(' / ') || loc('arpa_gene_base_any')])
+                    + ` · ${loc('arpa_gene_fusion_strength',[+(fusionStrength(k) * 100).toFixed(0)])}`;
+            },
+            fusionDesc(k){ return fusionText(k); },
+            fusionReady(k){ return fusionUsable(k); },
+            fusionSlotted(k){
+                let at = geneFusionSlotOf(fusionParts(k)[0]);
+                let s = at === false ? false : geneSlots()[at];
+                return s && s.h && fusionKey(s.g,s.h) === k ? true : false;
+            },
+            // A half is already carried by another slotted hybrid. Its own slot does not count.
+            fusionBlocked(k){
+                return fusionParts(k).some(function(t){ return geneFusionSlotOf(t) !== false; });
+            },
             filled(i){
                 let s = geneSlots()[i];
                 return s && s.g ? true : false;
@@ -2592,7 +2794,7 @@ function geneSlotPanel(parent,traitMethods,majors){
                 if (!this.isGene(i)){
                     return `${traitSkin('name',s.g)} ${loc('arpa_genepool_rank',[+traitRank(s.g).toFixed(2)])}`;
                 }
-                return `${traitSkin('name',s.g)} ${loc('arpa_genepool_rank',[s.r])} / ${geneRankCap(i)}`;
+                return `${slotGeneName(s)} ${loc('arpa_genepool_rank',[s.r])} / ${geneRankCap(i)}`;
             },
             matched(i){ return geneSlotMatched(i); },
             // The base a slot calls for, which is nothing at all until its pair has something in it.
@@ -2609,18 +2811,18 @@ function geneSlotPanel(parent,traitMethods,majors){
             },
             removeLabel(i){
                 let s = geneSlots()[i];
-                return s && s.g ? loc('arpa_gene_remove_pop',[traitSkin('name',s.g)]) : loc('arpa_gene_remove');
+                return s && s.g ? loc('arpa_gene_remove_pop',[slotGeneName(s)]) : loc('arpa_gene_remove');
             },
             // Allow unslotted gene-like traits to be removed without a cost.
             canRemoveGene(i){
                 let s = geneSlots()[i];
-                return s && s.g && geneLike(s.g) && !geneSlotExtra(i) && !slotRecessive(i) ? true : false;
+                return s && s.g && geneLike(s.g) && !geneSlotExtra(i) && !slotRecessive(i) && !slotForeseen(i) ? true : false;
             },
             // Major and genus traits require the CRISPR removal upgrade and plasmids.
             canCull(i){
                 let s = geneSlots()[i];
                 // Recessive-pair contents cannot change after the run starts.
-                if (slotRecessive(i)){ return false; }
+                if (slotRecessive(i) || slotForeseen(i)){ return false; }
                 return s && s.g && !this.isGene(i) && majorRemovable(s.g) ? true : false;
             },
             cullSlot(i){
@@ -2634,7 +2836,7 @@ function geneSlotPanel(parent,traitMethods,majors){
             // --- Shapeshifter's genus setting -------------------------------------------------
             canShape(i){
                 let s = geneSlots()[i];
-                return s && s.g === 'shapeshifter' && shapeOptions().length > 0 ? true : false;
+                return s && s.g === 'shapeshifter' && !slotForeseen(i) && shapeOptions().length > 0 ? true : false;
             },
             shapeBtn(i){
                 let at = strandMimic();
@@ -2675,7 +2877,7 @@ function geneSlotPanel(parent,traitMethods,majors){
             },
             canRank(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g || !this.isGene(i)){ return false; }
+                if (!s || !s.g || !this.isGene(i) || slotForeseen(i)){ return false; }
                 // At the ceiling there is still a rank to buy, so long as it can be broken through.
                 return s.r < geneRankCap(i) || geneBreakUnlocked() ? true : false;
             },
@@ -2706,7 +2908,8 @@ function geneSlotPanel(parent,traitMethods,majors){
             removeGene(i){
                 let s = geneSlots()[i];
                 if (!s || !s.g || !this.canRemoveGene(i)){ return; }
-                if (unplaceTrait(s.g) !== false){ afterGeneChange(s.g); }
+                let gone = slotGenes(s);
+                if (unplaceSlot(i) !== false){ afterGeneChange(...gone); }
             },
             openGenePicker(i){
                 let modal = this.$buefy.modal.open({
@@ -2723,7 +2926,7 @@ function geneSlotPanel(parent,traitMethods,majors){
             },
             rankUp(i){
                 let s = geneSlots()[i];
-                if (!s || !s.g || !this.isGene(i)){ return; }
+                if (!s || !s.g || !this.isGene(i) || slotForeseen(i)){ return; }
 
                 let rankCap = geneRankCap(i);
                 if (s.r >= rankCap && !geneBreakUnlocked()){ return; }
@@ -2752,7 +2955,7 @@ function geneSlotPanel(parent,traitMethods,majors){
                     s.r++;
                     bought++;
                 }
-                if (bought > 0){ afterGeneChange(s.g); }
+                if (bought > 0){ afterGeneChange(...slotGenes(s)); }
             },
             unlock(gene){
                 if (genePermanent(gene) || !geneTemp(gene)){ return; }
@@ -2862,7 +3065,7 @@ function geneSlotPanel(parent,traitMethods,majors){
         // Explain that removing a minor gene is free.
         popover(`geneClearPop${i}`, function(){
             let s = geneSlots()[i];
-            return s && s.g && isGene() ? `<div class="has-text-warning">${loc("arpa_gene_remove_pop",[traitSkin("name",s.g)])}</div>` : ``;
+            return s && s.g && isGene() ? `<div class="has-text-warning">${loc("arpa_gene_remove_pop",[slotGeneName(s)])}</div>` : ``;
         },
         {
             elm: `#geneClear${i}`,
@@ -2937,14 +3140,21 @@ function geneSlotPanel(parent,traitMethods,majors){
                 }
                 return info;
             }
-            // geneVars includes the unbonded strength penalty.
-            let vars = traits[s.g].vars ? geneVars(s.g) : [];
-            let total = vars.length
-                ? traits[s.g].desc(vars.map(function(v){ return +(v * s.r).toFixed(2); }))
-                : traits[s.g].desc();
-            let each = vars.length ? traits[s.g].desc(vars) : ``;
+            // This slot's own contribution: a gene also live from another slot is counted there.
+            let total = ``, each = ``;
+            slotGenes(s).forEach(function(g){
+                if (!traits[g]){ return; }
+                let vars = traits[g].vars ? traits[g].vars(geneSlotStrength(i)) : [];
+                total += (total ? ` ` : ``) + (vars.length
+                    ? traits[g].desc(vars.map(function(v){ return +(v * s.r).toFixed(2); }))
+                    : traits[g].desc());
+                if (vars.length){ each += (each ? ` ` : ``) + traits[g].desc(vars.map(function(v){ return +v.toFixed(2); })); }
+            });
             let rate = each && each !== total
                 ? `<div class="has-text-caution">${loc('arpa_gene_per_rank',[each])}</div>`
+                : ``;
+            let hybrid = s.h
+                ? `<div class="has-text-caution">${loc('arpa_gene_fusion_halves',[traitSkin('name',s.g),traitSkin('name',s.h),+(fusionStrength(fusionKey(s.g,s.h)) * 100).toFixed(0)])}</div>`
                 : ``;
             let want = geneSlotBase(i);
             let fits = geneSlotAnswers(i);
@@ -2964,8 +3174,9 @@ function geneSlotPanel(parent,traitMethods,majors){
             let strength = `<div class="${geneSlotMatched(i) ? `has-text-success` : `has-text-caution`}">`
                 + loc(geneSlotMatched(i) ? 'arpa_gene_bonded' : 'arpa_gene_unbonded')
                 + `</div>`;
-            return `<div class="has-text-warning">${traitSkin('name',s.g)}</div>`
+            return `<div class="has-text-warning">${slotGeneName(s)}</div>`
                  + `<div>${total}</div>`
+                 + hybrid
                  + `<div class="has-text-caution">${loc('arpa_gene_at_rank',[s.r,geneRankCap(i)])}</div>`
                  + pairing
                  + locked
@@ -2981,10 +3192,18 @@ function geneSlotPanel(parent,traitMethods,majors){
 
 // Everything that could go in one slot.
 function slotChoices(slot){
-    if (geneSlotExtra(slot)){ return []; }
+    if (geneSlotExtra(slot) || slotForeseen(slot)){ return []; }
     let out = geneRoster().filter(function(t){
         return geneUnlocked(t) && geneSlotOf(t) === false && geneSuited(t) && geneSlotFits(slot,t);
     });
+    // Hybrids may sit beside their halves' own slots, but no gene is carried by two hybrids.
+    if (geneFusionUnlocked()){
+        Object.keys(geneFusions()).forEach(function(k){
+            if (!fusionUsable(k)){ return; }
+            if (fusionParts(k).some(function(t){ return geneFusionSlotOf(t) !== false; })){ return; }
+            if (geneSlotFits(slot,k)){ out.push(k); }
+        });
+    }
     // Major traits may fill only empty slots.
     let held = geneSlots()[slot];
     if (!held || !held.g){
@@ -3047,6 +3266,58 @@ function shapePickModal(modal){
     });
 }
 
+// Build the picker for one half of a hybrid design.
+function fusionPickModal(side,v,modal){
+    let other = v[side === 'fa' ? 'fb' : 'fa'];
+    $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle fusionPickTitle">${loc(side === 'fa' ? 'arpa_gene_fusion_pick_a' : 'arpa_gene_fusion_pick_b')}</p>`));
+    // Said once here rather than on every row: each row's strength sits on its base line.
+    $('#modalBox').append($(`<p class="fusionPickHint has-text-caution">${loc('arpa_gene_fusion_pick_note')}</p>`));
+
+    let body = $(`<div id="fusionPick" class="modalBody fusionPick"></div>`);
+    $('#modalBox').append(body);
+
+    let choices = fusionCandidates().sort(function(a,b){
+        return traitSkin('name',a).localeCompare(traitSkin('name',b));
+    });
+    if (choices.length === 0){
+        body.append(`<div class="has-text-fade">${loc('arpa_gene_fusion_pick')}</div>`);
+        return;
+    }
+
+    choices.forEach(function(gene){
+        let base = geneBaseOf(gene);
+        // Shown as paired with the other half once it is chosen, since a shared base makes both stronger.
+        let strength = other && other !== gene ? fusionStrength(fusionKey(gene,other)) : genes.gene_fusion_strength;
+        let blocked = gene === other ? loc('arpa_gene_fusion_pick_other')
+            : (other && geneFusions()[fusionKey(gene,other)] ? loc('arpa_gene_fusion_dupe') : false);
+        let type = loc('arpa_gene_fusion_bases',[base || loc('arpa_gene_base_any')]);
+        if (traits[gene].genus){
+            type += ` &middot; ${loc('arpa_gene_fusion_genus',[loc(`genelab_genus_${traits[gene].genus}`)])}`;
+        }
+        type += ` &middot; ${loc('arpa_gene_fusion_strength',[+(strength * 100).toFixed(0)])}`;
+        // Rounded: 6 x 0.6 is 3.5999999999999996 in floating point.
+        let does = traits[gene].vars
+            ? traits[gene].desc(traits[gene].vars(strength).map(function(n){ return +n.toFixed(2); }))
+            : traits[gene].desc();
+        body.append(`<button id="fusionPick_${gene}" class="button fusionPickRow${v[side] === gene ? ' is-chosen' : ''}"${blocked ? ' disabled' : ''}>`
+            + `<span class="pickBase base${base || 'None'}">${base || '&middot;'}</span>`
+            + `<span class="fusionPickInfo">`
+            + `<span class="fusionPickName has-text-warning">${traitSkin('name',gene)}</span>`
+            + `<span class="fusionPickType has-text-caution">${type}</span>`
+            + `<span class="fusionPickDesc">${does}</span>`
+            + (blocked ? `<span class="fusionPickNote has-text-danger">${blocked}</span>` : ``)
+            + `</span></button>`);
+    });
+
+    choices.forEach(function(gene){
+        $(`#fusionPick_${gene}`).on('click',function(){
+            if ($(this).is('[disabled]')){ return; }
+            v[side] = gene;
+            if (modal){ modal.close(); }
+        });
+    });
+}
+
 function genePickModal(slot,modal){
     // Show the requested base in the picker header.
     let want = geneSlotBase(slot);
@@ -3056,7 +3327,7 @@ function genePickModal(slot,modal){
     // The same grid serves an empty slot and a swap; only the heading tells them apart.
     let held = geneSlots()[slot];
     let title = held && held.g
-        ? loc('arpa_gene_replace_title',[geneSlotLabel(slot),traitSkin('name',held.g)])
+        ? loc('arpa_gene_replace_title',[geneSlotLabel(slot),slotGeneName(held)])
         : loc(slotIsMajor(slot) ? 'arpa_gene_pick_major' : 'arpa_gene_pick',[geneSlotLabel(slot)]);
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}${badge}</p>`));
 
@@ -3065,6 +3336,9 @@ function genePickModal(slot,modal){
 
     // Treat special traits as minor genes for slotting and ranking.
     let isMajor = function(t){ return traits[t] && !geneLike(t); };
+    // Hybrid keys have no trait entry of their own.
+    let pickName = function(t){ return isFusionKey(t) ? fusionName(t) : traitSkin('name',t); };
+    let pickBases = function(t){ return isFusionKey(t) ? fusionBasesOf(t) : [geneBaseOf(t)].filter(function(b){ return b; }); };
 
     let choices = slotChoices(slot);
 
@@ -3072,13 +3346,16 @@ function genePickModal(slot,modal){
     choices.sort(function(a,b){
         let fa = isMajor(a) === slotIsMajor(slot), fb = isMajor(b) === slotIsMajor(slot);
         if (fa !== fb){ return fa ? -1 : 1; }
-        return traitSkin('name',a).localeCompare(traitSkin('name',b));
+        return pickName(a).localeCompare(pickName(b));
     });
 
     choices.forEach(function(gene){
-        let mine = geneBaseOf(gene);
+        let mine = pickBases(gene);
+        let marks = mine.length > 0
+            ? mine.map(function(b){ return `<span class="pickBase base${b}">${b}</span>`; }).join('')
+            : `<span class="pickBase baseNone">&middot;</span>`;
         body.append(`<button id="genePick_${gene}" class="button genePickBtn${isMajor(gene) ? ` genePickMajor` : ` genePickFits`}" data-gene="${gene}">`
-            + `<span class="pickBase base${mine || 'None'}">${mine || '&middot;'}</span>${traitSkin('name',gene)}</button>`);
+            + `${marks}${pickName(gene)}</button>`);
     });
 
     choices.forEach(function(gene){
@@ -3095,24 +3372,35 @@ function genePickModal(slot,modal){
             // Priced for the gene being taken, not the empty slot: mastery costs double.
             let cost = geneSlotCost(slot,gene);
             if (global.resource.Genes.amount < cost){ return; }
+            let fused = isFusionKey(gene);
             let prev = geneSlots()[slot];
-            let displaced = prev && prev.g && prev.g !== gene ? prev.g : false;
+            let displaced = slotGenes(prev).filter(function(g){ return g !== gene; });
+            // Check placement before charging: a hybrid can still be refused if a half went down meanwhile.
+            let placed = fused ? placeFusion(gene,{ slot: slot, rank: 1 }) : placeTrait(gene,{ slot: slot, rank: 1 });
+            if (placed === false){ return; }
             global.resource.Genes.amount -= cost;
-            placeTrait(gene,{ slot: slot, rank: 1 });
             clearPopper();
             if (modal){ modal.close(); }
-            afterGeneChange(gene,displaced);
+            afterGeneChange(...(fused ? fusionParts(gene) : [gene]),...displaced);
         });
 
         popover(`genePickPop_${gene}`,function(){
             let major = isMajor(gene);
             let mine = geneBaseOf(gene);
             let info = $(`<div></div>`);
-            info.append(`<div class="has-text-warning">${traitSkin('name',gene)}</div>`);
-            // Use the shared trait-description helper for picker entries.
-            getTraitDesc(info, gene, { trank: major ? 1 : undefined });
+            info.append(`<div class="has-text-warning">${pickName(gene)}</div>`);
+            if (isFusionKey(gene)){
+                // What it is made of, then both halves at the strength they run at in a hybrid.
+                info.append(`<div class="has-text-caution">${fusionOrigin(gene)}</div>`);
+                info.append(`<div>${fusionText(gene)}</div>`);
+                info.append(`<div class="has-text-caution">${loc('arpa_gene_fusion_bases',[fusionBasesOf(gene).join(' / ') || loc('arpa_gene_base_any')])}</div>`);
+            }
+            else {
+                // Use the shared trait-description helper for picker entries.
+                getTraitDesc(info, gene, { trank: major ? 1 : undefined });
+            }
             // What putting it here would orient the pair to, when the pair has no type yet.
-            if (!geneSlotBase(slot) && mine){
+            if (!geneSlotBase(slot) && mine && !isFusionKey(gene)){
                 info.append(`<div class="has-text-caution">${loc('arpa_gene_orients',[mine,genes.gene_pairs[mine]])}</div>`);
             }
             if (major){
@@ -3138,9 +3426,9 @@ function genePickModal(slot,modal){
 }
 
 // Anything that has to happen once a gene's live rank changes.
-function afterGeneChange(gene,also){
+function afterGeneChange(...changed){
     syncGenes();
-    [gene,also].forEach(function(g){
+    changed.forEach(function(g){
         if (!g){ return; }
         if (g === 'mastery'){ calc_mastery(true); }
         if (g === 'persuasive' || g === 'logistician'){ updateTrades(); }

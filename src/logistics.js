@@ -21,6 +21,7 @@ export const logiConst = {
     rest: 90,          // A world outside Sol decays back down to this when above it.
     solRest: 60,        // A Sol world decays back down to this when above it.
     decayDays: 5,       // Game days per point of decay.
+    spyDrag: 5,         // Infiltrators on a world per extra point of decay each decayDays.
     raidShare: 0.5,     // Points a raider takes per point of hull it has left (percent).
     guardFire: 0.5,     // Share of their usual damage defenders land on a raider.
     cargoBonus: 1,      // Extra points an Extra Cargo freighter delivers per drop-off.
@@ -76,10 +77,25 @@ export function lanesSecured(region){
     return false;
 }
 
-// The level a world decays back to when it is over it. A Sol world settles lower until its lanes are
-// secured, after which it holds anything up to the same level as everywhere else.
+// Count infiltrators assigned to a world.
+export function infiltratorsOn(region){
+    const planted = global.race['alien'] && global.race.alien['infiltrators'];
+    const zone = planted ? planted[region === 'spc_home' ? 'city' : region] : false;
+    if (!zone){ return 0; }
+    let count = 0;
+    for (const building in zone){ count += zone[building] || 0; }
+    return count;
+}
+
+// Return a world's logistics floor after security and infiltrator penalties.
 export function logisticsRest(region){
-    return solWorld(region) && !lanesSecured(region) ? logiConst.solRest : logiConst.rest;
+    const rest = solWorld(region) && !lanesSecured(region) ? logiConst.solRest : logiConst.rest;
+    return Math.max(logiConst.floor, rest - infiltratorsOn(region));
+}
+
+// Return logistics lost per decay interval above the resting level.
+export function logisticsDecay(region){
+    return 1 + Math.floor(infiltratorsOn(region) / logiConst.spyDrag);
 }
 
 // The value a world starts at, whether when the supply lines are cut or when it first becomes reachable.
@@ -198,7 +214,7 @@ export function logisticsDay(){
     logi.d += steps * logiConst.decayDays;
     Object.keys(logi.v).forEach(function(region){
         const rest = logisticsRest(region);
-        if (logi.v[region] > rest){ logi.v[region] = round2(Math.max(rest, logi.v[region] - steps)); }
+        if (logi.v[region] > rest){ logi.v[region] = round2(Math.max(rest, logi.v[region] - steps * logisticsDecay(region))); }
     });
 }
 

@@ -34,15 +34,6 @@ import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect } from './iceage.js';
 
-function pykreteWeatherMultiplier(){
-    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
-    if (genus !== 'polar'){ return 1; }
-    let pykrete = traits.pykrete.vars(global.race['pykrete'] || 0.1);
-    if (global.city.calendar.temp === 0){ return 1 + (pykrete[1] / 100); }
-    if (global.city.calendar.temp === 2){ return 1 - (pykrete[0] / 100); }
-    return 1;
-}
-
 {
     document.addEventListener('DOMContentLoaded',function() {
         if (!window.matchMedia)
@@ -2829,6 +2820,8 @@ function fastLoop(){
                 const selector = '#' + provider.region + '-' + provider.struct + ' .on';
                 powerBadge(selector,active !== (state.on || 0),active !== (state.on || 0) ? 'ON ' + active + '/' + state.on : 'ON');
             }); }
+            // Round infiltrator-adjusted capacity before it is floored elsewhere.
+            capacity = Math.round(capacity * 100) / 100;
             anchorState.s_max = capacity;
 
             let used = 0;
@@ -13310,12 +13303,10 @@ function longLoop(){
         }
 
         if (global.race['wish'] && global.race['wishStats']){
-            if (global.race.wishStats.minor > 0){
-                global.race.wishStats.minor--;
-            }
-            if (global.race.wishStats.major > 0){
-                global.race.wishStats.major--;
-            }
+            ['minor','major'].forEach(function(k){
+                let left = global.race.wishStats[k];
+                global.race.wishStats[k] = Number.isFinite(left) && left > 1 ? left - 1 : 0;
+            });
             if (global.race.wishStats.bad > 0){
                 global.race.wishStats.bad--;
             }
@@ -14408,6 +14399,15 @@ function diffCalc(res,period){
             el.classList.remove('has-text-danger');
         }
     }
+}
+
+function pykreteWeatherMultiplier(){
+    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
+    if (genus !== 'polar'){ return 1; }
+    let pykrete = traits.pykrete.vars(global.race['pykrete'] || 0.1);
+    if (global.city.calendar.temp === 0){ return 1 + (pykrete[1] / 100); }
+    if (global.city.calendar.temp === 2){ return 1 - (pykrete[0] / 100); }
+    return 1;
 }
 
 // Cache resource rate nodes and refresh entries after their rows are rebuilt.
