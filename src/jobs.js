@@ -1095,7 +1095,7 @@ export function craftsmanCapacityByZone(){
         add('underground:under_foundry', jobStack(global.underground['under_foundry'].count));
     }
     if (p_on['core_blacksmith']){
-        add('underground:core_blacksmith', jobStack(global.underground['core_blacksmith'].count * 2));
+        add('underground:core_blacksmith', jobStack(p_on['core_blacksmith'] * 2));
     }
     if (support_on['crater_fabrication']){
         add('surface:crater_fabrication', jobStack(support_on['crater_fabrication'] * 2));

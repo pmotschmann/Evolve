@@ -967,7 +967,7 @@ export function defineResources(wiki){
     loadResource('Elysanite',wiki,0,1,false,true,'advanced');
     loadResource('Unobtainium',wiki,0,1,false,false,'advanced');
     loadResource('Positronium',wiki,0,1,false,false,'advanced');
-    loadResource('Power_Bones',wiki,100,1,false,false,'advanced')
+    loadResource('Power_Bones',wiki,-2,1,false,false,'advanced')
     loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');
     loadResource('Nanite',wiki,0,1,false,false,'advanced');
