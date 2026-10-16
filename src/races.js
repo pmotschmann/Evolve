@@ -3070,6 +3070,14 @@ export const traits = {
         genus: 'eldritch',
         vars(r=1){ return [8*r]; },
     },
+    rocky: { // Stone, Lumber and Bone cost reduced (includes Plywood, Boneweave and Power Bones)
+        name(){ return loc('trait_rocky_name'); },
+        desc(v = traits.rocky.vars()){ return loc('trait_rocky',[...v,global.resource.Stone.name]); },
+        type: 'minor',
+        base: 'A',
+        genus: 'primordial',
+        vars(r=1){ return [4*r]; },
+    },
     fortify: { // gene fortification
         name(){ return loc('trait_fortify_name'); },
         desc(v){ return loc('trait_fortify',v); },

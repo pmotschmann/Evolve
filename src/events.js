@@ -66,7 +66,7 @@ export const events = {
     fire: {
         reqs: function(){
             let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
-            return global.resource.Lumber.display && global.resource.Lumber.name == loc('resource_Lumber_name') && genus !== 'aquatic'
+            return (global.resource.Lumber.display && (!global.race['evil'] || global.race['iceage']) && genus !== 'aquatic')
         },
         type: 'major',
         class: 'negative',

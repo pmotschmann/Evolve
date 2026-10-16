@@ -2479,8 +2479,9 @@ export function adjustCosts(c_action, opts){
     costs = heavyAdjust(costs, args);
     costs = dictatorAdjust(costs, args);
     costs = lMatAdjust(costs, c_action, args);
-    costs = nexusAdjust(costs, c_action, args);
-    costs = undergroundTradeAdjust(costs, c_action, args);
+    costs = nexusAdjust(costs, args);
+    costs = undergroundTradeAdjust(costs, args);
+    costs = rockAdjust(costs, args);
     costs = razedAdjust(costs, c_action, args);
     costs = craftAdjust(costs, args);
     return bindCostArgs(costs, c_action, args);
@@ -2831,7 +2832,7 @@ function lMatAdjust(costs, c_action, args){
     return costs;
 }
 
-function nexusAdjust(costs, c_action, args){
+function nexusAdjust(costs, args){
     if(global.tech['nexus'] && global.race['witch_hunter'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
         let newCosts = {};
         let adjustRate = 0.96 ** global.tech['nexus'];
@@ -2848,13 +2849,30 @@ function nexusAdjust(costs, c_action, args){
     return costs;
 }
 
-export function undergroundTradeAdjust(costs, c_action, args){
+export function undergroundTradeAdjust(costs, args){
     if(global.underground['trade']){
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             let adjustRate = (1 - actions.underground.depths.trade.price_reduction() / 100) ** global.underground['trade'].count; //0.99x
             if (['Money'].includes(res)){
                 newCosts[res] = function(){ return costs[res](args) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](args); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+export function rockAdjust(costs, args){
+    let effect = geneBonus('rocky', false, true);
+    if (effect < 1 && (costs['Stone'] || costs['Lumber'] || costs['Plywood'] || costs['Power_Bones'])){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Stone', 'Lumber', 'Plywood', 'Power_Bones'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](args) * effect) || 0; }
             }
             else {
                 newCosts[res] = function(){ return costs[res](args); }
