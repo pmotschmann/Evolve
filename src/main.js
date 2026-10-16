@@ -4469,7 +4469,7 @@ function fastLoop(){
                     lowerBound += geneVars('promiscuous')[0] * global.race['promiscuous'];
                 }
                 if(global.race['fasting']){
-                    lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
+                    lowerBound += highPopAdjust(hugeAdjust(global.civic.meditator.workers)) * 0.15;
                 }
                 if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
@@ -4818,8 +4818,10 @@ function fastLoop(){
             breakdown.p['Knowledge'][global.race['iceage'] ? loc('rock_carving') : global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
 
             if (global.race['iceage'] && global.tech['science'] >= 3){
-                sundial_base *= 1 + hugeAdjust(0.05 * jobScale(global.civic.professor.workers));
-                breakdown.p['Knowledge'][`ᄂ${job_data.professor.name()}`] = 5 * jobScale(global.civic.professor.workers) + '%';
+                let mult = 0.05 * workerScale(global.civic.professor.workers,'professor');
+                mult = highPopAdjust(mult);
+                sundial_base *= 1 + mult;
+                breakdown.p['Knowledge'][`ᄂ${job_data.professor.name()}`] = +(mult).toFixed(1) + '%';
             }
             if (p_on['under_biolab']){
                 let biolab = actions.underground.industry.under_biolab.bio_effect();
@@ -6952,7 +6954,6 @@ function fastLoop(){
         if(p_on['core_mine']){
             let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
             base = workerScale(base, 'core_miner');
-            // Not named `traits`: that would shadow the trait table the two lookups below read from.
             let trait_mods = racialTrait(base, 'miner');
             if (global.race['tough']){
                 trait_mods *= 1 + (traits.tough.vars()[0] / 100);

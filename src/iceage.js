@@ -665,7 +665,7 @@ const iceAgeModules = {
                 },
                 breakthrough_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc. Rolled every fastLoop interval (4 times/second)
                     let base = 400;
-                    let professors = workerScale(jobScale(global.civic.professor.workers), 'professor');
+                    let professors = workerScale(highPopAdjust(global.civic.professor.workers), 'professor');
                     base += (global.underground['stone_slab']?.breakthrough || 0) * 800;
                     base /= professors; //infinite with 0 professors
                     if (global.surface['critical_storage']){
@@ -4342,7 +4342,7 @@ const iceAgeModules = {
                 special: true,
                 support(){ return -1; },
                 powered(){ return 0; },
-                lines(){ return hugeScale(1) * Math.floor(global.civic.crater_worker.workers / jobScale(2)); },
+                lines(){ return Math.floor(hugeScale(global.civic.crater_worker.workers) / jobScale(2)); },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -4929,7 +4929,7 @@ export function aberrant_stats(lifeform){
     fight *= a_effect('weak');
     fight *= aberrant_trait_list.ooze.trait_effect(aberrant_traits.ooze || 0).fight;
     fight *= aberrant_traits.bloated ? 0.75 : 1;
-    fight *= global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
+    fight *= jobScale(1);
 
     return { health:Math.floor(health), fight:Math.floor(fight), loot_mult:loot_mult };
 }

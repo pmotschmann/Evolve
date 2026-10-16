@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, sizeApproximation, active_rituals, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry, factoryData, nf_resources } from './industry.js';
-import { jobScale, jobStack, loadFoundry, job_data } from './jobs.js';
+import { jobScale, hugeScale, jobStack, loadFoundry, job_data } from './jobs.js';
 import { vBind, clearElement, popover, clearPopper, removeFromQueue, removeFromRQueue, calc_mastery, calcDeepPower, gameLoop, getEaster, getHalloween, randomKey, modRes, messageQueue, fibonacci } from './functions.js';
 import { setResourceName, drawResourceTab, atomic_mass, craftCost, supplyValue } from './resources.js';
 import { buildGarrison, govEffect, govTitle, armyRating, govCivics, rivalActive } from './civics.js';
@@ -4699,22 +4699,22 @@ export function racialTrait(workers,type){
     if (global.race['hivemind'] && type !== 'farmer' && !global.race['lone_survivor']){
         let breakpoint = traits.hivemind.vars()[0];
         let scale = 0.05;
-        if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy'){
-            breakpoint *= traits.high_pop.vars()[0];
-            scale = 0.5 / (traits.hivemind.vars()[0] * traits.high_pop.vars()[0]);
+        if (type !== 'army' && type !== 'hellArmy'){
+            let mult = jobScale(1) / hugeScale(1);
+            breakpoint *= mult;
+            scale /= mult
         }
         if (workers <= breakpoint){
-            let start = 1 - (breakpoint * scale);
-            modifier *= (workers * scale) + start;
+            modifier *= 1 - (breakpoint - workers) * scale;
         }
         else {
-            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
+            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : ((global.race['high_pop'] ? 0.985 : 0.98) ** hugeScale(1));
             modifier *= 1 + (1 - (mod ** (workers - breakpoint)));
         }
     }
     let antidFathom = fathomCheck('antid');
     if (antidFathom > 0){
-        let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
+        let mod = type === 'army' || type === 'hellArmy' ? 0.99 : ((global.race['high_pop'] ? 0.985 : 0.98) ** hugeScale(1));
         modifier *= 1 + (1 - (mod ** (workers * antidFathom / 4))) / 2;
     }
     if (global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
