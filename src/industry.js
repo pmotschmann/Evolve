@@ -2317,7 +2317,7 @@ export function setPowerGrid(){
     clearGrids(grids);
 
     clearElement($('#powerGrid'));
-    $('#powerGrid').append(`<div class="powerGridHead"><div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div><div id="powerModeSwitch"><b-switch class="setting" v-model="lowPowerBalance">Distribute Low Power</b-switch></div></div>`);
+    $('#powerGrid').append(`<div class="powerGridHead"><div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div><div id="powerModeSwitch"><b-switch class="setting" v-model="lowPowerBalance">${loc('ui_distribute_low_power')}</b-switch></div></div>`);
     vBind({
         el: `#powerModeSwitch`,
         data: global.settings
