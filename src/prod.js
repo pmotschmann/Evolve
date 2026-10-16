@@ -687,12 +687,33 @@ const knowledgeCapTargets = {
     tau_red: ['womling_lab']
 };
 
+// Infiltrator limits and post-search escalation multipliers.
+export const infiltratorVars = {
+    perShadow: 5,           // Infiltrators at work at once per Shadow War tier.
+    building: 0.05,         // Output each one takes from an ordinary building.
+    knowledge: 0.01,        // Output each one takes from a knowledge-cap structure...
+    surgeShadow: 21,        // ...until shadow reaches this,
+    surgeCap: 3,            // when the cap is multiplied by this,
+    surgeKnowledge: 0.02    // and a knowledge-cap structure loses this much to each one.
+};
+
+// Whether the post-search escalation is in force.
+export function infiltratorSurge(){
+    return global.tech['shadow'] && global.tech.shadow >= infiltratorVars.surgeShadow ? true : false;
+}
+
+// The most infiltrators that can be at work at once.
+export function infiltratorCap(){
+    return (global.tech['shadow'] || 0) * infiltratorVars.perShadow * (infiltratorSurge() ? infiltratorVars.surgeCap : 1);
+}
+
 // Return a structure's output fraction for its Counter Espionage zone.
 export function infiltratorFactor(zone, building){
     const planted = global.race['alien'] && global.race.alien['infiltrators'];
     const count = planted && planted[zone] ? (planted[zone][building] || 0) : 0;
     if (count <= 0){ return 1; }
-    const penalty = knowledgeCapTargets[zone] && knowledgeCapTargets[zone].includes(building) ? 0.01 : 0.05;
+    const knowledge = knowledgeCapTargets[zone] && knowledgeCapTargets[zone].includes(building);
+    const penalty = knowledge ? (infiltratorSurge() ? infiltratorVars.surgeKnowledge : infiltratorVars.knowledge) : infiltratorVars.building;
     return Math.max(0, 1 - count * penalty);
 }
 

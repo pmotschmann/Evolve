@@ -3,7 +3,7 @@ import { global, save, webWorker, p_on, writeSave, writeBackup } from './vars.js
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost, techEra , resName } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct, checkTechRequirements } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass, unlockCrates, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, jobStack, limitCraftsmen, job_data } from './jobs.js';
@@ -17,7 +17,7 @@ import { setOrbits } from './stars.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter, setupRituals, altReplicatorRes } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
-import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
+import { big_bang, cataclysm_end, descension, aiApocalypse, subjugated } from './resets.js';
 import { ecoGainMajorTrait, drawPerkUnderground } from './iceage.js';
 import { capitalZone } from './supply.js';
 import { logiConst } from './logistics.js';
@@ -5972,6 +5972,10 @@ const techs = {
             if (payCosts(this)){
                 global.settings.showGenetics = true;
                 global.settings.arpa.physics = true;
+                // Held back at sentience when Prophetic Blueprint opened ARPA early.
+                if (global.blood['aware']){
+                    global.settings.arpa.blood = true;
+                }
                 if (global.race['truepath'] && !global.tech['unify']){
                     global.tech['unify'] = 1;
                 }
@@ -18930,8 +18934,6 @@ const techs = {
             }
             if (payCosts(this)){
                 messageQueue(loc('tech_syndicate_tactics_msg',[loc(`outer_shipyard_class_corsair`),loc(`outer_shipyard_class_destroyer`),loc(`outer_shipyard_class_cruiser`)]),'info',false,['progress']);
-                // Granting shadow 8 wakes the Venus base.
-                messageQueue(loc('syndicate_venus_active',[planetName().venus]),'danger',false,['combat','progress']);
                 return true;
             }
             return false;
@@ -19067,6 +19069,7 @@ const techs = {
             Knowledge(){ return 28000000; },
             Alien_Intel(){ return 800; }
         },
+        wide: true,
         effect(){
             // Show Zone Security patrol requirements and their completion state.
             const status = zoneSecurityStatus();
@@ -19077,7 +19080,7 @@ const techs = {
             }).join(', ');
             return `<div>${loc('tech_zone_security_effect')}</div>`
                 + `<div class="has-text-success">${loc('tech_zone_security_logistics',[logiConst.solRest,logiConst.rest])}</div>`
-                + `<div>${loc('tech_zone_security_req',[sWarfare.secureFleets,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
+                + `<div>${loc('tech_zone_security_req',[sWarfare.secureFleets,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum'),sWarfare.secureSpeed])}</div>`
                 + `<div class="${mark(status.fleets >= sWarfare.secureFleets)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.secureFleets])}</div>`
                 + `<div>${loc('tech_zone_security_cover',[worlds])}</div>`;
         },
@@ -19104,6 +19107,7 @@ const techs = {
             Knowledge(){ return 28500000; },
             Alien_Intel(){ return 800; }
         },
+        wide: true,
         effect(){
             // Show Outer Security patrol requirements and their completion state.
             const status = outerSecurityStatus();
@@ -19114,7 +19118,7 @@ const techs = {
             }).join(', ');
             return `<div>${loc('tech_outer_security_effect')}</div>`
                 + `<div class="has-text-success">${loc('tech_outer_security_logistics',[logiConst.solRest,logiConst.rest])}</div>`
-                + `<div>${loc('tech_zone_security_req',[sWarfare.outerTotal,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum')])}</div>`
+                + `<div>${loc('tech_zone_security_req',[sWarfare.outerTotal,loc('outer_shipyard_class_cruiser'),sWarfare.secureFirepower,loc('outer_shipyard_sensor_quantum'),sWarfare.secureSpeed])}</div>`
                 + `<div>${loc('tech_outer_security_stops',[sWarfare.outerStops])}</div>`
                 + `<div class="${mark(status.fleets >= sWarfare.outerTotal)}">${loc('tech_zone_security_fleets',[status.fleets,sWarfare.outerTotal])}</div>`
                 + `<div class="${mark(status.inner >= sWarfare.secureFleets)}">${loc('tech_outer_security_inner',[status.inner,sWarfare.secureFleets])}</div>`
@@ -19157,6 +19161,91 @@ const techs = {
         post(){
             renderSpace();
         }
+    },
+    infiltrator_detector: {
+        id: 'tech-infiltrator_detector',
+        title(){ return loc('tech_infiltrator_detector'); },
+        desc(){ return loc('tech_infiltrator_detector'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 21 },
+        grant: ['shadow',22],
+        cost: {
+            Knowledge(){ return 29500000; },
+            Alien_Intel(){ return 1250; }
+        },
+        effect(){
+            return `<div>${loc('tech_infiltrator_detector_effect')}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                messageQueue(loc('tech_infiltrator_detector_msg',[logiConst.rest]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    supercore_processor: {
+        id: 'tech-supercore_processor',
+        title(){ return loc('tech_supercore_processor'); },
+        desc(){ return loc('tech_supercore_processor'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 22 },
+        grant: ['shadow',23],
+        cost: { // Soft lock, option is not available until TP6c path
+            Money(){ return 35000000000000; },
+            Knowledge(){ return 30000000; },
+            Alien_Intel(){ return 25000000000000; },
+            Cipher(){ return 20000000000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_supercore_processor_effect',[planetName().titan])}</div>`;
+        },
+        action(){
+            if (payCosts(this)){
+                global.tech['shadow_core'] = 1;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_supercore_processor_flair'); }
+    },
+    jeff_processor: {
+        id: 'tech-jeff_processor',
+        title(){ return loc('tech_jeff_processor'); },
+        desc(){ return loc('tech_jeff_processor'); },
+        category: 'progress',
+        era: 'shadow_war',
+        path: ['truepath'],
+        reqs: { shadow: 22 },
+        grant: ['shadow',23],
+        cost: {
+            Knowledge(){ return 30000000; }
+        },
+        effect(){
+            const gains = calcPrestige('sj');
+            const plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+            return `<div>${loc('tech_jeff_processor_effect',[loc('tau_planet',[planetName().red])])}</div>`
+                + `<div class="has-text-danger">${loc('tech_jeff_processor_reset')}</div>`
+                + `<div class="has-text-caution">${loc('tech_jeff_processor_gains',[gains.plasmid,plasmidType,gains.phage,gains.exons])}</div>`;
+        },
+        action(){
+            // Check the cost before triggering the Subjugated reset.
+            if (!checkAffordable(this) || $('#jeffReset').length){ return false; }
+            // Stop game loops while the reset overlay is displayed.
+            if (webWorker.w){ webWorker.w.terminate(); }
+            clearPopper();
+            $('body').append(`<div id="jeffReset" class="jeffReset"></div><div id="jeffSigil" class="jeffSigil" aria-hidden="true">${jeffSigil()}</div>`);
+            setTimeout(function(){ $('#jeffReset').addClass('dim'); }, 50);
+            setTimeout(function(){ $('#jeffSigil').addClass('show'); }, 1500);
+            setTimeout(function(){ $('#jeffSigil').addClass('open'); }, 3000);
+            setTimeout(function(){ subjugated(); }, 5500);
+            return false;
+        },
+        flair(){ return loc('tech_jeff_processor_flair'); }
     },
     alien_containment: {
         id: 'tech-alien_containment',
@@ -19203,6 +19292,31 @@ const techs = {
             return false;
         }
     },
+}
+
+// Build the Jeff Processor reset overlay SVG.
+function jeffSigil(){
+    let rays = '';
+    for (let i = 0; i < 24; i++){
+        const a = (i * 15) * Math.PI / 180;
+        const r1 = 98, r2 = i % 2 ? 128 : 150;
+        rays += `<line x1="${(100 + Math.cos(a) * r1).toFixed(1)}" y1="${(105 + Math.sin(a) * r1).toFixed(1)}" x2="${(100 + Math.cos(a) * r2).toFixed(1)}" y2="${(105 + Math.sin(a) * r2).toFixed(1)}"/>`;
+    }
+    return `<svg viewBox="0 0 200 200">`
+        + `<g class="rays">${rays}</g>`
+        + `<g class="pyramid">`
+            + `<polygon class="capstone" points="100,20 142.5,95 57.5,95"/>`
+            + `<polygon class="base" points="54,101 146,101 185,170 15,170"/>`
+            + `<line x1="40.6" y1="124" x2="159.4" y2="124"/><line x1="27.6" y1="147" x2="172.4" y2="147"/>`
+            + `<line x1="100" y1="101" x2="100" y2="124"/>`
+            + `<line x1="70" y1="124" x2="70" y2="147"/><line x1="130" y1="124" x2="130" y2="147"/>`
+            + `<line x1="55" y1="147" x2="55" y2="170"/><line x1="100" y1="147" x2="100" y2="170"/><line x1="145" y1="147" x2="145" y2="170"/>`
+        + `</g>`
+        + `<g class="lid">`
+            + `<path class="eye" d="M76 72 Q100 54 124 72 Q100 90 76 72 Z"/>`
+            + `<circle class="iris" cx="100" cy="72" r="8"/><circle class="pupil" cx="100" cy="72" r="3.5"/>`
+        + `</g>`
+        + `</svg>`;
 }
 
 function uniteEffect(){

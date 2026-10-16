@@ -2446,7 +2446,7 @@ export const traits = {
         val: 260,
         vars(r){
             // [Wish Cooldown Period]
-            return traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]);
+            return traitScale(r || traitRank('wish') || 1, [2520], [1440], [540]).map(v => Math.round(v));
         }
     },
     devious: {
@@ -4968,6 +4968,10 @@ export const genes = {
     strand_split_powered: 8,
     gene_unlock_phage: 25,
     gene_slot_cost: 10,         // genes, to fill any empty slot
+    gene_rapid_discount: 10,    // genes Rapid DNA takes off every minor slot fill and rank, down to free
+    gene_fusion_strength: 0.5,  // what each half of a Fusion Proteins hybrid runs at
+    gene_fusion_strength_same: 0.6,  // ...when both halves share a base, since it then answers only one
+    gene_fusion_cost: { TALENs: 1, Exons: 1 },  // prestige paid to design one hybrid
     gene_rank_base: 5,          // ranks a mispaired slot holds before any limit break (legacy saves)
     gene_rank_paired: 10,       // ...and what a minor gene in a minor slot holds instead
     gene_rank_major: 20,        // ...and what a minor gene given a major slot holds
@@ -5062,6 +5066,163 @@ export function geneTemp(gene){
 
 export function geneUnlocked(gene){
     return genePermanent(gene) || geneTemp(gene) ? true : false;
+}
+
+// --- Fusion Proteins hybrids -------------------------------------------------------------------
+// Fusion designs pair two permanently unlocked minor genes in global.genes.fusion.
+// Slotted hybrids activate both halves at fusion strength.
+
+export function geneFusionUnlocked(){
+    return global.genes['mutation'] && global.genes.mutation >= 6 ? true : false;
+}
+
+export function geneFusions(){
+    if (!global.genes['fusion'] || typeof global.genes['fusion'] !== 'object'){
+        global.genes['fusion'] = {};
+    }
+    return global.genes.fusion;
+}
+
+// Order-free, so A+B and B+A are the same design.
+export function fusionKey(a,b){
+    return a < b ? `fx-${a}-${b}` : `fx-${b}-${a}`;
+}
+
+export function isFusionKey(key){
+    return typeof key === 'string' && key.substring(0,3) === 'fx-';
+}
+
+export function fusionParts(key){
+    return isFusionKey(key) ? key.substring(3).split('-') : [];
+}
+
+// The minor genes a hybrid may be designed from: permanent unlocks only, and never the specials.
+export function fusionCandidates(){
+    return geneCatalog().filter(function(t){
+        return !genes.gene_specials.includes(t) && genePermanent(t);
+    });
+}
+
+// Whether a design's halves are both genes this run can slot at all.
+export function fusionUsable(key){
+    if (!geneFusionUnlocked() || !geneFusions()[key]){ return false; }
+    let roster = geneRoster();
+    let parts = fusionParts(key);
+    return parts.length === 2 && parts.every(function(t){
+        return traits[t] && roster.includes(t) && geneUnlocked(t) && geneSuited(t);
+    });
+}
+
+// A hybrid's own name: a blend of its halves' names, the head of one onto the tail of the other.
+// Worked from the displayed names, so it follows a species' skin and the locale.
+export function fusionName(key){
+    let name = fusionBlendOf(key);
+    // Two of the player's own designs that blend alike are told apart by a numeral, in key order.
+    let twins = Object.keys(geneFusions()).sort().filter(function(k){ return fusionBlendOf(k) === name; });
+    let at = twins.indexOf(key);
+    return at > 0 ? `${name} ${fusionConstants.numerals[at] || at + 1}` : name;
+}
+
+function fusionBlendOf(key){
+    let parts = fusionParts(key);
+    if (parts.length !== 2){ return ''; }
+    let a = traitSkin('name',parts[0]), b = traitSkin('name',parts[1]);
+    // Both ways round; keep whichever scores better.
+    let one = fusionBlend(a,b), two = fusionBlend(b,a);
+    return two.score < one.score ? two.name : one.name;
+}
+
+// What it was made from, written out: shown beside the blended name wherever the hybrid is described.
+export function fusionOrigin(key){
+    let parts = fusionParts(key);
+    return loc('arpa_gene_fusion_name',[traitSkin('name',parts[0]),traitSkin('name',parts[1])]);
+}
+
+const fusionConstants = {
+    blend_target: 8,    // the length a blend is steered towards
+    blend_min_part: 2,  // the fewest letters either half may lend
+    vowels: 'aeiouyàáâäãåèéêëìíîïòóôöõùúûüýÿæœøаеёиоуыэюя',
+    numerals: ['','II','III','IV','V','VI','VII','VIII','IX','X']
+};
+
+function fusionVowel(c){
+    return c ? fusionConstants.vowels.includes(c.toLowerCase()) : false;
+}
+
+// Blend two gene names and return the best candidate with its score.
+function fusionBlend(a,b){
+    // A multi-word name lends its first word as a head and its last as a tail.
+    let first = a.split(/\s+/)[0], last = b.split(/\s+/).pop();
+    let min = fusionConstants.blend_min_part;
+    let heads = [], tails = [];
+    for (let k=min; k<first.length; k++){
+        if (!fusionVowel(first[k - 1]) && fusionVowel(first[k - 2])){ heads.push(first.slice(0,k)); }
+    }
+    for (let j=1; j<=last.length - min; j++){
+        if (fusionVowel(last[j]) && !fusionVowel(last[j - 1])){ tails.push(last.slice(j)); }
+    }
+    let same = [a.toLowerCase(),b.toLowerCase(),first.toLowerCase(),last.toLowerCase()];
+    let best = false;
+    heads.forEach(function(h){
+        tails.forEach(function(t){
+            let name = h + t.toLowerCase();
+            // Never just one of the names it came from.
+            if (same.includes(name.toLowerCase())){ return; }
+            // Off target either way costs; a short head costs a little more, so the first name stays recognisable.
+            let score = Math.abs(name.length - fusionConstants.blend_target) + (h.length < 3 ? 0.5 : 0);
+            if (!best || score < best.score){ best = { name: name, score: score }; }
+        });
+    });
+    if (best){ return best; }
+    // A script with no vowels to split on, or names too short to cut: half of each, by character.
+    let name = first.slice(0,Math.ceil(first.length / 2)) + last.slice(Math.floor(last.length / 2));
+    return { name: name, score: 100 };
+}
+
+// The bases either half can answer to.
+export function fusionBasesOf(key){
+    let out = [];
+    fusionParts(key).forEach(function(t){
+        let b = geneBaseOf(t);
+        if (b && !out.includes(b)){ out.push(b); }
+    });
+    return out;
+}
+
+// Return each hybrid half's effective strength.
+export function fusionStrength(key){
+    let parts = fusionParts(key);
+    let a = parts.length === 2 ? geneBaseOf(parts[0]) : false;
+    return a && a === geneBaseOf(parts[1]) ? genes.gene_fusion_strength_same : genes.gene_fusion_strength;
+}
+
+function slotFusionBases(s){
+    return s && s.h ? fusionBasesOf(fusionKey(s.g,s.h)) : [];
+}
+
+// Why two genes cannot be fused into a new design right now, as a locale key, or false when they can.
+export function fusionProblem(a,b){
+    if (!geneFusionUnlocked()){ return 'arpa_gene_fusion_locked'; }
+    if (!a || !b){ return 'arpa_gene_fusion_pick'; }
+    if (a === b){ return 'arpa_gene_fusion_same'; }
+    let pool = fusionCandidates();
+    if (!pool.includes(a) || !pool.includes(b)){ return 'arpa_gene_fusion_pick'; }
+    if (geneFusions()[fusionKey(a,b)]){ return 'arpa_gene_fusion_dupe'; }
+    let cost = genes.gene_fusion_cost;
+    if (Object.keys(cost).some(function(res){ return global.prestige[res].count < cost[res]; })){
+        return 'arpa_gene_fusion_cost';
+    }
+    return false;
+}
+
+// Pay for and record a new design. The design is permanent; slotting it is a separate step.
+export function designFusion(a,b){
+    if (fusionProblem(a,b)){ return false; }
+    let cost = genes.gene_fusion_cost;
+    Object.keys(cost).forEach(function(res){ global.prestige[res].count -= cost[res]; });
+    let key = fusionKey(a,b);
+    geneFusions()[key] = 1;
+    return key;
 }
 
 // Some minor traits should not be mutated by some species
@@ -5326,11 +5487,41 @@ export function pairBase(slot){
     let first = slot - (slot % genes.strand_slots);
     for (let n=0; n<genes.strand_slots; n++){
         let s = slots[first + n];
-        if (!s || !s.g || genes.gene_specials.includes(s.g)){ continue; }
+        // A hybrid answers whichever base the pair asks for, so it orients the pair only when nothing else does.
+        if (!s || !s.g || s.h || genes.gene_specials.includes(s.g)){ continue; }
         let b = s.b || geneBaseOf(s.g);
         if (b){ return n === 0 ? b : genes.gene_pairs[b]; }
     }
-    return false;
+    return fusedPairBase(slots,first);
+}
+
+// Orient a pair held only by hybrids: the first orientation both halves can answer, else the first one tried.
+function fusedPairBase(slots,first){
+    let want = [];
+    let tries = [];
+    for (let n=0; n<genes.strand_slots; n++){
+        let list = slotFusionBases(slots[first + n]);
+        want.push(list.length > 0 ? list : false);
+        list.forEach(function(b){ tries.push(n === 0 ? b : genes.gene_pairs[b]); });
+    }
+    if (tries.length === 0){ return false; }
+    let fits = tries.find(function(o){
+        return (!want[0] || want[0].includes(o)) && (!want[1] || want[1].includes(genes.gene_pairs[o]));
+    });
+    return fits || tries[0];
+}
+
+// Return the bases accepted by a slot.
+function slotAccepts(slot){
+    let slots = geneSlots();
+    let here = slots[slot], partner = slots[genePairSlot(slot)];
+    if (!(here && here.h) && !(partner && partner.h)){
+        let want = geneSlotBase(slot);
+        return want ? [want] : false;
+    }
+    if (!partner || !partner.g || genes.gene_specials.includes(partner.g)){ return false; }
+    let list = partner.h ? slotFusionBases(partner) : [partner.b || geneBaseOf(partner.g)].filter(function(b){ return b; });
+    return list.length > 0 ? list.map(function(b){ return genes.gene_pairs[b]; }) : false;
 }
 
 // The base a slot calls for, or false while its pair has no orientation yet.
@@ -5406,16 +5597,19 @@ export function geneGenusSlotUnlocked(){
 // Whether a gene may go in a slot at all.
 export function geneSlotFits(slot,gene){
     if (geneSlotExtra(slot) || !slotActive(slot)){ return false; }
+    // A hybrid is a minor gene for every placement rule.
+    let fused = isFusionKey(gene);
+    let like = fused || geneLike(gene);
     if (slotGenusHeld(slot)){
         // The genus's own traits always; a gene only once Chimeric DNA has opened the spare half.
-        if (!genusFeeder(gene) && !(geneLike(gene) && geneGenusSlotUnlocked())){ return false; }
+        if (!genusFeeder(gene) && !(like && geneGenusSlotUnlocked())){ return false; }
     }
     // Each kind keeps to its own strand until Unlocked DNA says otherwise.
-    else if (!geneCrossingUnlocked() && geneLike(gene) === slotIsMajor(slot)){ return false; }
-    let want = geneSlotBase(slot);
+    else if (!geneCrossingUnlocked() && like === slotIsMajor(slot)){ return false; }
+    let want = slotAccepts(slot);
     if (!want){ return true; }
-    let mine = geneBaseOf(gene);
-    return !mine || mine === want ? true : false;
+    let mine = fused ? fusionBasesOf(gene) : [geneBaseOf(gene)].filter(function(b){ return b; });
+    return mine.length === 0 || mine.some(function(b){ return want.includes(b); }) ? true : false;
 }
 
 // Whether the gene sitting in a slot answers that slot's own base.
@@ -5449,15 +5643,17 @@ export function geneEmergentList(){
 let geneRankCache = null;
 // Cache gene-to-slot lookups.
 let geneSlotMap = null;
-// Cache each gene's bonded state for geneVars().
-let geneWeakMap = null;
+// The hybrid slot carrying each gene; rebuilt with geneSlotMap.
+let geneFusionMap = {};
+// Cache each gene's strength for geneVars().
+let geneStrengthMap = null;
 // How many rungs the genus is holding. Read through strandPairCount on nearly every strand lookup.
 let geneGenusPairs = null;
 
 export function bumpGeneCache(){
     geneRankCache = null;
     geneSlotMap = null;
-    geneWeakMap = null;
+    geneStrengthMap = null;
     geneGenusPairs = null;
 }
 
@@ -5636,6 +5832,12 @@ export function geneEffectiveBase(slot){
     let s = geneSlots()[slot];
     if (!s || !s.g || !traits[s.g]){ return false; }
     if (genes.gene_specials.includes(s.g)){ return s.b || geneSlotBase(slot); }
+    if (s.h){
+        // A hybrid shows the half its slot asks for.
+        let want = geneSlotBase(slot);
+        let list = slotFusionBases(s);
+        return want && list.includes(want) ? want : (list[0] || false);
+    }
     return s.b || geneBaseOf(s.g);
 }
 
@@ -5647,38 +5849,74 @@ export function geneSlotMatched(slot){
     return a && b && genes.gene_pairs[a] === b ? true : false;
 }
 
-// An unbonded gene runs at half strength.
-export function geneWeak(gene){
+// What one slot's gene runs at: half when unbonded, and half again for each half of a hybrid.
+export function geneSlotStrength(slot){
+    let s = geneSlots()[slot];
+    return (geneSlotMatched(slot) ? 1 : 0.5) * (s && s.h ? fusionStrength(fusionKey(s.g,s.h)) : 1);
+}
+
+// The slots a gene is live from: its own, and the one hybrid that carries it. Either may be absent.
+function geneSources(gene){
+    return [geneSlotOf(gene),geneFusionSlotOf(gene)].filter(function(at){ return at !== false; });
+}
+
+// Return a gene's rank-weighted effective strength across active slots.
+export function geneStrength(gene){
     // Emergent genes inherit bonded strength from their paired rungs.
-    if (geneEmergentBy[gene]){ return false; }
-    if (geneWeakMap === null){ geneWeakMap = {}; }
-    let held = geneWeakMap[gene];
+    if (geneEmergentBy[gene]){ return 1; }
+    if (geneStrengthMap === null){ geneStrengthMap = {}; }
+    let held = geneStrengthMap[gene];
     if (held === undefined){
-        let slot = geneSlotOf(gene);
-        held = slot === false || !geneSlotMatched(slot);
-        geneWeakMap[gene] = held;
+        let slots = geneSlots();
+        let sources = geneSources(gene);
+        let ranks = 0, weighted = 0;
+        sources.forEach(function(at){
+            let r = slots[at].r || 0;
+            ranks += r;
+            weighted += r * geneSlotStrength(at);
+        });
+        // Off the strand a gene reads as unbonded, which is what descriptions of it show.
+        held = sources.length === 0 ? 0.5 : (ranks > 0 ? weighted / ranks : geneSlotStrength(sources[0]));
+        geneStrengthMap[gene] = held;
     }
     return held;
 }
 
-// Return a gene's active values, including the unbonded penalty.
+// Return a gene's active values, including the unbonded and hybrid penalties.
 export function geneVars(gene){
     if (!traits[gene] || !traits[gene].vars){ return [0]; }
-    return traits[gene].vars(geneWeak(gene) ? 0.5 : 1);
+    return traits[gene].vars(geneStrength(gene));
 }
 
-// Return a gene slot index, preserving slot zero as a valid result.
-export function geneSlotOf(gene){
-    if (geneSlotMap === null){
-        let slots = geneSlots();
-        geneSlotMap = {};
-        for (let i=0; i<slots.length; i++){
-            if (slots[i] && slots[i].g && geneSlotMap[slots[i].g] === undefined){
-                geneSlotMap[slots[i].g] = i;
-            }
+function buildGeneSlotMaps(){
+    let slots = geneSlots();
+    geneSlotMap = {};
+    geneFusionMap = {};
+    for (let i=0; i<slots.length; i++){
+        let s = slots[i];
+        if (!s || !s.g){ continue; }
+        if (s.h){
+            // Both halves of a hybrid answer to its slot.
+            if (geneFusionMap[s.g] === undefined){ geneFusionMap[s.g] = i; }
+            if (geneFusionMap[s.h] === undefined){ geneFusionMap[s.h] = i; }
+        }
+        else if (geneSlotMap[s.g] === undefined){
+            geneSlotMap[s.g] = i;
         }
     }
+}
+
+// Return a gene's own slot index, preserving slot zero.
+export function geneSlotOf(gene){
+    if (geneSlotMap === null){ buildGeneSlotMaps(); }
     let at = geneSlotMap[gene];
+    return at === undefined ? false : at;
+}
+
+// The slot of the hybrid carrying a gene, or false. At most one hybrid may carry any gene.
+export function geneFusionSlotOf(gene){
+    if (geneSlotMap === null){ buildGeneSlotMaps(); }
+    let at = geneFusionMap[gene];
     return at === undefined ? false : at;
 }
 
@@ -5728,10 +5966,21 @@ export function geneCostDiscount(gene){
     return 1 - (traits.versatility.vars(rank)[0] / 100);
 }
 
+// Apply the multipliers, then Rapid DNA's flat cut. Without Rapid DNA nothing is ever free.
+function genePrice(base,gene){
+    let cost = Math.floor(base * geneCostMod(gene) * geneCostDiscount(gene));
+    if (global.genes['mutation'] && global.genes.mutation >= 4 && (!gene || geneLike(gene))){
+        return Math.max(0,cost - genes.gene_rapid_discount);
+    }
+    return Math.max(1,cost);
+}
+
 // Self explanatory: the cost to slot or upgrade a gene
 export function geneSlotCost(slot,gene){
     let g = gene !== undefined ? gene : geneInSlot(slot);
-    return Math.max(1,Math.floor(genes.gene_slot_cost * geneCostMod(g) * geneCostDiscount(g)));
+    // A hybrid is priced as an ordinary minor gene.
+    if (isFusionKey(g)){ g = fusionParts(g)[0]; }
+    return genePrice(genes.gene_slot_cost,g);
 }
 
 function geneCostMod(gene){
@@ -5751,7 +6000,7 @@ export function geneRankBase(rank){
 
 // Calculate the price of a rank after its slot has been purchased.
 export function geneRankCost(rank,gene,slot){
-    return Math.max(1,Math.floor(geneRankBase(rank) * geneCostMod(gene) * geneCostDiscount(gene)));
+    return genePrice(geneRankBase(rank),gene);
 }
 
 export function geneBreakCost(slot){
@@ -5767,10 +6016,9 @@ export function geneBreakCost(slot){
 export function geneRank(gene){
     // An emergent trait sits in no slot; its rank is read off the pairs instead.
     if (geneEmergentBy[gene]){ return geneEmergentRank(gene); }
-    let slot = geneSlotOf(gene);
-    if (slot === false){ return 0; }
-    // Only minor genes are ranked on the slot.
-    return geneSlots()[slot].r || 0;
+    // Only minor genes are ranked on the slot; a gene in its own slot and a hybrid counts both.
+    let slots = geneSlots();
+    return geneSources(gene).reduce(function(sum,at){ return sum + (slots[at].r || 0); },0);
 }
 
 // The multiplier a gene contributes, as 1 + vars[idx] * rank / 100. The one call every hook makes.
@@ -5807,8 +6055,10 @@ export function syncGenes(){
     });
     geneSlots().forEach(function(slot){
         // Major and genus slot entries keep their gameplay rank on global.race.
+        // The total across a gene's own slot and any hybrid carrying it.
         if (slot && slot.g && slot.r && geneLike(slot.g)){
-            global.race[slot.g] = slot.r;
+            global.race[slot.g] = geneRank(slot.g);
+            if (slot.h){ global.race[slot.h] = geneRank(slot.h); }
         }
     });
     // Store slotless emergent ranks where gameplay hooks read them.
@@ -5929,6 +6179,42 @@ export function placeTrait(trait,opts){
     return false;
 }
 
+// Put a hybrid on the strand: into a picked slot, or the first that fits, minor strand first.
+export function placeFusion(key,opts){
+    opts = opts || {};
+    if (!fusionUsable(key)){ return false; }
+    let parts = fusionParts(key);
+    // A half may also sit in its own slot, but no gene is carried by two hybrids at once.
+    if (geneFusionSlotOf(parts[0]) !== false || geneFusionSlotOf(parts[1]) !== false){ return false; }
+    let slots = geneSlots();
+    let at = false;
+    if (opts['slot'] !== undefined && opts.slot !== false){
+        at = opts.slot;
+        if (geneSlotExtra(at) || at < 0 || at >= slots.length){ return false; }
+        // Like any minor gene it may replace another minor gene, but nothing else.
+        let held = slots[at];
+        if (held && held.g && !geneLike(held.g)){ return false; }
+        if (!geneSlotFits(at,key)){ return false; }
+    }
+    else {
+        let kinds = slotPreference(parts[0]);
+        for (let k=0; k<kinds.length && at === false; k++){
+            let open = [], fresh = [];
+            for (let i=0; i<slots.length; i++){
+                if (slots[i] || geneSlotExtra(i) || !slotActive(i)){ continue; }
+                if (slotKind(i) !== kinds[k] || !geneSlotFits(i,key)){ continue; }
+                (pairBase(i) ? open : fresh).push(i);
+            }
+            at = open.length > 0 ? open[0] : (fresh.length > 0 ? fresh[0] : false);
+        }
+        if (at === false){ return false; }
+    }
+    slots[at] = { g: parts[0], h: parts[1], r: Math.max(1,opts['rank'] || 1) };
+    delete geneBreaks()[at];
+    bumpGeneCache();
+    return at;
+}
+
 function finishPlacement(slot,trait,opts){
     setGeneSlot(slot,trait,opts);
     // Major and genus traits use half strength in minor slots.
@@ -5958,7 +6244,11 @@ export function strandRoom(trait){
 
 // Take a trait off its strand. The pair it was on loses its orientation once nothing is left in it.
 export function unplaceTrait(trait){
-    let slot = geneSlotOf(trait);
+    return unplaceSlot(geneSlotOf(trait));
+}
+
+// Empty one slot. By index rather than by gene, since a gene can also be live from a hybrid elsewhere.
+export function unplaceSlot(slot){
     if (slot === false || geneSlotExtra(slot)){ return false; }
     // A pair the design bought is sealed; what went in stays in.
     if (slotRecessive(slot)){ return false; }
@@ -5979,6 +6269,7 @@ export function pruneStrand(){
     for (let i=from; i<to && i<slots.length; i++){
         if (!slots[i]){ continue; }
         if (slots[i].g){ dropped.push(slots[i].g); }
+        if (slots[i].h){ dropped.push(slots[i].h); }
         slots[i] = false;
         delete geneBreaks()[i];
     }
@@ -6042,7 +6333,7 @@ export function layoutStrand(){
         let s = slots[i];
         if (s && s.g && traits[s.g]){
             if (geneLike(s.g)){
-                carried.push({ g: s.g, r: s.r || 1, b: breaks[i] || 0 });
+                carried.push({ g: s.g, h: s.h || false, r: s.r || 1, b: breaks[i] || 0 });
             }
             else if (s.p){
                 // Undo the cramped-slot penalty before re-laying, so it is never charged twice.
@@ -6134,7 +6425,7 @@ export function layoutStrand(){
 
     // Minor genes last, into whatever the majors left behind.
     carried.forEach(function(c){
-        let slot = placeTrait(c.g,{ rank: c.r });
+        let slot = c.h ? placeFusion(fusionKey(c.g,c.h),{ rank: c.r }) : placeTrait(c.g,{ rank: c.r });
         if (slot === false){ return; }
         let owed = Math.max(c.b,geneBreaksFor(c.r,slot));
         if (owed > 0){ geneBreaks()[slot] = owed; }

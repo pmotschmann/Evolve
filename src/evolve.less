@@ -6452,6 +6452,94 @@ div.bigbang {
     z-index: 100;
 }
 
+// Jeff Processor reset overlay and eye animation.
+@jeff-gold: #d4af37;
+div.jeffReset {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: #000;
+    opacity: 0;
+    transition: opacity 2s ease-in;
+
+    &.dim {
+        opacity: 0.5;
+    }
+}
+div.jeffSigil {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: ~"min(60vmin, 26rem)";
+    height: ~"min(60vmin, 26rem)";
+    z-index: 101;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+    transition: opacity 1.5s ease-out, transform 2.5s ease-out;
+    filter: drop-shadow(0 0 0.75rem fade(@jeff-gold, 70%));
+
+    &.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+    .rays line {
+        stroke: @jeff-gold;
+        stroke-width: 2;
+        stroke-linecap: round;
+        opacity: 0.45;
+    }
+    .rays {
+        transform-origin: 100px 105px;
+        animation: jeffRays 24s linear infinite;
+    }
+    .pyramid polygon,
+    .pyramid line {
+        fill: none;
+        stroke: @jeff-gold;
+        stroke-width: 3;
+        stroke-linejoin: round;
+    }
+    .pyramid .capstone {
+        fill: fade(@jeff-gold, 18%);
+    }
+    .eye {
+        fill: #fff8e1;
+        stroke: @jeff-gold;
+        stroke-width: 2.5;
+    }
+    .iris {
+        fill: @jeff-gold;
+    }
+    .pupil {
+        fill: #111;
+    }
+    // Open the eye after the sigil animation.
+    .lid {
+        transform-origin: 100px 72px;
+        transform: scaleY(0.05);
+        transition: transform 0.8s ease-out;
+    }
+    &.open .lid {
+        transform: scaleY(1);
+    }
+}
+@keyframes jeffRays {
+    to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    div.jeffSigil .rays { animation: none; }
+}
+
 // --- Gene slots ----------------------------------------------------------------------------------
 .baseA { color: var(--tc-danger,  #e57373); }
 .baseT { color: var(--tc-caution, #ffb74d); }
@@ -6611,6 +6699,62 @@ div.bigbang {
     .pickCost {
         margin-left: auto;
         padding-left: 0.5rem;
+    }
+}
+
+// Fusion Proteins half-picker styles.
+.fusionPick {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.25rem;
+
+    .fusionPickRow {
+        height: auto;
+        // Scroll long gene libraries instead of compressing rows.
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        text-align: left;
+        white-space: normal;
+
+        .pickBase { margin-top: 0.1rem; }
+
+        &.is-chosen {
+            border-color: var(--tc-success, #81c784);
+            box-shadow: 0 0 0.3rem var(--tc-success, #81c784);
+        }
+    }
+
+    .fusionPickInfo {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .fusionPickName { font-weight: 700; }
+    .fusionPickType, .fusionPickNote { font-size: 0.75rem; }
+    .fusionPickDesc { font-size: 0.85rem; opacity: 0.9; }
+}
+
+#modalBox {
+    // Clear of the corner close button, which would otherwise sit over the end of a long title.
+    .fusionPickTitle { padding: 0 2rem; }
+    .fusionPickHint { font-size: 0.75rem; margin-bottom: 0.4rem; }
+}
+
+@media only screen and (max-width: 48rem) {
+    // A phone has the height to spare and little else, so the list gets more of it and the rows less padding.
+    .fusionPick {
+        max-height: 70vh;
+
+        .fusionPickRow { padding: 0.3rem 0.5rem; }
+        .fusionPickDesc { font-size: 0.8rem; }
     }
 }
 
@@ -6875,7 +7019,26 @@ div.bigbang {
         }
     }
 
-    .geneLibrary {
+    .geneFusion .fusionMaker {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+
+        .button {
+            height: 1.75rem;
+            font-size: 0.85rem;
+        }
+
+        .fusionHalf {
+            min-width: 10rem;
+            justify-content: flex-start;
+            gap: 0.4rem;
+        }
+    }
+
+    .geneLibrary, .geneFusion {
         .geneEntry {
             display: flex;
             align-items: baseline;
@@ -6900,6 +7063,56 @@ div.bigbang {
             .button {
                 height: 1.5rem;
                 font-size: 0.75rem;
+            }
+        }
+    }
+
+    // Use compact hybrid cards on narrow screens.
+    @media only screen and (max-width: 48rem) {
+        .geneFusion {
+            .fusionIntro {
+                font-size: 0.85rem;
+            }
+
+            .fusionMaker {
+                display: grid;
+                grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+
+                .fusionHalf {
+                    min-width: 0;
+                    width: 100%;
+
+                    // A long gene name shortens rather than widening the button.
+                    > span:last-child {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                .fusionFuse {
+                    // Escaped: LESS would otherwise do the division and leave grid-column: -1.
+                    grid-column: ~"1 / -1";
+                    width: 100%;
+                }
+            }
+
+            .geneEntry.fusionEntry {
+                display: grid;
+                grid-template-columns: minmax(0,1fr) auto;
+                column-gap: 0.5rem;
+                row-gap: 0.1rem;
+                padding: 0.45rem 0;
+                border-bottom: 1px solid rgba(128,128,128,0.25);
+
+                > span:first-child {
+                    min-width: 0;
+                }
+
+                .fusionTitle   { grid-column: 1; grid-row: 1; font-weight: 700; }
+                .fusionStatus  { grid-column: 2; grid-row: 1; align-self: center; }
+                .fusionOrigin  { grid-column: 1; grid-row: 2; white-space: normal; }
+                .fusionBase    { grid-column: 2; grid-row: 2; white-space: normal; text-align: right; }
+                .geneText      { grid-column: ~"1 / -1"; grid-row: 3; }
             }
         }
     }

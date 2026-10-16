@@ -14,6 +14,7 @@ import { zWarfareVars, sWarfare, detectorSegments, containmentCaptureChance, int
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower, fleetVars, sensorUpgrade, improvedSensors, shipPartKey,
          shipDockedAt, supplyRouteStops } from './../ships.js';
 import { logiConst } from './../logistics.js';
+import { infiltratorVars } from './../prod.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -1029,14 +1030,13 @@ export function mechanicsPage(content){
         let swar = infoBoxBuilder(mainContent,{ name: 'swar', template: 'mechanics', label: loc('wiki_mechanics_swar'), paragraphs: 4, break: [3], h_level: 2,
             para_data: {
                 1: [loc('tech_syndicate_threat_analysis')],
-                2: [s.startMin,s.startMax,s.homeBerths,loc('outer_shipyard_class_freighter'),getSolarName('venus'),loc('tech_syndicate_tactics'),s.venusBerths],
+                2: [s.startMin,s.startMax,s.homeBerths,loc('outer_shipyard_class_freighter')],
                 3: [pct(s.stealth),loc('outer_shipyard_sensors'),pct(sensorUpgrade.stealth),loc('tech_improved_sensors')],
                 4: [loc('wiki_mechanics_tp_ships')]
             },
             data_link: {
                 3: [false,false,false,'wiki.html#shadow_war-tp_tech-improved_sensors'],
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
-                2: [false,false,false,false,false,'wiki.html#shadow_war-tp_tech-syndicate_tactics'],
                 4: ['wiki.html#mechanics-gameplay-tp_ships']
             }
         });
@@ -1113,7 +1113,7 @@ export function mechanicsPage(content){
         let logistics = infoBoxBuilder(mainContent,{ name: 'logistics', template: 'mechanics', label: loc('wiki_mechanics_logistics'), paragraphs: 3, break: [2,3], h_level: 2,
             para_data: {
                 1: [loc('tech_syndicate_threat_analysis'),logiConst.start,logiConst.cap,100 - logiConst.start,logiConst.cap - 100,logiConst.tauStart],
-                2: [logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest,loc('tech_zone_security'),loc('tech_outer_security')]
+                2: [logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest,loc('tech_zone_security'),loc('tech_outer_security'),logiConst.spyDrag]
             },
             data_link: {
                 1: ['wiki.html#shadow_war-tp_tech-syndicate_threat_analysis'],
@@ -1140,7 +1140,7 @@ export function mechanicsPage(content){
             para_data: {
                 1: [loc('tech_syndicate_base_data'),loc('counter_espionage')],
                 2: [loc('counter_espionage')],
-                3: [5,20],
+                3: [infiltratorVars.building * 100, Math.round(1 / infiltratorVars.building), infiltratorVars.knowledge * 100, infiltratorVars.surgeKnowledge * 100, loc('space_sybase_search_title'), infiltratorVars.perShadow],
                 5: [sWarfare.containmentStops,loc('tech_alien_containment'),loc('space_dwarf_alien_containment_title'),+(containmentCaptureChance(false) * 100).toFixed(1),interrogationDuration(false),sWarfare.intelMin,sWarfare.intelMax,loc('resource_Alien_Intel_name'),sWarfare.containmentCapacity,+(containmentCaptureChance(true) * 100).toFixed(1),loc('tech_takedown_tactics'),interrogationDuration(true),loc('tech_we_have_ways')]
             },
             data_link: {
