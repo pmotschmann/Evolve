@@ -2415,6 +2415,8 @@
   "surface_warehouse_effect": "Вместимость складских помещений +%0%",
   "surface_bone_storage": "Костехранилище",
   "surface_bone_storage_desc": "Хранит силовые кости во льду, уменьшая нестабильность.",
+  "surface_bone_storage_effect1": "?????? %0 %1 ?? ?????? ???????.",
+  "surface_bone_storage_effect2": "????????? ?????? %1 ?? %0%",
   "tech_surface_expedition": "Экспедиция на поверхность",
   "tech_surface_expedition_effect": "Послать солдат в ледяные пустоши на поиски интересных мест.",
   "tech_surface_expedition_result": "Солдаты обнаружили неизвестный метеоритный кратер далеко в пустошах.",

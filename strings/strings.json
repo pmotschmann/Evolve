@@ -2415,6 +2415,8 @@
   "surface_warehouse_effect": "Storage Space storage +%0%",
   "surface_bone_storage": "Bone Storage",
   "surface_bone_storage_desc": "Stores Power Bones suspended in ice to minimize instability.",
+  "surface_bone_storage_effect1": "Stores %0 %1 before decay sets in.",
+  "surface_bone_storage_effect2": "Reduces %1 decay by %0%",
   "tech_surface_expedition": "Surface Expedition",
   "tech_surface_expedition_effect": "Send soldiers out into the frozen landscape and try to have them discover places of interest.",
   "tech_surface_expedition_result": "Your soldiers have discovered an unknown meteorite crater far out in the wastes.",
