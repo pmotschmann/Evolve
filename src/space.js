@@ -6204,7 +6204,7 @@ const galaxyProjects = {
             ship: {
                 civ(){ return global.race['grenadier'] ? 0 : jobStack(1); },
                 mil(){
-                    let base = jobStack(1);
+                    let base = hugeScale(jobStack(1));
                     return global.race['grenadier'] ? Math.ceil(base / 2) : base;
                 },
                 helium: 6,
@@ -6259,7 +6259,7 @@ const galaxyProjects = {
                 civ(){ return jobStack(2); },
                 mil(){
                     let base = global.race['grenadier'] ? 2 : 3;
-                    return jobStack(base);
+                    return hugeScale(jobStack(base));
                 },
                 helium: 10,
                 rating(){ 
@@ -6313,7 +6313,7 @@ const galaxyProjects = {
                 civ(){ return jobStack(3); },
                 mil(){
                     let base = global.race['grenadier'] ? 3 : 5;
-                    return jobStack(base);
+                    return hugeScale(jobStack(base));
                 },
                 helium: 25,
                 rating(){ 
@@ -6369,7 +6369,7 @@ const galaxyProjects = {
                 civ(){ return jobStack(6); },
                 mil(){
                     let base = global.race['grenadier'] ? 6 : 10;
-                    return jobStack(base);
+                    return hugeScale(jobStack(base));
                 },
                 deuterium: 25,
                 rating(){ 
@@ -6425,7 +6425,7 @@ const galaxyProjects = {
                 civ(){ return jobStack(10); },
                 mil(){
                     let base = global.race['grenadier'] ? 12 : 20;
-                    return jobStack(base);
+                    return hugeScale(jobStack(base));
                 },
                 deuterium: 80,
                 rating(){ 
@@ -7380,7 +7380,7 @@ const galaxyProjects = {
             },
             ship: {
                 civ(){ return jobStack(2); },
-                mil(){ return jobStack(1); },
+                mil(){ return hugeScale(jobStack(1)); },
                 helium: 10,
                 rating(){ 
                     let rating = global.race['banana'] ? 4 : 5;
@@ -7609,7 +7609,7 @@ const galaxyProjects = {
             ship: {
                 civ(){ return 0; },
                 mil(){
-                    let base = jobStack(1);
+                    let base = hugeScale(jobStack(1));
                     return global.race['grenadier'] ? Math.ceil(base / 2) : base;
                 },
                 helium: 8,
@@ -7704,7 +7704,7 @@ const galaxyProjects = {
                 civ(){ return 0; },
                 mil(){
                     let base = global.race['grenadier'] ? 1 : 2;
-                    return jobStack(base);
+                    return hugeScale(jobStack(base));
                 },
                 helium: 18,
                 rating(){ 

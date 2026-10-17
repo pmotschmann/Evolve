@@ -665,7 +665,7 @@ const iceAgeModules = {
                 },
                 breakthrough_chance(){ //1 = 1 in 1 (100%), 2 = 1 in 2 (50%), etc. Rolled every fastLoop interval (4 times/second)
                     let base = 400;
-                    let professors = workerScale(jobScale(global.civic.professor.workers), 'professor');
+                    let professors = workerScale(highPopAdjust(global.civic.professor.workers), 'professor');
                     base += (global.underground['stone_slab']?.breakthrough || 0) * 800;
                     base /= professors; //infinite with 0 professors
                     if (global.surface['critical_storage']){
@@ -953,7 +953,7 @@ const iceAgeModules = {
                 },
                 dig_rate(){
                     let ratio = global.underground['mineshaft']?.ratio ?? 100;
-                    let miner_base = workerScale(global.civic.miner.workers * ratio / 100,'mineshaft_miner');
+                    let miner_base = workerScale((global.civic.miner?.workers ?? 0) * ratio / 100,'mineshaft_miner');
                     let trait_mods = racialTrait(miner_base,'miner'); 
                     if (global.race['tough']){
                         trait_mods *= 1 + (traits.tough.vars()[0] / 100);
@@ -3234,22 +3234,10 @@ const iceAgeModules = {
                     Water(r={}){ return undergroundCostMultiplier('bone_storage', r.offset, 320000, 1.16, 'wastes', 'surface'); }
                 },
                 effect(wiki){
-                    let bones = hugeEffect(this.storage.res('Power_Bones') * this.storage.multiplier(), 0);
-                    return `<div>${loc('plus_max_resource',[bones,global.resource.Power_Bones.name])}</div>`;
-                },
-                storage: {
-                    res(res){
-                        let list = {
-                            'Power_Bones': hugeAdjust(50)
-                        };
-                        return res ? (list[res] || 0) : list;
-                    },
-                    multiplier(wiki){
-                        return BHStorageMulti(1);
-                    },
-                    gain(res, val, multiplier, count){ //not affected by spatial
-                        return Math.floor(count * val * multiplier);
-                    }
+                    let max = hugeEffect(50, 0);
+                    let decay = (1 - (0.98 ** hugeEffect(1))) * 100;
+                    let desc = `<div>${loc('surface_bone_storage_effect1',[max,global.resource.Power_Bones.name])}</div>`;
+                    return `${desc}<div>${loc('surface_bone_storage_effect2',[+(decay).toFixed(1),global.resource.Power_Bones.name])}</div>`;
                 },
                 action(args){
                     if (payCosts(this)){
@@ -3519,7 +3507,7 @@ const iceAgeModules = {
                 spared: true,
                 effect(){
                     let desc = ``;
-                    let lumberjacks = workerScale(global.civic.lumberjack.workers,'lumberjack');
+                    let lumberjacks = workerScale(global.civic.lumberjack?.workers ?? 0,'lumberjack');
                     if (global.race['servants']){
                         let serve = global.race.servants.jobs.lumberjack;
                         serve *= servantTrait(global.race.servants.jobs.lumberjack,'lumberjack');
@@ -4354,7 +4342,7 @@ const iceAgeModules = {
                 special: true,
                 support(){ return -1; },
                 powered(){ return 0; },
-                lines(){ return hugeScale(1) * Math.floor(global.civic.crater_worker.workers / jobScale(2)); },
+                lines(){ return Math.floor(hugeScale(global.civic.crater_worker.workers) / jobScale(2)); },
                 action(args){
                     if (payCosts(this)){
                         incrementStruct(this);
@@ -4829,7 +4817,8 @@ function cave_fight(real=false, seed=global['warseed']){
         deaths -= reduction;
         injuries += reduction;
     }
-    army -= Math.min(army, deaths);
+    deaths = Math.min(army, deaths);
+    army -= deaths;
     injuries = Math.min(injuries, army);
     let further_deaths = 0;
     let rounds = 0;
@@ -4843,9 +4832,9 @@ function cave_fight(real=false, seed=global['warseed']){
             let armor = armorCalc(new_deaths);
             let armor_reduce = Math.floor(Math.min(new_deaths, armor, army-injuries));
             injuries += armor_reduce;
-            new_deaths -= armor_reduce;
-            further_deaths += Math.min(army, new_deaths);
-            army -= Math.min(army, new_deaths);
+            new_deaths = Math.min(army, new_deaths-armor_reduce);
+            further_deaths += new_deaths;
+            army -= new_deaths;
             injuries = Math.min(injuries, army);
         }
         rounds++;
@@ -4940,7 +4929,7 @@ export function aberrant_stats(lifeform){
     fight *= a_effect('weak');
     fight *= aberrant_trait_list.ooze.trait_effect(aberrant_traits.ooze || 0).fight;
     fight *= aberrant_traits.bloated ? 0.75 : 1;
-    fight *= global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
+    fight *= jobScale(1);
 
     return { health:Math.floor(health), fight:Math.floor(fight), loot_mult:loot_mult };
 }
@@ -5931,11 +5920,12 @@ function growth_cycle(lifeform){
         }
         if (water_ratio > 0 && (self.count >= 2 || eco_info.plant) ){ //grows if there are at least 2 already
             //growth is reduced at >50% size coverage. Linear reduction to 0 at 100% coverage
-            results.grow_gain = self.count * ((eco_info.growth_rate - 1) * (2 - Math.max(1, size_ratio * 2))) * fed * ecoMinorTraitEffect(lifeform, 'promiscuous');
+            let coverage = Math.min(1, size_ratio);
+            results.grow_gain = self.count * ((eco_info.growth_rate - 1) * (2 - Math.max(1, coverage * 2))) * fed * ecoMinorTraitEffect(lifeform, 'promiscuous');
             if (results.grow_gain < 0){
                 results.grow_gain = 0;
             }
-            results.overcrowd_gain_reduce = (2 - Math.max(1, size_ratio * 2));
+            results.overcrowd_gain_reduce = (2 - Math.max(1, Math.min(1, coverage) * 2));
         }
         results.total_loss = results.flood_loss + results.drought_loss + results.size_loss + results.starve_loss + results.carnivore_loss + results.herbivore_loss;
         results.total_gain = results.grow_gain;

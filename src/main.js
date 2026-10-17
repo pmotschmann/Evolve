@@ -2,7 +2,7 @@ import { $ } from './dom.js';
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, callback_queue, active_rituals, suppressReactivity, restoreReactivity, decayPerks, writeSave } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat, checkAdept } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, resetResBuffer, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, zoneTally, deepClone, exceededATimeThreshold, loopTimers, getWeaselTechLevelRequirement, calcQuantumLevel, drawPet, actionReqs, calcDeepPower, poolStock, initDrift, driftOffset, driftStep, driftFlush, driftSync, driftClamp, driftPulse, driftHeld, resName, time_mult } from './functions.js';
 import { races, traits, racialTrait, orbitLength, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, blubberFill, citizenDeath, cleanRemoveTrait, syncGenes, geneBonus, geneFlat, geneRank, traitSkin, grantRandomMinorTrait, geneVars, grantEvolveGenes, mutationGenes, migrateStrand, templeOutputBonus, findMinorTrait} from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, faithTempleCount, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers, drawResourceTab, loadRegionSwitch, blackMarketPrice, blackMarketVolume, tradeVolumeBonus } from './resources.js';
 import { supplyMode, setRegCaps, clampPools, syncSupplyZones, refreshPools, supplyRegionKey, supplyZone, regDelta, regDiff, bdStacks, regionBaseTotal, setZoneHousing, fitHousing, citizenShare, citizenZones, partitioned, regAmount, supplyPool, supplyPools, starveZone } from './supply.js';
@@ -33,15 +33,6 @@ import { setMoonPhase, setWeather, seasonDesc, astrologySign, astroVal } from '.
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 import { surfaceEcosystem, surfaceEcosystemVisual, ecosystemInfo, drawEcology, renderUnderground, renderSurface, ecoMinorTraitEffect } from './iceage.js';
-
-function pykreteWeatherMultiplier(){
-    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
-    if (genus !== 'polar'){ return 1; }
-    let pykrete = traits.pykrete.vars(global.race['pykrete'] || 0.1);
-    if (global.city.calendar.temp === 0){ return 1 + (pykrete[1] / 100); }
-    if (global.city.calendar.temp === 2){ return 1 - (pykrete[0] / 100); }
-    return 1;
-}
 
 {
     document.addEventListener('DOMContentLoaded',function() {
@@ -1734,12 +1725,7 @@ function fastLoop(){
         return ok;
     }
 
-    var time_multiplier = 0.25;
-    if (webWorker.offline){
-        // Offline catch-up: a single fast loop simulates offlineScale whole game days of
-        // production at once (one game day = longRatio fast loops of 0.25s each).
-        time_multiplier *= webWorker.longRatio * webWorker.offlineScale;
-    }
+    var time_multiplier = time_mult(0.25);
     resetResBuffer();
     if (global.race.species === 'protoplasm'){
         // Early Evolution Game
@@ -2829,6 +2815,8 @@ function fastLoop(){
                 const selector = '#' + provider.region + '-' + provider.struct + ' .on';
                 powerBadge(selector,active !== (state.on || 0),active !== (state.on || 0) ? 'ON ' + active + '/' + state.on : 'ON');
             }); }
+            // Round infiltrator-adjusted capacity before it is floored elsewhere.
+            capacity = Math.round(capacity * 100) / 100;
             anchorState.s_max = capacity;
 
             let used = 0;
@@ -3407,6 +3395,9 @@ function fastLoop(){
             if(info && Math.min(global.surface.herbivores?.count, global.surface.carnivores?.count, global.surface.scavengers?.count) >= 10){
                 morale += hugeAdjust(p_on['surface_zoo']) * 4;
                 global.city.morale.zoo = hugeAdjust(p_on['surface_zoo']) * 4;
+            }
+            else{
+                global.city.morale.zoo = 0;
             }
         }
         else{
@@ -4471,7 +4462,7 @@ function fastLoop(){
                     lowerBound += geneVars('promiscuous')[0] * global.race['promiscuous'];
                 }
                 if(global.race['fasting']){
-                    lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
+                    lowerBound += highPopAdjust(hugeAdjust(global.civic.meditator.workers)) * 0.15;
                 }
                 if(global.city.banquet && global.city.banquet.on && global.city.banquet.level >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
@@ -4820,8 +4811,10 @@ function fastLoop(){
             breakdown.p['Knowledge'][global.race['iceage'] ? loc('rock_carving') : global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
 
             if (global.race['iceage'] && global.tech['science'] >= 3){
-                sundial_base *= 1 + hugeAdjust(0.05 * jobScale(global.civic.professor.workers));
-                breakdown.p['Knowledge'][`ᄂ${job_data.professor.name()}`] = 5 * jobScale(global.civic.professor.workers) + '%';
+                let mult = 0.05 * workerScale(global.civic.professor.workers,'professor');
+                mult = highPopAdjust(mult);
+                sundial_base *= 1 + mult;
+                breakdown.p['Knowledge'][`ᄂ${job_data.professor.name()}`] = +(mult).toFixed(1) + '%';
             }
             if (p_on['under_biolab']){
                 let biolab = actions.underground.industry.under_biolab.bio_effect();
@@ -6954,7 +6947,6 @@ function fastLoop(){
         if(p_on['core_mine']){
             let base = Math.min(global.civic.core_miner.workers, jobScale(p_on['core_mine'])); //reduce available workers immediately on resource shortage
             base = workerScale(base, 'core_miner');
-            // Not named `traits`: that would shadow the trait table the two lookups below read from.
             let trait_mods = racialTrait(base, 'miner');
             if (global.race['tough']){
                 trait_mods *= 1 + (traits.tough.vars()[0] / 100);
@@ -9350,6 +9342,19 @@ function fastLoop(){
             }
         }
 
+        if (global.resource.Power_Bones.display){
+            let excess = global.resource.Power_Bones.amount - hugeAdjust(global.surface.bone_storage.count * 50);
+            if (excess > 0){
+                let decay = 0.005 * (0.98 ** hugeAdjust(global.surface.bone_storage.count));
+                decay = excess * (1 - ((1 - decay) ** time_multiplier));
+                modRes('Power_Bones', -(decay));
+                breakdown.p.consume.Power_Bones[loc('evo_challenge_decay')] = -(decay / time_multiplier);
+            }
+            else {
+                delete breakdown.p.consume.Power_Bones[loc('evo_challenge_decay')];
+            }
+        }
+
         if (firstRun){
             if (global.tech['piracy']){
                 renderSpace();
@@ -9364,7 +9369,8 @@ function fastLoop(){
         }
     }
 
-    if (global.civic['garrison'] && garrisonSize() < garrisonSize(true)){
+    let difference = global.civic['garrison'] ? garrisonSize(true) - garrisonSize() : 0;
+    if (difference > 0){
         let rate = 2.5;
         if (global.race['high_pop']){
             rate *= traits.high_pop.vars()[2];
@@ -9408,13 +9414,12 @@ function fastLoop(){
             global.civic.garrison.rate += traits.brute.vars(1)[1] / 40 * fathom * time_multiplier;
         }
         global.civic.garrison.progress += global.civic.garrison.rate;
-        while (global.civic.garrison.progress >= 100){
-            global.civic.garrison.progress -= 100;
-            global.civic.garrison.workers++;
-
-            if (global.portal['fortress'] && global.portal.fortress['assigned'] && global.portal.fortress.garrison < global.portal.fortress.assigned){
-                global.portal.fortress.garrison++;
-            };
+        let gain = Math.floor(Math.min(difference, global.civic.garrison.progress / 100));
+        global.civic.garrison.workers += gain;
+        global.civic.garrison.progress %= 100;
+        if (global.portal['fortress'] && global.portal.fortress['assigned']){
+            let f_difference = Math.max(global.portal.fortress.assigned - global.portal.fortress.garrison, 0);
+            global.portal.fortress.garrison += Math.min(gain, f_difference);
         }
     }
 
@@ -9672,8 +9677,7 @@ function midLoop(){
             Cipher: 0,
             Nanite: 0,
             Materials: 0,
-            Positronium: 0,
-            Power_Bones: 10
+            Positronium: 0
         };
         // labor caps
         var lCaps = {
@@ -13310,12 +13314,10 @@ function longLoop(){
         }
 
         if (global.race['wish'] && global.race['wishStats']){
-            if (global.race.wishStats.minor > 0){
-                global.race.wishStats.minor--;
-            }
-            if (global.race.wishStats.major > 0){
-                global.race.wishStats.major--;
-            }
+            ['minor','major'].forEach(function(k){
+                let left = global.race.wishStats[k];
+                global.race.wishStats[k] = Number.isFinite(left) && left > 1 ? left - 1 : 0;
+            });
             if (global.race.wishStats.bad > 0){
                 global.race.wishStats.bad--;
             }
@@ -14330,6 +14332,7 @@ function diffCalc(res,period){
         let fast = 1 - (traits.hyper.vars()[0] / 100);
         sec = Math.floor(sec * fast);
     }
+    sec /= time_mult(1);
 
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
@@ -14408,6 +14411,15 @@ function diffCalc(res,period){
             el.classList.remove('has-text-danger');
         }
     }
+}
+
+function pykreteWeatherMultiplier(){
+    let genus = races[global.race.species]?.type === 'hybrid' ? global.race.maintype : races[global.race.species]?.type;
+    if (genus !== 'polar'){ return 1; }
+    let pykrete = traits.pykrete.vars(global.race['pykrete'] || 0.1);
+    if (global.city.calendar.temp === 0){ return 1 + (pykrete[1] / 100); }
+    if (global.city.calendar.temp === 2){ return 1 - (pykrete[0] / 100); }
+    return 1;
 }
 
 // Cache resource rate nodes and refresh entries after their rows are rebuilt.

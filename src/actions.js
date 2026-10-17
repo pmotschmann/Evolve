@@ -9663,6 +9663,15 @@ function sentience(){
         aiStart();
     }
 
+    // Prophetic Blueprint opens the Genetics ARPA tab only.
+    if (global.genes['mutation'] && global.genes.mutation >= 5 && !global.settings.showGenetics){
+        global.settings.showGenetics = true;
+        global.settings.arpa.genetics = true;
+        global.settings.arpa.physics = false;
+        global.settings.arpa.blood = false;
+        global.settings.arpa.arpaTabs = 1;
+    }
+
     if (global.settings.tabLoad){
         drawCity();
         clearElement($(`#r_civics`));
