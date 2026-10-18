@@ -11459,7 +11459,7 @@
   "wiki_trait_effect_xenophobic": "贸易站的贸易路线 -1",
   "wiki_trait_effect_beast": "狩猎产量 +%0%；有风时，狩猎产量变为 +%1%。新兵训练速度 +%2%。",
   "wiki_trait_effect_cautious": "下雨时战斗评级 -%0%。",
-  "wiki_trait_effect_versatility": "Minor genes cost %0% less to slot and to rank up, and your minor strand carries an extra base pair.",
+  "wiki_trait_effect_versatility": "次要基因花费 -%0%，额外获得一个碱基对。",
   "wiki_trait_effect_unassuming": "负面事件会以 %0% 的概率再次发生。",
   "wiki_trait_effect_grazer": "失业人口不消耗食物；手动收集食物时，按农民的%0%加成计算。",
   "wiki_trait_effect_grey_market": "Every trade route in use yields %0% of one route's import in each tradable resource you have unlocked.",
