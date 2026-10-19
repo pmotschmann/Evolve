@@ -1,5 +1,5 @@
 import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates, writeSave, writeBackup } from './vars.js';
-import { tagEvent, calcPrestige, updateResetStats, driftClear } from './functions.js';
+import { tagEvent, calcPrestige, updateResetStats, logPrestigeGains, driftClear } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel, grandDeathTourNeeds } from './achieve.js';
 import { thrusterOrbitProjection } from './iceage.js';
@@ -53,6 +53,8 @@ export function warhead(){
             unlockFeat('hubris');
         }
         checkAchievements();
+
+        logPrestigeGains('mad', gains);
 
         grandDeathTour('md');
 
@@ -191,6 +193,8 @@ export function bioseed(){
 
     checkAchievements();
 
+    logPrestigeGains('bioseed', gains);
+
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let probes = global.starDock.probes.count + 1;
@@ -271,6 +275,7 @@ export function cataclysm_end(){
             unlockAchieve('failed_history');
         }
 
+        logPrestigeGains('cataclysm', gains);
         grandDeathTour('ct');
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
@@ -381,6 +386,7 @@ export function big_bang(){
     let gains = calcPrestige('bigbang');
 
     checkAchievements();
+    logPrestigeGains('blackhole', gains);
 
     global.stats.blackhole++;
     updateResetStats();
@@ -479,6 +485,7 @@ export function vacuumCollapse(){
         let gains = calcPrestige('vacuum');
 
         checkAchievements();
+        logPrestigeGains('vacuum', gains);
 
         global.stats.blackhole++;
         updateResetStats();
@@ -599,6 +606,7 @@ export function ascend(){
     }
 
     checkAchievements();
+    logPrestigeGains('ascension', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -721,6 +729,7 @@ export function descension(){
     global.stats.descend++;
     updateResetStats();
     checkAchievements();
+    logPrestigeGains('infusion', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     global['race'] = {
@@ -810,6 +819,7 @@ export function apotheosis(){
     }
 
     checkAchievements();
+    logPrestigeGains('apotheosis', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -903,6 +913,7 @@ export function terraform(planet){
     }
 
     checkAchievements();
+    logPrestigeGains('terraform', gains);
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
@@ -967,6 +978,7 @@ export function aiApocalypse(){
 
     global.stats.aiappoc++;
     updateResetStats();
+    logPrestigeGains('ai', gains);
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
@@ -1051,6 +1063,7 @@ export function matrix(){
 
     global.stats.matrix++;
     updateResetStats();
+    logPrestigeGains('matrix', gains); // needs to be after reset count is updated for servant calculation
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
@@ -1133,6 +1146,7 @@ export function retirement(){
 
     global.stats.retire++;
     updateResetStats();
+    logPrestigeGains('retired', gains);
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
@@ -1215,6 +1229,7 @@ export function gardenOfEden(){
 
     global.stats.eden++;
     updateResetStats();
+    logPrestigeGains('eden', gains);
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
         global.stats.antiplasmid += gains.plasmid;
@@ -1363,6 +1378,7 @@ export function blast_away(){
         global.race['start_iceage'] = 1;
         global.race['iceage'] = 1;
     }
+    logPrestigeGains('thruster', gains); // log after all achievements are checked
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
@@ -1404,6 +1420,7 @@ export function living_extinction(){
 
     let gains = calcPrestige('living_extinction');
     checkAchievements();
+    logPrestigeGains('living_extinction', gains);
 
     global.stats.lextinct++;
     updateResetStats();
@@ -1481,6 +1498,7 @@ export function zApocalypse(){
 
     global.stats.zappoc++;
     updateResetStats();
+    logPrestigeGains('zombie_apocalypse', gains);
     global.prestige.Phage.count += gains.phage;
     global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
