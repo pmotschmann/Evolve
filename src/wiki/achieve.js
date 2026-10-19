@@ -61,7 +61,7 @@ export function achievePage(universe, filter, sort){
     <div id="filtering" class="b-tabs">
         <nav class="tabs">
             <ul>
-                <li class="${filter ? '' : 'is-active'}"><a @click="filterSwap()">All</a></li>
+                <li class="${filter ? '' : 'is-active'}"><a @click="filterSwap()">${loc('ui_all')}</a></li>
                 <li class="${filter && filter === 'missing' ? 'is-active' : ''}"><a @click="filterSwap('missing')">${loc('wiki_achievements_missing')}</a></li>
                 <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">${loc('wiki_achievements_obtained')}</a></li>
                 <li class="${filter && filter === 'incomplete' ? 'is-active' : ''}"><a @click="filterSwap('incomplete')">${loc('wiki_achievements_incomplete')}</a></li>

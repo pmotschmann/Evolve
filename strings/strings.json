@@ -15060,5 +15060,20 @@
   "supply_freighter_route_no_pickup": "No pickup",
   "supply_freighter_route_pickup_title": "Route Pickup: %0",
   "supply_freighter_route_pickup_done": "Done",
-  "supply_freighter_route_invalid": "This route cannot reach a refuelling stop before the fleet runs out of fuel."
+  "supply_freighter_route_invalid": "This route cannot reach a refuelling stop before the fleet runs out of fuel.",
+  "ui_active_challenge_genes": "Active Challenge Genes",
+  "ui_strength": "Strength:",
+  "ui_blocking_resource": "(blocking resource)",
+  "ui_first_blocking_resource": "(first blocking resource)",
+  "ui_last_blocking_resource": "(last blocking resource)",
+  "ui_top_bar": "Top Bar",
+  "ui_race_info": "Race Info",
+  "ui_tab_navigation": "Tab Navigation",
+  "ui_external_links": "External Links",
+  "ui_wiki": "Wiki",
+  "ui_donate": "Donate",
+  "ui_distribute_low_power": "Distribute Low Power",
+  "ui_delete": "Delete",
+  "ui_solar_system": "Solar System",
+  "ui_all": "All"
 }

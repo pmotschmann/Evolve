@@ -575,7 +575,7 @@ export function challengeIcon(){
         if (global.race['badgenes']){ desc += `<div>${loc('evo_challenge_badgenes')}</div>`; }
 
         if (desc.length > 0){
-            $('#topBar .planetWrap .flair').append($(`<div class="is-sr-only"><div>Active Challenge Genes</div>${desc}</div>`));
+            $('#topBar .planetWrap .flair').append($(`<div class="is-sr-only"><div>${loc('ui_active_challenge_genes')}</div>${desc}</div>`));
         }
 
         popover('topbarPlanet',
