@@ -8,7 +8,7 @@ import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize, govEffect, soldierDeath, soldierTrainingRate, soldierRecoveryRate, buildGarrison,
          rivalCollapsed, govTitle } from './civics.js';
 import { jobScale, jobStackStep, job_data, loadFoundry, limitCraftsmen, workerScale, hugeScale } from './jobs.js';
-import { production, highPopAdjust, hugeAdjust, infiltratorFactor } from './prod.js';
+import { production, highPopAdjust, hugeAdjust, infiltratorFactor, infiltratorCap } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, drawTech, bank_vault, structName, initStruct, getStructNumActive,
          buildTemplate, casinoEffect, housingLabel, setAction, drawCity, hugeEffect } from './actions.js';
 import { fuel_adjust, renderSpace, incrementStruct, planetName, int_fuel_adjust, checkRequirements, spaceTech,
@@ -2191,7 +2191,7 @@ const outerTruth = {
             desc(){
                 let world = sybaseWorld();
                 if (!world){ return loc('space_sybase_unknown'); }
-                return `<div>${loc(`space_sybase_${world}_desc`,[planetName()[world]])}</div><div class="has-text-danger">${loc('space_sybase_info_desc')}</div>`;
+                return `<div>${loc(`space_sybase_${world}_desc`,[planetName()[world]])}</div><div class="has-text-danger">${loc(global.tech.shadow >= 21 ? 'space_sybase_info_destroyed' : 'space_sybase_info_desc')}</div>`;
             },
             zone: 'outer',
             showDest(){
@@ -2231,13 +2231,13 @@ const outerTruth = {
             path: ['truepath'],
             queue_complete(){ return 0; },
             cost: {
-                Knowledge(){ return 20000000; },
+                Knowledge(){ return 29000000; },
                 Alien_Intel(){ return 1000; }
             },
             effect(){ return loc('space_sybase_search_effect'); },
             action(){
-                return false;
                 if (payCosts(this)){
+                    messageQueue(loc('space_sybase_search_msg'),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -7418,6 +7418,7 @@ export const sWarfare = {
     secureFirepower: 2000,      // Combined firepower each of them needs.
     secureHulls: ['cruiser','battlecruiser','dreadnought'],     // At least one of these per fleet.
     secureSensor: 'quantum',    // Sensor at least one ship per fleet must carry.
+    secureSpeed: 500,           // Minimum fleet speed in km/s, as the shipyard shows it.
     // Required route coverage; a stop in any zone of a set fulfills it.
     secureCover: [['spc_home','spc_moon'], ['spc_red'], ['spc_dwarf'], ['spc_hell'], ['spc_belt']],
     // Outer Security requirements; fleets use Zone Security specifications.
@@ -7426,6 +7427,13 @@ export const sWarfare = {
     outerStops: 3,              // Maximum route stops for outer patrol fleets.
     outerCover: [['spc_gas','spc_gas_moon'], ['spc_titan','spc_enceladus'], ['spc_makemake']]
 };
+
+// Return the slowest patrol speed without temporary relay boosts.
+function securePatrolSpeed(ships){
+    if (!ships.length){ return 0; }
+    const slowest = Math.min(...ships.map(s => shipSpeed(s) / massRelaySpeedBoost(s)));
+    return slowest * starConstants.KM_S_PER_SHIPUNIT;
+}
 
 // Return qualifying patrol fleets and their route stops, excluding routes over `maxStops`.
 function securePatrols(maxStops){
@@ -7448,6 +7456,7 @@ function securePatrols(maxStops){
         const scan = fleet.ships.some(s => s.sensor === sWarfare.secureSensor);
         const fire = fleet.ships.reduce((t,s) => t + shipAttackPower(s), 0);
         if (!heavy || !scan || fire < sWarfare.secureFirepower){ return; }
+        if (securePatrolSpeed(fleet.ships) < sWarfare.secureSpeed){ return; }
         if (maxStops && fleet.length > maxStops){ return; }
         out.push(fleet);
     });
@@ -7636,7 +7645,7 @@ export function counterEspionageDay(){
         }
     }
     if (global.stats.days >= alien.next){
-        if (infiltratorTotal(alien) < global.tech.shadow * 5){
+        if (infiltratorTotal(alien) < infiltratorCap()){
             const targets = counterEspionageTargets();
             if (targets.length > 0){
                 const target = targets[Math.floor(seededRandom(0,targets.length,true))];

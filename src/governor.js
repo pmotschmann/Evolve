@@ -1,6 +1,6 @@
 import { $ } from './dom.js';
 import { global, seededRandom, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue , resName } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, buildQueue, resName } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable, checkCosts, drawTech, drawCity } from './actions.js';
 import { govCivics, govTitle, govEffect, garrisonSize, rivalActive, spyActive } from './civics.js';
@@ -1747,7 +1747,7 @@ export const gov_tasks = {
             let mass = function(m){
                 return global.race.universe === 'magic' ? atomic_mass[m] : (['Elerium','Infernite'].includes(m) ? atomic_mass[m] * 10 : atomic_mass[m]);
             };
-            let remain = p_on['mass_ejector'] * 1000;
+            let remain = p_on['mass_ejector'] * actions.interstellar.int_blackhole.mass_ejector.volume();
             Object.keys(atomic_mass).sort((a,b) => (mass(a) < mass(b)) ? 1 : -1).forEach(function(res){
                 let trade = breakdown.p.consume[res].hasOwnProperty(loc('trade')) ? breakdown.p.consume[res][loc('trade')]: 0;
                 let craft = breakdown.p.consume[res].hasOwnProperty(loc('job_craftsman')) ? breakdown.p.consume[res][loc('job_craftsman')]: 0;

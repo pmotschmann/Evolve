@@ -1,7 +1,7 @@
 import { $ } from './dom.js';
 import { global, set_alevel, set_ulevel } from './vars.js';
 import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
-import { races, genus_def, traits, geneSlots, geneLike, geneCatalog, genePermanent, citizenDeath } from './races.js';
+import { races, genus_def, traits, geneSlots, geneLike, geneCatalog, genePermanent, citizenDeath, genes } from './races.js';
 import { actions } from './actions.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters, towerSize } from './portal.js';
@@ -2444,6 +2444,30 @@ export const perkList = {
                 active(){
                     return global.genes['mutation'] && global.genes.mutation >= 3 ? true : false;
                 }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_mutation4",[genes.gene_rapid_discount,loc('resource_Genes_name')]);
+                },
+                active(){
+                    return global.genes['mutation'] && global.genes.mutation >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_mutation5");
+                },
+                active(){
+                    return global.genes['mutation'] && global.genes.mutation >= 5 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_mutation6",[Math.round(genes.gene_fusion_strength * 100),Math.round(genes.gene_fusion_strength_same * 100)]);
+                },
+                active(){
+                    return global.genes['mutation'] && global.genes.mutation >= 6 ? true : false;
+                }
             }
         ],
         notes: [
@@ -2451,7 +2475,10 @@ export const perkList = {
             loc(`wiki_perks_crispr_note_upgrade`,[ 
                 [
                     `<span class="has-text-caution">${loc(`arpa_genepool_transformation_title`)}</span>`,
-                    `<span class="has-text-caution">${loc(`arpa_genepool_metamorphosis_title`)}</span>`
+                    `<span class="has-text-caution">${loc(`arpa_genepool_metamorphosis_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_rapid_dna_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_prophetic_blueprint_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_fusion_proteins_title`)}</span>`
                 ].join(', ')
             ])
         ]

@@ -10,7 +10,7 @@ import { freightCapacity, freightCargo, freightLoad, freightWeight, freightSpeed
          startFreightRoute, stopFreightRoute, shipFleet, shipArrivalTime, shipSpeed, seedStarterSupplyRoutes,
          deployedSupplyCount, deployableSupply, deploySupplyShip, undeploySupplyShip, shipPosition, shipMoving, shipDockedAt, shipDestination,
          supplyRouteStops, supplyRouteValid } from './ships.js';
-import { logiConst, logisticsActive, logisticsWorlds, logisticsOf, logisticsRest, routeSupplyEstimate } from './logistics.js';
+import { logiConst, logisticsActive, logisticsWorlds, logisticsOf, logisticsRest, logisticsDecay, routeSupplyEstimate } from './logistics.js';
 import { govActive, govTaskActive, defineGovernor } from './governor.js';
 import { autoRouteOn, toggleAutoRoute } from './autoroute.js';
 import { govEffect, rivalCollapsed } from './civics.js';
@@ -967,7 +967,7 @@ export function defineResources(wiki){
     loadResource('Elysanite',wiki,0,1,false,true,'advanced');
     loadResource('Unobtainium',wiki,0,1,false,false,'advanced');
     loadResource('Positronium',wiki,0,1,false,false,'advanced');
-    loadResource('Power_Bones',wiki,100,1,false,false,'advanced')
+    loadResource('Power_Bones',wiki,-2,1,false,false,'advanced')
     loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');
     loadResource('Nanite',wiki,0,1,false,false,'advanced');
@@ -4144,7 +4144,7 @@ function appendLogisticsInbound(host, group){
 
 function initLogisticsTab(host){
     host.append($(`<div class="storage-header supplyZonesTitle"><h2>${loc('tab_logistics')}</h2></div>`));
-    host.append($(`<p class="logisticsIntro">${loc('logistics_intro',[logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest])}</p>`));
+    host.append($(`<p class="logisticsIntro">${loc('logistics_intro',[logiConst.floor,logiConst.cap,logiConst.decayDays,logiConst.solRest,logiConst.rest,logiConst.spyDrag])}</p>`));
     const worlds = logisticsWorlds();
     const freighters = (global.space.shipyard?.ships || []).filter(ship => ship.class === 'freighter' && ship.damage < 100);
     const placed = new Set();
@@ -4169,7 +4169,7 @@ function initLogisticsTab(host){
                 tone(){ return logiValueClass(logisticsOf(world)); },
                 settle(){
                     const rest = logisticsRest(world);
-                    return logisticsOf(world) > rest ? loc('logistics_world_rest',[rest,logiConst.decayDays]) : loc('logistics_world_steady');
+                    return logisticsOf(world) > rest ? loc('logistics_world_rest',[rest,logiConst.decayDays,logisticsDecay(world)]) : loc('logistics_world_steady');
                 }
             }});
         }
