@@ -80,3 +80,8 @@ docker build . -t evolve
 # Run evolve server. Default address: http://localhost:8080/
 docker run --name evolve -p 8080:80 -d evolve
 ```
+
+## Wasmer Edge
+[![Deploy to Wasmer](https://img.shields.io/badge/Deploy%20to-Wasmer-171717?logo=wasmer&logoColor=white)](https://wasmer.io/apps/create?github=pmotschmann%2FEvolve)
+
+To host your own copy, fork this repository first and import your fork. The import serves the repository you choose and does not copy it into your GitHub account. Import a branch that contains the root `Staticfile`; if it is not the default branch, select it in the import page's branch setting. The `Staticfile` makes Wasmer serve the committed game files (`index.html`, `wiki.html`, `evolve/`, `wiki/`, `lib/`, `strings/`, `font/`) as they are, without running `npm run build`. If you change the source, rebuild and commit `evolve/` and `wiki/` in your fork before deploying. Saves are stored in each player's browser for that site, so use Export/Import to move a save between hosts. The pages include this project's Google Analytics tag; change or remove it in your fork.
