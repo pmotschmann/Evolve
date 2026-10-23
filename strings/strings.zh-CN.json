@@ -7913,7 +7913,7 @@
   "space_mission_desc": "进行%0任务",
   "space_support": "需要%0支持",
   "space_used_support": "%0支持 -1",
-  "space_used_support_more": "%0 %1 Support",
+  "space_used_support_more": "%1支持 %0",
   "space_rival_ally": "因联盟产量 +%0%",
   "space_rival_war": "因战争产量 %0%",
   "space_mine": "%0 Mine",
