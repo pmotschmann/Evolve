@@ -405,6 +405,45 @@ html.dracula {
     }
 }
 
+// The game draws Dark theme popups light; on the wiki they use the Night theme's dark popup colours,
+// so the theme's light text (such as 1-star species names) stays readable.
+html.dark {
+    .main>div.popper,
+    body .modal>div.popper {
+        background-color: #0f0f0f;
+        border-color: #999;
+        color: #fff;
+
+        >div {
+            border-top-color: #999;
+        }
+        .split>div:nth-of-type(2) {
+            border-left-color: #999;
+        }
+        .has-text-dark {
+            color: #fff;
+        }
+        .has-text-label {
+            color: #ffff9e;
+        }
+        .has-text-success {
+            color: #23d160;
+        }
+        .has-text-warning {
+            color: #ffdd57;
+        }
+        .has-text-caution {
+            color: #ffa500;
+        }
+        .grad-from-left {
+            background-image: linear-gradient(90deg, #f14668 45%, #fff 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, #fff 45%, #f14668 55%);
+        }
+    }
+}
+
 html.light,
 html.gruvboxLight {
     .menu-label {
