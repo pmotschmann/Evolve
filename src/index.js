@@ -348,13 +348,13 @@ function tabLabel(lbl){
 }
 
 function updateQueueStyle(){
-    const buildingQueue = $('#buildQueue');
+    const queues = $('#buildQueue, #resQueue');
     ['standardqueuestyle', 'listqueuestyle', 'bulletlistqueuestyle', 'numberedlistqueuestyle']
         .forEach(qstyle => {
             if (global.settings.queuestyle === qstyle) {
-                buildingQueue.addClass(qstyle);
+                queues.addClass(qstyle);
             } else {
-                buildingQueue.removeClass(qstyle);
+                queues.removeClass(qstyle);
             }
         });
 }

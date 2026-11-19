@@ -10389,6 +10389,10 @@ export function resQueue(){
         <span id="pauserqueue" class="${global.r_queue.pause ? 'pause' : 'play'}" role="button" @click="pauseRQueue()" :aria-label="pausedesc()"></span>
     `));
 
+    if (global.settings.queuestyle) {
+        $('#resQueue').addClass(global.settings.queuestyle);
+    }        
+
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
 
